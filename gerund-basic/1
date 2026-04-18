@@ -1,0 +1,187 @@
+
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>현재진행형 vs 동명사 - 기초 다지기 50제</title>
+<link href="https://fonts.googleapis.com/css2?family=Pretendard:wght@400;600;700;800&display=swap" rel="stylesheet">
+<style>
+body, html { margin: 0; padding: 0; background-color: #f8fafc; }
+#egm-app-root { font-family: 'Pretendard', sans-serif; background-color: #f8fafc; color: #1e293b; line-height: 1.6; padding-bottom: 50px; margin: 0 auto; max-width: 100%; text-align: left; word-break: keep-all; }
+#egm-app-root * { box-sizing: border-box; margin: 0; padding: 0; }
+#egm-app-root button, #egm-app-root input { appearance: none; font-family: inherit; outline: none; border: none; }
+#egm-app-root .header { background: #0f172a; border-bottom: 6px solid #10b981; padding: 40px 20px; text-align: center; color: white; border-radius: 0 0 24px 24px; box-shadow: 0 10px 25px rgba(15, 23, 42, 0.15); margin-bottom: 30px; }
+#egm-app-root .badge-top { font-size: 0.85rem; font-weight: 800; letter-spacing: 1px; background: rgba(16, 185, 129, 0.2); color: #10b981; display: inline-block; padding: 6px 16px; border-radius: 30px; margin-bottom: 15px; }
+#egm-app-root .header h1 { font-size: 2.1rem; font-weight: 800; margin-bottom: 8px; line-height: 1.3; }
+#egm-app-root .header p { font-size: 1rem; color: #94a3b8; font-weight: 500; }
+#egm-app-root .dashboard { max-width: 650px; margin: -50px auto 30px; padding: 0 20px; display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; position: relative; z-index: 10; }
+#egm-app-root .stat-card { background: #ffffff; padding: 16px 10px; border-radius: 20px; text-align: center; box-shadow: 0 4px 15px rgba(0,0,0,0.08); border: 1px solid #e2e8f0; }
+#egm-app-root .stat-card .val { font-size: 1.6rem; font-weight: 800; display: block; color: #0f172a; }
+#egm-app-root .stat-card .lbl { font-size: 0.75rem; color: #64748b; font-weight: 700; }
+#egm-app-root .stat-card.correct .val { color: #10b981; }
+#egm-app-root .stat-card.wrong .val { color: #f43f5e; }
+#egm-app-root .tabs { display: flex; gap: 8px; max-width: 800px; margin: 0 auto 25px; padding: 0 20px; overflow-x: auto; scrollbar-width: none; }
+#egm-app-root .tabs::-webkit-scrollbar { display: none; }
+#egm-app-root .tab-btn { flex-shrink: 0; padding: 12px 20px; border-radius: 12px; border: 2px solid #e2e8f0; background: #fff; color: #64748b; font-weight: 700; font-size: 0.95rem; transition: 0.2s; cursor: pointer; }
+#egm-app-root .tab-btn.active { background: #0f172a; color: #10b981; border-color: #0f172a; box-shadow: 0 4px 12px rgba(15, 23, 42, 0.2); }
+#egm-app-root .sec { display: none; animation: egmFadeIn 0.4s ease; max-width: 800px; margin: 0 auto; padding: 0 20px; }
+#egm-app-root .sec.active { display: block; }
+#egm-app-root .q-card { background: #ffffff; border-radius: 16px; padding: 24px; margin-bottom: 24px; box-shadow: 0 4px 15px rgba(0,0,0,0.03); position: relative; border: 1px solid #e2e8f0; transition: 0.3s; }
+#egm-app-root .q-card.solved-o { border-color: #10b981; background: #f0fdf4; }
+#egm-app-root .q-card.solved-x { border-color: #f43f5e; background: #fff1f2; }
+#egm-app-root .q-header { display: flex; align-items: flex-start; gap: 12px; margin-bottom: 16px; }
+#egm-app-root .q-num { background: #f1f5f9; color: #0f172a; width: 32px; height: 32px; display: flex; align-items: center; justify-content: center; border-radius: 8px; font-weight: 800; font-size: 0.95rem; flex-shrink: 0; }
+#egm-app-root .q-kor { font-size: 0.95rem; font-weight: 700; color: #10b981; margin-bottom: 8px; }
+#egm-app-root .q-eng { font-size: 1.1rem; font-weight: 600; color: #0f172a; line-height: 1.5; padding-top: 2px;}
+#egm-app-root .q-eng em { color: #0f172a; font-style: normal; font-weight: 800; text-decoration: underline; text-decoration-color: #10b981; text-decoration-thickness: 3px; }
+#egm-app-root .q-eng u { text-decoration-color: #10b981; text-decoration-thickness: 3px; text-underline-offset: 4px; color: #0f172a; font-weight: 800; }
+#egm-app-root .choices { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+#egm-app-root .choice-btn { padding: 14px 16px; border-radius: 12px; border: 1px solid #cbd5e1; background: #fff; color: #334155; font-size: 0.95rem; font-weight: 600; transition: 0.2s; text-align: center; cursor: pointer; }
+#egm-app-root .choice-btn:hover:not(:disabled) { border-color: #0f172a; background: #f8fafc; color: #0f172a; }
+#egm-app-root .choice-btn.ans-o { background: #10b981; color: white; border-color: #10b981; }
+#egm-app-root .choice-btn.ans-x { background: #f43f5e; color: white; border-color: #f43f5e; }
+#egm-app-root .choice-btn.reveal { border-color: #10b981; color: #10b981; background: #f0fdf4; }
+#egm-app-root .input-area { display: flex; gap: 10px; }
+#egm-app-root .q-input { flex: 1; padding: 14px 18px; border-radius: 12px; border: 1px solid #cbd5e1; font-size: 1rem; font-weight: 600; color: #0f172a; background: #fff; }
+#egm-app-root .q-input:focus { border-color: #0f172a; box-shadow: 0 0 0 2px rgba(15, 23, 42, 0.1); }
+#egm-app-root .check-btn { padding: 0 24px; border-radius: 12px; background: #0f172a; color: #10b981; font-weight: 700; cursor: pointer; transition: 0.2s; }
+#egm-app-root .check-btn:hover:not(:disabled) { background: #1e293b; }
+#egm-app-root .check-btn:disabled { background: #94a3b8; color: #fff; cursor: not-allowed; }
+#egm-app-root .scramble-area { margin-top: 10px; }
+#egm-app-root .drop-zone { min-height: 56px; border: 2px dashed #cbd5e1; border-radius: 12px; padding: 10px; display: flex; flex-wrap: wrap; gap: 8px; align-items: center; background: #fff; margin-bottom: 12px; }
+#egm-app-root .drop-ph { color: #94a3b8; font-size: 0.9rem; font-weight: 600; pointer-events: none; }
+#egm-app-root .word-pool { display: flex; flex-wrap: wrap; gap: 8px; padding: 12px; background: #f1f5f9; border-radius: 12px; min-height: 56px; }
+#egm-app-root .chip { padding: 8px 16px; background: white; border-radius: 8px; border: 1px solid #e2e8f0; color: #334155; font-weight: 700; font-size: 0.95rem; cursor: pointer; transition: 0.15s; user-select: none; }
+#egm-app-root .chip.in-zone { background: #0f172a; color: #10b981; border-color: #0f172a; }
+#egm-app-root .hint-box { margin-top: 16px; padding: 16px; background: #fffbeb; border: 1px solid #fde68a; border-radius: 12px; font-size: 0.95rem; font-weight: 500; color: #92400e; display: none; line-height: 1.6; }
+#egm-app-root .hint-box.show { display: block; animation: egmFadeIn 0.3s ease; }
+#egm-toast { position: fixed; bottom: 30px; left: 50%; transform: translateX(-50%) translateY(100px); padding: 12px 32px; border-radius: 50px; color: white; font-weight: 700; z-index: 9999; transition: transform 0.3s cubic-bezier(0.18, 0.89, 0.32, 1.28); opacity: 0; pointer-events: none; box-shadow: 0 4px 15px rgba(0,0,0,0.2); }
+#egm-toast.show { transform: translateX(-50%) translateY(0); opacity: 1; }
+#egm-result { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(248,250,252,0.95); display: none; flex-direction: column; align-items: center; justify-content: center; z-index: 10000; padding: 20px; }
+#egm-result .r-card { background: white; padding: 40px; border-radius: 24px; box-shadow: 0 20px 50px rgba(15, 23, 42, 0.1); text-align: center; max-width: 400px; width: 100%; border: 1px solid #e2e8f0; }
+#egm-app-root .r-score { font-size: 4rem; font-weight: 800; color: #0f172a; margin: 10px 0; }
+#egm-app-root .r-btn { padding: 16px 40px; background: #0f172a; color: #10b981; border-radius: 12px; font-weight: 700; width: 100%; cursor: pointer; transition: 0.2s;}
+@keyframes egmFadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+@media (max-width: 600px) { #egm-app-root .choices { grid-template-columns: 1fr; } #egm-app-root .dashboard { grid-template-columns: 1fr 1fr 1fr; gap: 8px; } }
+</style>
+</head>
+<body>
+<div id="egm-toast"></div>
+<div id="egm-app-root">
+    <div class="header">
+        <div class="badge-top">BASIC GRAMMAR 50</div>
+        <h1>현재진행형 vs 동명사 (기초)</h1>
+        <p>형태와 기본 해석을 확실하게 다져보세요!</p>
+    </div>
+    <div class="dashboard">
+        <div class="stat-card"><span class="val" id="st-tot">0</span><span class="lbl">진행도 / 50</span></div>
+        <div class="stat-card correct"><span class="val" id="st-cor">0</span><span class="lbl">정답</span></div>
+        <div class="stat-card wrong"><span class="val" id="st-wrg">0</span><span class="lbl">오답</span></div>
+    </div>
+    <div class="tabs">
+        <button class="tab-btn active" onclick="egmSwitch(0, this)">1. 현재진행형</button>
+        <button class="tab-btn" onclick="egmSwitch(1, this)">2. 동명사</button>
+        <button class="tab-btn" onclick="egmSwitch(2, this)">3. 기초 형태 구분</button>
+    </div>
+    <div class="sec active" id="sec-0"></div><div class="sec" id="sec-1"></div><div class="sec" id="sec-2"></div>
+    <div id="egm-result">
+        <div class="r-card">
+            <div style="font-size: 3.5rem; margin-bottom:10px;">🏆</div>
+            <h2 style="font-weight: 800; color:#0f172a;">기초 학습 완료!</h2>
+            <div class="r-score" id="r-score">0점</div>
+            <p id="r-msg" style="color: #64748b; font-weight: 600; margin-bottom: 20px; font-size:1.05rem;"></p>
+            <button class="r-btn" onclick="location.reload()">다시 풀기</button>
+        </div>
+    </div>
+</div>
+<script>
+const qData = {
+    sec0: [
+        { type: "mcq", kor: "나는 지금 책을 읽고 있는 중이다.", eng: "I <em>___</em> a book right now.", ans: "am reading", opts: ["am reading", "is reading", "are reading", "reading"], hint: "I에는 be동사 am을 사용합니다." },
+        { type: "mcq", kor: "그녀는 음악을 듣고 있다.", eng: "She <em>___</em> to music.", ans: "is listening", opts: ["listening", "are listening", "am listening", "is listening"], hint: "She(3인칭 단수)에는 is를 사용합니다." },
+        { type: "mcq", kor: "그들은 축구를 하는 중이다.", eng: "They <em>___</em> soccer.", ans: "are playing", opts: ["is playing", "are playing", "playing", "am playing"], hint: "They(복수)에는 are를 사용합니다." },
+        { type: "mcq", kor: "아기가 자고 있어.", eng: "The baby <em>___</em>.", ans: "is sleeping", opts: ["is sleeping", "are sleeping", "sleeps", "sleeping"], hint: "The baby(단수)에는 is를 사용합니다." },
+        { type: "mcq", kor: "우리는 영어를 공부하는 중이다.", eng: "We <em>___</em> English.", ans: "are studying", opts: ["is studying", "am studying", "are studying", "studying"], hint: "We(복수)에는 are를 사용합니다." },
+        { type: "mcq", kor: "그는 저녁을 만들고 있다.", eng: "He <em>___</em> dinner.", ans: "is making", opts: ["is makeing", "are making", "making", "is making"], hint: "make처럼 e로 끝나는 동사는 e를 빼고 ing를 붙입니다." },
+        { type: "mcq", kor: "비가 내리고 있어.", eng: "It <em>___</em>.", ans: "is raining", opts: ["is raining", "are raining", "raining", "rains"], hint: "비인칭 주어 It에는 is를 씁니다." },
+        { type: "mcq", kor: "부모님은 TV를 보고 계신다.", eng: "My parents <em>___</em> TV.", ans: "are watching", opts: ["is watching", "are watching", "watching", "am watching"], hint: "My parents(복수)이므로 are를 씁니다." },
+        { type: "input", kor: "소년들이 수영을 하고 있다. (swim)", eng: "The boys <em>___</em> in the pool.", ans: "are swimming", hint: "swim은 단모음+단자음이므로 m을 한 번 더 쓰고 ing!" },
+        { type: "input", kor: "나는 이메일을 쓰는 중이다. (write)", eng: "I <em>___</em> an email.", ans: "am writing", hint: "write는 e를 빼고 ing를 붙입니다." },
+        { type: "input", kor: "탐은 공부를 하고 있지 않다. (not / study)", eng: "Tom <em>___</em> now.", ans: "is not studying", hint: "부정문은 be동사 뒤에 not을 붙입니다.", ans2: "isn't studying" },
+        { type: "input", kor: "우리는 점심을 먹고 있다. (have)", eng: "We <em>___</em> lunch.", ans: "are having", hint: "have는 e를 빼고 ing를 붙입니다." },
+        { type: "input", kor: "너는 기다리고 있니? (you / wait)", eng: "<em>___</em> for someone?", ans: "Are you waiting", hint: "의문문은 Be동사가 주어 앞으로 나갑니다." },
+        { type: "input", kor: "새가 하늘을 날고 있다. (fly)", eng: "A bird <em>___</em> in the sky.", ans: "is flying", hint: "단수 주어(A bird) + is flying" },
+        { type: "input", kor: "그들은 영화를 보고 있지 않다. (not / watch)", eng: "They <em>___</em> a movie.", ans: "are not watching", hint: "are 뒤에 not을 붙입니다.", ans2:"aren't watching" },
+        { type: "input", kor: "그녀는 의자에 앉아 있는 중이다. (sit)", eng: "She <em>___</em> on the chair.", ans: "is sitting", hint: "sit은 단모음+단자음이므로 t를 한 번 더 씁니다." },
+        { type: "scramble", kor: "나는 숙제를 하고 있는 중이다.", ans: "I am doing my homework", words: ["doing", "I", "am", "my", "homework"] },
+        { type: "scramble", kor: "그 버스가 오고 있다.", ans: "The bus is coming", words: ["is", "bus", "coming", "The"] },
+        { type: "scramble", kor: "너는 지금 무엇을 하고 있니?", ans: "What are you doing now", words: ["doing", "you", "are", "now", "What"] },
+        { type: "scramble", kor: "우리는 달리고 있지 않다.", ans: "We are not running", words: ["not", "are", "We", "running"] }
+    ],
+    sec1: [
+        { type: "mcq", kor: "나는 테니스 치는 것을 즐긴다.", eng: "I enjoy <em>___</em> tennis.", ans: "playing", opts: ["to play", "playing", "play", "played"], hint: "enjoy는 동명사(~ing)를 목적어로 취합니다." },
+        { type: "mcq", kor: "걷는 것은 건강에 좋다.", eng: "<em>___</em> is good for your health.", ans: "Walking", opts: ["Walk", "Walks", "Walking", "Walked"], hint: "문장의 주어 자리에 쓰이는 동명사입니다." },
+        { type: "mcq", kor: "내 취미는 사진을 찍는 것이다.", eng: "My hobby is <em>___</em> pictures.", ans: "taking", opts: ["to taking", "take", "took", "taking"], hint: "보어 자리에 쓰이는 동명사입니다." },
+        { type: "mcq", kor: "그녀는 숙제하는 것을 끝마쳤다.", eng: "She finished <em>___</em> her homework.", ans: "doing", opts: ["to do", "doing", "do", "done"], hint: "finish는 동명사를 목적어로 취합니다." },
+        { type: "mcq", kor: "도와주어서 고마워.", eng: "Thank you for <em>___</em> me.", ans: "helping", opts: ["help", "helped", "to help", "helping"], hint: "전치사(for) 뒤에는 동명사가 와야 합니다." },
+        { type: "mcq", kor: "창문 여는 것을 꺼리시나요?", eng: "Do you mind <em>___</em> the window?", ans: "opening", opts: ["open", "to open", "opening", "opened"], hint: "mind(~을 꺼리다)는 동명사를 목적어로 취합니다." },
+        { type: "mcq", kor: "그는 담배 피우는 것을 포기했다.", eng: "He gave up <em>___</em>.", ans: "smoking", opts: ["smoke", "to smoke", "smoking", "smoked"], hint: "give up 뒤에는 동명사가 옵니다." },
+        { type: "mcq", kor: "외식하는 것 어때?", eng: "How about <em>___</em> out?", ans: "eating", opts: ["eating", "eat", "to eat", "ate"], hint: "전치사 about 뒤에는 동명사가 옵니다." },
+        { type: "input", kor: "대답하는 것을 피했다. (answer)", eng: "He avoided <em>___</em> my question.", ans: "answering", hint: "avoid는 동명사를 목적어로 취합니다." },
+        { type: "input", kor: "책을 읽는 것은. (read)", eng: "<em>___</em> books is my favorite activity.", ans: "Reading", hint: "주어 자리에 쓰이는 동명사입니다. (대문자로 시작!)" },
+        { type: "input", kor: "한국어를 배우는 것. (learn)", eng: "She is interested in <em>___</em> Korean.", ans: "learning", hint: "전치사 in 뒤에는 동명사를 씁니다." },
+        { type: "input", kor: "일어나는 것을 좋아하지 않는다. (get)", eng: "I don't like <em>___</em> up early.", ans: "getting", hint: "get은 t를 한 번 더 쓰고 ing!" },
+        { type: "input", kor: "의사가 되는 것이다. (become)", eng: "My dream is <em>___</em> a doctor.", ans: "becoming", hint: "보어 역할을 하는 동명사입니다. e를 빼고 ing!" },
+        { type: "input", kor: "계속해서 이야기했다. (talk)", eng: "They kept <em>___</em>.", ans: "talking", hint: "keep + v-ing : 계속해서 ~하다" },
+        { type: "input", kor: "실패하는 것이 두렵니? (fail)", eng: "Are you afraid of <em>___</em>?", ans: "failing", hint: "전치사 of 뒤에는 동명사!" },
+        { type: "input", kor: "게임하는 것을 멈췄다. (play)", eng: "We stopped <em>___</em> games.", ans: "playing", hint: "stop + v-ing : ~하던 것을 멈추다" },
+        { type: "scramble", kor: "실수를 하는 것은 정상이다.", ans: "Making mistakes is normal", words: ["normal", "is", "Making", "mistakes"] },
+        { type: "scramble", kor: "너를 다시 보기를 고대한다.", ans: "I look forward to seeing you", words: ["look", "forward", "seeing", "I", "to", "you"] },
+        { type: "scramble", kor: "그녀는 그림 그리는 것을 잘한다.", ans: "She is good at drawing", words: ["is", "drawing", "at", "She", "good"] },
+        { type: "scramble", kor: "영어를 배우는 것은 쉽지 않다.", ans: "Learning English is not easy", words: ["English", "not", "Learning", "easy", "is"] }
+    ],
+    sec2: [
+        { type: "dist", kor: "내 여동생은 소파에서 자고 있다.", eng: "My sister is <u>sleeping</u> on the sofa.", ans: "현재진행형", opts: ["현재진행형", "동명사"], hint: "'~하는 중이다'로 해석되므로 현재진행형입니다." },
+        { type: "dist", kor: "그의 직업은 차를 파는 것이다.", eng: "His job is <u>selling</u> cars.", ans: "동명사", opts: ["현재진행형", "동명사"], hint: "'~하는 것'으로 해석되는 명사적 용법(동명사)입니다." },
+        { type: "dist", kor: "영화를 보는 것은 재미있다.", eng: "<u>Watching</u> movies is fun.", ans: "동명사", opts: ["현재진행형", "동명사"], hint: "문장의 주어(~하는 것은)로 쓰였습니다." },
+        { type: "dist", kor: "그들은 병원을 짓고 있는 중이다.", eng: "They are <u>building</u> a hospital.", ans: "현재진행형", opts: ["현재진행형", "동명사"], hint: "be + v-ing 로 '~하는 중이다'의 의미입니다." },
+        { type: "dist", kor: "초대해준 것에 감사해.", eng: "Thank you for <u>inviting</u> me.", ans: "동명사", opts: ["현재진행형", "동명사"], hint: "전치사(for) 뒤에 온 명사(동명사)입니다." },
+        { type: "dist", kor: "나는 열쇠를 찾고 있는 중이다.", eng: "I am <u>looking</u> for my keys.", ans: "현재진행형", opts: ["현재진행형", "동명사"], hint: "주어의 진행 중인 동작을 나타냅니다." },
+        { type: "dist", kor: "그녀는 피아노 치는 것을 즐긴다.", eng: "She enjoys <u>playing</u> the piano.", ans: "동명사", opts: ["현재진행형", "동명사"], hint: "동사 enjoy의 목적어(~하는 것을)로 쓰였습니다." },
+        { type: "dist", kor: "봐! 눈이 내리고 있어.", eng: "Look! It is <u>snowing</u>.", ans: "현재진행형", opts: ["현재진행형", "동명사"], hint: "현재 진행 중인 상태를 나타냅니다." },
+        { type: "dist", kor: "내 취미는 우표를 모으는 것이다.", eng: "My hobby is <u>collecting</u> stamps.", ans: "동명사", opts: ["현재진행형", "동명사"], hint: "'취미 = 모으는 것' (보어 역할)" },
+        { type: "dist", kor: "우리는 여행을 계획하고 있다.", eng: "We are <u>planning</u> a trip.", ans: "현재진행형", opts: ["현재진행형", "동명사"], hint: "계획하는 동작이 진행 중임을 나타냅니다." }
+    ]
+};
+
+let tot = 0, cor = 0, wrg = 0; const T_Q = 50; const st = {}; 
+function egmToast(m, t) { let ts = document.getElementById('egm-toast'); ts.innerText = m; ts.style.background = t === 'o' ? '#10b981' : '#f43f5e'; ts.classList.add('show'); setTimeout(() => ts.classList.remove('show'), 2000); }
+function egmSwitch(i, b) { document.querySelectorAll('.sec').forEach(s => s.classList.remove('active')); document.querySelectorAll('.tab-btn').forEach(tb => tb.classList.remove('active')); document.getElementById('sec-' + i).classList.add('active'); b.classList.add('active'); window.scrollTo({ top: 0, behavior: 'smooth' }); }
+function upd(id, isC) { if (st[id]) return; st[id] = true; tot++; if (isC) cor++; else wrg++; document.getElementById('st-tot').innerText = tot; document.getElementById('st-cor').innerText = cor; document.getElementById('st-wrg').innerText = wrg;
+    if (tot === T_Q) { setTimeout(() => { document.getElementById('egm-result').style.display = 'flex'; let sc = Math.round((cor / T_Q) * 100); document.getElementById('r-score').innerText = sc + '점'; document.getElementById('r-msg').innerText = sc >= 90 ? "기초 마스터! 다음 단계로 가볼까요? 🏆" : "기초를 아주 잘 다졌어요! ✨"; }, 800); }
+}
+function hMCQ(b, a, id) { let c = b.closest('.q-card'); if(st[id]) return; let ok = (b.innerText.trim() === a); c.querySelectorAll('.choice-btn').forEach(btn => { btn.disabled = true; if(btn.innerText.trim() === a) btn.classList.add('reveal'); }); if(ok) { b.classList.add('ans-o'); c.classList.add('solved-o'); egmToast('정답입니다!', 'o'); } else { b.classList.add('ans-x'); c.classList.add('solved-x'); egmToast('틀렸어요. 해설을 확인하세요.', 'x'); } c.querySelector('.hint-box').classList.add('show'); upd(id, ok); }
+function hInp(b, a, id) { if(st[id]) return; let c = b.closest('.q-card'), inp = c.querySelector('.q-input'); let ty = inp.value.trim().toLowerCase().replace(/\s+/g, ' '); let ok = false; let ansArr = [a.toLowerCase()]; if(c.dataset.ans2) ansArr.push(c.dataset.ans2.toLowerCase()); if(ansArr.includes(ty)) ok = true; inp.disabled = true; b.disabled = true; if(ok) { c.classList.add('solved-o'); egmToast('완벽해요!', 'o'); } else { c.classList.add('solved-x'); inp.value = `${inp.value} (정답: ${a})`; egmToast('해설을 확인하세요.', 'x'); } c.querySelector('.hint-box').classList.add('show'); upd(id, ok); }
+function hChip(c, id) { if(st[id]) return; let dz = document.getElementById('dz-' + id), p = document.getElementById('pool-' + id); dz.querySelector('.drop-ph')?.remove(); if(c.parentElement === p) { c.classList.add('in-zone'); dz.appendChild(c); } else { c.classList.remove('in-zone'); p.appendChild(c); } }
+function hScr(b, a, id) { if(st[id]) return; let c = b.closest('.q-card'), dz = document.getElementById('dz-' + id); let ty = Array.from(dz.querySelectorAll('.chip')).map(ch => ch.innerText.trim()).join(' '); let ok = (ty === a); b.disabled = true; c.querySelectorAll('.chip').forEach(ch => ch.style.pointerEvents = 'none'); if(ok) { c.classList.add('solved-o'); egmToast('문장 완성!', 'o'); } else { c.classList.add('solved-x'); dz.innerHTML = `<div style="color:#f43f5e; font-weight:700; padding:8px;">정답: ${a}</div>`; egmToast('순서가 틀렸어요.', 'x'); } c.querySelector('.hint-box').classList.add('show'); upd(id, ok); }
+function render() {
+    let gn = 1; ['sec0', 'sec1', 'sec2'].forEach((k, i) => {
+        let con = document.getElementById('sec-' + i), ht = '';
+        qData[k].forEach(q => { let id = 'q_' + gn; let a2 = q.ans2 ? `data-ans2="${q.ans2}"` : '';
+            ht += `<div class="q-card" id="${id}" ${a2}><div class="q-kor">${q.kor}</div><div class="q-header"><div class="q-num">${gn}</div><div class="q-eng">${q.eng||''}</div></div>`;
+            if (q.type === 'mcq') { ht += `<div class="choices">`; [...q.opts].sort(()=>Math.random()-0.5).forEach(o => { ht += `<button class="choice-btn" onclick="hMCQ(this, '${q.ans.replace(/'/g, "\\'")}', '${id}')">${o}</button>`; }); ht += `</div>`; } 
+            else if (q.type === 'input') { ht += `<div class="input-area"><input type="text" class="q-input" placeholder="정답 입력" onkeypress="if(event.key==='Enter') this.nextElementSibling.click()"><button class="check-btn" onclick="hInp(this, '${q.ans.replace(/'/g, "\\'")}', '${id}')">확인</button></div>`; } 
+            else if (q.type === 'scramble') { ht += `<div class="scramble-area"><div class="drop-zone" id="dz-${id}"><span class="drop-ph">단어를 클릭하여 배열하세요</span></div><div class="word-pool" id="pool-${id}">`; q.words.sort(()=>Math.random()-0.5).forEach(w => { ht += `<div class="chip" onclick="hChip(this, '${id}')">${w}</div>`; }); ht += `</div><button class="check-btn" style="width:100%; margin-top:12px; padding:14px;" onclick="hScr(this, '${q.ans}', '${id}')">확인</button></div>`; }
+            else if (q.type === 'dist') { ht += `<div class="choices" style="grid-template-columns:1fr 1fr;">`; q.opts.forEach(o => { ht += `<button class="choice-btn" onclick="hMCQ(this, '${q.ans}', '${id}')">${o}</button>`; }); ht += `</div>`; }
+            if (q.hint) ht += `<div class="hint-box">💡 <b>해설:</b> ${q.hint}</div>`; ht += `</div>`; gn++;
+        }); con.innerHTML = ht;
+    });
+}
+window.onload = render;
+</script>
+</body>
+</html>
+
+
+```

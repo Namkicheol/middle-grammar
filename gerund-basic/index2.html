@@ -1,0 +1,412 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Grammar Master: 기초 50제</title>
+<link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@400;600;700;800&family=Noto+Sans+KR:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+/* 클로드 원본 프리미엄 디자인 100% 복구 */
+:root{--sky:#e0f2fe;--blue:#0ea5e9;--dark:#0c4a6e;--green:#22c55e;--red:#ef4444;--purple:#8b5cf6;--bg:#f0f9ff;--white:#fff;--gray:#94a3b8;}
+*{margin:0;padding:0;box-sizing:border-box;}
+body{font-family:'Baloo 2','Noto Sans KR',sans-serif;background:var(--bg);padding-bottom:60px;}
+
+.header{background:linear-gradient(135deg,#0ea5e9,#6366f1);padding:24px 20px 32px;text-align:center;position:relative;overflow:hidden;}
+.header::before{content:'';position:absolute;top:-40px;right:-40px;width:160px;height:160px;background:rgba(255,255,255,.1);border-radius:50%;}
+.hbadge{display:inline-block;background:rgba(255,255,255,.25);color:#fff;font-size:12px;font-weight:700;letter-spacing:2px;padding:4px 16px;border-radius:20px;margin-bottom:10px;}
+.header h1{color:#fff;font-size:1.8rem;font-weight:800;margin-bottom:4px;}
+.header p{color:rgba(255,255,255,.85);font-size:.85rem;}
+
+.scoreboard{display:flex;justify-content:center;gap:12px;margin:-18px 20px 20px;position:relative;z-index:10;}
+.sc{background:var(--white);border-radius:16px;padding:12px 20px;text-align:center;box-shadow:0 4px 20px rgba(0,0,0,.1);flex:1;max-width:110px;}
+.sc .n{font-size:1.8rem;font-weight:800;line-height:1;}
+.sc .l{font-size:.68rem;color:var(--gray);font-weight:600;margin-top:2px;}
+.sc.t .n{color:var(--blue);} .sc.c .n{color:var(--green);} .sc.w .n{color:var(--red);}
+
+.pw{padding:0 20px;margin-bottom:18px;max-width:800px;margin-left:auto;margin-right:auto;}
+.plabel{display:flex;justify-content:space-between;font-size:.85rem;font-weight:700;color:var(--gray);margin-bottom:6px;}
+.pbg{background:#e2e8f0;border-radius:99px;height:10px;overflow:hidden;}
+.pfill{height:100%;border-radius:99px;background:linear-gradient(90deg,var(--blue),var(--purple));transition:width .4s;}
+
+.tabs{display:flex;gap:8px;padding:0 20px;margin-bottom:18px;overflow-x:auto;scrollbar-width:none;max-width:800px;margin-left:auto;margin-right:auto;}
+.tabs::-webkit-scrollbar{display:none;}
+.tab{flex-shrink:0;padding:10px 18px;border-radius:20px;border:2px solid #e2e8f0;background:var(--white);color:var(--gray);font-family:inherit;font-weight:700;font-size:.9rem;cursor:pointer;transition:all .2s;}
+.tab.active{background:var(--blue);border-color:var(--blue);color:#fff;box-shadow:0 4px 12px rgba(14,165,233,.35);}
+
+.sec{display:none;padding:0 20px;max-width:800px;margin:0 auto;}
+.sec.show{display:block;animation:fadein 0.4s;}
+.sec-hdr{background:var(--white);border-radius:18px;padding:16px 20px;margin-bottom:14px;border-left:5px solid var(--blue);box-shadow:0 2px 12px rgba(0,0,0,.06);}
+.sec-hdr .lbl{font-size:.75rem;font-weight:800;color:var(--blue);letter-spacing:1px;text-transform:uppercase;margin-bottom:4px;}
+.sec-hdr h2{font-size:1.1rem;font-weight:800;color:var(--dark);margin-bottom:3px;}
+
+.question-card{background:var(--white);border-radius:18px;padding:20px;margin-bottom:16px;box-shadow:0 2px 12px rgba(0,0,0,.06);position:relative;overflow:hidden;}
+.question-card::before{content:'';position:absolute;top:0;left:0;width:5px;height:100%;background:#e2e8f0;transition:background .3s;}
+.question-card.ok::before{background:var(--green);}
+.question-card.ng::before{background:var(--red);}
+.question-card.ng{background:#fff1f2;} 
+.question-card.ok{background:#f0fdf4;} 
+
+.q-num{display:inline-flex;align-items:center;justify-content:center;width:28px;height:28px;background:var(--sky);color:var(--blue);border-radius:8px;font-size:.85rem;font-weight:800;margin-bottom:10px;}
+.q-kor { font-size:0.95rem; font-weight:700; color:var(--dark); margin-bottom:10px; background:#fef08a; display:inline-block; padding:4px 10px; border-radius:6px;}
+.q-text{font-size:1.15rem;font-weight:600;color:var(--dark);margin-bottom:15px;line-height:1.6;}
+.q-text em{font-style:normal;color:var(--blue);font-weight:800;border-bottom:2px dotted var(--blue);}
+.q-text u{text-decoration-color:var(--blue); text-decoration-thickness:2px; font-weight:800;}
+
+.blank{border:none;border-bottom:2.5px solid var(--blue);background:transparent;font-family:inherit;font-size:1.1rem;font-weight:700;color:var(--dark);padding:2px 8px;min-width:80px;text-align:center;outline:none;transition:.2s;display:inline-block;}
+.blank:focus{border-color:var(--purple);}
+.blank.ok{border-color:var(--green);color:var(--green);background:#dcfce7;border-radius:6px;}
+.blank.ng{border-color:var(--red);color:var(--red);background:#fee2e2;border-radius:6px;}
+
+/* 객관식 버튼: 모바일에서 1줄, PC에서 2줄 */
+.choices{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:4px;}
+@media (max-width: 600px) { .choices { grid-template-columns: 1fr; } }
+.choice{padding:14px 16px;border-radius:14px;border:2px solid #e2e8f0;background:var(--white);color:var(--dark);font-family:inherit;font-weight:600;font-size:1rem;cursor:pointer;transition:all .15s;text-align:left;}
+.choice:hover:not(:disabled){border-color:var(--blue);background:var(--sky);transform:translateY(-1px);}
+.choice.ok{background:#f0fdf4;border-color:var(--green);color:var(--green);}
+.choice.ng{background:#fef2f2;border-color:var(--red);color:var(--red);}
+.choice.reveal{background:#f0fdf4;border-color:var(--green);color:var(--green);font-weight:800;}
+
+/* 배열 및 주관식 폼 */
+.word-pool{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:12px;min-height:50px;padding:12px;background:var(--sky);border-radius:14px;}
+.answer-area{display:flex;flex-wrap:wrap;gap:8px;min-height:54px;padding:12px;background:var(--white);border-radius:14px;border:2px dashed #cbd5e1;margin-bottom:12px;align-items:center;}
+.area-ph{color:var(--gray);font-size:.9rem;font-weight:600;}
+.chip{padding:8px 14px;border-radius:20px;font-family:inherit;font-weight:700;font-size:.95rem;cursor:pointer;border:none;transition:all .15s;user-select:none;}
+.pool-chip{background:var(--white);color:var(--dark);box-shadow:0 2px 6px rgba(0,0,0,.08);border:1px solid #e2e8f0;}
+.pool-chip:hover{background:var(--blue);color:#fff;transform:scale(1.05);}
+.ans-chip{background:var(--purple);color:#fff;}
+.ans-chip:hover{opacity:.8;}
+.ok-chip{background:var(--green);color:#fff;cursor:default;}
+.ng-chip{background:var(--red);color:#fff;cursor:default;}
+
+/* 확인 버튼 모바일 하단 100% 꽉차게 */
+.check-btn{display:block;width:100%;margin-top:12px;padding:14px;border-radius:14px;border:none;background:var(--blue);color:#fff;font-family:inherit;font-weight:800;font-size:1.05rem;cursor:pointer;transition:all .15s;}
+.check-btn:hover:not(:disabled){filter:brightness(1.08);transform:translateY(-1px);}
+.check-btn:disabled{background:#e2e8f0;color:var(--gray);cursor:default;transform:none;}
+
+/* 정답/해설 노란색 박스 */
+.answer-hint{display:none;margin-top:12px;padding:16px;background:#fef9c3;border-radius:12px;font-size:.95rem;font-weight:500;color:#854d0e;line-height:1.6;border:1px solid #fde047;}
+.answer-hint.show{display:block;}
+.answer-hint strong { color: #b45309; font-weight:800; }
+.hint-btn{background:none;border:none;color:var(--gray);font-family:inherit;font-size:.85rem;font-weight:700;cursor:pointer;padding:8px 0;margin-top:4px;display:block;text-decoration:underline;text-underline-offset:3px;}
+.hint-btn:hover{color:var(--purple);}
+
+.done-badge{position:absolute;top:16px;right:18px;font-size:1.4rem;animation:pop .3s ease;}
+
+/* 결과창 */
+#result{display:none;padding:0 20px;max-width:800px;margin:0 auto;animation:fadein .4s;}
+.rc{background:linear-gradient(135deg,#0ea5e9,#6366f1);border-radius:24px;padding:32px 20px;text-align:center;color:#fff;margin-bottom:20px;}
+.rc .emoji{font-size:4.5rem;margin-bottom:10px;}
+.rc .title{font-size:1.6rem;font-weight:800;margin-bottom:6px;}
+.rc .score{font-size:3.5rem;font-weight:800;margin-bottom:6px;}
+.rc .sub{font-size:.9rem;opacity:.9;margin-bottom:20px;}
+.rg{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:20px;}
+.rs{background:rgba(255,255,255,.2);border-radius:16px;padding:16px;}
+.rs .n{font-size:2rem;font-weight:800;}.rs .l{font-size:.75rem;opacity:.9;}
+.rb{display:block;width:100%;padding:16px;border-radius:16px;border:none;background:var(--blue);color:#fff;font-family:inherit;font-weight:800;font-size:1.1rem;cursor:pointer;box-shadow:0 4px 14px rgba(14,165,233,.4);}
+
+#toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%) translateY(80px);background:var(--dark);color:#fff;padding:12px 24px;border-radius:24px;font-weight:700;font-size:.95rem;transition:transform .3s;z-index:999;pointer-events:none;white-space:nowrap;}
+#toast.show{transform:translateX(-50%) translateY(0);}
+#toast.ok{background:var(--green);}#toast.ng{background:var(--red);}
+
+@keyframes fadein{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}
+@keyframes pop{0%{transform:scale(.8)}70%{transform:scale(1.1)}100%{transform:scale(1)}}
+</style>
+</head>
+<body>
+<div id="toast"></div>
+<div class="header">
+  <div class="hbadge">STEP 1. BASIC GRAMMAR</div>
+  <h1>현재진행형 vs 동명사</h1>
+  <p>형태와 기본 해석을 완벽하게 마스터하세요!</p>
+</div>
+
+<div class="scoreboard">
+  <div class="sc t"><div class="n" id="sc-t">0</div><div class="l">완료</div></div>
+  <div class="sc c"><div class="n" id="sc-c">0</div><div class="l">✅ 정답</div></div>
+  <div class="sc w"><div class="n" id="sc-w">0</div><div class="l">❌ 오답</div></div>
+</div>
+
+<div class="pw">
+  <div class="plabel"><span>학습 진행률</span><span id="pt">0 / 50</span></div>
+  <div class="pbg"><div class="pfill" id="pf" style="width:0%"></div></div>
+</div>
+
+<div class="tabs">
+  <button class="tab active" onclick="sw(0,this)">1. 진행형 (20제)</button>
+  <button class="tab" onclick="sw(1,this)">2. 동명사 (20제)</button>
+  <button class="tab" onclick="sw(2,this)">3. 구분하기 (10제)</button>
+</div>
+
+<div class="sec show" id="s0"></div>
+<div class="sec" id="s1"></div>
+<div class="sec" id="s2"></div>
+
+<div id="result">
+  <div class="rc">
+    <div class="emoji" id="re">🎉</div><div class="title" id="rt">기초 마스터 완료!</div>
+    <div class="score" id="rs">0점</div><div class="sub" id="rsub"></div>
+    <div class="rg">
+      <div class="rs"><div class="n" id="rc2">0</div><div class="l">✅ 정답</div></div>
+      <div class="rs"><div class="n" id="rw2">0</div><div class="l">❌ 오답</div></div>
+    </div>
+  </div>
+  <button class="rb" onclick="location.reload()">🔄 다시 풀기</button>
+</div>
+
+<script>
+// 50문제 데이터 (상태동사 삭제, 확실한 동작 중심)
+const qData = {
+  sec0: [
+    { type:"mcq", kor:"나는 지금 책을 읽고 있다.", eng:"I ___ a book now.", ans:"am reading", opts:["am reading","is reading","are reading","reading"], hint:"주어 I 뒤에는 am + ing를 씁니다." },
+    { type:"mcq", kor:"그녀는 노래를 부르고 있다.", eng:"She ___ a song.", ans:"is singing", opts:["am singing","is singing","are singing","singing"], hint:"She는 단수니까 is + ing!" },
+    { type:"mcq", kor:"그들은 축구를 하고 있다.", eng:"They ___ soccer.", ans:"are playing", opts:["is playing","are playing","am playing","playing"], hint:"They는 여러 명(복수)이라 are + ing!" },
+    { type:"mcq", kor:"아기가 자고 있다.", eng:"The baby ___.", ans:"is sleeping", opts:["is sleeping","are sleeping","sleeps","sleeping"], hint:"아기는 한 명(단수)이므로 is!" },
+    { type:"mcq", kor:"우리는 점심을 먹고 있다.", eng:"We ___ lunch.", ans:"are eating", opts:["is eating","are eating","eating","eat"], hint:"We(복수)는 are를 씁니다." },
+    { type:"input", kor:"소년들이 수영하고 있다. (swim)", eng:"The boys (are swimming) in the pool.", ans:"are swimming", hint:"swim은 m을 하나 더 쓰고 ing를 붙입니다." },
+    { type:"input", kor:"나는 편지를 쓰는 중이다. (write)", eng:"I (am writing) a letter.", ans:"am writing", hint:"write는 e를 빼고 ing를 붙여요." },
+    { type:"input", kor:"탐은 공부를 안 하고 있다. (not / study)", eng:"Tom (is not studying) now.", ans:"is not studying", hint:"부정문은 be동사 뒤에 not을 붙입니다. (isn't studying도 가능)" },
+    { type:"input", kor:"너 기다리고 있니? (you / wait)", eng:"(Are) you (waiting)?", ans:"Are waiting", hint:"의문문은 be동사 Are가 주어 앞으로 나갑니다." },
+    { type:"input", kor:"새가 날고 있다. (fly)", eng:"A bird (is flying).", ans:"is flying", hint:"fly는 그대로 ing를 붙입니다." },
+    { type:"mcq", kor:"비가 오고 있다.", eng:"It ___.", ans:"is raining", opts:["is raining","are raining","rains","raining"], hint:"날씨를 나타내는 It은 is와 짝꿍!" },
+    { type:"mcq", kor:"너는 잘 하고 있어.", eng:"You ___ well.", ans:"are doing", opts:["am doing","is doing","are doing","doing"], hint:"You는 언제나 are!" },
+    { type:"mcq", kor:"개가 짖고 있다.", eng:"The dog ___.", ans:"is barking", opts:["am barking","is barking","are barking","barking"], hint:"개 한 마리(단수)이므로 is!" },
+    { type:"mcq", kor:"그들은 뛰지 않고 있다.", eng:"They ___.", ans:"are not running", opts:["is not running","are not running","not running","run not"], hint:"They는 are, run은 n 하나 더!" },
+    { type:"mcq", kor:"그는 TV를 보고 있다.", eng:"He ___ TV.", ans:"is watching", opts:["is watching","are watching","watch","watching"], hint:"He는 단수라 is!" },
+    { type:"scramble", kor:"나는 숙제를 하는 중이다.", eng:"", ans:"I am doing my homework", words:["am","doing","homework","I","my"], hint:"주어 + be + ing 구조로 배열하세요." },
+    { type:"scramble", kor:"버스가 오고 있다.", eng:"", ans:"The bus is coming", words:["is","bus","coming","The"], hint:"The bus 뒤에 is가 옵니다." },
+    { type:"scramble", kor:"그녀는 의자에 앉아있다.", eng:"", ans:"She is sitting on the chair", words:["is","sitting","chair","the","on","She"], hint:"sit은 t를 한 번 더 쓰고 ing!" },
+    { type:"scramble", kor:"우리는 공원에서 노는 중이다.", eng:"", ans:"We are playing in the park", words:["are","playing","We","park","the","in"], hint:"장소(in the park)는 문장 맨 뒤로 갑니다." },
+    { type:"scramble", kor:"누군가 밖에서 울고 있다.", eng:"", ans:"Someone is crying outside", words:["is","Someone","crying","outside"], hint:"Someone은 한 명 취급(단수)이므로 is를 씁니다." }
+  ],
+  sec1: [
+    { type:"mcq", kor:"나는 수영하는 것을 즐긴다.", eng:"I enjoy ___.", ans:"swimming", opts:["swim","swimming","to swimming","swims"], hint:"enjoy 뒤에는 무조건 동명사(-ing)가 옵니다." },
+    { type:"mcq", kor:"걷는 것은 건강에 좋다.", eng:"___ is good.", ans:"Walking", opts:["Walk","Walks","Walking","Walked"], hint:"문장 맨 앞에서 주어 역할을 하는 동명사입니다." },
+    { type:"mcq", kor:"내 취미는 사진 찍기다.", eng:"My hobby is ___ pictures.", ans:"taking", opts:["take","to taking","taking","takes"], hint:"내 취미 = 사진 찍는 것 (보어 역할)" },
+    { type:"mcq", kor:"그녀는 숙제하기를 끝냈다.", eng:"She finished ___ her homework.", ans:"doing", opts:["do","to do","doing","done"], hint:"finish 뒤에는 무조건 ing가 옵니다." },
+    { type:"mcq", kor:"도와준 것 고마워.", eng:"Thanks for ___ me.", ans:"helping", opts:["help","helped","to help","helping"], hint:"전치사 for 뒤에는 명사 역할(ing)이 와야 합니다." },
+    { type:"input", kor:"그녀는 영어를 배우는 데 관심이 있다. (learn)", eng:"She is interested in (learning) English.", ans:"learning", hint:"전치사 in 뒤에는 ing!" },
+    { type:"input", kor:"나는 일찍 일어나는 것을 싫어해. (get)", eng:"I don't like (getting) up early.", ans:"getting", hint:"get은 t를 하나 더 쓰고 ing!" },
+    { type:"input", kor:"내 꿈은 선생님이 되는 것이다. (become)", eng:"My dream is (becoming) a teacher.", ans:"becoming", hint:"e를 빼고 ing!" },
+    { type:"input", kor:"그들은 계속 말했다. (talk)", eng:"They kept (talking).", ans:"talking", hint:"keep + ing : 계속 ~하다" },
+    { type:"input", kor:"우리는 게임하는 것을 멈췄다. (play)", eng:"We stopped (playing) games.", ans:"playing", hint:"stop + ing : 하던 일을 멈추다" },
+    { type:"mcq", kor:"문 여는 것 괜찮니?", eng:"Do you mind ___ the door?", ans:"opening", opts:["open","to open","opening","opened"], hint:"mind(꺼리다) 뒤에는 ing를 씁니다." },
+    { type:"mcq", kor:"그는 담배 피우는 것을 포기했다.", eng:"He gave up ___.", ans:"smoking", opts:["smoke","to smoke","smoking","smoked"], hint:"give up 뒤에는 하던 행동(ing)!" },
+    { type:"mcq", kor:"외식하는 게 어때?", eng:"How about ___ out?", ans:"eating", opts:["eat","eating","to eat","ate"], hint:"How about(~어때?) 뒤에는 ing!" },
+    { type:"mcq", kor:"그는 대답을 피했다.", eng:"He avoided ___.", ans:"answering", opts:["answer","to answer","answering","answered"], hint:"avoid(피하다) 뒤에는 ing를 씁니다." },
+    { type:"mcq", kor:"책 읽기는 재밌다.", eng:"___ books is fun.", ans:"Reading", opts:["Read","Reading","To reading","Reads"], hint:"문장의 주어 역할입니다." },
+    { type:"scramble", kor:"실수하는 건 정상이야.", eng:"", ans:"Making mistakes is normal", words:["Making","is","normal","mistakes"], hint:"동명사 주어(Making)로 시작합니다." },
+    { type:"scramble", kor:"너를 보길 고대해.", eng:"", ans:"I look forward to seeing you", words:["forward","seeing","I","you","look","to"], hint:"look forward to 뒤에는 반드시 ing가 옵니다." },
+    { type:"scramble", kor:"그녀는 그림을 잘 그려.", eng:"", ans:"She is good at drawing pictures", words:["is","good","pictures","She","drawing","at"], hint:"be good at + ing 구조입니다." },
+    { type:"scramble", kor:"나쁜 습관을 깨는 것은 어렵다.", eng:"", ans:"Breaking a bad habit is hard", words:["a","Breaking","is","hard","habit","bad"], hint:"주어(Breaking)로 시작하세요." },
+    { type:"scramble", kor:"아침 안 먹는 것은 나쁘다.", eng:"", ans:"Not eating breakfast is bad", words:["eating","bad","breakfast","is","Not"], hint:"동명사의 부정은 Not + ing 입니다." }
+  ],
+  sec2: [
+    { type:"dist", eng:"My friend is <u>swimming</u>.", ans:"현재진행형", opts:["현재진행형","동명사"], hint:"내 친구가 수영하는 '중'입니다." },
+    { type:"dist", eng:"My hobby is <u>swimming</u>.", ans:"동명사", opts:["현재진행형","동명사"], hint:"내 취미는 수영하는 '것'입니다. (주어를 설명해주는 보어)" },
+    { type:"dist", eng:"She is <u>baking</u> cookies.", ans:"현재진행형", opts:["현재진행형","동명사"], hint:"쿠키를 굽고 있는 '중'입니다." },
+    { type:"dist", eng:"Her specialty is <u>baking</u>.", ans:"동명사", opts:["현재진행형","동명사"], hint:"그녀의 특기 = 굽는 '것' (보어)" },
+    { type:"dist", eng:"Thanks for <u>cleaning</u>.", ans:"동명사", opts:["현재진행형","동명사"], hint:"전치사 for 뒤에 온 명사(~하는 것)입니다." },
+    { type:"dist", eng:"They are <u>cleaning</u>.", ans:"현재진행형", opts:["현재진행형","동명사"], hint:"그들이 청소하는 '동작 중'입니다." },
+    { type:"dist", eng:"<u>Running</u> is healthy.", ans:"동명사", opts:["현재진행형","동명사"], hint:"달리는 '것'은 건강하다. (문장의 주어)" },
+    { type:"dist", eng:"He is <u>running</u>.", ans:"현재진행형", opts:["현재진행형","동명사"], hint:"그는 달리는 '중'입니다." },
+    { type:"dist", eng:"I am <u>cooking</u>.", ans:"현재진행형", opts:["현재진행형","동명사"], hint:"나는 요리하는 '중'입니다." },
+    { type:"dist", eng:"I enjoy <u>cooking</u>.", ans:"동명사", opts:["현재진행형","동명사"], hint:"요리하는 '것'을 즐긴다. (동사 뒤 목적어)" }
+  ]
+};
+
+let TOTAL = 50;
+let placed = {};
+let answered = {};
+let correct = 0, wrong = 0;
+
+function render() {
+    let globalNum = 1;
+    [0, 1, 2].forEach(secIdx => {
+        let secDiv = document.getElementById('s'+secIdx);
+        let html = '';
+        let secTitle = ['1. 현재진행형 (20제)', '2. 동명사 (20제)', '3. 구분하기 (10제)'][secIdx];
+        let secDesc = ['형태와 해석 (선택/입력/배열)', '동명사의 역할 (선택/입력/배열)', '문장 속 역할 구분하기'][secIdx];
+        html += `<div class="sec-hdr"><div class="lbl">Point ${['A','B','C'][secIdx]}</div><h2>${secTitle}</h2><div class="desc">${secDesc}</div></div>`;
+
+        qData['sec'+secIdx].forEach(q => {
+            let id = 'q' + globalNum;
+            html += `<div class='question-card' id='qc-${id}'>`;
+            html += `<div class='q-header'><span class='q-num'>${globalNum}</span>`;
+            if(q.kor) html += `<div><span class='q-kor'>${q.kor}</span></div>`;
+            html += `</div>`;
+            
+            if(q.type === 'mcq' || q.type === 'dist') {
+                html += `<div class='q-text'>${q.eng.replace(/___/g, "<em>___</em>")}</div>`;
+                html += `<div class='choices' ${q.type==='dist'?'style="grid-template-columns:1fr 1fr;"':''}>`;
+                let opts = q.type==='dist' ? q.opts : [...q.opts].sort(()=>Math.random()-0.5);
+                opts.forEach(o => {
+                    html += `<button class='choice' onclick="checkChoice(this, '${q.ans.replace(/'/g,"\\'").replace(/"/g,"&quot;")}', '${id}')">${o}</button>`;
+                });
+                html += `</div>`;
+            } else if (q.type === 'input') {
+                let parts = q.eng.split(/\((.*?)\)/g);
+                let engHTML = "";
+                if(parts.length > 1) {
+                    for(let i=0; i<parts.length; i++) {
+                        if(i%2 === 1) engHTML += `<input class='blank' id='bi-${id}' placeholder='___' data-ans="${parts[i].replace(/"/g,"&quot;")}" autocomplete='off'>`;
+                        else engHTML += parts[i];
+                    }
+                }
+                html += `<div class='q-text'>${engHTML}</div>`;
+                html += `<button class='check-btn' onclick="checkBlank('${id}')">✔ 정답 확인</button>`;
+            } else if (q.type === 'scramble') {
+                placed[id] = [];
+                html += `<div class='word-pool' id='pool-${id}'>`;
+                q.words.sort(()=>Math.random()-0.5).forEach((w, wi) => {
+                    html += `<button class='chip pool-chip' id='wc-${id}-${wi}' onclick="moveWord('${id}',${wi},this)">${w}</button>`;
+                });
+                html += `</div>`;
+                html += `<div class='answer-area' id='area-${id}'><span class='area-ph'>단어 칩을 눌러 순서대로 배열하세요 →</span></div>`;
+                html += `<button class='check-btn' onclick="checkArrange('${id}','${q.ans.replace(/'/g,"\\'").replace(/"/g,"&quot;")}')">✔ 정답 확인</button>`;
+            }
+            
+            // ★ 정답 및 해설이 뚜렷하게 보이도록 수정 ★
+            html += `<div class='answer-hint' id='ah-${id}'>💡 <strong>정답: ${q.ans}</strong><br><br>👉 해설: ${q.hint}</div>`;
+            html += `<button class='hint-btn' onclick="showHint('${id}')">💡 정답/해설 보기</button>`;
+            html += `</div>`;
+            globalNum++;
+        });
+        secDiv.innerHTML = html;
+    });
+}
+window.onload = render;
+
+// 클로드 로직 100% 반영
+function sw(i, btn) {
+    document.querySelectorAll('.sec').forEach(s => s.classList.remove('show'));
+    document.querySelectorAll('.tab').forEach(b => b.classList.remove('active'));
+    document.getElementById('s'+i).classList.add('show');
+    btn.classList.add('active');
+    window.scrollTo({top: 0, behavior: 'smooth'});
+}
+function showHint(k) { document.getElementById('ah-'+k).classList.add('show'); }
+
+function checkChoice(btn, ans, k) {
+    var card = document.getElementById('qc-'+k);
+    if (card.classList.contains('ok') || card.classList.contains('ng')) return;
+    var btns = btn.parentElement.querySelectorAll('.choice');
+    btns.forEach(b => b.disabled = true);
+    var got = btn.textContent.trim() === ans;
+    btn.classList.add(got ? 'ok' : 'ng');
+    if (!got) btns.forEach(b => { if (b.textContent.trim()===ans) b.classList.add('reveal'); });
+    mark(k, got);
+}
+
+function checkBlank(k) {
+    var inps = document.querySelectorAll(`#qc-${k} .blank`);
+    var card = document.getElementById('qc-'+k);
+    if (card.classList.contains('ok') || card.classList.contains('ng')) return;
+    
+    let allGot = true;
+    inps.forEach(inp => {
+        inp.disabled = true;
+        if(!window._normDefined){
+            window.norm=function(s){s=s.trim().toLowerCase().replace(/\s+/g,' ');s=s.replace(/isn't/g,'is not').replace(/aren't/g,'are not').replace(/wasn't/g,'was not').replace(/weren't/g,'were not').replace(/don't/g,'do not').replace(/doesn't/g,'does not').replace(/didn't/g,'did not').replace(/won't/g,'will not').replace(/shouldn't/g,'should not').replace(/can't/g,'cannot');return s;};
+            window._normDefined=true;
+        }
+        var typed = window.norm(inp.value);
+        var ans = window.norm(inp.dataset.ans);
+        var got = (typed === ans || (inp.dataset.ans2 && typed === window.norm(inp.dataset.ans2)));
+        inp.classList.add(got ? 'ok' : 'ng');
+        if(!got) allGot = false;
+    });
+    card.querySelector('.check-btn').disabled = true;
+    mark(k, allGot);
+}
+
+document.addEventListener('keydown', function(e) {
+    if (e.key === 'Enter' && e.target.classList.contains('blank')) {
+        let k = e.target.id.split('-')[1];
+        checkBlank(k);
+    }
+});
+
+function moveWord(k, i, btn) {
+    if (btn.style.visibility === 'hidden' || btn.disabled) return;
+    btn.style.visibility = 'hidden';
+    placed[k].push({i: i, w: btn.textContent});
+    refreshArea(k);
+}
+function removeWord(k, pos) {
+    var it = placed[k].splice(pos, 1)[0];
+    var btn = document.getElementById('wc-'+k+'-'+it.i);
+    if (btn) btn.style.visibility = 'visible';
+    refreshArea(k);
+}
+function refreshArea(k) {
+    var area = document.getElementById('area-'+k);
+    if (!placed[k].length) {
+        area.innerHTML = '<span class="area-ph">단어 칩을 눌러 순서대로 배열하세요 →</span>';
+        return;
+    }
+    area.innerHTML = '';
+    placed[k].forEach((it, pos) => {
+        var c = document.createElement('button');
+        c.className = 'chip ans-chip';
+        c.textContent = it.w;
+        c.onclick = () => removeWord(k, pos);
+        area.appendChild(c);
+    });
+}
+function checkArrange(k, ans) {
+    var card = document.getElementById('qc-'+k);
+    if (card.classList.contains('ok') || card.classList.contains('ng')) return;
+    var typed = placed[k].map(i => i.w).join(' ').trim().toLowerCase().replace(/\s+/g, ' ');
+    var cleanAns = ans.trim().toLowerCase().replace(/\s+/g, ' ');
+    card.querySelector('.check-btn').disabled = true;
+    document.querySelectorAll('#pool-'+k+' .pool-chip').forEach(c => { c.style.visibility = 'hidden'; c.disabled = true; });
+    var chips = document.querySelectorAll('#area-'+k+' .ans-chip');
+    var got = (typed === cleanAns);
+    chips.forEach(c => {
+        c.classList.remove('ans-chip'); c.classList.add(got ? 'ok-chip' : 'ng-chip'); c.onclick = null;
+    });
+    mark(k, got);
+}
+
+function mark(k, got) {
+    if (answered[k]) return;
+    answered[k] = true;
+    var card = document.getElementById('qc-'+k);
+    card.classList.add(got ? 'ok' : 'ng');
+    var b = document.createElement('div');
+    b.className = 'done-badge'; b.textContent = got ? '✅' : '❌';
+    card.appendChild(b);
+    if (got) { correct++; toast('🎉 정답!','ok'); }
+    else { wrong++; document.getElementById('ah-'+k).classList.add('show'); toast('틀렸어요! 해설 확인 👆','ng'); }
+    var done = correct+wrong;
+    document.getElementById('sc-t').textContent = done;
+    document.getElementById('sc-c').textContent = correct;
+    document.getElementById('sc-w').textContent = wrong;
+    document.getElementById('pt').textContent = done+' / '+TOTAL;
+    document.getElementById('pf').style.width = (done/TOTAL*100)+'%';
+    if (done===TOTAL) setTimeout(showResult, 800);
+}
+
+function showResult() {
+    document.querySelectorAll('.sec').forEach(s => s.style.display='none');
+    document.querySelector('.tabs').style.display = 'none';
+    document.getElementById('result').style.display = 'block';
+    var sc = Math.round(correct/TOTAL*100);
+    var e='😊', t='수고했어요!';
+    if(sc>=90){e='🏆';t='완벽해요!';} else if(sc>=70){e='🎉';t='잘 했어요!';} else if(sc>=50){e='💪';t='절반 이상 맞았어요!';}
+    document.getElementById('re').textContent=e; document.getElementById('rt').textContent=t;
+    document.getElementById('rs').textContent=sc+'점';
+    document.getElementById('rc2').textContent=correct; document.getElementById('rw2').textContent=wrong;
+}
+
+function toast(msg, type) {
+    var t = document.getElementById('toast');
+    t.textContent = msg; t.className = 'show '+(type||'');
+    clearTimeout(t._t); t._t = setTimeout(() => t.classList.remove('show'), 1800);
+}
+</script>
+</body>
+</html>
+
+
+```

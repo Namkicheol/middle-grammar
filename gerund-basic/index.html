@@ -281,13 +281,22 @@ function hMCQ(b, a, id) {
     upd(id, ok);
 }
 
+function normAns(s){
+    s=s.trim().toLowerCase().replace(/\s+/g,' ');
+    s=s.replace(/isn't/g,'is not').replace(/aren't/g,'are not')
+       .replace(/wasn't/g,'was not').replace(/weren't/g,'were not')
+       .replace(/don't/g,'do not').replace(/doesn't/g,'does not')
+       .replace(/didn't/g,'did not').replace(/won't/g,'will not')
+       .replace(/can't/g,'cannot').replace(/shouldn't/g,'should not');
+    return s;
+}
 function hInp(b, a, id) {
     if(st[id]) return;
     let c = b.closest('.q-card'), inp = c.querySelector('.q-input');
-    let ty = inp.value.trim().toLowerCase().replace(/\s+/g, ' ');
+    let ty = normAns(inp.value);
     let ok = false;
-    let ansArr = [a.toLowerCase()];
-    if(c.dataset.ans2) ansArr.push(c.dataset.ans2.toLowerCase());
+    let ansArr = [normAns(a)];
+    if(c.dataset.ans2) ansArr.push(normAns(c.dataset.ans2));
     if(ansArr.includes(ty)) ok = true;
     inp.disabled = true; b.disabled = true;
     if(ok) { c.classList.add('solved-o'); egmToast('정확합니다!', 'o'); }

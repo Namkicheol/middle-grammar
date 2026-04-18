@@ -89,3 +89,4 @@ function norm(s) {
 2. 정답 비교에 `norm()` 함수 반드시 포함
 3. `sec2`(구분하기) 타입 문제는 `kor` 필드 추가
 4. 단어는 문항당 vocab 뱃지 또는 ctx 박스로 제공
+5. **파일 작업 완료 후 자동으로 `git add → commit → push origin main`** — 사용자가 따로 요청하지 않아도 항상 실행

@@ -290,6 +290,7 @@ function upd(id, isC) {
             let sc = Math.round((cor / T_Q) * 100);
             document.getElementById('r-score').innerText = sc + '점';
             document.getElementById('r-msg').innerText = sc >= 90 ? "완벽합니다! 마스터 등극! 🏆" : "수고하셨습니다! 틀린 부분도 복습해 보세요! ✨";
+            showScorePopup(cor, T_Q);
         }, 800);
     }
 }
@@ -366,6 +367,7 @@ function render() {
 }
 window.onload = render;
 </script>
+<script src="../score-popup.js"></script>
 </body>
 </html>
 

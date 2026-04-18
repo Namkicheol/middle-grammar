@@ -421,6 +421,7 @@ function showResult() {
     document.getElementById('re').textContent=e; document.getElementById('rt').textContent=t;
     document.getElementById('rs').textContent=sc+'점';
     document.getElementById('rc2').textContent=correct; document.getElementById('rw2').textContent=wrong;
+    showScorePopup(correct, TOTAL);
 }
 
 function toast(msg, type) {
@@ -429,6 +430,7 @@ function toast(msg, type) {
     clearTimeout(t._t); t._t = setTimeout(() => t.classList.remove('show'), 1800);
 }
 </script>
+<script src="../score-popup.js"></script>
 </body>
 </html>
 

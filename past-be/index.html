@@ -530,6 +530,7 @@ function showResult(){
       return '<div class="ri">내가 쓴 것: <span class="ma">'+(v.my||'(없음)')+'</span> → 정답: <span class="ca">'+v.right+'</span></div>';
     }).join('');
   }
+  showScorePopup(correct, TOTAL);
 }
 function toast(msg,type){
   var t=document.getElementById('toast');
@@ -591,5 +592,6 @@ document.addEventListener('DOMContentLoaded',function(){
   });
 });
 </script>
+<script src="../score-popup.js"></script>
 </body>
 </html>

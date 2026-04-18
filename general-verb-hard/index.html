@@ -134,7 +134,6 @@ body{font-family:'Noto Sans KR','Baloo 2',sans-serif;background:var(--bg);paddin
 
   <!-- Q1 choice: studies -->
   <div class="question-card" id="qc-a1"><span class="q-num">1</span>
-    <div class="ctx">📌 나의 친구 재민이는 언어 천재이다.</div>
     <div class="q-text">He <em>___</em> four languages fluently, including French and Spanish.</div>
     <div class="vocab"><span class="vw">fluently 유창하게</span><span class="vw">including ~을 포함하여</span></div>
     <div class="choices" data-qid="a1" data-ans="studies">
@@ -143,23 +142,21 @@ body{font-family:'Noto Sans KR','Baloo 2',sans-serif;background:var(--bg);paddin
       <button class="choice" onclick="pickChoice(this)">studys</button>
       <button class="choice" onclick="pickChoice(this)">studying</button>
     </div>
-    <div class="answer-hint" id="ah-a1">💡 정답: <strong>studies</strong> — study(자음+y) → y를 i로 바꾸고 +es</div>
+    <div class="answer-hint" id="ah-a1">💡 정답: <strong>studies</strong> — study(자음+y) → y를 i로 바꾸고 +es<br>📝 해석: 그는 프랑스어와 스페인어를 포함하여 네 가지 언어를 유창하게 공부한다.</div>
     <button class="hint-btn" onclick="showHint('a1')">💡 힌트 보기</button>
   </div>
 
   <!-- Q2 blank: doesn't eat -->
   <div class="question-card" id="qc-a2"><span class="q-num">2</span>
-    <div class="ctx">📌 샘(Sam)은 엄격한 채식주의자이다.</div>
     <div class="q-text">He <input class="blank" id="bi-a2" placeholder="___" data-ans="doesn't eat" autocomplete="off" style="min-width:140px"> meat or fish of any kind. <span class="ex">(eat, 부정형)</span></div>
     <div class="vocab"><span class="vw">strict 엄격한</span><span class="vw">vegetarian 채식주의자</span><span class="vw">of any kind 어떤 종류의</span></div>
     <button class="check-btn" onclick="checkBlank('a2')">✔ 확인</button>
-    <div class="answer-hint" id="ah-a2">💡 정답: <strong>doesn't eat</strong> (= does not eat) — He(3인칭 단수) → doesn't + 동사원형</div>
+    <div class="answer-hint" id="ah-a2">💡 정답: <strong>doesn't eat</strong> (= does not eat) — He(3인칭 단수) → doesn't + 동사원형<br>📝 해석: 그는 어떤 종류의 고기나 생선도 먹지 않는다.</div>
     <button class="hint-btn" onclick="showHint('a2')">💡 힌트 보기</button>
   </div>
 
   <!-- Q3 choice: washes -->
   <div class="question-card" id="qc-a3"><span class="q-num">3</span>
-    <div class="ctx">📌 매주 일요일은 김씨 가족의 청소날이다.</div>
     <div class="q-text">His mother <em>___</em> the dishes, and his father mops the floor.</div>
     <div class="vocab"><span class="vw">dishes 설거지</span><span class="vw">mop 대걸레질하다</span><span class="vw">floor 바닥</span></div>
     <div class="choices" data-qid="a3" data-ans="washes">
@@ -168,23 +165,21 @@ body{font-family:'Noto Sans KR','Baloo 2',sans-serif;background:var(--bg);paddin
       <button class="choice" onclick="pickChoice(this)">washs</button>
       <button class="choice" onclick="pickChoice(this)">washing</button>
     </div>
-    <div class="answer-hint" id="ah-a3">💡 정답: <strong>washes</strong> — -sh/-ch/-x/-o로 끝나는 동사 → +es</div>
+    <div class="answer-hint" id="ah-a3">💡 정답: <strong>washes</strong> — -sh/-ch/-x/-o로 끝나는 동사 → +es<br>📝 해석: 그의 어머니는 설거지를 하고, 그의 아버지는 바닥을 닦는다.</div>
     <button class="hint-btn" onclick="showHint('a3')">💡 힌트 보기</button>
   </div>
 
   <!-- Q4 blank: doesn't go -->
   <div class="question-card" id="qc-a4"><span class="q-num">4</span>
-    <div class="ctx">📌 제이크(Jake)는 우리 반의 야행성 인간으로 유명하다.</div>
     <div class="q-text">He <input class="blank" id="bi-a4" placeholder="___" data-ans="doesn't go" autocomplete="off" style="min-width:130px"> to bed before midnight, even on school nights. <span class="ex">(go, 부정형)</span></div>
     <div class="vocab"><span class="vw">night owl 야행성인 사람</span><span class="vw">midnight 자정</span><span class="vw">even 심지어</span></div>
     <button class="check-btn" onclick="checkBlank('a4')">✔ 확인</button>
-    <div class="answer-hint" id="ah-a4">💡 정답: <strong>doesn't go</strong> (= does not go) — He(3인칭) → doesn't + 동사원형</div>
+    <div class="answer-hint" id="ah-a4">💡 정답: <strong>doesn't go</strong> (= does not go) — He(3인칭) → doesn't + 동사원형<br>📝 해석: 그는 등교하는 날에도 자정 전에 잠자리에 들지 않는다.</div>
     <button class="hint-btn" onclick="showHint('a4')">💡 힌트 보기</button>
   </div>
 
   <!-- Q5 choice: has -->
   <div class="question-card" id="qc-a5"><span class="q-num">5</span>
-    <div class="ctx">📌 나의 친구 소라는 동물을 매우 좋아한다.</div>
     <div class="q-text">She <em>___</em> three cats and a golden retriever at home.</div>
     <div class="vocab"><span class="vw">golden retriever 골든 리트리버(개 품종)</span><span class="vw">pet 반려동물</span></div>
     <div class="choices" data-qid="a5" data-ans="has">
@@ -193,23 +188,21 @@ body{font-family:'Noto Sans KR','Baloo 2',sans-serif;background:var(--bg);paddin
       <button class="choice" onclick="pickChoice(this)">haves</button>
       <button class="choice" onclick="pickChoice(this)">having</button>
     </div>
-    <div class="answer-hint" id="ah-a5">💡 정답: <strong>has</strong> — have는 불규칙 변화: She/He/It → has</div>
+    <div class="answer-hint" id="ah-a5">💡 정답: <strong>has</strong> — have는 불규칙 변화: She/He/It → has<br>📝 해석: 그녀는 집에 고양이 세 마리와 골든 리트리버 한 마리를 키운다.</div>
     <button class="hint-btn" onclick="showHint('a5')">💡 힌트 보기</button>
   </div>
 
   <!-- Q6 blank: teaches -->
   <div class="question-card" id="qc-a6"><span class="q-num">6</span>
-    <div class="ctx">📌 김 선생님은 우리 학교에서 가장 사랑받는 선생님이다.</div>
     <div class="q-text">He <input class="blank" id="bi-a6" placeholder="___" data-ans="teaches" autocomplete="off" style="min-width:110px"> algebra and geometry to second-year students. <span class="ex">(teach)</span></div>
-    <div class="vocab"><span class="vw">beloved 사랑받는</span><span class="vw">algebra 대수학</span><span class="vw">geometry 기하학</span></div>
+    <div class="vocab"><span class="vw">algebra 대수학</span><span class="vw">geometry 기하학</span><span class="vw">second-year 2학년</span></div>
     <button class="check-btn" onclick="checkBlank('a6')">✔ 확인</button>
-    <div class="answer-hint" id="ah-a6">💡 정답: <strong>teaches</strong> — -ch로 끝나는 동사 → +es</div>
+    <div class="answer-hint" id="ah-a6">💡 정답: <strong>teaches</strong> — -ch로 끝나는 동사 → +es<br>📝 해석: 그는 2학년 학생들에게 대수학과 기하학을 가르친다.</div>
     <button class="hint-btn" onclick="showHint('a6')">💡 힌트 보기</button>
   </div>
 
   <!-- Q7 choice: goes -->
   <div class="question-card" id="qc-a7"><span class="q-num">7</span>
-    <div class="ctx">📌 제이크(Jake)는 야행성이다.</div>
     <div class="q-text">He never <em>___</em> to bed before midnight, even on weekends.</div>
     <div class="vocab"><span class="vw">never 절대 ~하지 않다</span><span class="vw">weekend 주말</span></div>
     <div class="choices" data-qid="a7" data-ans="goes">
@@ -218,23 +211,21 @@ body{font-family:'Noto Sans KR','Baloo 2',sans-serif;background:var(--bg);paddin
       <button class="choice" onclick="pickChoice(this)">gos</button>
       <button class="choice" onclick="pickChoice(this)">going</button>
     </div>
-    <div class="answer-hint" id="ah-a7">💡 정답: <strong>goes</strong> — -o로 끝나는 동사(go, do) → +es</div>
+    <div class="answer-hint" id="ah-a7">💡 정답: <strong>goes</strong> — -o로 끝나는 동사(go, do) → +es<br>📝 해석: 그는 주말에도 절대 자정 전에 잠자리에 들지 않는다.</div>
     <button class="hint-btn" onclick="showHint('a7')">💡 힌트 보기</button>
   </div>
 
   <!-- Q8 blank: bakes -->
   <div class="question-card" id="qc-a8"><span class="q-num">8</span>
-    <div class="ctx">📌 리사(Lisa)의 엄마는 아늑한 작은 빵집을 운영한다.</div>
     <div class="q-text">She <input class="blank" id="bi-a8" placeholder="___" data-ans="bakes" autocomplete="off" style="min-width:90px"> fresh croissants and muffins every morning. <span class="ex">(bake)</span></div>
-    <div class="vocab"><span class="vw">cozy 아늑한</span><span class="vw">croissant 크루아상</span><span class="vw">muffin 머핀</span></div>
+    <div class="vocab"><span class="vw">croissant 크루아상</span><span class="vw">muffin 머핀</span><span class="vw">fresh 신선한</span></div>
     <button class="check-btn" onclick="checkBlank('a8')">✔ 확인</button>
-    <div class="answer-hint" id="ah-a8">💡 정답: <strong>bakes</strong> — She(3인칭) → bake+s</div>
+    <div class="answer-hint" id="ah-a8">💡 정답: <strong>bakes</strong> — She(3인칭) → bake+s<br>📝 해석: 그녀는 매일 아침 신선한 크루아상과 머핀을 굽는다.</div>
     <button class="hint-btn" onclick="showHint('a8')">💡 힌트 보기</button>
   </div>
 
   <!-- Q9 choice: doesn't like -->
   <div class="question-card" id="qc-a9"><span class="q-num">9</span>
-    <div class="ctx">📌 민호와 수호는 둘 다 같은 축구부 소속이다.</div>
     <div class="q-text">Minho plays basketball in his free time, but Suho <em>___</em> basketball at all.</div>
     <div class="vocab"><span class="vw">free time 여가 시간</span><span class="vw">at all 전혀</span></div>
     <div class="choices" data-qid="a9" data-ans="doesn't like">
@@ -243,48 +234,44 @@ body{font-family:'Noto Sans KR','Baloo 2',sans-serif;background:var(--bg);paddin
       <button class="choice" onclick="pickChoice(this)">not likes</button>
       <button class="choice" onclick="pickChoice(this)">likes not</button>
     </div>
-    <div class="answer-hint" id="ah-a9">💡 정답: <strong>doesn't like</strong> — Suho(3인칭 단수) → doesn't + 동사원형</div>
+    <div class="answer-hint" id="ah-a9">💡 정답: <strong>doesn't like</strong> — Suho(3인칭 단수) → doesn't + 동사원형<br>📝 해석: 민호는 여가 시간에 농구를 하지만, 수호는 농구를 전혀 좋아하지 않는다.</div>
     <button class="hint-btn" onclick="showHint('a9')">💡 힌트 보기</button>
   </div>
 
   <!-- Q10 blank: doesn't enjoy -->
   <div class="question-card" id="qc-a10"><span class="q-num">10</span>
-    <div class="ctx">📌 미나(Mina)는 말하는 것보다 문자 보내는 것을 더 좋아한다.</div>
     <div class="q-text">She <input class="blank" id="bi-a10" placeholder="___" data-ans="doesn't enjoy" autocomplete="off" style="min-width:155px"> long phone calls with her friends. <span class="ex">(enjoy, 부정형)</span></div>
     <div class="vocab"><span class="vw">prefer 더 좋아하다</span><span class="vw">text 문자를 보내다</span><span class="vw">phone call 전화 통화</span></div>
     <button class="check-btn" onclick="checkBlank('a10')">✔ 확인</button>
-    <div class="answer-hint" id="ah-a10">💡 정답: <strong>doesn't enjoy</strong> (= does not enjoy) — She(3인칭) → doesn't + 동사원형</div>
+    <div class="answer-hint" id="ah-a10">💡 정답: <strong>doesn't enjoy</strong> (= does not enjoy) — She(3인칭) → doesn't + 동사원형<br>📝 해석: 그녀는 친구들과의 긴 전화 통화를 즐기지 않는다.</div>
     <button class="hint-btn" onclick="showHint('a10')">💡 힌트 보기</button>
   </div>
 
   <!-- Q11 choice: writes -->
   <div class="question-card" id="qc-a11"><span class="q-num">11</span>
-    <div class="ctx">📌 소민이는 매일 밤 일기를 쓰는 습관이 있다.</div>
     <div class="q-text">She <em>___</em> down her thoughts and feelings before going to sleep.</div>
-    <div class="vocab"><span class="vw">thought 생각</span><span class="vw">feeling 감정</span><span class="vw">journal 일기를 쓰다</span></div>
+    <div class="vocab"><span class="vw">thought 생각</span><span class="vw">feeling 감정</span></div>
     <div class="choices" data-qid="a11" data-ans="writes">
       <button class="choice" onclick="pickChoice(this)">write</button>
       <button class="choice" onclick="pickChoice(this)">writes</button>
       <button class="choice" onclick="pickChoice(this)">writees</button>
       <button class="choice" onclick="pickChoice(this)">written</button>
     </div>
-    <div class="answer-hint" id="ah-a11">💡 정답: <strong>writes</strong> — She(3인칭) → write+s</div>
+    <div class="answer-hint" id="ah-a11">💡 정답: <strong>writes</strong> — She(3인칭) → write+s<br>📝 해석: 그녀는 잠들기 전에 자신의 생각과 감정을 적는다.</div>
     <button class="hint-btn" onclick="showHint('a11')">💡 힌트 보기</button>
   </div>
 
   <!-- Q12 blank: chooses -->
   <div class="question-card" id="qc-a12"><span class="q-num">12</span>
-    <div class="ctx">📌 나의 언니는 자리 선택에 매우 까다롭다.</div>
     <div class="q-text">She always <input class="blank" id="bi-a12" placeholder="___" data-ans="chooses" autocomplete="off" style="min-width:110px"> a window seat on the bus. <span class="ex">(choose)</span></div>
     <div class="vocab"><span class="vw">particular 까다로운</span><span class="vw">window seat 창가 자리</span></div>
     <button class="check-btn" onclick="checkBlank('a12')">✔ 확인</button>
-    <div class="answer-hint" id="ah-a12">💡 정답: <strong>chooses</strong> — She(3인칭) → choose+s</div>
+    <div class="answer-hint" id="ah-a12">💡 정답: <strong>chooses</strong> — She(3인칭) → choose+s<br>📝 해석: 그녀는 항상 버스에서 창가 자리를 고른다.</div>
     <button class="hint-btn" onclick="showHint('a12')">💡 힌트 보기</button>
   </div>
 
-  <!-- Q13 choice: boils (과학적 사실) -->
+  <!-- Q13 choice: boils -->
   <div class="question-card" id="qc-a13"><span class="q-num">13</span>
-    <div class="ctx">📌 과학 수업 시간, 선생님이 물의 끓는점을 설명하신다.</div>
     <div class="q-text">Pure water <em>___</em> at exactly 100 degrees Celsius.</div>
     <div class="vocab"><span class="vw">pure 순수한</span><span class="vw">boil 끓다</span><span class="vw">Celsius 섭씨</span></div>
     <div class="choices" data-qid="a13" data-ans="boils">
@@ -293,23 +280,21 @@ body{font-family:'Noto Sans KR','Baloo 2',sans-serif;background:var(--bg);paddin
       <button class="choice" onclick="pickChoice(this)">boiling</button>
       <button class="choice" onclick="pickChoice(this)">boiled</button>
     </div>
-    <div class="answer-hint" id="ah-a13">💡 정답: <strong>boils</strong> — Pure water(단수) → boil+s · 과학적 사실도 현재형으로!</div>
+    <div class="answer-hint" id="ah-a13">💡 정답: <strong>boils</strong> — Pure water(단수) → boil+s · 과학적 사실도 현재형으로!<br>📝 해석: 순수한 물은 정확히 섭씨 100도에서 끓는다.</div>
     <button class="hint-btn" onclick="showHint('a13')">💡 힌트 보기</button>
   </div>
 
   <!-- Q14 blank: lies -->
   <div class="question-card" id="qc-a14"><span class="q-num">14</span>
-    <div class="ctx">📌 준호(Junho)의 고양이 나비는 믿을 수 없을 정도로 게으르다.</div>
     <div class="q-text">She <input class="blank" id="bi-a14" placeholder="___" data-ans="lies" autocomplete="off" style="min-width:80px"> on the warm sofa all afternoon. <span class="ex">(lie)</span></div>
-    <div class="vocab"><span class="vw">incredibly 믿을 수 없을 정도로</span><span class="vw">lazy 게으른</span><span class="vw">sofa 소파</span></div>
+    <div class="vocab"><span class="vw">lie 눕다, 누워 있다</span><span class="vw">sofa 소파</span></div>
     <button class="check-btn" onclick="checkBlank('a14')">✔ 확인</button>
-    <div class="answer-hint" id="ah-a14">💡 정답: <strong>lies</strong> — She(3인칭) → lie+s (y→ies 규칙 아님)</div>
+    <div class="answer-hint" id="ah-a14">💡 정답: <strong>lies</strong> — She(3인칭) → lie+s (ie로 끝나는 동사 → +s)<br>📝 해석: 그녀(고양이)는 오후 내내 따뜻한 소파 위에 누워 있는다.</div>
     <button class="hint-btn" onclick="showHint('a14')">💡 힌트 보기</button>
   </div>
 
-  <!-- Q15 choice: run (복수 주어) -->
+  <!-- Q15 choice: run -->
   <div class="question-card" id="qc-a15"><span class="q-num">15</span>
-    <div class="ctx">📌 최씨 부부는 대단한 사업 수완을 가지고 있다.</div>
     <div class="q-text">Mr. and Mrs. Choi <em>___</em> a small but popular bakery near our school.</div>
     <div class="vocab"><span class="vw">run (사업을) 운영하다</span><span class="vw">popular 인기 있는</span><span class="vw">bakery 빵집</span></div>
     <div class="choices" data-qid="a15" data-ans="run">
@@ -318,67 +303,62 @@ body{font-family:'Noto Sans KR','Baloo 2',sans-serif;background:var(--bg);paddin
       <button class="choice" onclick="pickChoice(this)">running</button>
       <button class="choice" onclick="pickChoice(this)">runned</button>
     </div>
-    <div class="answer-hint" id="ah-a15">💡 정답: <strong>run</strong> — Mr. and Mrs. Choi(복수 주어) → 동사원형 그대로</div>
+    <div class="answer-hint" id="ah-a15">💡 정답: <strong>run</strong> — Mr. and Mrs. Choi(복수 주어) → 동사원형 그대로<br>📝 해석: Mr. Choi와 Mrs. Choi는 우리 학교 근처에서 작지만 인기 있는 빵집을 운영한다.</div>
     <button class="hint-btn" onclick="showHint('a15')">💡 힌트 보기</button>
   </div>
 
   <!-- Q16 blank: performs -->
   <div class="question-card" id="qc-a16"><span class="q-num">16</span>
-    <div class="ctx">📌 우리 학교 밴드는 지역에서 꽤 유명하다.</div>
     <div class="q-text">The band <input class="blank" id="bi-a16" placeholder="___" data-ans="performs" autocomplete="off" style="min-width:115px"> at the school festival every spring. <span class="ex">(perform)</span></div>
-    <div class="vocab"><span class="vw">perform 공연하다</span><span class="vw">festival 축제</span><span class="vw">locally 지역에서</span></div>
+    <div class="vocab"><span class="vw">perform 공연하다</span><span class="vw">festival 축제</span></div>
     <button class="check-btn" onclick="checkBlank('a16')">✔ 확인</button>
-    <div class="answer-hint" id="ah-a16">💡 정답: <strong>performs</strong> — The band(단수 취급) → perform+s</div>
+    <div class="answer-hint" id="ah-a16">💡 정답: <strong>performs</strong> — The band(단수 취급) → perform+s<br>📝 해석: 그 밴드는 매년 봄 학교 축제에서 공연한다.</div>
     <button class="hint-btn" onclick="showHint('a16')">💡 힌트 보기</button>
   </div>
 
   <!-- Q17 choice: sings -->
   <div class="question-card" id="qc-a17"><span class="q-num">17</span>
-    <div class="ctx">📌 리사(Lisa)는 음악적으로 매우 재능 있는 학생이다.</div>
     <div class="q-text">She <em>___</em> in the school choir and plays the violin.</div>
-    <div class="vocab"><span class="vw">talented 재능 있는</span><span class="vw">choir 합창단</span></div>
+    <div class="vocab"><span class="vw">choir 합창단</span><span class="vw">violin 바이올린</span></div>
     <div class="choices" data-qid="a17" data-ans="sings">
       <button class="choice" onclick="pickChoice(this)">sing</button>
       <button class="choice" onclick="pickChoice(this)">sings</button>
       <button class="choice" onclick="pickChoice(this)">singes</button>
       <button class="choice" onclick="pickChoice(this)">singing</button>
     </div>
-    <div class="answer-hint" id="ah-a17">💡 정답: <strong>sings</strong> — She(3인칭) → sing+s</div>
+    <div class="answer-hint" id="ah-a17">💡 정답: <strong>sings</strong> — She(3인칭) → sing+s<br>📝 해석: 그녀는 학교 합창단에서 노래하고 바이올린을 연주한다.</div>
     <button class="hint-btn" onclick="showHint('a17')">💡 힌트 보기</button>
   </div>
 
   <!-- Q18 blank: doesn't understand -->
   <div class="question-card" id="qc-a18"><span class="q-num">18</span>
-    <div class="ctx">📌 수지(Suji)는 때때로 수학을 어려워한다.</div>
     <div class="q-text">She <input class="blank" id="bi-a18" placeholder="___" data-ans="doesn't understand" autocomplete="off" style="min-width:195px"> why algebra is so important in real life. <span class="ex">(understand, 부정형)</span></div>
-    <div class="vocab"><span class="vw">struggle 어려워하다</span><span class="vw">algebra 대수학</span><span class="vw">real life 실생활</span></div>
+    <div class="vocab"><span class="vw">algebra 대수학</span><span class="vw">real life 실생활</span><span class="vw">important 중요한</span></div>
     <button class="check-btn" onclick="checkBlank('a18')">✔ 확인</button>
-    <div class="answer-hint" id="ah-a18">💡 정답: <strong>doesn't understand</strong> (= does not understand)</div>
+    <div class="answer-hint" id="ah-a18">💡 정답: <strong>doesn't understand</strong> (= does not understand)<br>📝 해석: 그녀는 왜 대수학이 실생활에서 그렇게 중요한지 이해하지 못한다.</div>
     <button class="hint-btn" onclick="showHint('a18')">💡 힌트 보기</button>
   </div>
 
   <!-- Q19 choice: tries -->
   <div class="question-card" id="qc-a19"><span class="q-num">19</span>
-    <div class="ctx">📌 나의 할머니는 건강에 매우 신경을 쓰신다.</div>
     <div class="q-text">She always <em>___</em> new healthy recipes she finds on the internet.</div>
-    <div class="vocab"><span class="vw">health-conscious 건강에 신경 쓰는</span><span class="vw">recipe 조리법</span></div>
+    <div class="vocab"><span class="vw">healthy 건강한</span><span class="vw">recipe 조리법</span><span class="vw">internet 인터넷</span></div>
     <div class="choices" data-qid="a19" data-ans="tries">
       <button class="choice" onclick="pickChoice(this)">try</button>
       <button class="choice" onclick="pickChoice(this)">tries</button>
       <button class="choice" onclick="pickChoice(this)">trys</button>
       <button class="choice" onclick="pickChoice(this)">trying</button>
     </div>
-    <div class="answer-hint" id="ah-a19">💡 정답: <strong>tries</strong> — try(자음+y) → y를 i로 바꾸고 +es</div>
+    <div class="answer-hint" id="ah-a19">💡 정답: <strong>tries</strong> — try(자음+y) → y를 i로 바꾸고 +es<br>📝 해석: 그녀는 항상 인터넷에서 찾은 새로운 건강 조리법을 시도한다.</div>
     <button class="hint-btn" onclick="showHint('a19')">💡 힌트 보기</button>
   </div>
 
   <!-- Q20 blank: takes -->
   <div class="question-card" id="qc-a20"><span class="q-num">20</span>
-    <div class="ctx">📌 제이크(Jake)는 자신의 개 맥스(Max)를 매우 아낀다.</div>
     <div class="q-text">He <input class="blank" id="bi-a20" placeholder="___" data-ans="takes" autocomplete="off" style="min-width:90px"> Max for a walk twice a day, rain or shine. <span class="ex">(take)</span></div>
     <div class="vocab"><span class="vw">twice 두 번</span><span class="vw">rain or shine 날씨에 상관없이</span></div>
     <button class="check-btn" onclick="checkBlank('a20')">✔ 확인</button>
-    <div class="answer-hint" id="ah-a20">💡 정답: <strong>takes</strong> — He(3인칭) → take+s</div>
+    <div class="answer-hint" id="ah-a20">💡 정답: <strong>takes</strong> — He(3인칭) → take+s<br>📝 해석: 그는 날씨에 상관없이 하루에 두 번 Max를 산책시킨다.</div>
     <button class="hint-btn" onclick="showHint('a20')">💡 힌트 보기</button>
   </div>
 </div>
@@ -406,7 +386,7 @@ body{font-family:'Noto Sans KR','Baloo 2',sans-serif;background:var(--bg);paddin
     </div>
     <div class="answer-area" id="area-c1"><span class="area-ph">여기에 단어를 놓으세요 →</span></div>
     <button class="check-btn" data-qid="c1" data-ans="She writes in her diary every night" onclick="checkArrange(this)">✔ 확인</button>
-    <div class="answer-hint" id="ah-c1">💡 정답: <strong>She writes in her diary every night</strong></div>
+    <div class="answer-hint" id="ah-c1">💡 정답: <strong>She writes in her diary every night</strong><br>📝 해석: 그녀는 매일 밤 일기장에 글을 쓴다.</div>
     <button class="hint-btn" onclick="showHint('c1')">💡 힌트 보기</button>
   </div>
 
@@ -425,7 +405,7 @@ body{font-family:'Noto Sans KR','Baloo 2',sans-serif;background:var(--bg);paddin
     </div>
     <div class="answer-area" id="area-c2"><span class="area-ph">여기에 단어를 놓으세요 →</span></div>
     <button class="check-btn" data-qid="c2" data-ans="He always finishes his homework before dinner" onclick="checkArrange(this)">✔ 확인</button>
-    <div class="answer-hint" id="ah-c2">💡 정답: <strong>He always finishes his homework before dinner</strong></div>
+    <div class="answer-hint" id="ah-c2">💡 정답: <strong>He always finishes his homework before dinner</strong><br>📝 해석: 그는 항상 저녁 식사 전에 숙제를 마친다.</div>
     <button class="hint-btn" onclick="showHint('c2')">💡 힌트 보기</button>
   </div>
 
@@ -446,7 +426,7 @@ body{font-family:'Noto Sans KR','Baloo 2',sans-serif;background:var(--bg);paddin
     </div>
     <div class="answer-area" id="area-c3"><span class="area-ph">여기에 단어를 놓으세요 →</span></div>
     <button class="check-btn" data-qid="c3" data-ans="The band performs at the school festival every spring" onclick="checkArrange(this)">✔ 확인</button>
-    <div class="answer-hint" id="ah-c3">💡 정답: <strong>The band performs at the school festival every spring</strong></div>
+    <div class="answer-hint" id="ah-c3">💡 정답: <strong>The band performs at the school festival every spring</strong><br>📝 해석: 그 밴드는 매년 봄 학교 축제에서 공연한다.</div>
     <button class="hint-btn" onclick="showHint('c3')">💡 힌트 보기</button>
   </div>
 
@@ -466,7 +446,7 @@ body{font-family:'Noto Sans KR','Baloo 2',sans-serif;background:var(--bg);paddin
     </div>
     <div class="answer-area" id="area-c4"><span class="area-ph">여기에 단어를 놓으세요 →</span></div>
     <button class="check-btn" data-qid="c4" data-ans="Jake does not go to bed before midnight" onclick="checkArrange(this)">✔ 확인</button>
-    <div class="answer-hint" id="ah-c4">💡 정답: <strong>Jake does not go to bed before midnight</strong></div>
+    <div class="answer-hint" id="ah-c4">💡 정답: <strong>Jake does not go to bed before midnight</strong><br>📝 해석: Jake는 자정 전에 잠자리에 들지 않는다.</div>
     <button class="hint-btn" onclick="showHint('c4')">💡 힌트 보기</button>
   </div>
 
@@ -488,7 +468,7 @@ body{font-family:'Noto Sans KR','Baloo 2',sans-serif;background:var(--bg);paddin
     </div>
     <div class="answer-area" id="area-c5"><span class="area-ph">여기에 단어를 놓으세요 →</span></div>
     <button class="check-btn" data-qid="c5" data-ans="Jimin and Sora run a popular bakery near our school" onclick="checkArrange(this)">✔ 확인</button>
-    <div class="answer-hint" id="ah-c5">💡 정답: <strong>Jimin and Sora run a popular bakery near our school</strong></div>
+    <div class="answer-hint" id="ah-c5">💡 정답: <strong>Jimin and Sora run a popular bakery near our school</strong><br>📝 해석: Jimin과 Sora는 우리 학교 근처에서 인기 있는 빵집을 운영한다.</div>
     <button class="hint-btn" onclick="showHint('c5')">💡 힌트 보기</button>
   </div>
 </div>
@@ -542,6 +522,7 @@ function checkBlank(k){
   var inp=document.getElementById('bi-'+k);
   var card=document.getElementById('qc-'+k);
   if(card.classList.contains('ok')||card.classList.contains('ng'))return;
+  if(!inp.value.trim()){toast('답을 입력하세요!','ng');inp.focus();return;}
   inp.disabled=true;card.querySelector('.check-btn').disabled=true;
   var got=norm(inp.value)===norm(inp.dataset.ans);
   inp.classList.add(got?'ok':'ng');
@@ -573,6 +554,7 @@ function checkArrange(btn){
   var k=btn.dataset.qid,ans=btn.dataset.ans;
   var card=document.getElementById('qc-'+k);
   if(card.classList.contains('ok')||card.classList.contains('ng'))return;
+  if(!placed[k].length){toast('단어를 배열하세요!','ng');return;}
   var typed=placed[k].map(function(i){return i.w;}).join(' ');
   btn.disabled=true;
   document.querySelectorAll('#pool-'+k+' .pool-chip').forEach(function(c){c.style.visibility='hidden';c.disabled=true;});

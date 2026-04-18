@@ -4,7 +4,11 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>중학 영어 문법 워크시트</title>
-<link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@400;600;700;800&family=Noto+Sans+KR:wght@400;500;700&display=swap" rel="stylesheet">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@600;700;800;900&display=swap" rel="stylesheet">
+<!-- Pretendard: 현재 가장 세련된 한글 웹폰트 -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css">
 <style>
 :root{
   --blue:#0ea5e9;--dark:#0c4a6e;--purple:#6366f1;
@@ -14,44 +18,246 @@
   --bdr:#e2e8f0;
 }
 *{margin:0;padding:0;box-sizing:border-box;}
-body{font-family:'Noto Sans KR','Baloo 2',sans-serif;background:var(--bg);min-height:100vh;padding-bottom:60px;font-size:16px;}
+body{font-family:'Pretendard','Plus Jakarta Sans',sans-serif;background:var(--bg);min-height:100vh;padding-bottom:60px;font-size:16px;}
 
-/* ── header ── */
-.header{
-  background:linear-gradient(135deg,#0ea5e9 0%,#6366f1 100%);
-  padding:52px 20px 72px;text-align:center;position:relative;overflow:hidden;
+/* ══════════════════════════════
+   ✨ NEW BEAUTIFUL HEADER
+══════════════════════════════ */
+.header {
+  background: linear-gradient(135deg, #0f0c29 0%, #1a1a4e 30%, #24243e 60%, #0d1b4b 100%);
+  padding: 64px 20px 92px;
+  text-align: center;
+  position: relative;
+  overflow: hidden;
 }
-.header::before{
-  content:'';position:absolute;inset:0;
-  background-image:radial-gradient(rgba(255,255,255,.12) 1px,transparent 1px);
-  background-size:22px 22px;
-}
-.header::after{
-  content:'';position:absolute;bottom:-1px;left:50%;transform:translateX(-50%);
-  width:130%;height:68px;background:var(--bg);border-radius:50% 50% 0 0;
-}
-.hbadge{display:inline-block;background:rgba(255,255,255,.18);color:rgba(255,255,255,.9);font-size:13px;font-weight:700;letter-spacing:2.5px;text-transform:uppercase;padding:6px 20px;border-radius:20px;margin-bottom:20px;border:1px solid rgba(255,255,255,.3);position:relative;z-index:1;}
-.header h1{color:#fff;font-size:3.2rem;font-weight:900;line-height:1.1;margin-bottom:12px;letter-spacing:-.5px;position:relative;z-index:1;}
-.header h1 em{font-style:normal;color:#fde68a;}
-.header h1 small{display:block;font-size:1.1rem;font-weight:600;color:rgba(255,255,255,.65);letter-spacing:1px;margin-top:8px;}
-.header p{color:rgba(255,255,255,.72);font-size:.95rem;line-height:1.7;max-width:360px;margin:0 auto 32px;position:relative;z-index:1;}
-.stats{display:flex;justify-content:center;gap:12px;flex-wrap:wrap;position:relative;z-index:1;}
-.stat{background:rgba(255,255,255,.18);border:1px solid rgba(255,255,255,.28);border-radius:16px;padding:14px 26px;text-align:center;min-width:84px;}
-.stat-n{font-size:2rem;font-weight:900;color:#fde68a;line-height:1;}
-.stat-l{font-size:.75rem;color:rgba(255,255,255,.7);margin-top:4px;font-weight:700;letter-spacing:.5px;}
 
-/* ── wrap ── */
+/* 도트 격자 패턴 */
+.header::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background-image: radial-gradient(rgba(255,255,255,.06) 1px, transparent 1px);
+  background-size: 26px 26px;
+  pointer-events: none;
+}
+
+/* 아래쪽 웨이브 */
+.header::after {
+  content: '';
+  position: absolute;
+  bottom: -1px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 140%;
+  height: 72px;
+  background: var(--bg);
+  border-radius: 50% 50% 0 0;
+}
+
+/* 빛나는 orb 장식 */
+.header-orb {
+  position: absolute;
+  border-radius: 50%;
+  pointer-events: none;
+  filter: blur(70px);
+}
+.header-orb--1 {
+  width: 380px; height: 380px;
+  background: radial-gradient(circle, rgba(99,102,241,.45) 0%, transparent 70%);
+  top: -120px; right: -80px;
+  animation: orbFloat 10s ease-in-out infinite;
+}
+.header-orb--2 {
+  width: 280px; height: 280px;
+  background: radial-gradient(circle, rgba(14,165,233,.4) 0%, transparent 70%);
+  bottom: 0px; left: -60px;
+  animation: orbFloat 12s ease-in-out infinite reverse;
+}
+.header-orb--3 {
+  width: 200px; height: 200px;
+  background: radial-gradient(circle, rgba(168,85,247,.35) 0%, transparent 70%);
+  top: 40%; left: 50%;
+  transform: translateX(-50%);
+  animation: orbFloat 8s ease-in-out infinite;
+}
+
+@keyframes orbFloat {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-20px); }
+}
+
+/* 플로팅 알파벳 장식 */
+.header-deco {
+  position: absolute;
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  font-weight: 900;
+  color: rgba(255,255,255,.06);
+  pointer-events: none;
+  user-select: none;
+  line-height: 1;
+}
+.header-deco--1 { font-size: 150px; top: -20px; left: 2%; animation: floatA 9s ease-in-out infinite; }
+.header-deco--2 { font-size: 95px;  top: 8px; right: 4%; animation: floatA 11s ease-in-out infinite reverse; }
+.header-deco--3 { font-size: 80px;  bottom: 55px; left: 9%; animation: floatA 7s ease-in-out infinite; }
+.header-deco--4 { font-size: 115px; bottom: 35px; right: 7%; animation: floatA 13s ease-in-out infinite reverse; }
+
+@keyframes floatA {
+  0%, 100% { transform: translateY(0) rotate(0deg); }
+  40%       { transform: translateY(-14px) rotate(4deg); }
+  70%       { transform: translateY(7px) rotate(-3deg); }
+}
+
+/* 헤더 내부 콘텐츠 */
+.header-inner {
+  position: relative;
+  z-index: 2;
+}
+
+/* ── 뱃지 ── */
+.hbadge {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  background: rgba(255,255,255,.1);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  color: rgba(255,255,255,.92);
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  font-size: 11.5px;
+  font-weight: 700;
+  letter-spacing: 2.8px;
+  text-transform: uppercase;
+  padding: 8px 22px;
+  border-radius: 30px;
+  margin-bottom: 24px;
+  border: 1px solid rgba(255,255,255,.22);
+  box-shadow: 0 4px 24px rgba(0,0,0,.25), inset 0 1px 0 rgba(255,255,255,.18);
+}
+
+.hbadge-dot {
+  width: 7px; height: 7px;
+  background: #4ade80;
+  border-radius: 50%;
+  box-shadow: 0 0 10px #4ade80, 0 0 20px rgba(74,222,128,.5);
+  animation: dotPulse 2s ease-in-out infinite;
+  flex-shrink: 0;
+}
+
+@keyframes dotPulse {
+  0%, 100% { opacity: 1; transform: scale(1); box-shadow: 0 0 10px #4ade80, 0 0 20px rgba(74,222,128,.5); }
+  50% { opacity: .8; transform: scale(1.4); box-shadow: 0 0 6px #4ade80, 0 0 12px rgba(74,222,128,.3); }
+}
+
+/* ── 타이틀 ── */
+.header h1 {
+  color: #fff;
+  font-family: 'Pretendard', sans-serif;
+  font-size: 3.5rem;
+  font-weight: 900;
+  line-height: 1.15;
+  margin-bottom: 16px;
+  letter-spacing: -1.5px;
+  text-shadow: 0 4px 30px rgba(0,0,0,.4);
+}
+
+.header h1 em {
+  font-style: normal;
+  background: linear-gradient(135deg, #fde68a 0%, #fbbf24 50%, #f59e0b 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  filter: drop-shadow(0 0 24px rgba(251,191,36,.6));
+}
+
+.header h1 small {
+  display: block;
+  font-size: .95rem;
+  font-weight: 600;
+  color: rgba(255,255,255,.55);
+  letter-spacing: 4px;
+  margin-top: 10px;
+  text-transform: uppercase;
+  -webkit-text-fill-color: rgba(255,255,255,.55);
+}
+
+/* ── 설명 ── */
+.header p {
+  color: rgba(255,255,255,.65);
+  font-size: .95rem;
+  line-height: 1.75;
+  max-width: 370px;
+  margin: 0 auto 38px;
+}
+
+/* ── 스탯 카드 ── */
+.stats {
+  display: flex;
+  justify-content: center;
+  gap: 14px;
+  flex-wrap: wrap;
+}
+
+.stat {
+  background: rgba(255,255,255,.09);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+  border: 1px solid rgba(255,255,255,.18);
+  border-radius: 22px;
+  padding: 18px 34px;
+  text-align: center;
+  min-width: 92px;
+  box-shadow:
+    0 8px 32px rgba(0,0,0,.2),
+    inset 0 1px 0 rgba(255,255,255,.18),
+    inset 0 -1px 0 rgba(0,0,0,.1);
+  transition: transform .22s ease, box-shadow .22s ease;
+  position: relative;
+  overflow: hidden;
+}
+
+.stat::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(255,255,255,.4), transparent);
+}
+
+.stat:hover {
+  transform: translateY(-5px);
+  box-shadow:
+    0 16px 48px rgba(0,0,0,.25),
+    inset 0 1px 0 rgba(255,255,255,.25);
+}
+
+.stat-n {
+  font-size: 2.3rem;
+  font-weight: 900;
+  color: #fde68a;
+  line-height: 1;
+  text-shadow: 0 0 24px rgba(253,230,138,.6);
+}
+
+.stat-l {
+  font-size: .73rem;
+  color: rgba(255,255,255,.6);
+  margin-top: 6px;
+  font-weight: 700;
+  letter-spacing: 1.5px;
+}
+
+/* ══════════════════════════════
+   이하 기존 스타일 유지
+══════════════════════════════ */
 .wrap{max-width:800px;margin:0 auto;padding:32px 16px 24px;}
 .unit-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px;}
 @media(max-width:560px){.unit-grid{grid-template-columns:1fr;}}
 
-/* ── section label ── */
 .section-label{
   font-size:.8rem;font-weight:700;letter-spacing:2px;text-transform:uppercase;
   color:var(--gray);margin-bottom:16px;padding-left:2px;
 }
 
-/* ── unit card ── */
 @keyframes slideUp{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:translateY(0)}}
 .unit-card{
   background:var(--white);border-radius:20px;
@@ -87,7 +293,6 @@ body{font-family:'Noto Sans KR','Baloo 2',sans-serif;background:var(--bg);min-he
 .card-title{font-size:1.2rem;font-weight:800;color:var(--dark);line-height:1.3;margin-bottom:6px;}
 .card-sub{font-size:.9rem;color:var(--gray);line-height:1.55;}
 
-/* ── badges ── */
 .badges{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:16px;}
 .badge{font-size:.78rem;font-weight:700;padding:4px 12px;border-radius:10px;font-family:inherit;}
 .badge.basic{background:var(--sky);color:var(--dark);}
@@ -95,7 +300,6 @@ body{font-family:'Noto Sans KR','Baloo 2',sans-serif;background:var(--bg);min-he
 .badge.new{background:#fde8ff;color:#7c3aed;}
 .badge.topic{background:#f1f5f9;color:#475569;}
 
-/* ── worksheets in card ── */
 .ws-list{display:grid;grid-template-columns:1fr 1fr;gap:10px;}
 @media(max-width:400px){.ws-list{grid-template-columns:1fr;}}
 .ws-btn{
@@ -108,157 +312,193 @@ body{font-family:'Noto Sans KR','Baloo 2',sans-serif;background:var(--bg);min-he
 .ws-btn:hover{border-color:var(--blue);background:var(--sky);}
 .unit-card.hard .ws-btn:hover{border-color:var(--amber);background:var(--amb-bg);}
 .ws-icon{font-size:1.25rem;flex-shrink:0;}
-.ws-text{}
 .ws-type{font-size:.75rem;font-weight:700;color:var(--gray);letter-spacing:.5px;text-transform:uppercase;}
 .ws-name{font-size:.95rem;font-weight:700;line-height:1.3;}
 .ws-cnt{font-size:.8rem;color:var(--gray);}
 
-/* ── footer ── */
 .footer{text-align:center;padding:28px 20px;font-size:.85rem;color:var(--gray);border-top:1px solid var(--bdr);background:var(--white);}
+
+/* 반응형 */
+@media(max-width:480px){
+  .header h1 { font-size: 2.6rem; }
+  .stat { padding: 14px 22px; }
+  .stat-n { font-size: 1.9rem; }
+}
 </style>
 </head>
 <body>
 
+<!-- ✨ 새 헤더 -->
 <div class="header">
-  <div class="hbadge">Middle School English</div>
-  <h1>중학 영어 <em>문법</em><small>Grammar Worksheet</small></h1>
-  <p>단원별 개념 정리 + 자동채점 인터랙티브 문제</p>
-  <div class="stats">
-    <div class="stat"><div class="stat-n">4</div><div class="stat-l">단원</div></div>
-    <div class="stat"><div class="stat-n">6</div><div class="stat-l">워크시트</div></div>
-    <div class="stat"><div class="stat-n">240+</div><div class="stat-l">연습문제</div></div>
+  <!-- 빛나는 orb 장식 -->
+  <div class="header-orb header-orb--1"></div>
+  <div class="header-orb header-orb--2"></div>
+  <div class="header-orb header-orb--3"></div>
+
+  <!-- 플로팅 알파벳 -->
+  <div class="header-deco header-deco--1">G</div>
+  <div class="header-deco header-deco--2">R</div>
+  <div class="header-deco header-deco--3">A</div>
+  <div class="header-deco header-deco--4">M</div>
+
+  <!-- 메인 콘텐츠 -->
+  <div class="header-inner">
+    <div class="hbadge">
+      <span class="hbadge-dot"></span>
+      Middle School English
+    </div>
+
+    <h1>중학 영어 <em>문법</em><small>Grammar Worksheet</small></h1>
+    <p>단원별 개념 정리 + 자동채점 인터랙티브 문제</p>
+
+    <div class="stats">
+      <div class="stat">
+        <div class="stat-n">4</div>
+        <div class="stat-l">단원</div>
+      </div>
+      <div class="stat">
+        <div class="stat-n">6</div>
+        <div class="stat-l">워크시트</div>
+      </div>
+      <div class="stat">
+        <div class="stat-n">240+</div>
+        <div class="stat-l">연습문제</div>
+      </div>
+    </div>
   </div>
 </div>
 
+<!-- 기존 콘텐츠 유지 -->
 <div class="wrap">
   <div class="section-label">📚 단원 목록</div>
-<div class="unit-grid">
-  <!-- Unit 1: be동사 -->
-  <a class="unit-card" href="be-verb/v2.html">
-    <div class="card-top">
-      <div class="unit-num">01</div>
-      <div class="card-info">
-        <div class="card-title">be동사 &amp; 일반동사 현재형</div>
-        <div class="card-sub">am / is / are · 부정형 · 어순 배열</div>
-      </div>
-    </div>
-    <div class="badges">
-      <span class="badge basic">🌱 기초</span>
-      <span class="badge topic">현재형</span>
-      <span class="badge topic">부정문</span>
-      <span class="badge topic">어순</span>
-    </div>
-    <div class="ws-list">
-      <div class="ws-btn">
-        <span class="ws-icon">✏️</span>
-        <div class="ws-text">
-          <div class="ws-type">Live Worksheet</div>
-          <div class="ws-name">be동사 워크시트</div>
-          <div class="ws-cnt">45문제</div>
-        </div>
-      </div>
-    </div>
-  </a>
+  <div class="unit-grid">
 
-  <!-- Unit 2: 일반동사 심화 -->
-  <a class="unit-card hard" href="general-verb-hard/">
-    <div class="card-top">
-      <div class="unit-num">02</div>
-      <div class="card-info">
-        <div class="card-title">일반동사 현재형 심화</div>
-        <div class="card-sub">3인칭 단수 변화 · 부정문 · 문맥 파악</div>
-      </div>
-    </div>
-    <div class="badges">
-      <span class="badge hard">⚡ 심화</span>
-      <span class="badge new">🆕 NEW</span>
-      <span class="badge topic">-s/-es/-ies</span>
-      <span class="badge topic">does not</span>
-    </div>
-    <div class="ws-list">
-      <div class="ws-btn">
-        <span class="ws-icon">🎯</span>
-        <div class="ws-text">
-          <div class="ws-type">심화 워크시트</div>
-          <div class="ws-name">일반동사 심화</div>
-          <div class="ws-cnt">25문제</div>
+    <!-- Unit 1: be동사 -->
+    <a class="unit-card" href="be-verb/v2.html">
+      <div class="card-top">
+        <div class="unit-num">01</div>
+        <div class="card-info">
+          <div class="card-title">be동사 &amp; 일반동사 현재형</div>
+          <div class="card-sub">am / is / are · 부정형 · 어순 배열</div>
         </div>
       </div>
-    </div>
-  </a>
+      <div class="badges">
+        <span class="badge basic">🌱 기초</span>
+        <span class="badge topic">현재형</span>
+        <span class="badge topic">부정문</span>
+        <span class="badge topic">어순</span>
+      </div>
+      <div class="ws-list">
+        <div class="ws-btn">
+          <span class="ws-icon">✏️</span>
+          <div class="ws-text">
+            <div class="ws-type">Live Worksheet</div>
+            <div class="ws-name">be동사 워크시트</div>
+            <div class="ws-cnt">45문제</div>
+          </div>
+        </div>
+      </div>
+    </a>
 
-  <!-- Unit 3: 동명사 기초+심화 (합침) -->
-  <div class="unit-card">
-    <div class="card-top">
-      <div class="unit-num">03</div>
-      <div class="card-info">
-        <div class="card-title">현재진행형 vs 동명사</div>
-        <div class="card-sub">be + -ing · 주어·목적어 역할 · 상황별 구별</div>
-      </div>
-    </div>
-    <div class="badges">
-      <span class="badge basic">🌱 기초</span>
-      <span class="badge hard">⚡ 심화</span>
-      <span class="badge topic">동명사</span>
-      <span class="badge topic">형태 구별</span>
-    </div>
-    <div class="ws-list">
-      <div class="ws-btn" onclick="location.href='gerund-basic/'" style="cursor:pointer">
-        <span class="ws-icon">✏️</span>
-        <div class="ws-text">
-          <div class="ws-type">Grammar Master</div>
-          <div class="ws-name">기초 워크시트</div>
-          <div class="ws-cnt">50문제</div>
+    <!-- Unit 2: 일반동사 심화 -->
+    <a class="unit-card hard" href="general-verb-hard/">
+      <div class="card-top">
+        <div class="unit-num">02</div>
+        <div class="card-info">
+          <div class="card-title">일반동사 현재형 심화</div>
+          <div class="card-sub">3인칭 단수 변화 · 부정문 · 문맥 파악</div>
         </div>
       </div>
-      <div class="ws-btn" onclick="location.href='gerund-hard/'" style="cursor:pointer">
-        <span class="ws-icon">🎯</span>
-        <div class="ws-text">
-          <div class="ws-type">Grammar Master</div>
-          <div class="ws-name">심화 50제</div>
-          <div class="ws-cnt">50문제</div>
+      <div class="badges">
+        <span class="badge hard">⚡ 심화</span>
+        <span class="badge new">🆕 NEW</span>
+        <span class="badge topic">-s/-es/-ies</span>
+        <span class="badge topic">does not</span>
+      </div>
+      <div class="ws-list">
+        <div class="ws-btn">
+          <span class="ws-icon">🎯</span>
+          <div class="ws-text">
+            <div class="ws-type">심화 워크시트</div>
+            <div class="ws-name">일반동사 심화</div>
+            <div class="ws-cnt">25문제</div>
+          </div>
+        </div>
+      </div>
+    </a>
+
+    <!-- Unit 3: 동명사 기초+심화 -->
+    <div class="unit-card">
+      <div class="card-top">
+        <div class="unit-num">03</div>
+        <div class="card-info">
+          <div class="card-title">현재진행형 vs 동명사</div>
+          <div class="card-sub">be + -ing · 주어·목적어 역할 · 상황별 구별</div>
+        </div>
+      </div>
+      <div class="badges">
+        <span class="badge basic">🌱 기초</span>
+        <span class="badge hard">⚡ 심화</span>
+        <span class="badge topic">동명사</span>
+        <span class="badge topic">형태 구별</span>
+      </div>
+      <div class="ws-list">
+        <div class="ws-btn" onclick="location.href='gerund-basic/'" style="cursor:pointer">
+          <span class="ws-icon">✏️</span>
+          <div class="ws-text">
+            <div class="ws-type">Grammar Master</div>
+            <div class="ws-name">기초 워크시트</div>
+            <div class="ws-cnt">50문제</div>
+          </div>
+        </div>
+        <div class="ws-btn" onclick="location.href='gerund-hard/'" style="cursor:pointer">
+          <span class="ws-icon">🎯</span>
+          <div class="ws-text">
+            <div class="ws-type">Grammar Master</div>
+            <div class="ws-name">심화 50제</div>
+            <div class="ws-cnt">50문제</div>
+          </div>
         </div>
       </div>
     </div>
+
+    <!-- Unit 4: be동사 과거형 -->
+    <div class="unit-card">
+      <div class="card-top">
+        <div class="unit-num">04</div>
+        <div class="card-info">
+          <div class="card-title">be동사 과거형 — was / were</div>
+          <div class="card-sub">was · were · 부정문 · 의문문</div>
+        </div>
+      </div>
+      <div class="badges">
+        <span class="badge basic">🌱 기초</span>
+        <span class="badge hard">⚡ 심화</span>
+        <span class="badge new">🆕 NEW</span>
+        <span class="badge topic">was/were</span>
+        <span class="badge topic">맥락 파악</span>
+      </div>
+      <div class="ws-list">
+        <div class="ws-btn" onclick="location.href='past-be/'" style="cursor:pointer">
+          <span class="ws-icon">✏️</span>
+          <div class="ws-text">
+            <div class="ws-type">기초 워크시트</div>
+            <div class="ws-name">과거형 기초</div>
+            <div class="ws-cnt">45문제</div>
+          </div>
+        </div>
+        <div class="ws-btn" onclick="location.href='past-be-hard/'" style="cursor:pointer">
+          <span class="ws-icon">🎯</span>
+          <div class="ws-text">
+            <div class="ws-type">심화 워크시트</div>
+            <div class="ws-name">맥락 파악 심화</div>
+            <div class="ws-cnt">25문제</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
   </div>
-
-  <!-- Unit 5: be동사 과거형 -->
-  <div class="unit-card">
-    <div class="card-top">
-      <div class="unit-num">04</div>
-      <div class="card-info">
-        <div class="card-title">be동사 과거형 — was / were</div>
-        <div class="card-sub">was · were · 부정문 · 의문문</div>
-      </div>
-    </div>
-    <div class="badges">
-      <span class="badge basic">🌱 기초</span>
-      <span class="badge hard">⚡ 심화</span>
-      <span class="badge new">🆕 NEW</span>
-      <span class="badge topic">was/were</span>
-      <span class="badge topic">맥락 파악</span>
-    </div>
-    <div class="ws-list">
-      <div class="ws-btn" onclick="location.href='past-be/'" style="cursor:pointer">
-        <span class="ws-icon">✏️</span>
-        <div class="ws-text">
-          <div class="ws-type">기초 워크시트</div>
-          <div class="ws-name">과거형 기초</div>
-          <div class="ws-cnt">45문제</div>
-        </div>
-      </div>
-      <div class="ws-btn" onclick="location.href='past-be-hard/'" style="cursor:pointer">
-        <span class="ws-icon">🎯</span>
-        <div class="ws-text">
-          <div class="ws-type">심화 워크시트</div>
-          <div class="ws-name">맥락 파악 심화</div>
-          <div class="ws-cnt">25문제</div>
-        </div>
-      </div>
-    </div>
-  </div>
-
-</div>
 </div>
 
 <div class="footer">

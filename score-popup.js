@@ -1,6 +1,29 @@
 (function () {
   var _injected = false;
 
+  function storageKey() {
+    return 'mg_score_' + location.pathname;
+  }
+
+  function getBest() {
+    try { var d = localStorage.getItem(storageKey()); return d ? JSON.parse(d) : null; }
+    catch (e) { return null; }
+  }
+
+  function saveBest(sc, correct, total) {
+    try {
+      var prev = getBest();
+      if (!prev || sc >= prev.sc) {
+        localStorage.setItem(storageKey(), JSON.stringify({
+          sc: sc, correct: correct, total: total,
+          date: new Date().toLocaleDateString('ko-KR')
+        }));
+        return true;
+      }
+      return false;
+    } catch (e) { return false; }
+  }
+
   function injectCSS() {
     if (_injected) return;
     _injected = true;
@@ -19,13 +42,20 @@
       '#sp-title{font-size:1.55rem;font-weight:800;color:#1e293b;margin-bottom:6px;}',
       '#sp-score{font-size:3.8rem;font-weight:900;background:linear-gradient(135deg,#0ea5e9,#6366f1);',
       '-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;margin:6px 0;}',
-      '#sp-sub{color:#64748b;font-size:1rem;margin-bottom:28px;}',
+      '#sp-sub{color:#64748b;font-size:1rem;margin-bottom:10px;}',
+      '#sp-record{font-size:.85rem;font-weight:700;padding:4px 14px;border-radius:20px;margin-bottom:22px;display:inline-block;}',
+      '#sp-record.new{background:linear-gradient(135deg,#f59e0b,#ef4444);color:#fff;}',
+      '#sp-record.prev{background:#f1f5f9;color:#64748b;}',
       '#sp-retry{background:linear-gradient(135deg,#0ea5e9,#6366f1);color:#fff;border:none;border-radius:14px;',
       'padding:15px 40px;font-size:1.1rem;font-weight:700;cursor:pointer;',
       'box-shadow:0 6px 20px rgba(99,102,241,.4);transition:transform .15s,box-shadow .15s;}',
       '#sp-retry:hover{transform:translateY(-3px);box-shadow:0 10px 28px rgba(99,102,241,.5);}',
       '#sp-retry:active{transform:translateY(0);}',
-      '#sp-canvas{position:fixed;inset:0;pointer-events:none;z-index:10000;}'
+      '#sp-canvas{position:fixed;inset:0;pointer-events:none;z-index:10000;}',
+      '#sp-badge{position:fixed;top:14px;right:14px;z-index:500;background:rgba(255,255,255,.92);',
+      'backdrop-filter:blur(8px);border:1.5px solid #e2e8f0;border-radius:12px;padding:7px 14px;',
+      'font-size:.82rem;color:#475569;font-weight:600;box-shadow:0 2px 12px rgba(0,0,0,.08);',
+      'pointer-events:none;}'
     ].join('');
     document.head.appendChild(style);
   }
@@ -78,14 +108,36 @@
     draw();
   }
 
+  document.addEventListener('DOMContentLoaded', function () {
+    var prev = getBest();
+    if (!prev) return;
+    injectCSS();
+    var badge = document.createElement('div');
+    badge.id = 'sp-badge';
+    badge.textContent = '🏅 최고 ' + prev.sc + '점 (' + prev.correct + '/' + prev.total + ')';
+    document.body.appendChild(badge);
+  });
+
   window.showScorePopup = function (correct, total) {
     injectCSS();
+    var prev = getBest();
     var sc = Math.round(correct / total * 100);
+    var isNew = saveBest(sc, correct, total);
+
     var emoji, title;
     if (sc >= 90) { emoji = '🏆'; title = '완벽해요!'; }
     else if (sc >= 70) { emoji = '🎉'; title = '잘 했어요!'; }
     else if (sc >= 50) { emoji = '💪'; title = '절반 이상 맞았어요!'; }
     else { emoji = '😊'; title = '수고했어요!'; }
+
+    var recordHtml;
+    if (isNew && !prev) {
+      recordHtml = '<div id="sp-record" class="new">🎯 첫 번째 도전 완료!</div>';
+    } else if (isNew) {
+      recordHtml = '<div id="sp-record" class="new">🏅 신기록 달성! (이전 ' + prev.sc + '점)</div>';
+    } else {
+      recordHtml = '<div id="sp-record" class="prev">최고 기록 ' + prev.sc + '점 (' + prev.date + ')</div>';
+    }
 
     var overlay = document.createElement('div');
     overlay.id = 'sp-overlay';
@@ -96,6 +148,7 @@
         '<div id="sp-title">' + title + '</div>' +
         '<div id="sp-score">' + sc + '점</div>' +
         '<div id="sp-sub">' + correct + ' / ' + total + ' 문제 정답</div>' +
+        recordHtml +
         '<button id="sp-retry" onclick="location.reload()">🔄 다시풀기</button>' +
       '</div>';
     document.body.appendChild(overlay);

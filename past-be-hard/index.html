@@ -284,149 +284,90 @@ body{font-family:'Baloo 2','Noto Sans KR',sans-serif;background:var(--bg);paddin
   </div>
 </div>
 
-<!-- ── Section 1: 짧은 지문 — TOEIC Part 6 형식 ── -->
+<!-- ── Section 1: 짧은 지문 빈칸 채우기 ── -->
 <div class="sec" id="s1">
-  <div class="sec-hdr"><div class="lbl">Part 2 · 10문제</div><h2>TOEIC Part 6 — 지문 빈칸 채우기</h2><div class="desc">세 편의 지문을 읽고 빈칸에 알맞은 것을 고르세요</div></div>
+  <div class="sec-hdr"><div class="lbl">Part 2 · 10문제</div><h2>짧은 지문 읽고 빈칸 채우기</h2><div class="desc">앞뒤 문맥을 읽고 was / were를 빈칸에 직접 쓰세요</div></div>
 
-  <!-- ─ Passage A: 소풍 (Q16–18) ─ -->
-  <div class="passage">
-    <div class="ptitle">Questions 16–18 refer to the following diary entry.</div>
-    Last Saturday, I went on a picnic with my family. The weather <span class="bl">(16) ______</span> perfect — sunny and warm. The sandwiches my mom made <span class="bl">(17) ______</span> so delicious. The park <span class="bl">(18) ______</span> full of other families, too.
-  </div>
+  <!-- 지문 A: 소풍 -->
+  <div class="ctx">📖 지문 A — 지난 토요일 나는 가족과 소풍을 갔다. 날씨도, 음식도, 공원도 모두 완벽했다.</div>
 
   <div class="question-card" id="qc-b1"><span class="q-num">16</span>
-    <div class="q-text">The weather <em>______</em> perfect — sunny and warm.</div>
-    <div class="choices" data-qid="b1" data-ans="was">
-      <button class="choice" onclick="pickChoice(this)">(A) was</button>
-      <button class="choice" onclick="pickChoice(this)">(B) were</button>
-      <button class="choice" onclick="pickChoice(this)">(C) is</button>
-      <button class="choice" onclick="pickChoice(this)">(D) are</button>
-    </div>
-    <div class="answer-hint" id="ah-b1">💡 정답: <strong>(A) was</strong> — The weather(단수, 과거) → was<br>📝 해석: 날씨는 완벽했다 — 맑고 따뜻했다.</div>
+    <div class="q-text">The weather <input class="blank" id="bi-b1" placeholder="___" data-ans="was" autocomplete="off" style="min-width:80px"> perfect — sunny and warm.</div>
+    <button class="check-btn" onclick="checkBlank('b1')">✔ 확인</button>
+    <div class="answer-hint" id="ah-b1">💡 정답: <strong>was</strong> — The weather(단수, 과거) → was<br>📝 해석: 날씨는 완벽했다 — 맑고 따뜻했다.</div>
     <button class="hint-btn" onclick="showHint('b1')">💡 힌트 보기</button>
   </div>
 
   <div class="question-card" id="qc-b2"><span class="q-num">17</span>
-    <div class="q-text">The sandwiches my mom made <em>______</em> so delicious.</div>
-    <div class="choices" data-qid="b2" data-ans="were">
-      <button class="choice" onclick="pickChoice(this)">(A) was</button>
-      <button class="choice" onclick="pickChoice(this)">(B) were</button>
-      <button class="choice" onclick="pickChoice(this)">(C) is</button>
-      <button class="choice" onclick="pickChoice(this)">(D) are</button>
-    </div>
-    <div class="answer-hint" id="ah-b2">💡 정답: <strong>(B) were</strong> — The sandwiches(복수, 과거) → were<br>📝 해석: 엄마가 만든 샌드위치는 정말 맛있었다.</div>
+    <div class="q-text">The sandwiches my mom made <input class="blank" id="bi-b2" placeholder="___" data-ans="were" autocomplete="off" style="min-width:80px"> so delicious.</div>
+    <button class="check-btn" onclick="checkBlank('b2')">✔ 확인</button>
+    <div class="answer-hint" id="ah-b2">💡 정답: <strong>were</strong> — The sandwiches(복수, 과거) → were<br>📝 해석: 엄마가 만든 샌드위치는 정말 맛있었다.</div>
     <button class="hint-btn" onclick="showHint('b2')">💡 힌트 보기</button>
   </div>
 
   <div class="question-card" id="qc-b3"><span class="q-num">18</span>
-    <div class="q-text">The park <em>______</em> full of other families, too.</div>
-    <div class="choices" data-qid="b3" data-ans="was">
-      <button class="choice" onclick="pickChoice(this)">(A) was</button>
-      <button class="choice" onclick="pickChoice(this)">(B) were</button>
-      <button class="choice" onclick="pickChoice(this)">(C) is</button>
-      <button class="choice" onclick="pickChoice(this)">(D) are</button>
-    </div>
-    <div class="answer-hint" id="ah-b3">💡 정답: <strong>(A) was</strong> — The park(단수, 과거) → was<br>📝 해석: 공원도 다른 가족들로 가득했다.</div>
+    <div class="q-text">The park <input class="blank" id="bi-b3" placeholder="___" data-ans="was" autocomplete="off" style="min-width:80px"> full of other families, too.</div>
+    <button class="check-btn" onclick="checkBlank('b3')">✔ 확인</button>
+    <div class="answer-hint" id="ah-b3">💡 정답: <strong>was</strong> — The park(단수, 과거) → was<br>📝 해석: 공원도 다른 가족들로 가득했다.</div>
     <button class="hint-btn" onclick="showHint('b3')">💡 힌트 보기</button>
   </div>
 
-  <!-- ─ Passage B: 힘든 하루 (Q19–21) ─ -->
-  <div class="passage">
-    <div class="ptitle">Questions 19–21 refer to the following journal entry.</div>
-    Yesterday <span class="bl">(19) ______</span> a really bad day for me. I <span class="bl">(20) ______</span> late for school because I missed the bus. The bus <span class="bl">(21) ______</span> early that morning, and I couldn't catch it.
-  </div>
+  <!-- 지문 B: 힘든 하루 -->
+  <div class="ctx">📖 지문 B — 어제는 나에게 정말 힘든 날이었다. 버스를 놓쳐서 학교에 지각했다.</div>
 
   <div class="question-card" id="qc-b4"><span class="q-num">19</span>
-    <div class="q-text">Yesterday <em>______</em> a really bad day for me.</div>
-    <div class="choices" data-qid="b4" data-ans="was">
-      <button class="choice" onclick="pickChoice(this)">(A) was</button>
-      <button class="choice" onclick="pickChoice(this)">(B) were</button>
-      <button class="choice" onclick="pickChoice(this)">(C) is</button>
-      <button class="choice" onclick="pickChoice(this)">(D) are</button>
-    </div>
-    <div class="answer-hint" id="ah-b4">💡 정답: <strong>(A) was</strong> — Yesterday(단수, 과거) → was<br>📝 해석: 어제는 나에게 정말 힘든 날이었다.</div>
+    <div class="q-text">Yesterday <input class="blank" id="bi-b4" placeholder="___" data-ans="was" autocomplete="off" style="min-width:80px"> a really bad day for me.</div>
+    <button class="check-btn" onclick="checkBlank('b4')">✔ 확인</button>
+    <div class="answer-hint" id="ah-b4">💡 정답: <strong>was</strong> — Yesterday(단수, 과거) → was<br>📝 해석: 어제는 나에게 정말 힘든 날이었다.</div>
     <button class="hint-btn" onclick="showHint('b4')">💡 힌트 보기</button>
   </div>
 
   <div class="question-card" id="qc-b5"><span class="q-num">20</span>
-    <div class="q-text">I <em>______</em> late for school because I missed the bus.</div>
-    <div class="choices" data-qid="b5" data-ans="was">
-      <button class="choice" onclick="pickChoice(this)">(A) was</button>
-      <button class="choice" onclick="pickChoice(this)">(B) were</button>
-      <button class="choice" onclick="pickChoice(this)">(C) is</button>
-      <button class="choice" onclick="pickChoice(this)">(D) are</button>
-    </div>
-    <div class="answer-hint" id="ah-b5">💡 정답: <strong>(A) was</strong> — I(1인칭 단수, 과거) → was<br>📝 해석: 나는 버스를 놓쳐서 학교에 지각했다.</div>
+    <div class="q-text">I <input class="blank" id="bi-b5" placeholder="___" data-ans="was" autocomplete="off" style="min-width:80px"> late for school because I missed the bus.</div>
+    <button class="check-btn" onclick="checkBlank('b5')">✔ 확인</button>
+    <div class="answer-hint" id="ah-b5">💡 정답: <strong>was</strong> — I(1인칭 단수, 과거) → was<br>📝 해석: 나는 버스를 놓쳐서 학교에 지각했다.</div>
     <button class="hint-btn" onclick="showHint('b5')">💡 힌트 보기</button>
   </div>
 
   <div class="question-card" id="qc-b6"><span class="q-num">21</span>
-    <div class="q-text">The bus <em>______</em> early that morning, and I couldn't catch it.</div>
-    <div class="choices" data-qid="b6" data-ans="was">
-      <button class="choice" onclick="pickChoice(this)">(A) was</button>
-      <button class="choice" onclick="pickChoice(this)">(B) were</button>
-      <button class="choice" onclick="pickChoice(this)">(C) is</button>
-      <button class="choice" onclick="pickChoice(this)">(D) are</button>
-    </div>
-    <div class="answer-hint" id="ah-b6">💡 정답: <strong>(A) was</strong> — The bus(단수, 과거) → was<br>📝 해석: 그날 아침 버스가 일찍 왔고, 나는 그것을 탈 수 없었다.</div>
+    <div class="q-text">The bus <input class="blank" id="bi-b6" placeholder="___" data-ans="was" autocomplete="off" style="min-width:80px"> early that morning, and I couldn't catch it.</div>
+    <button class="check-btn" onclick="checkBlank('b6')">✔ 확인</button>
+    <div class="answer-hint" id="ah-b6">💡 정답: <strong>was</strong> — The bus(단수, 과거) → was<br>📝 해석: 그날 아침 버스가 일찍 왔고, 나는 그것을 탈 수 없었다.</div>
     <button class="hint-btn" onclick="showHint('b6')">💡 힌트 보기</button>
   </div>
 
-  <!-- ─ Passage C: 학교 연극 (Q22–25) ─ -->
-  <div class="passage">
-    <div class="ptitle">Questions 22–25 refer to the following review.</div>
-    Last Friday, our class put on a school play. The costumes <span class="bl">(22) ______</span> beautiful, and the actors <span class="bl">(23) ______</span> very confident on stage. The audience <span class="bl">(24) ______</span> big — only parents and teachers — but everyone <span class="bl">(25) ______</span> happy with the performance.
-  </div>
+  <!-- 지문 C: 학교 연극 -->
+  <div class="ctx">📖 지문 C — 지난 금요일 우리 반은 학교 연극을 공연했다. 의상도 훌륭하고 배우들도 자신감이 넘쳤다.</div>
 
   <div class="question-card" id="qc-b7"><span class="q-num">22</span>
-    <div class="q-text">The costumes <em>______</em> beautiful.</div>
-    <div class="vocab"><span class="vw">costume 의상</span><span class="vw">put on ~을 공연하다</span></div>
-    <div class="choices" data-qid="b7" data-ans="were">
-      <button class="choice" onclick="pickChoice(this)">(A) was</button>
-      <button class="choice" onclick="pickChoice(this)">(B) were</button>
-      <button class="choice" onclick="pickChoice(this)">(C) is</button>
-      <button class="choice" onclick="pickChoice(this)">(D) are</button>
-    </div>
-    <div class="answer-hint" id="ah-b7">💡 정답: <strong>(B) were</strong> — The costumes(복수, 과거) → were<br>📝 해석: 의상은 아름다웠다.</div>
+    <div class="q-text">The costumes <input class="blank" id="bi-b7" placeholder="___" data-ans="were" autocomplete="off" style="min-width:80px"> beautiful.</div>
+    <div class="vocab"><span class="vw">costume 의상</span></div>
+    <button class="check-btn" onclick="checkBlank('b7')">✔ 확인</button>
+    <div class="answer-hint" id="ah-b7">💡 정답: <strong>were</strong> — The costumes(복수, 과거) → were<br>📝 해석: 의상은 아름다웠다.</div>
     <button class="hint-btn" onclick="showHint('b7')">💡 힌트 보기</button>
   </div>
 
   <div class="question-card" id="qc-b8"><span class="q-num">23</span>
-    <div class="q-text">The actors <em>______</em> very confident on stage.</div>
+    <div class="q-text">The actors <input class="blank" id="bi-b8" placeholder="___" data-ans="were" autocomplete="off" style="min-width:80px"> very confident on stage.</div>
     <div class="vocab"><span class="vw">actor 배우</span><span class="vw">confident 자신감 있는</span><span class="vw">stage 무대</span></div>
-    <div class="choices" data-qid="b8" data-ans="were">
-      <button class="choice" onclick="pickChoice(this)">(A) was</button>
-      <button class="choice" onclick="pickChoice(this)">(B) were</button>
-      <button class="choice" onclick="pickChoice(this)">(C) is</button>
-      <button class="choice" onclick="pickChoice(this)">(D) are</button>
-    </div>
-    <div class="answer-hint" id="ah-b8">💡 정답: <strong>(B) were</strong> — The actors(복수, 과거) → were<br>📝 해석: 배우들은 무대 위에서 매우 자신감이 있었다.</div>
+    <button class="check-btn" onclick="checkBlank('b8')">✔ 확인</button>
+    <div class="answer-hint" id="ah-b8">💡 정답: <strong>were</strong> — The actors(복수, 과거) → were<br>📝 해석: 배우들은 무대 위에서 매우 자신감이 있었다.</div>
     <button class="hint-btn" onclick="showHint('b8')">💡 힌트 보기</button>
   </div>
 
   <div class="question-card" id="qc-b9"><span class="q-num">24</span>
-    <div class="q-text">The audience <em>______</em> big — only parents and teachers.</div>
+    <div class="q-text">The audience <input class="blank" id="bi-b9" placeholder="___" data-ans="was not" autocomplete="off" style="min-width:110px"> big — only parents and teachers. <span class="ex">(be, 부정형)</span></div>
     <div class="vocab"><span class="vw">audience 관객</span></div>
-    <div class="choices" data-qid="b9" data-ans="was not">
-      <button class="choice" onclick="pickChoice(this)">(A) was not</button>
-      <button class="choice" onclick="pickChoice(this)">(B) were not</button>
-      <button class="choice" onclick="pickChoice(this)">(C) is not</button>
-      <button class="choice" onclick="pickChoice(this)">(D) are not</button>
-    </div>
-    <div class="answer-hint" id="ah-b9">💡 정답: <strong>(A) was not</strong> — The audience(단수 집합명사, 과거 부정) → was not<br>📝 해석: 관객은 많지 않았다 — 부모님과 선생님들뿐이었다.</div>
+    <button class="check-btn" onclick="checkBlank('b9')">✔ 확인</button>
+    <div class="answer-hint" id="ah-b9">💡 정답: <strong>was not</strong> — The audience(단수 집합명사, 과거 부정) → was not / wasn't도 정답<br>📝 해석: 관객은 많지 않았다 — 부모님과 선생님들뿐이었다.</div>
     <button class="hint-btn" onclick="showHint('b9')">💡 힌트 보기</button>
   </div>
 
   <div class="question-card" id="qc-b10"><span class="q-num">25</span>
-    <div class="q-text">Everyone <em>______</em> happy with the performance.</div>
+    <div class="q-text">Everyone <input class="blank" id="bi-b10" placeholder="___" data-ans="was" autocomplete="off" style="min-width:80px"> happy with the performance.</div>
     <div class="vocab"><span class="vw">everyone 모든 사람</span><span class="vw">performance 공연</span></div>
-    <div class="choices" data-qid="b10" data-ans="was">
-      <button class="choice" onclick="pickChoice(this)">(A) was</button>
-      <button class="choice" onclick="pickChoice(this)">(B) were</button>
-      <button class="choice" onclick="pickChoice(this)">(C) is</button>
-      <button class="choice" onclick="pickChoice(this)">(D) are</button>
-    </div>
-    <div class="answer-hint" id="ah-b10">💡 정답: <strong>(A) was</strong> — Everyone(단수 취급, 과거) → was<br>📝 해석: 모든 사람이 공연에 만족했다.</div>
+    <button class="check-btn" onclick="checkBlank('b10')">✔ 확인</button>
+    <div class="answer-hint" id="ah-b10">💡 정답: <strong>was</strong> — Everyone(단수 취급, 과거) → was<br>📝 해석: 모든 사람이 공연에 만족했다.</div>
     <button class="hint-btn" onclick="showHint('b10')">💡 힌트 보기</button>
   </div>
 </div>
@@ -484,6 +425,7 @@ function checkBlank(k){
   var inp=document.getElementById('bi-'+k);
   var card=document.getElementById('qc-'+k);
   if(card.classList.contains('ok')||card.classList.contains('ng'))return;
+  if(!inp.value.trim()){toast('답을 입력하세요!','ng');inp.focus();return;}
   inp.disabled=true;
   card.querySelector('.check-btn').disabled=true;
   var got=norm(inp.value)===norm(inp.dataset.ans);

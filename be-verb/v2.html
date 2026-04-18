@@ -248,5 +248,62 @@ function toast(msg,type){
   clearTimeout(t._t);t._t=setTimeout(function(){t.classList.remove('show');},1800);
 }
 </script>
+<script>
+var vocabData={
+  'a2':[{w:'neighbor',k:'이웃'}],
+  'a3':[{w:'library',k:'도서관'}],
+  'a4':[{w:'tall',k:'키가 ~인'}],
+  'a5':[{w:'funny',k:'재미있는, 웃긴'}],
+  'a6':[{w:'late',k:'지각한, 늦은'}],
+  'a7':[{w:'same',k:'같은'},{w:'class',k:'반, 학급'}],
+  'a8':[{w:'jacket',k:'재킷'},{w:'expensive',k:'비싼'}],
+  'a9':[{w:'sunny',k:'화창한'},{w:'cloudy',k:'흐린'},{w:'rainy',k:'비 오는'}],
+  'a10':[{w:'parents',k:'부모님'},{w:'doctor',k:'의사'}],
+  'a11':[{w:'middle school',k:'중학교'}],
+  'a12':[{w:'answer',k:'답, 정답'},{w:'right',k:'옳은, 맞는'},{w:'wrong',k:'틀린'}],
+  'a13':[{w:'soccer club',k:'축구부'}],
+  'a14':[{w:'pretty',k:'예쁜'}],
+  'a15':[{w:'best friend',k:'절친한 친구'}],
+  'a16':[{w:'weather',k:'날씨'}],
+  'a18':[{w:'club',k:'동아리, 클럽'},{w:'fun',k:'재미있는'}],
+  'a19':[{w:'fan',k:'팬'}],
+  'b1':[{w:'resemble',k:'닮다'},{w:'each other',k:'서로'}],
+  'b2':[{w:'language',k:'언어'}],
+  'b3':[{w:'violin',k:'바이올린'},{w:'lesson',k:'수업'}],
+  'b5':[{w:'science',k:'과학'}],
+  'b6':[{w:'meat',k:'고기'},{w:'vegetarian',k:'채식주의자'}],
+  'b7':[{w:'hospital',k:'병원'}],
+  'b8':[{w:'in five minutes',k:'5분 후에'}],
+  'b9':[{w:'on foot',k:'걸어서, 도보로'}],
+  'b10':[{w:'clean',k:'청소하다'}],
+  'b11':[{w:'camping',k:'캠핑'}],
+  'b12':[{w:'free time',k:'여가 시간'}],
+  'b14':[{w:'healthy',k:'건강한'},{w:'exercise',k:'운동하다'}],
+  'b15':[{w:'post',k:'(온라인에) 올리다'},{w:'online',k:'온라인으로'}],
+  'b16':[{w:'often',k:'자주'}],
+  'b17':[{w:'practice',k:'연습하다'},{w:'dance move',k:'댄스 동작'}],
+  'b18':[{w:'baseball',k:'야구'}],
+  'b19':[{w:'cry',k:'울다'}],
+  'b20':[{w:'baguette',k:'바게트(빵)'},{w:'France',k:'프랑스'}]
+};
+document.addEventListener('DOMContentLoaded',function(){
+  var st=document.createElement('style');
+  st.textContent='.vi{display:flex;flex-wrap:wrap;gap:5px;margin-bottom:10px;}.vi .vw{font-size:.72rem;background:#fef3c7;color:#92400e;border-radius:6px;padding:2px 8px;font-weight:600;}';
+  document.head.appendChild(st);
+  Object.keys(vocabData).forEach(function(id){
+    var items=vocabData[id];
+    if(!items.length)return;
+    var card=document.getElementById('qc-'+id);
+    if(!card)return;
+    var div=document.createElement('div');div.className='vi';
+    items.forEach(function(v){
+      var span=document.createElement('span');span.className='vw';
+      span.textContent=v.w+' '+v.k;div.appendChild(span);
+    });
+    var qt=card.querySelector('.q-text')||card.querySelector('.choices')||card.querySelector('.blank');
+    if(qt)card.insertBefore(div,qt);else card.appendChild(div);
+  });
+});
+</script>
 </body>
 </html>

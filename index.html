@@ -18,20 +18,15 @@ body{font-family:'Noto Sans KR','Baloo 2',sans-serif;background:var(--bg);min-he
 
 /* ── header ── */
 .header{
-  background:linear-gradient(145deg,#0284c7 0%,#4f46e5 58%,#7c3aed 100%);
-  padding:64px 20px 88px;text-align:center;position:relative;overflow:hidden;
+  background:#111110;
+  padding:72px 20px 96px;text-align:center;position:relative;overflow:hidden;
 }
-.header-orb1{
-  position:absolute;top:-140px;right:-100px;
-  width:520px;height:520px;
-  background:radial-gradient(circle,rgba(124,58,237,.32) 0%,transparent 65%);
-  border-radius:50%;pointer-events:none;
-}
-.header-orb2{
-  position:absolute;bottom:-80px;left:-120px;
-  width:420px;height:420px;
-  background:radial-gradient(circle,rgba(14,165,233,.22) 0%,transparent 65%);
-  border-radius:50%;pointer-events:none;
+.header::before{
+  content:'';position:absolute;inset:0;
+  background:
+    radial-gradient(ellipse 60% 50% at 80% 20%,rgba(249,115,22,.08) 0%,transparent 60%),
+    radial-gradient(ellipse 50% 60% at 15% 80%,rgba(249,115,22,.05) 0%,transparent 60%);
+  pointer-events:none;
 }
 .header::after{
   content:'';position:absolute;bottom:-1px;left:50%;transform:translateX(-50%);
@@ -39,46 +34,48 @@ body{font-family:'Noto Sans KR','Baloo 2',sans-serif;background:var(--bg);min-he
 }
 .header-inner{position:relative;z-index:1;}
 .hbadge{
-  display:inline-flex;align-items:center;gap:6px;
-  background:rgba(255,255,255,.14);backdrop-filter:blur(10px);
-  color:rgba(255,255,255,.92);
+  display:inline-flex;align-items:center;gap:8px;
+  background:rgba(249,115,22,.1);
+  color:rgba(249,115,22,.75);
   font-family:'Inter',sans-serif;font-size:11px;font-weight:700;
   letter-spacing:2.5px;text-transform:uppercase;
-  padding:8px 22px;border-radius:100px;margin-bottom:28px;
-  border:1px solid rgba(255,255,255,.22);
+  padding:7px 20px;border-radius:100px;margin-bottom:32px;
+  border:1px solid rgba(249,115,22,.2);
 }
+.hbadge::before{content:'';display:inline-block;width:6px;height:6px;border-radius:50%;background:#f97316;}
 .header h1{
   font-family:'Baloo 2',sans-serif;
-  color:#fff;font-size:4rem;font-weight:900;
-  line-height:1;margin-bottom:10px;letter-spacing:-2px;
+  color:#fff;font-size:4.2rem;font-weight:900;
+  line-height:1;margin-bottom:12px;letter-spacing:-2px;
 }
-.header h1 em{font-style:normal;color:#fde68a;}
+.header h1 em{font-style:normal;color:#f97316;}
 .header-eng{
   font-family:'Inter',sans-serif;
-  font-size:.82rem;font-weight:700;
-  color:rgba(255,255,255,.42);letter-spacing:5px;text-transform:uppercase;
-  margin-bottom:18px;
+  font-size:.78rem;font-weight:700;
+  color:rgba(255,255,255,.25);letter-spacing:6px;text-transform:uppercase;
+  margin-bottom:20px;
 }
 .header-desc{
-  color:rgba(255,255,255,.68);font-size:.95rem;line-height:1.7;
-  margin-bottom:40px;
+  color:rgba(255,255,255,.42);font-size:.92rem;line-height:1.75;
+  margin-bottom:44px;
 }
 .stats{
   display:inline-flex;align-items:stretch;
-  background:rgba(255,255,255,.11);backdrop-filter:blur(14px);
-  border:1px solid rgba(255,255,255,.18);border-radius:20px;overflow:hidden;
+  background:rgba(255,255,255,.04);
+  border:1px solid rgba(255,255,255,.08);
+  border-radius:16px;overflow:hidden;
 }
-.stat{padding:18px 36px;text-align:center;border-right:1px solid rgba(255,255,255,.14);}
+.stat{padding:20px 40px;text-align:center;border-right:1px solid rgba(255,255,255,.07);}
 .stat:last-child{border-right:none;}
 .stat-n{
-  font-family:'Inter','Baloo 2',sans-serif;
-  font-size:2rem;font-weight:900;color:#fde68a;line-height:1;
+  font-family:'Inter',sans-serif;
+  font-size:2.1rem;font-weight:900;color:#f97316;line-height:1;
 }
-.stat-l{font-size:.72rem;color:rgba(255,255,255,.58);margin-top:5px;font-weight:600;letter-spacing:.5px;}
+.stat-l{font-size:.72rem;color:rgba(255,255,255,.32);margin-top:6px;font-weight:600;letter-spacing:.5px;}
 @media(max-width:480px){
-  .header h1{font-size:2.9rem;letter-spacing:-1px;}
-  .stat{padding:16px 22px;}
-  .stat-n{font-size:1.65rem;}
+  .header h1{font-size:3rem;letter-spacing:-1.5px;}
+  .stat{padding:16px 24px;}
+  .stat-n{font-size:1.7rem;}
 }
 
 /* ── wrap ── */
@@ -161,8 +158,6 @@ body{font-family:'Noto Sans KR','Baloo 2',sans-serif;background:var(--bg);min-he
 <body>
 
 <div class="header">
-  <div class="header-orb1"></div>
-  <div class="header-orb2"></div>
   <div class="header-inner">
     <div class="hbadge">Middle School English</div>
     <h1>중학 영어 <em>문법</em></h1>

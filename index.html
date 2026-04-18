@@ -18,19 +18,27 @@ body{font-family:'Baloo 2','Noto Sans KR',sans-serif;background:var(--bg);min-he
 
 /* ── header ── */
 .header{
-  background:linear-gradient(135deg,#0ea5e9,#6366f1);
-  padding:32px 20px 44px;text-align:center;position:relative;overflow:hidden;
+  background:linear-gradient(135deg,#0ea5e9 0%,#6366f1 100%);
+  padding:42px 20px 60px;text-align:center;position:relative;overflow:hidden;
 }
-.header::before{content:'';position:absolute;top:-50px;right:-50px;width:200px;height:200px;background:rgba(255,255,255,.08);border-radius:50%;}
-.header::after{content:'';position:absolute;bottom:-30px;left:-30px;width:140px;height:140px;background:rgba(255,255,255,.05);border-radius:50%;}
-.hbadge{display:inline-block;background:rgba(255,255,255,.22);color:#fff;font-size:11px;font-weight:700;letter-spacing:2px;text-transform:uppercase;padding:4px 16px;border-radius:20px;margin-bottom:12px;}
-.header h1{color:#fff;font-size:2rem;font-weight:800;line-height:1.25;margin-bottom:8px;}
+.header::before{
+  content:'';position:absolute;inset:0;
+  background-image:radial-gradient(rgba(255,255,255,.12) 1px,transparent 1px);
+  background-size:22px 22px;
+}
+.header::after{
+  content:'';position:absolute;bottom:-1px;left:50%;transform:translateX(-50%);
+  width:130%;height:68px;background:var(--bg);border-radius:50% 50% 0 0;
+}
+.hbadge{display:inline-block;background:rgba(255,255,255,.18);color:rgba(255,255,255,.9);font-size:11px;font-weight:700;letter-spacing:2.5px;text-transform:uppercase;padding:5px 18px;border-radius:20px;margin-bottom:18px;border:1px solid rgba(255,255,255,.3);position:relative;z-index:1;}
+.header h1{color:#fff;font-size:3rem;font-weight:900;line-height:1.1;margin-bottom:10px;letter-spacing:-.5px;position:relative;z-index:1;}
 .header h1 em{font-style:normal;color:#fde68a;}
-.header p{color:rgba(255,255,255,.75);font-size:.88rem;line-height:1.7;max-width:360px;margin:0 auto 22px;}
-.stats{display:flex;justify-content:center;gap:28px;flex-wrap:wrap;}
-.stat{text-align:center;}
-.stat-n{font-size:1.6rem;font-weight:800;color:#fde68a;}
-.stat-l{font-size:.68rem;color:rgba(255,255,255,.55);margin-top:1px;}
+.header h1 small{display:block;font-size:1rem;font-weight:600;color:rgba(255,255,255,.65);letter-spacing:1px;margin-top:6px;}
+.header p{color:rgba(255,255,255,.72);font-size:.85rem;line-height:1.65;max-width:340px;margin:0 auto 28px;position:relative;z-index:1;}
+.stats{display:flex;justify-content:center;gap:10px;flex-wrap:wrap;position:relative;z-index:1;}
+.stat{background:rgba(255,255,255,.18);border:1px solid rgba(255,255,255,.28);border-radius:16px;padding:12px 22px;text-align:center;min-width:76px;}
+.stat-n{font-size:1.8rem;font-weight:900;color:#fde68a;line-height:1;}
+.stat-l{font-size:.65rem;color:rgba(255,255,255,.7);margin-top:4px;font-weight:700;letter-spacing:.5px;}
 
 /* ── wrap ── */
 .wrap{max-width:800px;margin:0 auto;padding:28px 16px 20px;}
@@ -111,12 +119,12 @@ body{font-family:'Baloo 2','Noto Sans KR',sans-serif;background:var(--bg);min-he
 
 <div class="header">
   <div class="hbadge">Middle School English</div>
-  <h1>중학 영어<br><em>문법 워크시트</em></h1>
-  <p>be동사부터 동명사까지, 단원별로 개념을 익히고 바로 문제를 풀어보세요.</p>
+  <h1>중학 영어 <em>문법</em><small>Grammar Worksheet</small></h1>
+  <p>단원별 개념 정리 + 자동채점 인터랙티브 문제</p>
   <div class="stats">
-    <div class="stat"><div class="stat-n">5</div><div class="stat-l">단원</div></div>
-    <div class="stat"><div class="stat-n">7</div><div class="stat-l">워크시트</div></div>
-    <div class="stat"><div class="stat-n">285+</div><div class="stat-l">연습문제</div></div>
+    <div class="stat"><div class="stat-n">4</div><div class="stat-l">단원</div></div>
+    <div class="stat"><div class="stat-n">6</div><div class="stat-l">워크시트</div></div>
+    <div class="stat"><div class="stat-n">240+</div><div class="stat-l">연습문제</div></div>
   </div>
 </div>
 
@@ -177,23 +185,23 @@ body{font-family:'Baloo 2','Noto Sans KR',sans-serif;background:var(--bg);min-he
     </div>
   </a>
 
-  <!-- Unit 3: 동명사 기초 -->
-  <a class="unit-card" href="gerund-basic/">
+  <!-- Unit 3: 동명사 기초+심화 (합침) -->
+  <div class="unit-card">
     <div class="card-top">
       <div class="unit-num">03</div>
       <div class="card-info">
-        <div class="card-title">현재진행형 vs 동명사 — 기초</div>
-        <div class="card-sub">be + -ing · 동명사 주어·목적어 역할</div>
+        <div class="card-title">현재진행형 vs 동명사</div>
+        <div class="card-sub">be + -ing · 주어·목적어 역할 · 상황별 구별</div>
       </div>
     </div>
     <div class="badges">
       <span class="badge basic">🌱 기초</span>
+      <span class="badge hard">⚡ 심화</span>
       <span class="badge topic">동명사</span>
-      <span class="badge topic">현재진행형</span>
       <span class="badge topic">형태 구별</span>
     </div>
     <div class="ws-list">
-      <div class="ws-btn">
+      <div class="ws-btn" onclick="location.href='gerund-basic/'" style="cursor:pointer">
         <span class="ws-icon">✏️</span>
         <div class="ws-text">
           <div class="ws-type">Grammar Master</div>
@@ -201,25 +209,7 @@ body{font-family:'Baloo 2','Noto Sans KR',sans-serif;background:var(--bg);min-he
           <div class="ws-cnt">50문제</div>
         </div>
       </div>
-    </div>
-  </a>
-
-  <!-- Unit 4: 동명사 심화 -->
-  <a class="unit-card hard" href="gerund-hard/">
-    <div class="card-top">
-      <div class="unit-num">04</div>
-      <div class="card-info">
-        <div class="card-title">현재진행형 vs 동명사 — 심화</div>
-        <div class="card-sub">상황별 구별 · 의미 분석 · 구조 분석</div>
-      </div>
-    </div>
-    <div class="badges">
-      <span class="badge hard">⚡ 심화</span>
-      <span class="badge topic">상황별 구별</span>
-      <span class="badge topic">의미 분석</span>
-    </div>
-    <div class="ws-list">
-      <div class="ws-btn">
+      <div class="ws-btn" onclick="location.href='gerund-hard/'" style="cursor:pointer">
         <span class="ws-icon">🎯</span>
         <div class="ws-text">
           <div class="ws-type">Grammar Master</div>
@@ -228,12 +218,12 @@ body{font-family:'Baloo 2','Noto Sans KR',sans-serif;background:var(--bg);min-he
         </div>
       </div>
     </div>
-  </a>
+  </div>
 
   <!-- Unit 5: be동사 과거형 -->
   <div class="unit-card">
     <div class="card-top">
-      <div class="unit-num">05</div>
+      <div class="unit-num">04</div>
       <div class="card-info">
         <div class="card-title">be동사 과거형 — was / were</div>
         <div class="card-sub">was · were · 부정문 · 의문문</div>

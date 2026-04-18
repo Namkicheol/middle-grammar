@@ -123,6 +123,7 @@
 #egm-app-root .r-btn { padding: 16px 40px; background: #0f172a; color: #fbbf24; border-radius: 12px; font-weight: 700; width: 100%; cursor: pointer; transition: 0.2s;}
 
 @keyframes egmFadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+#egm-app-root .vw{font-size:.72rem;background:#fef3c7;color:#92400e;border-radius:6px;padding:2px 8px;font-weight:600;margin:1px 2px;display:inline-block;}
 
 @media (max-width: 600px) {
     #egm-app-root .tabs { padding: 0 10px; }
@@ -235,7 +236,30 @@ const qData = {
     ]
 };
 
-let tot = 0, cor = 0, wrg = 0; const T_Q = 50; const st = {}; 
+let tot = 0, cor = 0, wrg = 0; const T_Q = 50; const st = {};
+
+const vocabMap = {
+  9:[{w:'pool',k:'수영장'}],
+  16:[{w:'chair',k:'의자'}],
+  21:[{w:'enjoy',k:'즐기다'}],
+  22:[{w:'health',k:'건강'}],
+  23:[{w:'hobby',k:'취미'}],
+  24:[{w:'finish',k:'끝마치다'}],
+  25:[{w:'thanks for',k:'~해줘서 고마워'}],
+  26:[{w:'mind',k:'꺼리다'}],
+  27:[{w:'give up',k:'포기하다'},{w:'smoking',k:'흡연, 담배 피우기'}],
+  28:[{w:'how about',k:'~어때?'}],
+  29:[{w:'avoid',k:'피하다'}],
+  30:[{w:'favorite',k:'가장 좋아하는'}],
+  31:[{w:'interested in',k:'~에 관심이 있다'}],
+  33:[{w:'dream',k:'꿈'}],
+  34:[{w:'keep + -ing',k:'계속 ~하다'}],
+  35:[{w:'afraid of',k:'~이 두렵다'}],
+  36:[{w:'stop + -ing',k:'하던 것을 멈추다'}],
+  37:[{w:'mistake',k:'실수'}],
+  38:[{w:'look forward to',k:'~를 고대하다'}],
+  39:[{w:'be good at',k:'~를 잘하다'}],
+};
 
 function egmToast(m, t) {
     let ts = document.getElementById('egm-toast');
@@ -327,7 +351,11 @@ function render() {
             } else if (q.type === 'input') {
                 ht += `<div class="input-area"><input type="text" class="q-input" placeholder="정답 입력" onkeypress="if(event.key==='Enter') this.nextElementSibling.click()"><button class="check-btn" onclick="hInp(this, '${q.ans.replace(/'/g, "\\'")}', '${id}')">확인</button></div>`;
             }
-            if (q.hint) ht += `<div class="hint-box">💡 <b>해설:</b> ${q.hint}</div>`;
+            if (q.hint) {
+                let vHtml='';
+                if(vocabMap[gn]&&vocabMap[gn].length)vHtml='<br><br>📖 <b>단어:</b> '+vocabMap[gn].map(v=>`<span class='vw'>${v.w} ${v.k}</span>`).join(' ');
+                ht += `<div class="hint-box">💡 <b>해설:</b> ${q.hint}${vHtml}</div>`;
+            }
             ht += `</div>`;
             gn++;
         });

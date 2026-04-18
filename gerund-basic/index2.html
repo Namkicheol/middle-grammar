@@ -89,6 +89,7 @@ body{font-family:'Baloo 2','Noto Sans KR',sans-serif;background:var(--bg);paddin
 .answer-hint strong { color: #b45309; font-weight:800; }
 .hint-btn{background:none;border:none;color:var(--gray);font-family:inherit;font-size:.85rem;font-weight:700;cursor:pointer;padding:8px 0;margin-top:4px;display:block;text-decoration:underline;text-underline-offset:3px;}
 .hint-btn:hover{color:var(--purple);}
+.vw{font-size:.72rem;background:#fef3c7;color:#92400e;border-radius:6px;padding:2px 8px;font-weight:600;margin:1px 2px;display:inline-block;}
 
 .done-badge{position:absolute;top:16px;right:18px;font-size:1.4rem;animation:pop .3s ease;}
 
@@ -219,6 +220,30 @@ let placed = {};
 let answered = {};
 let correct = 0, wrong = 0;
 
+const vocabMap = {
+  6:[{w:'pool',k:'수영장'}],
+  7:[{w:'letter',k:'편지'}],
+  13:[{w:'bark',k:'짖다'}],
+  18:[{w:'chair',k:'의자'}],
+  21:[{w:'enjoy',k:'즐기다'}],
+  22:[{w:'health',k:'건강'}],
+  23:[{w:'hobby',k:'취미'}],
+  24:[{w:'finish',k:'끝마치다'}],
+  25:[{w:'thanks for',k:'~해줘서 고마워'}],
+  26:[{w:'interested in',k:'~에 관심이 있다'}],
+  28:[{w:'dream',k:'꿈'}],
+  29:[{w:'keep + -ing',k:'계속 ~하다'}],
+  30:[{w:'stop + -ing',k:'하던 것을 멈추다'}],
+  31:[{w:'mind',k:'꺼리다'}],
+  32:[{w:'give up',k:'포기하다'},{w:'smoking',k:'흡연, 담배 피우기'}],
+  33:[{w:'how about',k:'~어때?'}],
+  34:[{w:'avoid',k:'피하다'}],
+  36:[{w:'mistake',k:'실수'}],
+  37:[{w:'look forward to',k:'~를 고대하다'}],
+  38:[{w:'be good at',k:'~를 잘하다'}],
+  39:[{w:'habit',k:'습관'}],
+};
+
 function render() {
     let globalNum = 1;
     [0, 1, 2].forEach(secIdx => {
@@ -266,7 +291,9 @@ function render() {
             }
             
             // ★ 정답 및 해설이 뚜렷하게 보이도록 수정 ★
-            html += `<div class='answer-hint' id='ah-${id}'>💡 <strong>정답: ${q.ans}</strong><br><br>👉 해설: ${q.hint}</div>`;
+            let vHtml='';
+            if(vocabMap[globalNum]&&vocabMap[globalNum].length)vHtml='<br><br>📖 <strong>단어:</strong> '+vocabMap[globalNum].map(v=>`<span class='vw'>${v.w} ${v.k}</span>`).join(' ');
+            html += `<div class='answer-hint' id='ah-${id}'>💡 <strong>정답: ${q.ans}</strong><br><br>👉 해설: ${q.hint}${vHtml}</div>`;
             html += `<button class='hint-btn' onclick="showHint('${id}')">💡 정답/해설 보기</button>`;
             html += `</div>`;
             globalNum++;

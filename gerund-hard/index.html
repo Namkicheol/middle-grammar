@@ -90,6 +90,7 @@ body{font-family:'Baloo 2','Noto Sans KR',sans-serif;background:var(--bg);paddin
 .answer-hint strong { color: #b45309; font-weight:800; }
 .hint-btn{background:none;border:none;color:var(--gray);font-family:inherit;font-size:.85rem;font-weight:700;cursor:pointer;padding:8px 0;margin-top:4px;display:block;text-decoration:underline;text-underline-offset:3px;}
 .hint-btn:hover{color:var(--purple);}
+.vw{font-size:.72rem;background:#fef3c7;color:#92400e;border-radius:6px;padding:2px 8px;font-weight:600;margin:1px 2px;display:inline-block;}
 
 .done-badge{position:absolute;top:16px;right:18px;font-size:1.4rem;animation:pop .3s ease;}
 
@@ -219,6 +220,32 @@ let placed = {};
 let answered = {};
 let correct = 0, wrong = 0;
 
+const vocabMap = {
+  3:[{w:'aunt',k:'이모/고모/숙모'},{w:'stay',k:'머물다'}],
+  5:[{w:'noisy',k:'시끄러운'}],
+  7:[{w:'hat',k:'(챙 있는) 모자'}],
+  10:[{w:'loudly',k:'크게, 시끄럽게'}],
+  13:[{w:'letter',k:'편지'}],
+  15:[{w:'lie',k:'거짓말하다'}],
+  19:[{w:'piano',k:'피아노'}],
+  20:[{w:'shine',k:'빛나다'},{w:'brightly',k:'밝게'}],
+  21:[{w:'recycling',k:'재활용'},{w:'earth',k:'지구'}],
+  22:[{w:'favorite',k:'가장 좋아하는'},{w:'activity',k:'활동'}],
+  23:[{w:'how about',k:'~어때?'}],
+  24:[{w:'mind',k:'꺼리다'}],
+  25:[{w:'interested in',k:'~에 관심 있는'}],
+  27:[{w:'allowed',k:'허용된'}],
+  28:[{w:'worth',k:'~할 가치 있는'}],
+  29:[{w:'bite',k:'깨물다'},{w:'nails',k:'손톱'}],
+  30:[{w:'afraid of',k:'~이 두렵다'}],
+  32:[{w:'goal',k:'목표'},{w:'master',k:'완전히 익히다'}],
+  33:[{w:'be good at',k:'~를 잘하다'},{w:'solve',k:'풀다'}],
+  35:[{w:'keep + -ing',k:'계속 ~하다'}],
+  36:[{w:'look forward to',k:'~를 고대하다'}],
+  39:[{w:'tiring',k:'피곤하게 만드는'}],
+  40:[{w:'dishes',k:'설거지'}],
+};
+
 function render() {
     let globalNum = 1;
     [0, 1, 2].forEach(secIdx => {
@@ -264,7 +291,9 @@ function render() {
                 html += `<button class='check-btn' onclick="checkArrange('${id}','${q.ans.replace(/'/g,"\\'").replace(/"/g,"&quot;")}')">✔ 정답 확인</button>`;
             }
             
-            html += `<div class='answer-hint' id='ah-${id}'>💡 <strong>정답: ${q.ans}</strong><br><br>👉 해설: ${q.hint}</div>`;
+            let vHtml='';
+            if(vocabMap[globalNum]&&vocabMap[globalNum].length)vHtml='<br><br>📖 <strong>단어:</strong> '+vocabMap[globalNum].map(v=>`<span class='vw'>${v.w} ${v.k}</span>`).join(' ');
+            html += `<div class='answer-hint' id='ah-${id}'>💡 <strong>정답: ${q.ans}</strong><br><br>👉 해설: ${q.hint}${vHtml}</div>`;
             html += `<button class='hint-btn' onclick="showHint('${id}')">💡 정답/해설 보기</button>`;
             html += `</div>`;
             globalNum++;

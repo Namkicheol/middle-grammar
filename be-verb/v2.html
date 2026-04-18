@@ -288,20 +288,18 @@ var vocabData={
 };
 document.addEventListener('DOMContentLoaded',function(){
   var st=document.createElement('style');
-  st.textContent='.vi{display:flex;flex-wrap:wrap;gap:5px;margin-bottom:10px;}.vi .vw{font-size:.72rem;background:#fef3c7;color:#92400e;border-radius:6px;padding:2px 8px;font-weight:600;}';
+  st.textContent='.vi-vw{font-size:.72rem;background:#fef3c7;color:#92400e;border-radius:6px;padding:2px 8px;font-weight:600;margin:1px 2px;}';
   document.head.appendChild(st);
   Object.keys(vocabData).forEach(function(id){
     var items=vocabData[id];
     if(!items.length)return;
     var card=document.getElementById('qc-'+id);
     if(!card)return;
-    var div=document.createElement('div');div.className='vi';
-    items.forEach(function(v){
-      var span=document.createElement('span');span.className='vw';
-      span.textContent=v.w+' '+v.k;div.appendChild(span);
-    });
-    var qt=card.querySelector('.q-text')||card.querySelector('.choices')||card.querySelector('.blank');
-    if(qt)card.insertBefore(div,qt);else card.appendChild(div);
+    var hint=card.querySelector('.answer-hint');
+    if(!hint)return;
+    var vocHtml='<br><br>📖 <strong>단어:</strong> '+
+      items.map(function(v){return'<span class="vi-vw">'+v.w+' '+v.k+'</span>';}).join(' ');
+    hint.innerHTML+=vocHtml;
   });
 });
 </script>

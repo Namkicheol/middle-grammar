@@ -30,7 +30,7 @@
     var style = document.createElement('style');
     style.textContent = [
       '#sp-overlay{position:fixed;inset:0;z-index:9999;background:rgba(0,0,0,.55);backdrop-filter:blur(6px);',
-      'display:flex;align-items:center;justify-content:center;animation:sp-fi .3s ease;}',
+      'display:flex;align-items:center;justify-content:center;animation:sp-fi .3s ease;z-index:99999;}',
       '@keyframes sp-fi{from{opacity:0}to{opacity:1}}',
       '#sp-card{background:#fff;border-radius:28px;padding:44px 52px;text-align:center;max-width:400px;width:92%;',
       'box-shadow:0 24px 64px rgba(0,0,0,.32);animation:sp-si .45s cubic-bezier(.34,1.56,.64,1);position:relative;}',
@@ -51,7 +51,7 @@
       'box-shadow:0 6px 20px rgba(99,102,241,.4);transition:transform .15s,box-shadow .15s;}',
       '#sp-retry:hover{transform:translateY(-3px);box-shadow:0 10px 28px rgba(99,102,241,.5);}',
       '#sp-retry:active{transform:translateY(0);}',
-      '#sp-canvas{position:fixed;inset:0;pointer-events:none;z-index:10000;}',
+      '#sp-canvas{position:fixed;inset:0;pointer-events:none;z-index:100000;}',
       '#sp-badge{position:fixed;top:14px;right:14px;z-index:500;background:rgba(255,255,255,.92);',
       'backdrop-filter:blur(8px);border:1.5px solid #e2e8f0;border-radius:12px;padding:7px 14px;',
       'font-size:.82rem;color:#475569;font-weight:600;box-shadow:0 2px 12px rgba(0,0,0,.08);',

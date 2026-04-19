@@ -154,7 +154,120 @@ html += `<div class='answer-hint' id='ah-${id}'>💡 <strong>정답: ${q.ans}</s
 
 ---
 
-## 새 워크시트 추가 시 체크리스트
+## 결과 팝업 시스템 (score-popup.js)
+
+### 개요
+
+`score-popup.js`는 모든 워크시트가 공유하는 결과 팝업 스크립트. 각 HTML 파일 하단에 아래처럼 로드한다.
+
+```html
+<script src="../score-popup.js"></script>
+```
+
+### showScorePopup(correct, total, opts)
+
+| 파라미터 | 타입 | 설명 |
+|---------|------|------|
+| `correct` | number | 맞힌 문제 수 |
+| `total` | number | 섹션 전체 문제 수 |
+| `opts` | object | 선택. `nextText` / `onNextClick` 지정 시 "다음 탭" 버튼 추가 |
+
+```javascript
+// 다음 탭 버튼 + 다시풀기 버튼 함께 표시
+showScorePopup(secC[pre], SECTOTALS[pre], {
+  nextText: '일반동사 탭으로 →',
+  onNextClick: function() {
+    var ol = document.getElementById('sp-overlay');
+    if (ol) ol.remove();
+    sw(1, document.querySelectorAll('.tab')[1]);
+  }
+});
+
+// 다시풀기 버튼만 표시 (마지막 섹션)
+showScorePopup(secC[pre], SECTOTALS[pre]);
+```
+
+### 섹션별 팝업 패턴 (필수)
+
+**전체 완료 시 팝업이 아닌 섹션 완료 시 팝업**이 표시되도록 구현한다.
+
+#### a/b/c prefix 키 방식 (be-verb, past-be, past-be-hard, general-verb-hard)
+
+```javascript
+var TOTAL = 45;
+var SECTOTALS = {a: 20, b: 20, c: 5};
+var secC = {a:0, b:0, c:0}, secW = {a:0, b:0, c:0};
+
+function mark(k, got, my, right) {
+  // ...
+  var pre = k[0]; // 'a', 'b', 'c'
+  if (got) { correct++; secC[pre]++; }
+  else { wrong++; secW[pre]++; }
+  // ...
+  var secDone = secC[pre] + secW[pre];
+  if (secDone === SECTOTALS[pre]) {
+    (function(p, sc) {
+      setTimeout(function() {
+        var opts = {};
+        if (p === 'a') opts = { nextText: '다음 탭으로 →', onNextClick: function() { ... } };
+        showScorePopup(sc, SECTOTALS[p], opts);
+      }, 800);
+    })(pre, secC[pre]);
+  }
+  if (done === TOTAL) setTimeout(showResult, 800);
+}
+```
+
+#### q0~q49 숫자 키 방식 (gerund-basic/index2, gerund-hard)
+
+```javascript
+let SECTOTALS = [20, 20, 10], secC = [0,0,0], secW = [0,0,0];
+
+function mark(k, got) {
+  var n = parseInt(k.slice(1)), si = n < 20 ? 0 : n < 40 ? 1 : 2;
+  if (got) { correct++; secC[si]++; }
+  else { wrong++; secW[si]++; }
+  var secDone = secC[si] + secW[si];
+  if (secDone === SECTOTALS[si]) {
+    (function(i, sc) {
+      setTimeout(function() {
+        var opts = {};
+        if (i === 0) opts = { nextText: '다음 탭으로 →', onNextClick: function() { ... } };
+        showScorePopup(sc, SECTOTALS[i], opts);
+      }, 800);
+    })(si, secC[si]);
+  }
+}
+```
+
+#### q_1~q_50 키 + upd() 방식 (gerund-basic/index)
+
+```javascript
+const SEC_T = [20, 20, 10]; let secCor = [0,0,0], secWrg = [0,0,0];
+
+function upd(id, isC) {
+  var n = parseInt(id.split('_')[1]), si = n <= 20 ? 0 : n <= 40 ? 1 : 2;
+  if (isC) { cor++; secCor[si]++; } else { wrg++; secWrg[si]++; }
+  var secDone = secCor[si] + secWrg[si];
+  if (secDone === SEC_T[si]) {
+    (function(i, sc) {
+      setTimeout(function() {
+        var opts = {};
+        if (i === 0) opts = { nextText: '다음 탭으로 →', onNextClick: function() { ... } };
+        showScorePopup(sc, SEC_T[i], opts);
+      }, 800);
+    })(si, secCor[si]);
+  }
+}
+```
+
+### showResult()에서 showScorePopup 호출 금지
+
+섹션 팝업이 이미 처리하므로 `showResult()` 내에서 `showScorePopup`을 호출하지 않는다.
+
+---
+
+
 
 1. `index.html` 단원 카드 추가 (stats 숫자 업데이트)
 2. 정답 비교에 `norm()` 함수 반드시 포함

@@ -217,6 +217,7 @@ const qData = {
 };
 
 let TOTAL = 50;
+let SECTOTALS = [20, 20, 10], secC = [0,0,0], secW = [0,0,0];
 let placed = {};
 let answered = {};
 let correct = 0, wrong = 0;
@@ -405,14 +406,26 @@ function mark(k, got) {
     var b = document.createElement('div');
     b.className = 'done-badge'; b.textContent = got ? '✅' : '❌';
     card.appendChild(b);
-    if (got) { correct++; toast('🎉 정답!','ok'); }
-    else { wrong++; document.getElementById('ah-'+k).classList.add('show'); toast('틀렸어요! 해설 확인 👆','ng'); }
+    var n = parseInt(k.slice(1)), si = n < 20 ? 0 : n < 40 ? 1 : 2;
+    if (got) { correct++; secC[si]++; toast('🎉 정답!','ok'); }
+    else { wrong++; secW[si]++; document.getElementById('ah-'+k).classList.add('show'); toast('틀렸어요! 해설 확인 👆','ng'); }
     var done = correct+wrong;
     document.getElementById('sc-t').textContent = done;
     document.getElementById('sc-c').textContent = correct;
     document.getElementById('sc-w').textContent = wrong;
     document.getElementById('pt').textContent = done+' / '+TOTAL;
     document.getElementById('pf').style.width = (done/TOTAL*100)+'%';
+    var secDone = secC[si]+secW[si];
+    if (secDone === SECTOTALS[si]) {
+        (function(i, sc) {
+            setTimeout(function() {
+                var opts = {};
+                if (i===0) opts={nextText:'동명사 탭으로 →',onNextClick:function(){var ol=document.getElementById('sp-overlay');if(ol)ol.remove();sw(1,document.querySelectorAll('.tab')[1]);}};
+                else if (i===1) opts={nextText:'구분하기 탭으로 →',onNextClick:function(){var ol=document.getElementById('sp-overlay');if(ol)ol.remove();sw(2,document.querySelectorAll('.tab')[2]);}};
+                showScorePopup(sc, SECTOTALS[i], opts);
+            }, 800);
+        })(si, secC[si]);
+    }
     if (done===TOTAL) setTimeout(showResult, 800);
 }
 
@@ -426,7 +439,7 @@ function showResult() {
     document.getElementById('re').textContent=e; document.getElementById('rt').textContent=t;
     document.getElementById('rs').textContent=sc+'점';
     document.getElementById('rc2').textContent=correct; document.getElementById('rw2').textContent=wrong;
-    showScorePopup(correct, TOTAL);
+    // 섹션별 팝업으로 대체됨
 }
 
 function toast(msg, type) {

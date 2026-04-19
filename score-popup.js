@@ -135,8 +135,10 @@
       recordHtml = '<div id="sp-record" class="new">🎯 첫 번째 도전 완료!</div>';
     } else if (isNew) {
       recordHtml = '<div id="sp-record" class="new">🏅 신기록 달성! (이전 ' + prev.sc + '점)</div>';
-    } else {
+    } else if (prev) {
       recordHtml = '<div id="sp-record" class="prev">최고 기록 ' + prev.sc + '점 (' + prev.date + ')</div>';
+    } else {
+      recordHtml = '<div id="sp-record" class="new">🎯 첫 번째 도전 완료!</div>';
     }
 
     try { window.scrollTo(0, 0); } catch(e) {}

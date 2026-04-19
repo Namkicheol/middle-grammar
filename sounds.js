@@ -1,6 +1,8 @@
 (function () {
   var _ctx = null;
   var _lastResult = 0;
+  var _lastOk = 0;
+  var _lastNg = 0;
 
   function ac() {
     if (!_ctx) {
@@ -11,12 +13,11 @@
     return _ctx;
   }
 
-  // iOS Safari 포함 모바일 오디오 잠금 해제 — 첫 터치/클릭 시 실행
+  // iOS Safari 포함 모바일 잠금 해제 — 무음 버퍼 재생
   function unlock() {
     document.removeEventListener('touchstart', unlock, true);
     document.removeEventListener('click', unlock, true);
     var c = ac(); if (!c) return;
-    // 무음 버퍼 재생으로 iOS Safari 잠금 해제
     var buf = c.createBuffer(1, 1, 22050);
     var src = c.createBufferSource();
     src.buffer = buf;
@@ -40,17 +41,23 @@
   }
 
   function playOk() {
+    var now = Date.now();
+    if (now - _lastOk < 200) return;
+    _lastOk = now;
     var c = ac(); if (!c) return;
     var t = c.currentTime;
-    tone(659.25, 'sine', t,        0.12, 0.30); // E5
-    tone(783.99, 'sine', t + 0.09, 0.19, 0.26); // G5
+    tone(659.25, 'sine', t,        0.12, 0.30);
+    tone(783.99, 'sine', t + 0.09, 0.19, 0.26);
   }
 
   function playNg() {
+    var now = Date.now();
+    if (now - _lastNg < 200) return;
+    _lastNg = now;
     var c = ac(); if (!c) return;
     var t = c.currentTime;
-    tone(293.66, 'triangle', t,        0.15, 0.16); // D4
-    tone(246.94, 'triangle', t + 0.12, 0.20, 0.12); // B3
+    tone(293.66, 'triangle', t,        0.15, 0.16);
+    tone(246.94, 'triangle', t + 0.12, 0.20, 0.12);
   }
 
   function playResult(sc) {
@@ -60,21 +67,39 @@
     var c = ac(); if (!c) return;
     var t = c.currentTime;
     if (sc >= 70) {
-      tone(523.25, 'sine', t,        0.13, 0.32); // C5
-      tone(659.25, 'sine', t + 0.13, 0.13, 0.32); // E5
-      tone(783.99, 'sine', t + 0.26, 0.13, 0.32); // G5
-      tone(1046.5,  'sine', t + 0.39, 0.44, 0.38); // C6
+      tone(523.25, 'sine', t,        0.13, 0.32);
+      tone(659.25, 'sine', t + 0.13, 0.13, 0.32);
+      tone(783.99, 'sine', t + 0.26, 0.13, 0.32);
+      tone(1046.5,  'sine', t + 0.39, 0.44, 0.38);
     } else if (sc >= 50) {
       tone(523.25, 'sine', t,        0.13, 0.27);
       tone(659.25, 'sine', t + 0.13, 0.13, 0.27);
       tone(783.99, 'sine', t + 0.26, 0.36, 0.30);
     } else {
       tone(523.25, 'sine', t,        0.13, 0.22);
-      tone(587.33, 'sine', t + 0.13, 0.32, 0.22); // D5
+      tone(587.33, 'sine', t + 0.13, 0.32, 0.22);
     }
   }
 
-  // toast div 클래스 변화 감지 (함수 래핑 대신 MutationObserver 사용)
+  // ── 방법 1: 함수 래핑 ──────────────────────────────
+  var _ot = window.toast;
+  if (typeof _ot === 'function') {
+    window.toast = function (msg, type) {
+      _ot(msg, type);
+      if (type === 'ok') playOk();
+      else if (type === 'ng' && msg && msg.indexOf('틀렸') !== -1) playNg();
+    };
+  }
+  var _et = window.egmToast;
+  if (typeof _et === 'function') {
+    window.egmToast = function (msg, type) {
+      _et(msg, type);
+      if (type === 'o') playOk();
+      else if (type === 'x' && msg && msg.indexOf('틀렸') !== -1) playNg();
+    };
+  }
+
+  // ── 방법 2: MutationObserver (래핑 실패 시 백업) ────
   function watchToast(elId) {
     var el = document.getElementById(elId);
     if (!el) return;
@@ -89,7 +114,6 @@
     }).observe(el, { attributes: true, attributeFilter: ['class'] });
   }
 
-  // egm-toast는 background color로 정답/오답 구분
   function watchEgmToast(elId) {
     var el = document.getElementById(elId);
     if (!el) return;
@@ -105,7 +129,7 @@
     }).observe(el, { attributes: true, attributeFilter: ['class', 'style'] });
   }
 
-  // 결과화면 감지 (display 변화 → 600ms 후 점수 읽기)
+  // ── 결과화면 ───────────────────────────────────────
   function watchResult(elId, scoreElId) {
     var el = document.getElementById(elId);
     if (!el) return;
@@ -123,7 +147,7 @@
     obs.observe(el, { attributes: true, attributeFilter: ['style'] });
   }
 
-  // 섹션 완료 팝업 사운드 (window에 직접 할당된 함수라 래핑 안전)
+  // 섹션 팝업
   var _osp = window.showScorePopup;
   if (typeof _osp === 'function') {
     window.showScorePopup = function (correct, total, opts) {

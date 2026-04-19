@@ -29,11 +29,12 @@
     _injected = true;
     var style = document.createElement('style');
     style.textContent = [
-      '#sp-overlay{position:fixed;inset:0;z-index:9999;background:rgba(0,0,0,.55);backdrop-filter:blur(6px);',
-      'display:flex;align-items:center;justify-content:center;animation:sp-fi .3s ease;z-index:99999;}',
+      '#sp-overlay{position:fixed!important;top:0;left:0;width:100%;height:100%;z-index:999999!important;',
+      'background:rgba(0,0,0,.6);backdrop-filter:blur(6px);',
+      'display:flex!important;align-items:center;justify-content:center;animation:sp-fi .3s ease;}',
       '@keyframes sp-fi{from{opacity:0}to{opacity:1}}',
       '#sp-card{background:#fff;border-radius:28px;padding:44px 52px;text-align:center;max-width:400px;width:92%;',
-      'box-shadow:0 24px 64px rgba(0,0,0,.32);animation:sp-si .45s cubic-bezier(.34,1.56,.64,1);position:relative;}',
+      'box-shadow:0 24px 64px rgba(0,0,0,.32);animation:sp-si .45s cubic-bezier(.34,1.56,.64,1);}',
       '@keyframes sp-si{from{transform:scale(.65);opacity:0}to{transform:scale(1);opacity:1}}',
       '#sp-emoji{font-size:4.2rem;margin-bottom:6px;animation:sp-bounce 1s ease infinite alternate;}',
       '@keyframes sp-bounce{from{transform:translateY(0)}to{transform:translateY(-8px)}}',
@@ -51,7 +52,7 @@
       'box-shadow:0 6px 20px rgba(99,102,241,.4);transition:transform .15s,box-shadow .15s;}',
       '#sp-retry:hover{transform:translateY(-3px);box-shadow:0 10px 28px rgba(99,102,241,.5);}',
       '#sp-retry:active{transform:translateY(0);}',
-      '#sp-canvas{position:fixed;inset:0;pointer-events:none;z-index:100000;}',
+      '#sp-canvas{position:fixed;top:0;left:0;width:100%;height:100%;pointer-events:none;z-index:1000000;}',
       '#sp-badge{position:fixed;top:14px;right:14px;z-index:500;background:rgba(255,255,255,.92);',
       'backdrop-filter:blur(8px);border:1.5px solid #e2e8f0;border-radius:12px;padding:7px 14px;',
       'font-size:.82rem;color:#475569;font-weight:600;box-shadow:0 2px 12px rgba(0,0,0,.08);',
@@ -141,6 +142,7 @@
 
     var overlay = document.createElement('div');
     overlay.id = 'sp-overlay';
+    overlay.style.cssText = 'position:fixed;top:0;left:0;width:100%;height:100%;z-index:999999;background:rgba(0,0,0,.6);display:flex;align-items:center;justify-content:center;';
     overlay.innerHTML =
       '<div id="sp-card">' +
         '<div id="sp-emoji">' + emoji + '</div>' +
@@ -151,7 +153,7 @@
         recordHtml +
         '<button id="sp-retry" onclick="location.reload()">🔄 다시풀기</button>' +
       '</div>';
-    document.body.appendChild(overlay);
+    document.documentElement.appendChild(overlay);
 
     if (sc >= 50) launchConfetti(sc >= 70 ? 4000 : 2500);
   };

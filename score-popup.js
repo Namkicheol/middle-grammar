@@ -29,10 +29,9 @@
     _injected = true;
     var style = document.createElement('style');
     style.textContent = [
-      '#sp-overlay{position:fixed!important;top:0;left:0;width:100%;height:100%;z-index:999999!important;',
+      '#sp-overlay{position:fixed!important;top:0!important;left:0!important;width:100%!important;height:100%!important;z-index:2147483647!important;',
       'background:rgba(0,0,0,.6);backdrop-filter:blur(6px);',
-      'display:flex!important;align-items:center;justify-content:center;animation:sp-fi .3s ease;}',
-      '@keyframes sp-fi{from{opacity:0}to{opacity:1}}',
+      'display:flex!important;align-items:center!important;justify-content:center!important;}',
       '#sp-card{background:#fff;border-radius:28px;padding:44px 52px;text-align:center;max-width:400px;width:92%;',
       'box-shadow:0 24px 64px rgba(0,0,0,.32);animation:sp-si .45s cubic-bezier(.34,1.56,.64,1);}',
       '@keyframes sp-si{from{transform:scale(.65);opacity:0}to{transform:scale(1);opacity:1}}',
@@ -140,9 +139,24 @@
       recordHtml = '<div id="sp-record" class="prev">최고 기록 ' + prev.sc + '점 (' + prev.date + ')</div>';
     }
 
+    try { window.scrollTo(0, 0); } catch(e) {}
+
+    var old = document.getElementById('sp-overlay');
+    if (old) old.parentNode.removeChild(old);
+
     var overlay = document.createElement('div');
     overlay.id = 'sp-overlay';
-    overlay.style.cssText = 'position:fixed;top:0;left:0;width:100%;height:100%;z-index:999999;background:rgba(0,0,0,.6);display:flex;align-items:center;justify-content:center;';
+    overlay.style.position = 'fixed';
+    overlay.style.top = '0';
+    overlay.style.left = '0';
+    overlay.style.right = '0';
+    overlay.style.bottom = '0';
+    overlay.style.zIndex = '2147483647';
+    overlay.style.background = 'rgba(0,0,0,.6)';
+    overlay.style.display = 'flex';
+    overlay.style.alignItems = 'center';
+    overlay.style.justifyContent = 'center';
+    overlay.style.opacity = '1';
     overlay.innerHTML =
       '<div id="sp-card">' +
         '<div id="sp-emoji">' + emoji + '</div>' +
@@ -153,7 +167,7 @@
         recordHtml +
         '<button id="sp-retry" onclick="location.reload()">🔄 다시풀기</button>' +
       '</div>';
-    document.documentElement.appendChild(overlay);
+    document.body.appendChild(overlay);
 
     if (sc >= 50) launchConfetti(sc >= 70 ? 4000 : 2500);
   };

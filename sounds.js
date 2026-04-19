@@ -11,12 +11,21 @@
     return _ctx;
   }
 
-  // 첫 클릭 캡처 단계에서 AudioContext 미리 생성 (정답 버튼보다 먼저 실행)
-  function prewarm() {
-    document.removeEventListener('click', prewarm, true);
-    ac();
+  // iOS Safari 포함 모바일 오디오 잠금 해제 — 첫 터치/클릭 시 실행
+  function unlock() {
+    document.removeEventListener('touchstart', unlock, true);
+    document.removeEventListener('click', unlock, true);
+    var c = ac(); if (!c) return;
+    // 무음 버퍼 재생으로 iOS Safari 잠금 해제
+    var buf = c.createBuffer(1, 1, 22050);
+    var src = c.createBufferSource();
+    src.buffer = buf;
+    src.connect(c.destination);
+    src.start(0);
+    if (c.state === 'suspended') c.resume().catch(function () {});
   }
-  document.addEventListener('click', prewarm, true);
+  document.addEventListener('touchstart', unlock, true);
+  document.addEventListener('click', unlock, true);
 
   function tone(freq, type, t0, dur, vol) {
     var c = ac(); if (!c) return;

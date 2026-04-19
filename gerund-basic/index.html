@@ -302,9 +302,8 @@ function hMCQ(b, a, id) {
         btn.disabled = true;
         if(btn.innerText.trim() === a) btn.classList.add('reveal');
     });
-    if(ok) { b.classList.add('ans-o'); c.classList.add('solved-o'); egmToast('정답입니다!', 'o'); }
-    else { b.classList.add('ans-x'); c.classList.add('solved-x'); egmToast('틀렸습니다!', 'x'); }
-    c.querySelector('.hint-box').classList.add('show');
+    if(ok) { b.classList.add('ans-o'); c.classList.add('solved-o'); egmToast('🎉 정답!', 'o'); }
+    else { b.classList.add('ans-x'); c.classList.add('solved-x'); egmToast('틀렸어요! 힌트 확인 👆', 'x'); c.querySelector('.hint-box').classList.add('show'); }
     upd(id, ok);
 }
 
@@ -326,9 +325,8 @@ function hInp(b, a, id) {
     if(c.dataset.ans2) ansArr.push(normAns(c.dataset.ans2));
     if(ansArr.includes(ty)) ok = true;
     inp.disabled = true; b.disabled = true;
-    if(ok) { c.classList.add('solved-o'); egmToast('정확합니다!', 'o'); }
-    else { c.classList.add('solved-x'); inp.value = `${inp.value} (정답: ${a})`; egmToast('해설을 확인하세요.', 'x'); }
-    c.querySelector('.hint-box').classList.add('show');
+    if(ok) { c.classList.add('solved-o'); egmToast('🎉 정답!', 'o'); }
+    else { c.classList.add('solved-x'); inp.value = `${inp.value} (정답: ${a})`; egmToast('틀렸어요! 힌트 확인 👆', 'x'); c.querySelector('.hint-box').classList.add('show'); }
     upd(id, ok);
 }
 

@@ -406,7 +406,8 @@ body{font-family:'Noto Sans KR','Baloo 2',sans-serif;background:var(--bg);paddin
   <button class="rb" onclick="location.reload()">🔄 다시 풀기</button>
 </div>
 <script>
-var TOTAL=45,placed={"c1":[],"c2":[],"c3":[],"c4":[],"c5":[]},answered={},correct=0,wrong=0;
+var TOTAL=45,SECTOTALS={a:20,b:20,c:5},secC={a:0,b:0,c:0},secW={a:0,b:0,c:0};
+var placed={"c1":[],"c2":[],"c3":[],"c4":[],"c5":[]},answered={},correct=0,wrong=0;
 
 function norm(s){
   s=s.trim().toLowerCase();
@@ -502,14 +503,27 @@ function mark(k,got,my,right){
   var card=document.getElementById('qc-'+k);
   card.classList.add(got?'ok':'ng');
   var b=document.createElement('div');b.className='done-badge';b.textContent=got?'✅':'❌';card.appendChild(b);
-  if(got){correct++;toast('🎉 정답!','ok');}
-  else{wrong++;document.getElementById('ah-'+k).classList.add('show');toast('틀렸어요! 힌트 확인 👆','ng');}
+  var pre=k[0];
+  if(got){correct++;secC[pre]++;toast('🎉 정답!','ok');}
+  else{wrong++;secW[pre]++;document.getElementById('ah-'+k).classList.add('show');toast('틀렸어요! 힌트 확인 👆','ng');}
   var done=correct+wrong;
   document.getElementById('sc-t').textContent=done;
   document.getElementById('sc-c').textContent=correct;
   document.getElementById('sc-w').textContent=wrong;
   document.getElementById('pt').textContent=done+' / '+TOTAL;
   document.getElementById('pf').style.width=(done/TOTAL*100)+'%';
+  var secDone=secC[pre]+secW[pre];
+  if(secDone===SECTOTALS[pre]){
+    (function(p,sc){
+      setTimeout(function(){
+        var opts={};
+        if(p==='a') opts={btnText:'일반동사 탭으로 →',onBtnClick:function(){var ol=document.getElementById('sp-overlay');if(ol)ol.remove();sw(1,document.querySelectorAll('.tab')[1]);}};
+        else if(p==='b') opts={btnText:'단어 배열 탭으로 →',onBtnClick:function(){var ol=document.getElementById('sp-overlay');if(ol)ol.remove();sw(2,document.querySelectorAll('.tab')[2]);}};
+        else opts={btnText:'결과 보기 →',onBtnClick:function(){var ol=document.getElementById('sp-overlay');if(ol)ol.remove();}};
+        showScorePopup(sc,SECTOTALS[p],opts);
+      },800);
+    })(pre,secC[pre]);
+  }
   if(done===TOTAL)setTimeout(showResult,800);
 }
 function showResult(){
@@ -530,7 +544,6 @@ function showResult(){
       return '<div class="ri">내가 쓴 것: <span class="ma">'+(v.my||'(없음)')+'</span> → 정답: <span class="ca">'+v.right+'</span></div>';
     }).join('');
   }
-  showScorePopup(correct, TOTAL);
 }
 function toast(msg,type){
   var t=document.getElementById('toast');

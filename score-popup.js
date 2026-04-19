@@ -118,8 +118,9 @@
     document.body.appendChild(badge);
   });
 
-  window.showScorePopup = function (correct, total) {
+  window.showScorePopup = function (correct, total, opts) {
     injectCSS();
+    opts = opts || {};
     var prev = getBest();
     var sc = Math.round(correct / total * 100);
     var isNew = saveBest(sc, correct, total);
@@ -167,9 +168,11 @@
         '<div id="sp-score">' + sc + '점</div>' +
         '<div id="sp-sub">' + correct + ' / ' + total + ' 문제 정답</div>' +
         recordHtml +
-        '<button id="sp-retry" onclick="location.reload()">🔄 다시풀기</button>' +
+        '<button id="sp-retry">' + (opts.btnText || '🔄 다시풀기') + '</button>' +
       '</div>';
     document.body.appendChild(overlay);
+    var retryBtn = document.getElementById('sp-retry');
+    retryBtn.onclick = opts.onBtnClick || function () { location.reload(); };
 
     if (sc >= 50) launchConfetti(sc >= 70 ? 4000 : 2500);
   };

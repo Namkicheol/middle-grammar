@@ -329,7 +329,7 @@ function checkBlank(k) {
     var inps = document.querySelectorAll(`#qc-${k} .blank`);
     var card = document.getElementById('qc-'+k);
     if (card.classList.contains('ok') || card.classList.contains('ng')) return;
-    
+    if ([...inps].some(inp => !inp.value.trim())) { toast('답을 입력하세요!', 'ng'); return; }
     let allGot = true;
     inps.forEach(inp => {
         inp.disabled = true;
@@ -384,6 +384,7 @@ function refreshArea(k) {
 function checkArrange(k, ans) {
     var card = document.getElementById('qc-'+k);
     if (card.classList.contains('ok') || card.classList.contains('ng')) return;
+    if (!placed[k].length) { toast('단어를 배열하세요!', 'ng'); return; }
     var typed = placed[k].map(i => i.w).join(' ').trim().toLowerCase().replace(/\s+/g, ' ');
     var cleanAns = ans.trim().toLowerCase().replace(/\s+/g, ' ');
     card.querySelector('.check-btn').disabled = true;

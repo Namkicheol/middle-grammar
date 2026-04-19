@@ -319,6 +319,7 @@ function normAns(s){
 function hInp(b, a, id) {
     if(st[id]) return;
     let c = b.closest('.q-card'), inp = c.querySelector('.q-input');
+    if(!inp.value.trim()) { egmToast('답을 입력하세요!', 'x'); inp.focus(); return; }
     let ty = normAns(inp.value);
     let ok = false;
     let ansArr = [normAns(a)];

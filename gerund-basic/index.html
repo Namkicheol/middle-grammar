@@ -239,6 +239,7 @@ const qData = {
 };
 
 let tot = 0, cor = 0, wrg = 0; const T_Q = 50; const st = {};
+const SEC_T = [20, 20, 10]; let secCor = [0,0,0], secWrg = [0,0,0];
 
 const vocabMap = {
   9:[{w:'pool',k:'수영장'}],
@@ -280,17 +281,28 @@ function egmSwitch(i, b) {
 function upd(id, isC) {
     if (st[id]) return;
     st[id] = true; tot++;
-    if (isC) cor++; else wrg++;
+    var n = parseInt(id.split('_')[1]), si = n <= 20 ? 0 : n <= 40 ? 1 : 2;
+    if (isC) { cor++; secCor[si]++; } else { wrg++; secWrg[si]++; }
     document.getElementById('st-tot').innerText = tot;
     document.getElementById('st-cor').innerText = cor;
     document.getElementById('st-wrg').innerText = wrg;
+    var secDone = secCor[si]+secWrg[si];
+    if (secDone === SEC_T[si]) {
+        (function(i, sc) {
+            setTimeout(function() {
+                var opts = {};
+                if (i===0) opts={nextText:'동명사 탭으로 →',onNextClick:function(){var ol=document.getElementById('sp-overlay');if(ol)ol.remove();egmSwitch(1,document.querySelectorAll('.tab-btn')[1]);}};
+                else if (i===1) opts={nextText:'구분하기 탭으로 →',onNextClick:function(){var ol=document.getElementById('sp-overlay');if(ol)ol.remove();egmSwitch(2,document.querySelectorAll('.tab-btn')[2]);}};
+                showScorePopup(sc, SEC_T[i], opts);
+            }, 800);
+        })(si, secCor[si]);
+    }
     if (tot === T_Q) {
         setTimeout(() => {
             document.getElementById('egm-result').style.display = 'flex';
             let sc = Math.round((cor / T_Q) * 100);
             document.getElementById('r-score').innerText = sc + '점';
             document.getElementById('r-msg').innerText = sc >= 90 ? "완벽합니다! 마스터 등극! 🏆" : "수고하셨습니다! 틀린 부분도 복습해 보세요! ✨";
-            showScorePopup(cor, T_Q);
         }, 800);
     }
 }

@@ -46,11 +46,15 @@
       '#sp-record{font-size:.85rem;font-weight:700;padding:4px 14px;border-radius:20px;margin-bottom:22px;display:inline-block;}',
       '#sp-record.new{background:linear-gradient(135deg,#f59e0b,#ef4444);color:#fff;}',
       '#sp-record.prev{background:#f1f5f9;color:#64748b;}',
+      '#sp-btns{display:flex;flex-direction:column;gap:10px;}',
       '#sp-retry{background:linear-gradient(135deg,#0ea5e9,#6366f1);color:#fff;border:none;border-radius:14px;',
       'padding:15px 40px;font-size:1.1rem;font-weight:700;cursor:pointer;',
       'box-shadow:0 6px 20px rgba(99,102,241,.4);transition:transform .15s,box-shadow .15s;}',
       '#sp-retry:hover{transform:translateY(-3px);box-shadow:0 10px 28px rgba(99,102,241,.5);}',
       '#sp-retry:active{transform:translateY(0);}',
+      '#sp-next{background:#fff;color:#0ea5e9;border:2px solid #0ea5e9;border-radius:14px;',
+      'padding:13px 40px;font-size:1.05rem;font-weight:700;cursor:pointer;transition:all .15s;}',
+      '#sp-next:hover{background:#e0f2fe;}',
       '#sp-canvas{position:fixed;top:0;left:0;width:100%;height:100%;pointer-events:none;z-index:1000000;}',
       '#sp-badge{position:fixed;top:14px;right:14px;z-index:500;background:rgba(255,255,255,.92);',
       'backdrop-filter:blur(8px);border:1.5px solid #e2e8f0;border-radius:12px;padding:7px 14px;',
@@ -168,11 +172,16 @@
         '<div id="sp-score">' + sc + '점</div>' +
         '<div id="sp-sub">' + correct + ' / ' + total + ' 문제 정답</div>' +
         recordHtml +
-        '<button id="sp-retry">' + (opts.btnText || '🔄 다시풀기') + '</button>' +
+        '<div id="sp-btns">' +
+          (opts.nextText ? '<button id="sp-next">' + opts.nextText + '</button>' : '') +
+          '<button id="sp-retry">🔄 다시풀기</button>' +
+        '</div>' +
       '</div>';
     document.body.appendChild(overlay);
-    var retryBtn = document.getElementById('sp-retry');
-    retryBtn.onclick = opts.onBtnClick || function () { location.reload(); };
+    if (opts.nextText) {
+      document.getElementById('sp-next').onclick = opts.onNextClick || function () {};
+    }
+    document.getElementById('sp-retry').onclick = function () { location.reload(); };
 
     if (sc >= 50) launchConfetti(sc >= 70 ? 4000 : 2500);
   };

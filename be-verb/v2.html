@@ -515,7 +515,12 @@ function mark(k,got,my,right){
   var secDone=secC[pre]+secW[pre];
   if(secDone===SECTOTALS[pre]){
     (function(p,sc){
-      setTimeout(function(){showScorePopup(sc,SECTOTALS[p]);},800);
+      setTimeout(function(){
+        var opts={};
+        if(p==='a') opts={nextText:'일반동사 탭으로 →',onNextClick:function(){var ol=document.getElementById('sp-overlay');if(ol)ol.remove();sw(1,document.querySelectorAll('.tab')[1]);}};
+        else if(p==='b') opts={nextText:'단어 배열 탭으로 →',onNextClick:function(){var ol=document.getElementById('sp-overlay');if(ol)ol.remove();sw(2,document.querySelectorAll('.tab')[2]);}};
+        showScorePopup(sc,SECTOTALS[p],opts);
+      },800);
     })(pre,secC[pre]);
   }
   if(done===TOTAL)setTimeout(showResult,800);

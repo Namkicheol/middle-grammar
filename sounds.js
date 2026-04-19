@@ -11,7 +11,7 @@
     return _ctx;
   }
 
-  // 첫 클릭(캡처 단계)에서 AudioContext 미리 생성 — 정답 확인 버튼보다 먼저 실행됨
+  // 첫 클릭 캡처 단계에서 AudioContext 미리 생성 (정답 버튼보다 먼저 실행)
   function prewarm() {
     document.removeEventListener('click', prewarm, true);
     ac();
@@ -65,6 +65,38 @@
     }
   }
 
+  // toast div 클래스 변화 감지 (함수 래핑 불필요)
+  function watchToast(elId) {
+    var el = document.getElementById(elId);
+    if (!el) return;
+    new MutationObserver(function () {
+      if (!el.classList.contains('show')) return;
+      var txt = el.textContent || el.innerText || '';
+      if (el.classList.contains('ok') || el.classList.contains('o')) {
+        playOk();
+      } else if ((el.classList.contains('ng') || el.classList.contains('x')) && txt.indexOf('틀렸') !== -1) {
+        playNg();
+      }
+    }).observe(el, { attributes: true, attributeFilter: ['class'] });
+  }
+
+  // egm-toast는 background color로 정답/오답 구분
+  function watchEgmToast(elId) {
+    var el = document.getElementById(elId);
+    if (!el) return;
+    new MutationObserver(function () {
+      if (!el.classList.contains('show')) return;
+      var bg = el.style.background || '';
+      var txt = el.textContent || el.innerText || '';
+      if (bg.indexOf('10b981') !== -1 || bg.indexOf('10, 185, 129') !== -1) {
+        playOk();
+      } else if (txt.indexOf('틀렸') !== -1) {
+        playNg();
+      }
+    }).observe(el, { attributes: true, attributeFilter: ['class', 'style'] });
+  }
+
+  // 결과화면 감지 (display 변화 → 600ms 후 점수 읽기)
   function watchResult(elId, scoreElId) {
     var el = document.getElementById(elId);
     if (!el) return;
@@ -72,35 +104,17 @@
       var d = el.style.display;
       if (d && d !== 'none') {
         obs.disconnect();
-        var sEl = document.getElementById(scoreElId);
-        var sc = sEl ? (parseInt(sEl.textContent) || 50) : 50;
-        setTimeout(function () { playResult(sc); }, 350);
+        setTimeout(function () {
+          var sEl = document.getElementById(scoreElId);
+          var sc = sEl ? (parseInt(sEl.textContent) || 50) : 50;
+          playResult(sc);
+        }, 600);
       }
     });
     obs.observe(el, { attributes: true, attributeFilter: ['style'] });
   }
 
-  // sounds.js는 </body> 직전에 로드되므로 모든 함수가 이미 정의된 상태 — 즉시 래핑
-  var _ot = window.toast;
-  if (typeof _ot === 'function') {
-    window.toast = function (msg, type) {
-      _ot(msg, type);
-      if (type === 'ok') playOk();
-      else if (type === 'ng' && msg && msg.indexOf('틀렸') !== -1) playNg();
-    };
-  }
-
-  // egmToast (gerund-basic/index.html — type: 'o'/'x')
-  var _et = window.egmToast;
-  if (typeof _et === 'function') {
-    window.egmToast = function (msg, type) {
-      _et(msg, type);
-      if (type === 'o') playOk();
-      else if (type === 'x' && msg && msg.indexOf('틀렸') !== -1) playNg();
-    };
-  }
-
-  // 섹션 완료 팝업 사운드
+  // 섹션 완료 팝업 사운드 (showScorePopup은 window에 직접 할당된 함수라 래핑 안전)
   var _osp = window.showScorePopup;
   if (typeof _osp === 'function') {
     window.showScorePopup = function (correct, total, opts) {
@@ -110,8 +124,9 @@
     };
   }
 
-  // 최종 결과화면 사운드
-  watchResult('result', 'rs');          // 대부분의 워크시트
-  watchResult('egm-result', 'r-score'); // gerund-basic/index.html
+  watchToast('toast');
+  watchEgmToast('egm-toast');
+  watchResult('result', 'rs');
+  watchResult('egm-result', 'r-score');
 
 })();

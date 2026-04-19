@@ -7,9 +7,16 @@
       try { _ctx = new (window.AudioContext || window.webkitAudioContext)(); }
       catch (e) { return null; }
     }
-    if (_ctx.state === 'suspended') _ctx.resume();
+    if (_ctx.state === 'suspended') _ctx.resume().catch(function () {});
     return _ctx;
   }
+
+  // 첫 클릭(캡처 단계)에서 AudioContext 미리 생성 — 정답 확인 버튼보다 먼저 실행됨
+  function prewarm() {
+    document.removeEventListener('click', prewarm, true);
+    ac();
+  }
+  document.addEventListener('click', prewarm, true);
 
   function tone(freq, type, t0, dur, vol) {
     var c = ac(); if (!c) return;
@@ -26,14 +33,14 @@
   function playOk() {
     var c = ac(); if (!c) return;
     var t = c.currentTime;
-    tone(659.25, 'sine', t,       0.12, 0.30); // E5
+    tone(659.25, 'sine', t,        0.12, 0.30); // E5
     tone(783.99, 'sine', t + 0.09, 0.19, 0.26); // G5
   }
 
   function playNg() {
     var c = ac(); if (!c) return;
     var t = c.currentTime;
-    tone(293.66, 'triangle', t,       0.15, 0.16); // D4
+    tone(293.66, 'triangle', t,        0.15, 0.16); // D4
     tone(246.94, 'triangle', t + 0.12, 0.20, 0.12); // B3
   }
 
@@ -73,39 +80,38 @@
     obs.observe(el, { attributes: true, attributeFilter: ['style'] });
   }
 
-  window.addEventListener('load', function () {
-    // 표준 toast (ok/ng) — 대부분의 워크시트
-    var _ot = window.toast;
-    if (typeof _ot === 'function') {
-      window.toast = function (msg, type) {
-        _ot(msg, type);
-        if (type === 'ok') playOk();
-        else if (type === 'ng' && msg && msg.indexOf('틀렸') !== -1) playNg();
-      };
-    }
+  // sounds.js는 </body> 직전에 로드되므로 모든 함수가 이미 정의된 상태 — 즉시 래핑
+  var _ot = window.toast;
+  if (typeof _ot === 'function') {
+    window.toast = function (msg, type) {
+      _ot(msg, type);
+      if (type === 'ok') playOk();
+      else if (type === 'ng' && msg && msg.indexOf('틀렸') !== -1) playNg();
+    };
+  }
 
-    // egmToast (o/x) — gerund-basic/index.html
-    var _et = window.egmToast;
-    if (typeof _et === 'function') {
-      window.egmToast = function (msg, type) {
-        _et(msg, type);
-        if (type === 'o') playOk();
-        else if (type === 'x' && msg && msg.indexOf('틀렸') !== -1) playNg();
-      };
-    }
+  // egmToast (gerund-basic/index.html — type: 'o'/'x')
+  var _et = window.egmToast;
+  if (typeof _et === 'function') {
+    window.egmToast = function (msg, type) {
+      _et(msg, type);
+      if (type === 'o') playOk();
+      else if (type === 'x' && msg && msg.indexOf('틀렸') !== -1) playNg();
+    };
+  }
 
-    // 섹션 팝업 완료 사운드
-    var _osp = window.showScorePopup;
-    if (typeof _osp === 'function') {
-      window.showScorePopup = function (correct, total, opts) {
-        _osp(correct, total, opts);
-        var sc = Math.round(correct / total * 100);
-        setTimeout(function () { playResult(sc); }, 200);
-      };
-    }
+  // 섹션 완료 팝업 사운드
+  var _osp = window.showScorePopup;
+  if (typeof _osp === 'function') {
+    window.showScorePopup = function (correct, total, opts) {
+      _osp(correct, total, opts);
+      var sc = Math.round(correct / total * 100);
+      setTimeout(function () { playResult(sc); }, 200);
+    };
+  }
 
-    // 최종 결과화면 사운드 (MutationObserver)
-    watchResult('result', 'rs');          // 대부분의 워크시트
-    watchResult('egm-result', 'r-score'); // gerund-basic/index.html
-  });
+  // 최종 결과화면 사운드
+  watchResult('result', 'rs');          // 대부분의 워크시트
+  watchResult('egm-result', 'r-score'); // gerund-basic/index.html
+
 })();

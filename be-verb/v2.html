@@ -445,6 +445,7 @@ function checkBlank(k){
   var inp=document.getElementById('bi-'+k);
   var card=document.getElementById('qc-'+k);
   if(card.classList.contains('ok')||card.classList.contains('ng'))return;
+  if(!inp.value.trim()){toast('답을 입력하세요!','ng');inp.focus();return;}
   inp.disabled=true;
   card.querySelector('.check-btn').disabled=true;
   var got=norm(inp.value)===norm(inp.dataset.ans);
@@ -485,6 +486,7 @@ function checkArrange(btn){
   var ans=btn.dataset.ans;
   var card=document.getElementById('qc-'+k);
   if(card.classList.contains('ok')||card.classList.contains('ng'))return;
+  if(!placed[k].length){toast('단어를 배열하세요!','ng');return;}
   var typed=placed[k].map(function(i){return i.w;}).join(' ');
   btn.disabled=true;
   document.querySelectorAll('#pool-'+k+' .pool-chip').forEach(function(c){c.style.visibility='hidden';c.disabled=true;});

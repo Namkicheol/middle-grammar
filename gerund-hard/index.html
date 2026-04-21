@@ -90,10 +90,14 @@ body{font-family:'Noto Sans KR','Baloo 2',sans-serif;background:var(--bg);paddin
 .question-card.ok{background:#f0fdf4;}
 
 .q-num{display:inline-flex;align-items:center;justify-content:center;width:32px;height:32px;background:var(--sky);color:var(--blue);border-radius:8px;font-size:.92rem;font-weight:800;margin-bottom:12px;}
+.q-type{display:inline-block;margin-left:6px;font-size:.68rem;font-weight:700;background:#dbeafe;color:#1d4ed8;padding:3px 9px;border-radius:10px;letter-spacing:.5px;vertical-align:middle;}
+.q-type.fix{background:#fee2e2;color:#b91c1c;}
 .q-kor { font-size:1.05rem; font-weight:700; color:var(--dark); margin-bottom:12px; background:#dbeafe; display:inline-block; padding:5px 12px; border-radius:6px;}
 .q-text{font-size:1.3rem;font-weight:600;color:var(--dark);margin-bottom:16px;line-height:1.65;}
 .q-text em{font-style:normal;color:var(--blue);font-weight:800;border-bottom:2px dotted var(--blue);}
 .q-text u{text-decoration-color:var(--blue); text-decoration-thickness:2px; font-weight:800;}
+.q-text .wrong{color:var(--red);text-decoration:underline;text-decoration-style:wavy;font-weight:800;}
+.q-text .orig{color:#4a5a7a;font-size:.9em;}
 
 .blank{border:none;border-bottom:2.5px solid var(--blue);background:transparent;font-family:inherit;font-size:1.25rem;font-weight:700;color:var(--dark);padding:2px 8px;min-width:90px;text-align:center;outline:none;transition:.2s;display:inline-block;}
 .blank:focus{border-color:var(--purple);}
@@ -226,9 +230,9 @@ const qData = {
     { type:"mcq", kor:"그 남자는 지금 컴퓨터를 고치고 있다.", eng:"The man ___ the computer now.", ans:"is fixing", opts:["fixes","fix","is fixing","fixing"], hint:"The man(3인칭 단수) + now → is + -ing" },
     { type:"mcq", kor:"Sophie는 지금 거울을 보고 있다.", eng:"Sophie ___ in the mirror now.", ans:"is looking", opts:["looks","look","is looking","looking"], hint:"Sophie(단수) + now → is + -ing" },
     { type:"mcq", kor:"우리 가족은 지금 새 식당에서 저녁을 먹고 있다.", eng:"My family ___ dinner at a new restaurant now.", ans:"is having", opts:["has","have","is having","having"], hint:"My family(집합명사, 단수) + now → is + -ing. 이때 have는 '먹다'의 뜻이라 진행형 가능!" },
-    { type:"input", kor:"너 지금 내 말 듣고 있니?", eng:"(Are) you (listening) to me now?", ans:"Are listening", hint:"의문문은 be동사(Are)가 맨 앞으로!" },
+    { type:"fix", kor:"그녀는 지금 거울을 보고 있다.", eng:"❌ She <span class='wrong'>are</span> looking in the mirror now.", ans:"is", hint:"She(3인칭 단수) → are → is" },
     { type:"input", kor:"나는 지금 점심을 먹고 있다. (have)", eng:"I (am having) lunch now.", ans:"am having", hint:"have가 '먹다' 뜻일 때는 진행형 가능" },
-    { type:"input", kor:"그녀는 지금 편지를 쓰고 있다. (write)", eng:"She (is writing) a letter.", ans:"is writing", hint:"write → e를 빼고 +ing → writing" },
+    { type:"fix", kor:"학생들은 지금 프랑스어를 배우고 있다.", eng:"❌ The students <span class='wrong'>is learning</span> French now.", ans:"are learning", hint:"The students(복수) → is → are. 복수 주어는 are + -ing!" },
     { type:"input", kor:"그 소년들은 강에서 수영하고 있다. (swim)", eng:"The boys (are swimming) in the river.", ans:"are swimming", hint:"swim은 m을 하나 더 → swimming" },
     { type:"input", kor:"그는 지금 나에게 거짓말하고 있다. (lie)", eng:"He (is lying) to me.", ans:"is lying", hint:"lie는 ie를 y로 바꾸고 +ing → lying" },
     { type:"scramble", kor:"우리는 버스정류장에서 버스를 기다리고 있다.", eng:"", ans:"We are waiting for the bus", words:["for","are","bus","waiting","We","the"], hint:"wait for ~ (~를 기다리다)" },
@@ -248,9 +252,9 @@ const qData = {
     { type:"mcq", kor:"Ella는 강아지와 산책하는 것을 즐긴다.", eng:"Ella enjoys ___ a walk with her dog.", ans:"taking", opts:["take","took","to take","taking"], hint:"enjoy 뒤에는 -ing! take → e 빼고 +ing → taking" },
     { type:"mcq", kor:"그녀는 중국어 배우기를 포기했다 — 너무 어려웠다.", eng:"She gave up ___ Chinese. It was too difficult for her.", ans:"learning", opts:["learn","learns","learned","learning"], hint:"give up 뒤에는 -ing!" },
     { type:"mcq", kor:"불 좀 꺼주실래요?", eng:"Would you mind ___ off the light?", ans:"turning", opts:["turn","turned","to turn","turning"], hint:"mind(꺼리다) 뒤에는 -ing!" },
-    { type:"input", kor:"나는 그 책을 다 읽었다. (read)", eng:"I finished (reading) the book.", ans:"reading", hint:"finish 뒤에는 -ing" },
+    { type:"fix", kor:"나는 바다에서 수영하는 것을 즐긴다.", eng:"❌ I enjoy <span class='wrong'>to swim</span> in the ocean.", ans:"swimming", hint:"enjoy 뒤에는 반드시 -ing! to부정사 사용 불가" },
     { type:"input", kor:"내 목표는 영어를 마스터하는 것이다.", eng:"My goal is (mastering) English.", ans:"mastering", hint:"보어 자리(=이다) → 동명사" },
-    { type:"input", kor:"그는 수학 문제 푸는 것을 잘한다.", eng:"He is good at (solving) math.", ans:"solving", hint:"be good at + -ing (~를 잘하다)" },
+    { type:"fix", kor:"그녀는 보고서를 다 쓰고 잠자리에 들었다.", eng:"❌ She finished <span class='wrong'>to write</span> a paper.", ans:"writing", hint:"finish 뒤에는 반드시 -ing! to부정사 사용 불가" },
     { type:"input", kor:"아침을 안 먹는 것은 건강에 나쁘다. (eat)", eng:"Not (eating) breakfast is bad for health.", ans:"eating", hint:"동명사 부정은 -ing 앞에 Not" },
     { type:"input", kor:"그들은 계속 나에게 질문을 했다. (ask)", eng:"They kept (asking) questions.", ans:"asking", hint:"keep + -ing (계속 ~하다)" },
     { type:"scramble", kor:"나는 너를 만나길 고대한다.", eng:"", ans:"I look forward to seeing you", words:["seeing","to","I","you","forward","look"], hint:"look forward to + -ing" },
@@ -326,11 +330,13 @@ function render() {
 
         qData['sec'+secIdx].forEach(q => {
             let id = 'q' + globalNum;
+            const typeLabel = {mcq:'선택',input:'빈칸',scramble:'배열',dist:'구분',fix:'오류 수정'};
+            const typeClass = {mcq:'ctx',input:'ctx',scramble:'ctx',dist:'ctx',fix:'fix'};
             html += `<div class='question-card' id='qc-${id}'>`;
-            html += `<div class='q-header'><span class='q-num'>${globalNum}</span>`;
+            html += `<div class='q-header'><span class='q-num'>${globalNum}</span><span class='q-type ${typeClass[q.type]||"ctx"}'>${typeLabel[q.type]||q.type}</span>`;
             if(q.kor) html += `<div><span class='q-kor'>${q.kor}</span></div>`;
             html += `</div>`;
-            
+
             if(q.type === 'mcq' || q.type === 'dist') {
                 html += `<div class='q-text'>${q.eng.replace(/___/g, "<em>___</em>")}</div>`;
                 html += `<div class='choices' ${q.type==='dist'?'style="grid-template-columns:1fr 1fr;"':''}>`;
@@ -339,6 +345,9 @@ function render() {
                     html += `<button class='choice' onclick="checkChoice(this, '${q.ans.replace(/'/g,"\\'").replace(/"/g,"&quot;")}', '${id}')">${o}</button>`;
                 });
                 html += `</div>`;
+            } else if (q.type === 'fix') {
+                html += `<div class='q-text'><span class='orig'>${q.eng}</span><br>→ 밑줄 친 부분을 바르게 고치세요: <input class='blank' id='bi-${id}' placeholder='___' data-ans="${q.ans.replace(/"/g,"&quot;")}" autocomplete='off' style='min-width:140px'></div>`;
+                html += `<button class='check-btn' onclick="checkBlank('${id}')">✔ 정답 확인</button>`;
             } else if (q.type === 'input') {
                 let parts = q.eng.split(/\((.*?)\)/g);
                 let engHTML = "";

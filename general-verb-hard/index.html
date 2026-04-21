@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>일반동사 현재형 심화 워크시트</title>
-<link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@400;600;700;800&family=Noto+Sans+KR:wght@400;500;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@400;600;700;800;900&family=Noto+Sans+KR:wght@400;500;700&display=swap" rel="stylesheet">
 <style>
 :root{
   --navy:#1e2a4a;--navy-d:#111827;--navy-m:#2d3d6b;
@@ -15,12 +15,52 @@
 *{margin:0;padding:0;box-sizing:border-box;}
 body{font-family:'Noto Sans KR','Baloo 2',sans-serif;background:var(--bg);padding-bottom:60px;font-size:16px;}
 
-.header{background:linear-gradient(135deg,var(--navy-d) 0%,var(--navy) 60%,var(--navy-m) 100%);padding:32px 20px 42px;text-align:center;position:relative;overflow:hidden;}
-.header::before{content:'';position:absolute;top:-40px;right:-40px;width:160px;height:160px;background:rgba(245,158,11,.08);border-radius:50%;}
-.hbadge{display:inline-block;background:rgba(245,158,11,.22);color:var(--gold);font-size:14px;font-weight:700;letter-spacing:2px;padding:6px 18px;border-radius:20px;margin-bottom:12px;}
-.header h1{color:#fff;font-size:2.2rem;font-weight:800;margin-bottom:6px;}
-.header h1 em{color:var(--gold);font-style:normal;}
-.header p{color:rgba(255,255,255,.7);font-size:1rem;}
+/* ── 심화 헤더 ── */
+.header{
+  background:linear-gradient(135deg,var(--navy-d) 0%,var(--navy) 55%,var(--navy-m) 100%);
+  padding:44px 20px 54px;text-align:center;position:relative;overflow:hidden;
+}
+.header::before{
+  content:'';position:absolute;inset:0;
+  background-image:radial-gradient(rgba(245,158,11,.07) 1px,transparent 1px);
+  background-size:22px 22px;pointer-events:none;
+}
+.header::after{
+  content:'';position:absolute;bottom:-1px;left:50%;
+  transform:translateX(-50%);width:140%;height:48px;
+  background:var(--bg);border-radius:50% 50% 0 0;
+}
+
+/* 떠다니는 알파벳 장식 */
+.h-letter{
+  position:absolute;font-family:'Baloo 2',sans-serif;font-weight:900;
+  color:rgba(245,158,11,.14);pointer-events:none;user-select:none;
+  line-height:1;letter-spacing:-2px;
+}
+.h-letter.l-a{font-size:118px;top:-14px;left:4%;animation:floatL 9s ease-in-out infinite;}
+.h-letter.l-b{font-size:76px;top:22px;right:7%;animation:floatL 11s ease-in-out infinite reverse;}
+.h-letter.l-c{font-size:94px;bottom:8px;left:12%;animation:floatL 7s ease-in-out infinite;}
+.h-letter.l-d{font-size:62px;bottom:32px;right:16%;animation:floatL 13s ease-in-out infinite reverse;}
+@keyframes floatL{
+  0%,100%{transform:translateY(0) rotate(0deg);}
+  40%{transform:translateY(-12px) rotate(5deg);}
+  70%{transform:translateY(7px) rotate(-3deg);}
+}
+
+/* 빛나는 orb */
+.h-orb{position:absolute;border-radius:50%;pointer-events:none;filter:blur(50px);}
+.h-orb.o1{width:220px;height:220px;background:radial-gradient(circle,rgba(245,158,11,.35) 0%,transparent 70%);top:-60px;right:-40px;}
+.h-orb.o2{width:180px;height:180px;background:radial-gradient(circle,rgba(99,102,241,.28) 0%,transparent 70%);bottom:-40px;left:-30px;}
+
+.header-inner{position:relative;z-index:2;}
+
+.hbadge{display:inline-flex;align-items:center;gap:8px;background:rgba(245,158,11,.2);color:var(--gold);font-size:12px;font-weight:700;letter-spacing:2.2px;padding:6px 18px;border-radius:20px;margin-bottom:12px;border:1px solid rgba(245,158,11,.3);text-transform:uppercase;}
+.hbadge-dot{width:6px;height:6px;background:var(--gold);border-radius:50%;box-shadow:0 0 8px var(--gold);animation:pulse 2s ease-in-out infinite;}
+@keyframes pulse{0%,100%{opacity:1;transform:scale(1);}50%{opacity:.6;transform:scale(1.3);}}
+
+.header h1{color:#fff;font-size:2.1rem;font-weight:900;margin-bottom:6px;letter-spacing:-.5px;}
+.header h1 em{color:var(--gold);font-style:normal;filter:drop-shadow(0 0 12px rgba(245,158,11,.5));}
+.header p{color:rgba(255,255,255,.75);font-size:.95rem;line-height:1.6;}
 
 .scoreboard{display:flex;justify-content:center;gap:12px;margin:-18px 20px 24px;position:relative;z-index:10;}
 .sc{background:var(--white);border-radius:16px;padding:14px 22px;text-align:center;box-shadow:0 4px 20px rgba(0,0,0,.1);flex:1;max-width:120px;}
@@ -39,9 +79,9 @@ body{font-family:'Noto Sans KR','Baloo 2',sans-serif;background:var(--bg);paddin
 
 .sec{display:none;padding:0 20px;}.sec.show{display:block;}
 .sec-hdr{background:var(--white);border-radius:18px;padding:18px 22px;margin-bottom:16px;border-left:5px solid var(--gold);box-shadow:0 2px 12px rgba(0,0,0,.06);}
-.sec-hdr .lbl{font-size:.8rem;font-weight:700;color:var(--gold-d);letter-spacing:1px;text-transform:uppercase;margin-bottom:4px;}
-.sec-hdr h2{font-size:1.3rem;font-weight:800;color:var(--navy);margin-bottom:4px;}
-.sec-hdr .desc{font-size:.92rem;color:var(--gray);}
+.sec-hdr .lbl{font-size:.82rem;font-weight:700;color:var(--gold-d);letter-spacing:1px;text-transform:uppercase;margin-bottom:5px;}
+.sec-hdr h2{font-size:1.3rem;font-weight:800;color:var(--navy);margin-bottom:5px;}
+.sec-hdr .desc{font-size:.98rem;color:#5a6b8a;font-weight:500;line-height:1.55;}
 
 @keyframes slideUp{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:translateY(0)}}
 .question-card{background:var(--white);border-radius:18px;padding:22px 24px;margin-bottom:14px;box-shadow:0 2px 12px rgba(0,0,0,.06);position:relative;overflow:hidden;animation:slideUp .35s ease both;}
@@ -101,14 +141,30 @@ body{font-family:'Noto Sans KR','Baloo 2',sans-serif;background:var(--bg);paddin
 #toast.show{transform:translateX(-50%) translateY(0);}#toast.ok{background:var(--green);}#toast.ng{background:var(--red);}
 @keyframes fadein{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}
 @keyframes pop{0%{transform:scale(.8)}70%{transform:scale(1.1)}100%{transform:scale(1)}}
+@media(max-width:480px){
+  .header h1{font-size:1.7rem;}
+  .h-letter.l-a{font-size:90px;}
+  .h-letter.l-b{font-size:60px;}
+  .h-letter.l-c{font-size:70px;}
+  .h-letter.l-d{font-size:52px;}
+}
 </style>
 </head>
 <body>
 <div id="toast"></div>
 <div class="header">
-  <div class="hbadge">⚡ 일반동사 심화</div>
-  <h1>일반동사 <em>심화</em> 워크시트</h1>
-  <p>인칭·수 변화 · 단수 취급 · don't vs doesn't · 총 25문제</p>
+  <div class="h-orb o1"></div>
+  <div class="h-orb o2"></div>
+  <div class="h-letter l-a">D</div>
+  <div class="h-letter l-b">O</div>
+  <div class="h-letter l-c">E</div>
+  <div class="h-letter l-d">S</div>
+
+  <div class="header-inner">
+    <div class="hbadge"><span class="hbadge-dot"></span>Unit 02 · Advanced · 25문제</div>
+    <h1>일반동사 현재형 <em>심화</em></h1>
+    <p>인칭·수 변화 · 단수 취급 · don't vs doesn't · 총 25문제</p>
+  </div>
 </div>
 <div class="scoreboard">
   <div class="sc t"><div class="n" id="sc-t">0</div><div class="l">완료</div></div>

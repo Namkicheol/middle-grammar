@@ -159,6 +159,8 @@ Ne교과서 md파일/
 | `gerund-basic/index.html` | 현재진행형 vs 동명사 기초 — Pretendard 스타일 (50문제) |
 | `gerund-basic/index2.html` | 현재진행형 vs 동명사 기초 — Baloo 2 스타일 (50문제) |
 | `gerund-hard/index.html` | 현재진행형 vs 동명사 심화 (50문제) |
+| `to-will-basic/index.html` | to부정사 & 조동사 will/should 기초 (45문제) |
+| `to-will-hard/index.html` | to부정사 & 조동사 will/should 심화 (25문제) |
 | `sounds.js` | 효과음 (Web Audio API, 외부 파일 없음) |
 | `Ne교과서 md파일/` | Ne능률 중1 교과서 원본 md (L1–L8, 교과서·기본AB·심화·어법드릴) |
 | `worksheet-sentence-guide.md` | 문제 예문 출처·유형 규칙 가이드 |
@@ -171,9 +173,36 @@ Ne교과서 md파일/
 
 | 파일 | 테마 |
 |------|------|
-| `index.html`, `be-verb/v2.html`, `gerund-basic/index2.html`, `gerund-hard/index.html` | Baloo 2 · 파란 그라디언트 (`#0ea5e9 → #6366f1`) |
-| `general-verb-hard/index.html`, `past-be/index.html`, `past-be-hard/index.html` | Baloo 2 · 다크 네이비 + 앰버 골드 (`#1e2a4a`, `#f59e0b`) |
+| `index.html`, `be-verb/v2.html`, `gerund-basic/index2.html`, `gerund-hard/index.html`, `to-will-basic/index.html` | Baloo 2 · 파란 그라디언트 (`#0ea5e9 → #6366f1`) |
+| `general-verb-hard/index.html`, `past-be/index.html`, `past-be-hard/index.html`, `to-will-hard/index.html` | Baloo 2 · 다크 네이비 + 앰버 골드 (`#1e2a4a`, `#f59e0b`) |
 | `gerund-basic/index.html` | Pretendard · 다크 네이비 + 앰버 골드 (`#0f172a`, `#fbbf24`) |
+
+### 심화 워크시트 헤더 장식 (필수 · 2026-04-21~)
+
+`past-be-hard`, `to-will-hard` 이후 제작되는 **모든 다크 네이비 테마 심화 워크시트**는 다음 헤더 장식 요소를 포함한다. 단조로운 감을 줄이기 위한 표준 규격이다.
+
+| 요소 | 내용 |
+|------|------|
+| `.h-letter` × 4 | 주제와 관련된 알파벳/기호 4개를 각 모서리에 떠다니게 배치 (투명도 `rgba(245,158,11,.14)`, `floatL` 9/11/7/13s 무한 애니메이션) |
+| `.h-orb` × 2 | blur 50px 그라디언트 원 2개 (오렌지 + 인디고) |
+| `.header::before` | 22px 간격 도트 그리드 |
+| `.header::after` | 하단 웨이브(반원) 컷 |
+| `.hbadge-dot` | 상단 배지 안의 펄스 애니메이션 점 |
+| `padding` | `44px 20px 54px` (기본 `24px 20px 32px`보다 크게) |
+
+예시: `to-will-hard`는 A/B/C/D, `past-be-hard`는 W/A/S/?. 알파벳 대신 "!" · "?" 등 의미 있는 기호도 가능.
+
+### 섹션 헤더·지문 폰트 (심화 공통)
+
+```css
+.sec-hdr .lbl  { font-size:.78rem; }
+.sec-hdr h2    { font-size:1.18rem; }
+.sec-hdr .desc { font-size:.95rem; color:#5a6b8a; font-weight:500; line-height:1.55; }
+.passage       { font-size:1.02rem; line-height:1.9; padding:18px 20px; }
+.passage .ptitle{ font-size:.78rem; }
+```
+
+이전의 `.desc .8rem / gray` · `.passage .9rem`은 너무 작다는 피드백으로 상향 조정됨 (2026-04-21).
 
 ### 단어 뱃지 (vocab)
 

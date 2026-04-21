@@ -3,8 +3,8 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Unit 05 · be동사 과거형 심화</title>
-<link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@400;600;700;800&family=Noto+Sans+KR:wght@400;500;700&display=swap" rel="stylesheet">
+<title>Unit 04 · be동사 과거형 심화</title>
+<link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@400;600;700;800;900&family=Noto+Sans+KR:wght@400;500;700&display=swap" rel="stylesheet">
 <style>
 :root{
   --navy:#1e2a4a;--navy-d:#111827;--navy-m:#2d3d6b;
@@ -14,13 +14,56 @@
 }
 *{margin:0;padding:0;box-sizing:border-box;}
 body{font-family:'Baloo 2','Noto Sans KR',sans-serif;background:var(--bg);padding-bottom:60px;}
-.header{background:linear-gradient(135deg,var(--navy-d) 0%,var(--navy) 60%,var(--navy-m) 100%);padding:24px 20px 32px;text-align:center;position:relative;overflow:hidden;}
-.header::before{content:'';position:absolute;top:-40px;right:-40px;width:160px;height:160px;background:rgba(245,158,11,.08);border-radius:50%;}
-.hbadge{display:inline-block;background:rgba(245,158,11,.22);color:var(--gold);font-size:12px;font-weight:700;letter-spacing:2px;padding:4px 16px;border-radius:20px;margin-bottom:10px;}
-.header h1{color:#fff;font-size:1.8rem;font-weight:800;margin-bottom:4px;}
-.header h1 em{color:var(--gold);font-style:normal;}
-.header p{color:rgba(255,255,255,.7);font-size:.85rem;}
-.scoreboard{display:flex;justify-content:center;gap:12px;margin:-18px 20px 20px;position:relative;z-index:10;}
+
+/* ── 심화 헤더 ── */
+.header{
+  background:linear-gradient(135deg,var(--navy-d) 0%,var(--navy) 55%,var(--navy-m) 100%);
+  padding:44px 20px 54px;text-align:center;position:relative;overflow:hidden;
+}
+.header::before{
+  content:'';position:absolute;inset:0;
+  background-image:radial-gradient(rgba(245,158,11,.07) 1px,transparent 1px);
+  background-size:22px 22px;pointer-events:none;
+}
+.header::after{
+  content:'';position:absolute;bottom:-1px;left:50%;
+  transform:translateX(-50%);width:140%;height:48px;
+  background:var(--bg);border-radius:50% 50% 0 0;
+}
+
+/* 떠다니는 알파벳 장식 */
+.h-letter{
+  position:absolute;font-family:'Baloo 2',sans-serif;font-weight:900;
+  color:rgba(245,158,11,.14);pointer-events:none;user-select:none;
+  line-height:1;letter-spacing:-2px;
+}
+.h-letter.l-a{font-size:118px;top:-14px;left:4%;animation:floatL 9s ease-in-out infinite;}
+.h-letter.l-b{font-size:76px;top:22px;right:7%;animation:floatL 11s ease-in-out infinite reverse;}
+.h-letter.l-c{font-size:94px;bottom:8px;left:12%;animation:floatL 7s ease-in-out infinite;}
+.h-letter.l-d{font-size:62px;bottom:32px;right:16%;animation:floatL 13s ease-in-out infinite reverse;}
+@keyframes floatL{
+  0%,100%{transform:translateY(0) rotate(0deg);}
+  40%{transform:translateY(-12px) rotate(5deg);}
+  70%{transform:translateY(7px) rotate(-3deg);}
+}
+
+/* 빛나는 orb */
+.h-orb{position:absolute;border-radius:50%;pointer-events:none;filter:blur(50px);}
+.h-orb.o1{width:220px;height:220px;background:radial-gradient(circle,rgba(245,158,11,.35) 0%,transparent 70%);top:-60px;right:-40px;}
+.h-orb.o2{width:180px;height:180px;background:radial-gradient(circle,rgba(99,102,241,.28) 0%,transparent 70%);bottom:-40px;left:-30px;}
+
+.header-inner{position:relative;z-index:2;}
+
+.hbadge{display:inline-flex;align-items:center;gap:8px;background:rgba(245,158,11,.2);color:var(--gold);font-size:11.5px;font-weight:700;letter-spacing:2.2px;padding:6px 18px;border-radius:20px;margin-bottom:12px;border:1px solid rgba(245,158,11,.3);text-transform:uppercase;}
+.hbadge-dot{width:6px;height:6px;background:var(--gold);border-radius:50%;box-shadow:0 0 8px var(--gold);animation:pulse 2s ease-in-out infinite;}
+@keyframes pulse{0%,100%{opacity:1;transform:scale(1);}50%{opacity:.6;transform:scale(1.3);}}
+
+.header h1{color:#fff;font-size:2rem;font-weight:900;margin-bottom:6px;letter-spacing:-.5px;}
+.header h1 em{color:var(--gold);font-style:normal;filter:drop-shadow(0 0 12px rgba(245,158,11,.5));}
+.header p{color:rgba(255,255,255,.72);font-size:.88rem;line-height:1.6;}
+
+/* ── 나머지 스타일 ── */
+.scoreboard{display:flex;justify-content:center;gap:12px;margin:-20px 20px 20px;position:relative;z-index:10;}
 .sc{background:var(--white);border-radius:16px;padding:12px 20px;text-align:center;box-shadow:0 4px 20px rgba(0,0,0,.1);flex:1;max-width:110px;}
 .sc .n{font-size:1.8rem;font-weight:800;line-height:1;}.sc .l{font-size:.68rem;color:var(--gray);font-weight:600;margin-top:2px;}
 .sc.t .n{color:var(--navy);}.sc.c .n{color:var(--green);}.sc.w .n{color:var(--red);}
@@ -37,19 +80,33 @@ body{font-family:'Baloo 2','Noto Sans KR',sans-serif;background:var(--bg);paddin
 .sec-hdr .lbl{font-size:.72rem;font-weight:700;color:var(--gold-d);letter-spacing:1px;text-transform:uppercase;margin-bottom:4px;}
 .sec-hdr h2{font-size:1.05rem;font-weight:800;color:var(--navy);margin-bottom:3px;}
 .sec-hdr .desc{font-size:.8rem;color:var(--gray);}
+
+.passage{background:linear-gradient(180deg,#f8faff 0%,#f0f4fb 100%);border-radius:16px;padding:16px 18px;margin-bottom:14px;font-size:.9rem;color:#2d3d6b;line-height:1.85;border-left:4px solid var(--navy-m);box-shadow:0 2px 8px rgba(0,0,0,.04);}
+.passage .ptitle{font-size:.7rem;font-weight:800;color:var(--gold-d);letter-spacing:1.5px;text-transform:uppercase;margin-bottom:8px;}
+.passage .num{display:inline-block;width:22px;height:22px;background:var(--gold);color:var(--navy-d);border-radius:50%;font-size:.7rem;font-weight:800;text-align:center;line-height:22px;margin:0 2px;}
+
 .question-card{background:var(--white);border-radius:18px;padding:18px 20px;margin-bottom:12px;box-shadow:0 2px 12px rgba(0,0,0,.06);position:relative;overflow:hidden;}
 .question-card::before{content:'';position:absolute;top:0;left:0;width:4px;height:100%;background:#e2e8f0;transition:background .3s;}
 .question-card.ok::before{background:var(--green);}.question-card.ng::before{background:var(--red);}
 .q-num{display:inline-flex;align-items:center;justify-content:center;width:28px;height:28px;background:var(--gold-l);color:var(--gold-d);border-radius:8px;font-size:.82rem;font-weight:800;margin-bottom:8px;}
-.ctx{font-size:.8rem;color:#4a5a7a;background:#f5f7fd;border-left:3px solid var(--navy-m);padding:6px 10px;border-radius:0 8px 8px 0;margin-bottom:10px;line-height:1.6;}
-.q-text{font-size:1rem;font-weight:600;color:var(--navy);margin-bottom:10px;line-height:1.7;}
+.q-type{display:inline-block;margin-left:6px;font-size:.68rem;font-weight:700;background:#eef2ff;color:#4338ca;padding:3px 9px;border-radius:10px;letter-spacing:.5px;vertical-align:middle;}
+.q-type.fix{background:#fee2e2;color:#b91c1c;}
+.q-type.trans{background:#dcfce7;color:#15803d;}
+.q-type.kor{background:#fef3c7;color:#92400e;}
+.q-type.ctx{background:#e0e7ff;color:#4338ca;}
+.q-text{font-size:1rem;font-weight:600;color:var(--navy);margin-bottom:10px;line-height:1.75;}
 .q-text em{font-style:normal;color:var(--gold-d);font-weight:800;border-bottom:2px dotted var(--gold);}
+.q-text .wrong{color:var(--red);text-decoration:underline;text-decoration-style:wavy;font-weight:800;}
+.q-text .orig{color:#4a5a7a;font-size:.9em;}
+.q-text .kor-hint{display:block;background:#fef9c3;border-left:3px solid var(--gold);padding:6px 10px;border-radius:0 8px 8px 0;margin-bottom:8px;color:#854d0e;font-size:.9rem;font-weight:700;}
+
 .vocab{display:none;flex-wrap:wrap;gap:5px;margin-bottom:10px;}
 .vocab.show{display:flex;}
 .vw{font-size:.74rem;background:var(--gold-l);color:#92400e;border-radius:6px;padding:2px 8px;font-weight:600;}
 .vocab-toggle{background:none;border:1.5px solid var(--gold-d);color:var(--gold-d);border-radius:8px;padding:3px 10px;font-family:inherit;font-size:.72rem;font-weight:700;cursor:pointer;margin-bottom:6px;transition:all .15s;display:block;}
 .vocab-toggle:hover{background:var(--gold-l);}
-.blank{border:none;border-bottom:2.5px solid var(--gold-d);background:transparent;font-family:inherit;font-size:1rem;font-weight:700;color:var(--navy);padding:2px 8px;min-width:80px;text-align:center;outline:none;transition:.2s;display:inline-block;}
+
+.blank{border:none;border-bottom:2.5px solid var(--gold-d);background:transparent;font-family:inherit;font-size:1rem;font-weight:700;color:var(--navy);padding:2px 8px;min-width:100px;text-align:center;outline:none;transition:.2s;display:inline-block;}
 .blank:focus{border-color:var(--navy);}.blank.ok{border-color:var(--green);color:var(--green);background:#f0fdf4;border-radius:6px;}.blank.ng{border-color:var(--red);color:var(--red);background:#fef2f2;border-radius:6px;}
 .ex{font-size:.75rem;color:var(--gray);}
 .choices{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:4px;}
@@ -63,6 +120,7 @@ body{font-family:'Baloo 2','Noto Sans KR',sans-serif;background:var(--bg);paddin
 .hint-btn{background:none;border:none;color:var(--gray);font-family:inherit;font-size:.75rem;font-weight:600;cursor:pointer;padding:4px 0;margin-top:4px;display:block;}
 .hint-btn:hover{color:var(--gold-d);}
 .done-badge{position:absolute;top:12px;right:14px;font-size:1.2rem;animation:pop .3s ease;}
+
 #result{display:none;padding:0 20px;animation:fadein .4s;}
 .rc{background:linear-gradient(135deg,var(--navy-d),var(--navy-m));border-radius:24px;padding:28px 20px;text-align:center;color:#fff;margin-bottom:16px;}
 .rc .emoji{font-size:4rem;margin-bottom:8px;}.rc .title{font-size:1.5rem;font-weight:800;margin-bottom:4px;}
@@ -76,20 +134,30 @@ body{font-family:'Baloo 2','Noto Sans KR',sans-serif;background:var(--bg);paddin
 .rb{display:block;width:100%;padding:14px;border-radius:16px;border:none;background:var(--gold);color:var(--navy-d);font-family:inherit;font-weight:800;font-size:1rem;cursor:pointer;box-shadow:0 4px 14px rgba(245,158,11,.4);}
 #toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%) translateY(80px);background:var(--navy-d);color:#fff;padding:10px 22px;border-radius:20px;font-weight:700;font-size:.88rem;transition:transform .3s;z-index:999;pointer-events:none;white-space:nowrap;}
 #toast.show{transform:translateX(-50%) translateY(0);}#toast.ok{background:var(--green);}#toast.ng{background:var(--red);}
-.passage{background:#f5f7fd;border-radius:14px;padding:16px 18px;margin-bottom:14px;font-size:.92rem;color:#4a5a7a;line-height:1.9;border-left:4px solid var(--navy-m);}
-.passage .bl{color:var(--gold-d);font-weight:800;}
-.passage .ptitle{font-size:.72rem;font-weight:700;color:var(--navy-m);letter-spacing:1px;text-transform:uppercase;margin-bottom:8px;}
 @keyframes fadein{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}
 @keyframes pop{0%{transform:scale(.8)}70%{transform:scale(1.1)}100%{transform:scale(1)}}
+@media(max-width:480px){.header h1{font-size:1.7rem;}.h-letter.l-a{font-size:90px;}.h-letter.l-b{font-size:60px;}.h-letter.l-c{font-size:70px;}.h-letter.l-d{font-size:52px;}}
 </style>
 </head>
 <body>
 <div id="toast"></div>
+
+<!-- ✨ 헤더 -->
 <div class="header">
-  <div class="hbadge">⚡ Unit 05 심화</div>
-  <h1>be동사 과거형 <em>심화</em></h1>
-  <p>문맥을 읽고 was / were를 판단하세요 · 총 25문제</p>
+  <div class="h-orb o1"></div>
+  <div class="h-orb o2"></div>
+  <div class="h-letter l-a">W</div>
+  <div class="h-letter l-b">A</div>
+  <div class="h-letter l-c">S</div>
+  <div class="h-letter l-d">?</div>
+
+  <div class="header-inner">
+    <div class="hbadge"><span class="hbadge-dot"></span>Unit 04 · Advanced</div>
+    <h1>be동사 과거형 <em>심화</em></h1>
+    <p>문맥 파악 · 오류 수정 · 문장 전환 · 짧은 지문 · 총 25문제</p>
+  </div>
 </div>
+
 <div class="scoreboard">
   <div class="sc t"><div class="n" id="sc-t">0</div><div class="l">완료</div></div>
   <div class="sc c"><div class="n" id="sc-c">0</div><div class="l">✅ 정답</div></div>
@@ -100,16 +168,22 @@ body{font-family:'Baloo 2','Noto Sans KR',sans-serif;background:var(--bg);paddin
   <div class="pbg"><div class="pfill" id="pf" style="width:0%"></div></div>
 </div>
 <div class="tabs">
-  <button class="tab active" onclick="sw(0,this)">⚡ 문맥 파악 (15문제)</button>
-  <button class="tab" onclick="sw(1,this)">✏️ 짧은 지문 (10문제)</button>
+  <button class="tab active" onclick="sw(0,this)">⚡ 종합 훈련 (15문제)</button>
+  <button class="tab" onclick="sw(1,this)">📖 짧은 지문 (10문제)</button>
 </div>
 
-<!-- ── Section 0: 문맥 파악 혼합 ── -->
+<!-- ═══════════════════════════════════════
+     Section A : 종합 훈련 15문제
+       a1-a4  : 문맥 파악 mcq (was/were 선택)
+       a5-a8  : 오류 수정 (틀린 부분 고쳐쓰기)
+       a9-a11 : 문장 전환 (긍정→부정·의문, 현재→과거)
+       a12-a15: 우리말 → 영어 빈칸
+═══════════════════════════════════════ -->
 <div class="sec show" id="s0">
-  <div class="sec-hdr"><div class="lbl">Part 1 · 15문제</div><h2>문맥을 읽고 was / were 판단하기</h2><div class="desc">선택형(1–8) + 빈칸(9–15) · 앞뒤 문장이 힌트예요</div></div>
+  <div class="sec-hdr"><div class="lbl">Part 1 · 15문제</div><h2>종합 문법 훈련</h2><div class="desc">문맥 파악 · 오류 수정 · 문장 전환 · 우리말 영작</div></div>
 
-  <!-- Q1 MCQ -->
-  <div class="question-card" id="qc-a1"><span class="q-num">1</span>
+  <!-- ─── 문맥 파악 mcq (a1-a4) ─── -->
+  <div class="question-card" id="qc-a1"><span class="q-num">1</span><span class="q-type ctx">문맥 파악</span>
     <div class="q-text">The box on the shelf <em>___</em> empty. I couldn't find the cookies.</div>
     <div class="vocab"><span class="vw">shelf 선반</span><span class="vw">empty 텅 빈</span></div>
     <div class="choices" data-qid="a1" data-ans="was">
@@ -118,247 +192,318 @@ body{font-family:'Baloo 2','Noto Sans KR',sans-serif;background:var(--bg);paddin
       <button class="choice" onclick="pickChoice(this)">is</button>
       <button class="choice" onclick="pickChoice(this)">are</button>
     </div>
-    <div class="answer-hint" id="ah-a1">💡 정답: <strong>was</strong> — The box(단수) → was<br>📝 해석: 선반 위의 상자는 비어 있었다. 나는 쿠키를 찾을 수 없었다.</div>
+    <div class="answer-hint" id="ah-a1">💡 정답: <strong>was</strong> — The box(단수) + 과거 → was<br>📝 해석: 선반 위의 상자는 비어 있었다. 나는 쿠키를 찾을 수 없었다.</div>
     <button class="hint-btn" onclick="showHint('a1')">💡 힌트 보기</button>
   </div>
 
-  <!-- Q2 MCQ -->
-  <div class="question-card" id="qc-a2"><span class="q-num">2</span>
-    <div class="q-text">She <em>___</em> very proud of herself after winning first prize.</div>
-    <div class="vocab"><span class="vw">proud 자랑스러운</span><span class="vw">prize 상</span></div>
-    <div class="choices" data-qid="a2" data-ans="was">
+  <div class="question-card" id="qc-a2"><span class="q-num">2</span><span class="q-type ctx">문맥 파악</span>
+    <div class="q-text">Mia and her sister <em>___</em> at the library yesterday afternoon.</div>
+    <div class="vocab"><span class="vw">library 도서관</span><span class="vw">yesterday 어제</span></div>
+    <div class="choices" data-qid="a2" data-ans="were">
       <button class="choice" onclick="pickChoice(this)">was</button>
       <button class="choice" onclick="pickChoice(this)">were</button>
-      <button class="choice" onclick="pickChoice(this)">is</button>
       <button class="choice" onclick="pickChoice(this)">are</button>
+      <button class="choice" onclick="pickChoice(this)">is</button>
     </div>
-    <div class="answer-hint" id="ah-a2">💡 정답: <strong>was</strong> — She(단수) → was<br>📝 해석: 그녀는 1등 상을 딴 후 자기 자신이 매우 자랑스러웠다.</div>
+    <div class="answer-hint" id="ah-a2">💡 정답: <strong>were</strong> — Mia and her sister(복수) + 과거 → were<br>📝 해석: Mia와 언니는 어제 오후에 도서관에 있었다.</div>
     <button class="hint-btn" onclick="showHint('a2')">💡 힌트 보기</button>
   </div>
 
-  <!-- Q3 MCQ -->
-  <div class="question-card" id="qc-a3"><span class="q-num">3</span>
-    <div class="q-text">All of us <em>___</em> disappointed after the game.</div>
-    <div class="vocab"><span class="vw">disappointed 실망한</span></div>
-    <div class="choices" data-qid="a3" data-ans="were">
-      <button class="choice" onclick="pickChoice(this)">was</button>
-      <button class="choice" onclick="pickChoice(this)">were</button>
+  <div class="question-card" id="qc-a3"><span class="q-num">3</span><span class="q-type ctx">문맥 파악</span>
+    <div class="q-text">The soup <em>___</em> too salty, so I couldn't eat much of it.</div>
+    <div class="vocab"><span class="vw">soup 수프</span><span class="vw">salty 짠</span></div>
+    <div class="choices" data-qid="a3" data-ans="was">
       <button class="choice" onclick="pickChoice(this)">is</button>
+      <button class="choice" onclick="pickChoice(this)">were</button>
+      <button class="choice" onclick="pickChoice(this)">was</button>
       <button class="choice" onclick="pickChoice(this)">are</button>
     </div>
-    <div class="answer-hint" id="ah-a3">💡 정답: <strong>were</strong> — All of us(복수) → were<br>📝 해석: 우리 모두는 경기 후 실망했다.</div>
+    <div class="answer-hint" id="ah-a3">💡 정답: <strong>was</strong> — The soup(단수) + 과거(couldn't) → was<br>📝 해석: 수프가 너무 짜서 나는 많이 먹지 못했다.</div>
     <button class="hint-btn" onclick="showHint('a3')">💡 힌트 보기</button>
   </div>
 
-  <!-- Q4 MCQ -->
-  <div class="question-card" id="qc-a4"><span class="q-num">4</span>
-    <div class="q-text">My dog <em>___</em> sick. He didn't eat anything all day.</div>
-    <div class="vocab"><span class="vw">sick 아픈</span><span class="vw">all day 하루 종일</span></div>
-    <div class="choices" data-qid="a4" data-ans="was">
+  <div class="question-card" id="qc-a4"><span class="q-num">4</span><span class="q-type ctx">문맥 파악</span>
+    <div class="q-text">My friends <em>___</em> not at home last night. They went to a concert.</div>
+    <div class="vocab"><span class="vw">concert 콘서트</span><span class="vw">last night 어젯밤</span></div>
+    <div class="choices" data-qid="a4" data-ans="were">
       <button class="choice" onclick="pickChoice(this)">was</button>
+      <button class="choice" onclick="pickChoice(this)">are</button>
       <button class="choice" onclick="pickChoice(this)">were</button>
       <button class="choice" onclick="pickChoice(this)">is</button>
-      <button class="choice" onclick="pickChoice(this)">are</button>
     </div>
-    <div class="answer-hint" id="ah-a4">💡 정답: <strong>was</strong> — My dog(단수) → was<br>📝 해석: 내 강아지는 아팠다. 그는 하루 종일 아무것도 먹지 않았다.</div>
+    <div class="answer-hint" id="ah-a4">💡 정답: <strong>were</strong> — My friends(복수) + 과거(last night) → were<br>📝 해석: 내 친구들은 어젯밤 집에 없었다. 그들은 콘서트에 갔다.</div>
     <button class="hint-btn" onclick="showHint('a4')">💡 힌트 보기</button>
   </div>
 
-  <!-- Q5 MCQ -->
-  <div class="question-card" id="qc-a5"><span class="q-num">5</span>
-    <div class="q-text">All the chairs <em>___</em> taken. I had to stand.</div>
-    <div class="vocab"><span class="vw">taken 차지된</span><span class="vw">had to ~해야 했다</span></div>
-    <div class="choices" data-qid="a5" data-ans="were">
-      <button class="choice" onclick="pickChoice(this)">was</button>
-      <button class="choice" onclick="pickChoice(this)">were</button>
-      <button class="choice" onclick="pickChoice(this)">is</button>
-      <button class="choice" onclick="pickChoice(this)">are</button>
+  <!-- ─── 오류 수정 (a5-a8) ─── -->
+  <div class="question-card" id="qc-a5"><span class="q-num">5</span><span class="q-type fix">오류 수정</span>
+    <div class="q-text">
+      <span class="orig">❌ Jake and Liam <span class="wrong">was</span> in the same class last year.</span><br>
+      → 밑줄 친 부분을 바르게 고치세요:
+      <input class="blank" id="bi-a5" placeholder="___" data-ans="were" autocomplete="off" style="min-width:120px">
     </div>
-    <div class="answer-hint" id="ah-a5">💡 정답: <strong>were</strong> — All the chairs(복수) → were<br>📝 해석: 모든 의자가 차지되어 있었다. 나는 서 있어야 했다.</div>
+    <div class="vocab"><span class="vw">same 같은</span><span class="vw">class 반</span></div>
+    <button class="check-btn" onclick="checkBlank('a5')">✔ 확인</button>
+    <div class="answer-hint" id="ah-a5">💡 정답: <strong>were</strong> — 복수 주어(Jake and Liam) → was → were<br>📝 해석: Jake와 Liam은 작년에 같은 반이었다.</div>
     <button class="hint-btn" onclick="showHint('a5')">💡 힌트 보기</button>
   </div>
 
-  <!-- Q6 MCQ -->
-  <div class="question-card" id="qc-a6"><span class="q-num">6</span>
-    <div class="q-text">The library <em>___</em> closed on Sunday. I came back on Monday.</div>
-    <div class="vocab"><span class="vw">closed 문을 닫은</span><span class="vw">came back 다시 왔다</span></div>
-    <div class="choices" data-qid="a6" data-ans="was">
-      <button class="choice" onclick="pickChoice(this)">was</button>
-      <button class="choice" onclick="pickChoice(this)">were</button>
-      <button class="choice" onclick="pickChoice(this)">is</button>
-      <button class="choice" onclick="pickChoice(this)">are</button>
+  <div class="question-card" id="qc-a6"><span class="q-num">6</span><span class="q-type fix">오류 수정</span>
+    <div class="q-text">
+      <span class="orig">❌ Sophie <span class="wrong">were</span> very tired after the long flight.</span><br>
+      → 밑줄 친 부분을 바르게 고치세요:
+      <input class="blank" id="bi-a6" placeholder="___" data-ans="was" autocomplete="off" style="min-width:120px">
     </div>
-    <div class="answer-hint" id="ah-a6">💡 정답: <strong>was</strong> — The library(단수) → was<br>📝 해석: 도서관은 일요일에 닫혀 있었다. 나는 월요일에 다시 왔다.</div>
+    <div class="vocab"><span class="vw">tired 피곤한</span><span class="vw">flight 비행</span></div>
+    <button class="check-btn" onclick="checkBlank('a6')">✔ 확인</button>
+    <div class="answer-hint" id="ah-a6">💡 정답: <strong>was</strong> — 단수 주어(Sophie) → were → was<br>📝 해석: Sophie는 긴 비행 후에 매우 피곤했다.</div>
     <button class="hint-btn" onclick="showHint('a6')">💡 힌트 보기</button>
   </div>
 
-  <!-- Q7 MCQ -->
-  <div class="question-card" id="qc-a7"><span class="q-num">7</span>
-    <div class="q-text">The sneakers <em>___</em> too expensive. I put them back.</div>
-    <div class="vocab"><span class="vw">sneakers 운동화</span><span class="vw">expensive 비싼</span></div>
-    <div class="choices" data-qid="a7" data-ans="were">
-      <button class="choice" onclick="pickChoice(this)">was</button>
-      <button class="choice" onclick="pickChoice(this)">were</button>
-      <button class="choice" onclick="pickChoice(this)">is</button>
-      <button class="choice" onclick="pickChoice(this)">are</button>
+  <div class="question-card" id="qc-a7"><span class="q-num">7</span><span class="q-type fix">오류 수정</span>
+    <div class="q-text">
+      <span class="orig">❌ The cookies on the plate <span class="wrong">wasn't</span> sweet at all.</span><br>
+      → 밑줄 친 부분을 바르게 고치세요:
+      <input class="blank" id="bi-a7" placeholder="___" data-ans="weren't" autocomplete="off" style="min-width:130px">
     </div>
-    <div class="answer-hint" id="ah-a7">💡 정답: <strong>were</strong> — The sneakers(복수) → were<br>📝 해석: 그 운동화는 너무 비쌌다. 나는 그것들을 다시 놓았다.</div>
+    <div class="vocab"><span class="vw">plate 접시</span><span class="vw">sweet 달콤한</span></div>
+    <button class="check-btn" onclick="checkBlank('a7')">✔ 확인</button>
+    <div class="answer-hint" id="ah-a7">💡 정답: <strong>weren't</strong> (또는 were not) — 복수 주어(The cookies) 부정 → wasn't → weren't<br>📝 해석: 접시에 있던 쿠키들은 전혀 달지 않았다.</div>
     <button class="hint-btn" onclick="showHint('a7')">💡 힌트 보기</button>
   </div>
 
-  <!-- Q8 MCQ -->
-  <div class="question-card" id="qc-a8"><span class="q-num">8</span>
-    <div class="q-text">The window <em>___</em> open all night. That's why the floor got wet.</div>
-    <div class="vocab"><span class="vw">all night 밤새</span><span class="vw">floor 바닥</span><span class="vw">wet 젖은</span></div>
-    <div class="choices" data-qid="a8" data-ans="was">
-      <button class="choice" onclick="pickChoice(this)">was</button>
-      <button class="choice" onclick="pickChoice(this)">were</button>
-      <button class="choice" onclick="pickChoice(this)">is</button>
-      <button class="choice" onclick="pickChoice(this)">are</button>
+  <div class="question-card" id="qc-a8"><span class="q-num">8</span><span class="q-type fix">오류 수정</span>
+    <div class="q-text">
+      <span class="orig">❌ <span class="wrong">Was</span> you at the bus stop this morning?</span><br>
+      → 밑줄 친 부분을 바르게 고치세요:
+      <input class="blank" id="bi-a8" placeholder="___" data-ans="were" autocomplete="off" style="min-width:120px">
     </div>
-    <div class="answer-hint" id="ah-a8">💡 정답: <strong>was</strong> — The window(단수) → was<br>📝 해석: 창문은 밤새 열려 있었다. 그래서 바닥이 젖었다.</div>
+    <div class="vocab"><span class="vw">bus stop 버스 정류장</span><span class="vw">this morning 오늘 아침</span></div>
+    <button class="check-btn" onclick="checkBlank('a8')">✔ 확인</button>
+    <div class="answer-hint" id="ah-a8">💡 정답: <strong>were</strong> — 주어 you → 의문문 시작은 Were<br>📝 해석: 너는 오늘 아침에 버스 정류장에 있었니?</div>
     <button class="hint-btn" onclick="showHint('a8')">💡 힌트 보기</button>
   </div>
 
-  <!-- Q9 blank -->
-  <div class="question-card" id="qc-a9"><span class="q-num">9</span>
-    <div class="q-text">Sam <input class="blank" id="bi-a9" placeholder="___" data-ans="was not" autocomplete="off" style="min-width:110px"> well. The nurse called his parents. <span class="ex">(be, 부정형)</span></div>
-    <div class="vocab"><span class="vw">well 건강한</span><span class="vw">nurse 보건 교사</span></div>
+  <!-- ─── 문장 전환 (a9-a11) ─── -->
+  <div class="question-card" id="qc-a9"><span class="q-num">9</span><span class="q-type trans">문장 전환</span>
+    <div class="q-text">
+      <span class="orig">원문: The kids are in the playground now.</span><br>
+      → (과거형으로) The kids
+      <input class="blank" id="bi-a9" placeholder="___" data-ans="were" autocomplete="off" style="min-width:110px">
+      in the playground yesterday.
+    </div>
+    <div class="vocab"><span class="vw">playground 놀이터</span></div>
     <button class="check-btn" onclick="checkBlank('a9')">✔ 확인</button>
-    <div class="answer-hint" id="ah-a9">💡 정답: <strong>was not</strong> — Sam(단수, 과거 부정) → was not / wasn't도 정답<br>📝 해석: Sam은 몸이 좋지 않았다. 보건 교사가 그의 부모님께 전화했다.</div>
+    <div class="answer-hint" id="ah-a9">💡 정답: <strong>were</strong> — 복수 주어 + 과거(yesterday) → are → were<br>📝 해석: 그 아이들은 어제 놀이터에 있었다.</div>
     <button class="hint-btn" onclick="showHint('a9')">💡 힌트 보기</button>
   </div>
 
-  <!-- Q10 blank -->
-  <div class="question-card" id="qc-a10"><span class="q-num">10</span>
-    <div class="q-text">We <input class="blank" id="bi-a10" placeholder="___" data-ans="were" autocomplete="off" style="min-width:90px"> very excited about the school trip.</div>
-    <div class="vocab"><span class="vw">excited 신이 난</span><span class="vw">school trip 수학여행</span></div>
+  <div class="question-card" id="qc-a10"><span class="q-num">10</span><span class="q-type trans">문장 전환</span>
+    <div class="q-text">
+      <span class="orig">원문: Minjeong was a member of the drama club.</span><br>
+      → (부정문으로) Minjeong
+      <input class="blank" id="bi-a10" placeholder="___" data-ans="was not" autocomplete="off" style="min-width:140px">
+      a member of the drama club.
+    </div>
+    <div class="vocab"><span class="vw">member 회원</span><span class="vw">drama club 연극 동아리</span></div>
     <button class="check-btn" onclick="checkBlank('a10')">✔ 확인</button>
-    <div class="answer-hint" id="ah-a10">💡 정답: <strong>were</strong> — We(복수) → were<br>📝 해석: 우리는 수학여행이 매우 기대되었다.</div>
+    <div class="answer-hint" id="ah-a10">💡 정답: <strong>was not</strong> (또는 wasn't) — 단수 was 부정 → was not<br>📝 해석: 민정이는 연극 동아리 회원이 아니었다.</div>
     <button class="hint-btn" onclick="showHint('a10')">💡 힌트 보기</button>
   </div>
 
-  <!-- Q11 blank -->
-  <div class="question-card" id="qc-a11"><span class="q-num">11</span>
-    <div class="q-text">My key <input class="blank" id="bi-a11" placeholder="___" data-ans="was not" autocomplete="off" style="min-width:110px"> in my bag. I found it in my pocket. <span class="ex">(be, 부정형)</span></div>
-    <div class="vocab"><span class="vw">key 열쇠</span><span class="vw">pocket 주머니</span></div>
+  <div class="question-card" id="qc-a11"><span class="q-num">11</span><span class="q-type trans">문장 전환</span>
+    <div class="q-text">
+      <span class="orig">원문: Your parents were at the school festival.</span><br>
+      → (의문문으로)
+      <input class="blank" id="bi-a11" placeholder="___" data-ans="were your parents" autocomplete="off" style="min-width:200px">
+      at the school festival?
+    </div>
+    <div class="vocab"><span class="vw">parents 부모님</span><span class="vw">festival 축제</span></div>
     <button class="check-btn" onclick="checkBlank('a11')">✔ 확인</button>
-    <div class="answer-hint" id="ah-a11">💡 정답: <strong>was not</strong> — My key(단수, 과거 부정) → was not / wasn't도 정답<br>📝 해석: 내 열쇠는 가방에 없었다. 나는 그것을 주머니에서 찾았다.</div>
+    <div class="answer-hint" id="ah-a11">💡 정답: <strong>Were your parents</strong> — be동사 의문문: Were + 주어<br>📝 해석: 너의 부모님은 학교 축제에 계셨니?</div>
     <button class="hint-btn" onclick="showHint('a11')">💡 힌트 보기</button>
   </div>
 
-  <!-- Q12 blank -->
-  <div class="question-card" id="qc-a12"><span class="q-num">12</span>
-    <div class="q-text">It <input class="blank" id="bi-a12" placeholder="___" data-ans="was" autocomplete="off" style="min-width:90px"> my first time on an airplane. I was very nervous.</div>
-    <div class="vocab"><span class="vw">airplane 비행기</span><span class="vw">nervous 긴장한</span></div>
+  <!-- ─── 우리말 → 영어 (a12-a15) ─── -->
+  <div class="question-card" id="qc-a12"><span class="q-num">12</span><span class="q-type kor">우리말 영작</span>
+    <div class="q-text">
+      <span class="kor-hint">🇰🇷 어제 날씨는 매우 추웠다.</span>
+      The weather
+      <input class="blank" id="bi-a12" placeholder="___" data-ans="was" autocomplete="off" style="min-width:110px">
+      very cold yesterday. <span class="ex">(be)</span>
+    </div>
+    <div class="vocab"><span class="vw">weather 날씨</span><span class="vw">cold 추운</span></div>
     <button class="check-btn" onclick="checkBlank('a12')">✔ 확인</button>
-    <div class="answer-hint" id="ah-a12">💡 정답: <strong>was</strong> — It(단수, 과거) → was<br>📝 해석: 그것은 비행기를 처음 타는 것이었다. 나는 매우 긴장했다.</div>
+    <div class="answer-hint" id="ah-a12">💡 정답: <strong>was</strong> — The weather(단수) + 과거 → was<br>📝 해석: 어제 날씨는 매우 추웠다.</div>
     <button class="hint-btn" onclick="showHint('a12')">💡 힌트 보기</button>
   </div>
 
-  <!-- Q13 blank -->
-  <div class="question-card" id="qc-a13"><span class="q-num">13</span>
-    <div class="q-text">My mom <input class="blank" id="bi-a13" placeholder="___" data-ans="was" autocomplete="off" style="min-width:90px"> an honest person. She never lied to me.</div>
-    <div class="vocab"><span class="vw">honest 정직한</span><span class="vw">lied 거짓말했다</span></div>
+  <div class="question-card" id="qc-a13"><span class="q-num">13</span><span class="q-type kor">우리말 영작</span>
+    <div class="q-text">
+      <span class="kor-hint">🇰🇷 우리는 지난 주말에 집에 있지 않았다.</span>
+      We
+      <input class="blank" id="bi-a13" placeholder="___" data-ans="were not" autocomplete="off" style="min-width:150px">
+      at home last weekend. <span class="ex">(be, 부정형)</span>
+    </div>
+    <div class="vocab"><span class="vw">last weekend 지난 주말</span></div>
     <button class="check-btn" onclick="checkBlank('a13')">✔ 확인</button>
-    <div class="answer-hint" id="ah-a13">💡 정답: <strong>was</strong> — My mom(단수, 과거) → was<br>📝 해석: 우리 엄마는 정직한 사람이었다. 그녀는 나에게 절대 거짓말을 하지 않았다.</div>
+    <div class="answer-hint" id="ah-a13">💡 정답: <strong>were not</strong> (또는 weren't) — 복수 We + 과거 부정 → were not<br>📝 해석: 우리는 지난 주말에 집에 있지 않았다.</div>
     <button class="hint-btn" onclick="showHint('a13')">💡 힌트 보기</button>
   </div>
 
-  <!-- Q14 blank -->
-  <div class="question-card" id="qc-a14"><span class="q-num">14</span>
-    <div class="q-text">Mia <input class="blank" id="bi-a14" placeholder="___" data-ans="was" autocomplete="off" style="min-width:90px"> the only student who stayed to help the teacher.</div>
-    <div class="vocab"><span class="vw">the only 유일한</span><span class="vw">stayed 남았다</span></div>
+  <div class="question-card" id="qc-a14"><span class="q-num">14</span><span class="q-type kor">우리말 영작</span>
+    <div class="q-text">
+      <span class="kor-hint">🇰🇷 그는 지난 달에 아팠니?</span>
+      <input class="blank" id="bi-a14" placeholder="___" data-ans="was he" autocomplete="off" style="min-width:130px">
+      sick last month? <span class="ex">(be)</span>
+    </div>
+    <div class="vocab"><span class="vw">sick 아픈</span><span class="vw">last month 지난 달</span></div>
     <button class="check-btn" onclick="checkBlank('a14')">✔ 확인</button>
-    <div class="answer-hint" id="ah-a14">💡 정답: <strong>was</strong> — Mia(단수, 과거) → was<br>📝 해석: Mia는 선생님을 도우려고 남은 유일한 학생이었다.</div>
+    <div class="answer-hint" id="ah-a14">💡 정답: <strong>Was he</strong> — 단수 주어(he) + 과거 의문문 → Was + he<br>📝 해석: 그는 지난 달에 아팠니?</div>
     <button class="hint-btn" onclick="showHint('a14')">💡 힌트 보기</button>
   </div>
 
-  <!-- Q15 blank -->
-  <div class="question-card" id="qc-a15"><span class="q-num">15</span>
-    <div class="q-text">The players <input class="blank" id="bi-a15" placeholder="___" data-ans="were" autocomplete="off" style="min-width:90px"> tired and thirsty after practice.</div>
-    <div class="vocab"><span class="vw">player 선수</span><span class="vw">thirsty 목마른</span><span class="vw">practice 훈련</span></div>
+  <div class="question-card" id="qc-a15"><span class="q-num">15</span><span class="q-type kor">우리말 영작</span>
+    <div class="q-text">
+      <span class="kor-hint">🇰🇷 그 신발들은 우리 형의 것이었다.</span>
+      The shoes
+      <input class="blank" id="bi-a15" placeholder="___" data-ans="were" autocomplete="off" style="min-width:110px">
+      my brother's. <span class="ex">(be)</span>
+    </div>
+    <div class="vocab"><span class="vw">shoes 신발</span><span class="vw">brother 형</span></div>
     <button class="check-btn" onclick="checkBlank('a15')">✔ 확인</button>
-    <div class="answer-hint" id="ah-a15">💡 정답: <strong>were</strong> — The players(복수, 과거) → were<br>📝 해석: 선수들은 훈련 후 피곤하고 목이 말랐다.</div>
+    <div class="answer-hint" id="ah-a15">💡 정답: <strong>were</strong> — The shoes(복수) + 과거 → were<br>📝 해석: 그 신발들은 우리 형의 것이었다.</div>
     <button class="hint-btn" onclick="showHint('a15')">💡 힌트 보기</button>
   </div>
 </div>
 
-<!-- ── Section 1: 짧은 지문 빈칸 채우기 ── -->
+<!-- ═══════════════════════════════════════
+     Section B : 짧은 지문 10문제
+       b1-b5  : Passage A — 소풍날 일기 (긍정·부정 혼합)
+       b6-b10 : Passage B — 친구 집 방문 (의문문 포함)
+═══════════════════════════════════════ -->
 <div class="sec" id="s1">
-  <div class="sec-hdr"><div class="lbl">Part 2 · 10문제</div><h2>짧은 지문 읽고 빈칸 채우기</h2><div class="desc">앞뒤 문맥을 읽고 was / were를 빈칸에 직접 쓰세요</div></div>
+  <div class="sec-hdr"><div class="lbl">Part 2 · 10문제</div><h2>짧은 지문 읽고 빈칸 채우기</h2><div class="desc">지문의 흐름을 읽고 was / were / wasn't / weren't를 알맞게 써넣으세요</div></div>
 
-  <div class="question-card" id="qc-b1"><span class="q-num">16</span>
-    <div class="q-text">The weather <input class="blank" id="bi-b1" placeholder="___" data-ans="was" autocomplete="off" style="min-width:80px"> perfect — sunny and warm.</div>
+  <!-- ── Passage A (b1–b5) ── -->
+  <div class="passage">
+    <div class="ptitle">📖 Passage A · My Picnic Day</div>
+    Last Sunday <span class="num">1</span> a perfect day for a picnic. My brother and I <span class="num">2</span> very excited. The sky <span class="num">3</span> clear and blue. But the sandwiches <span class="num">4</span> fresh — my mom forgot to use new bread! Still, the whole day <span class="num">5</span> a wonderful memory.
+  </div>
+
+  <div class="question-card" id="qc-b1"><span class="q-num">16</span><span class="q-type ctx">지문 · 1번</span>
+    <div class="q-text">Last Sunday
+      <input class="blank" id="bi-b1" placeholder="___" data-ans="was" autocomplete="off" style="min-width:110px">
+      a perfect day for a picnic. <span class="ex">(be)</span>
+    </div>
+    <div class="vocab"><span class="vw">perfect 완벽한</span><span class="vw">picnic 소풍</span></div>
     <button class="check-btn" onclick="checkBlank('b1')">✔ 확인</button>
-    <div class="answer-hint" id="ah-b1">💡 정답: <strong>was</strong> — The weather(단수, 과거) → was<br>📝 해석: 날씨는 완벽했다 — 맑고 따뜻했다.</div>
+    <div class="answer-hint" id="ah-b1">💡 정답: <strong>was</strong> — Last Sunday(단수) + 과거 → was<br>📝 해석: 지난 일요일은 소풍을 가기에 완벽한 날이었다.</div>
     <button class="hint-btn" onclick="showHint('b1')">💡 힌트 보기</button>
   </div>
 
-  <div class="question-card" id="qc-b2"><span class="q-num">17</span>
-    <div class="q-text">The sandwiches my mom made <input class="blank" id="bi-b2" placeholder="___" data-ans="were" autocomplete="off" style="min-width:80px"> so delicious.</div>
+  <div class="question-card" id="qc-b2"><span class="q-num">17</span><span class="q-type ctx">지문 · 2번</span>
+    <div class="q-text">My brother and I
+      <input class="blank" id="bi-b2" placeholder="___" data-ans="were" autocomplete="off" style="min-width:110px">
+      very excited. <span class="ex">(be)</span>
+    </div>
+    <div class="vocab"><span class="vw">excited 신이 난</span></div>
     <button class="check-btn" onclick="checkBlank('b2')">✔ 확인</button>
-    <div class="answer-hint" id="ah-b2">💡 정답: <strong>were</strong> — The sandwiches(복수, 과거) → were<br>📝 해석: 엄마가 만든 샌드위치는 정말 맛있었다.</div>
+    <div class="answer-hint" id="ah-b2">💡 정답: <strong>were</strong> — 복수 주어(My brother and I) + 과거 → were<br>📝 해석: 내 남동생과 나는 매우 신이 나 있었다.</div>
     <button class="hint-btn" onclick="showHint('b2')">💡 힌트 보기</button>
   </div>
 
-  <div class="question-card" id="qc-b3"><span class="q-num">18</span>
-    <div class="q-text">The park <input class="blank" id="bi-b3" placeholder="___" data-ans="was" autocomplete="off" style="min-width:80px"> full of other families, too.</div>
+  <div class="question-card" id="qc-b3"><span class="q-num">18</span><span class="q-type ctx">지문 · 3번</span>
+    <div class="q-text">The sky
+      <input class="blank" id="bi-b3" placeholder="___" data-ans="was" autocomplete="off" style="min-width:110px">
+      clear and blue. <span class="ex">(be)</span>
+    </div>
+    <div class="vocab"><span class="vw">sky 하늘</span><span class="vw">clear 맑은</span></div>
     <button class="check-btn" onclick="checkBlank('b3')">✔ 확인</button>
-    <div class="answer-hint" id="ah-b3">💡 정답: <strong>was</strong> — The park(단수, 과거) → was<br>📝 해석: 공원도 다른 가족들로 가득했다.</div>
+    <div class="answer-hint" id="ah-b3">💡 정답: <strong>was</strong> — The sky(단수) + 과거 → was<br>📝 해석: 하늘은 맑고 푸르렀다.</div>
     <button class="hint-btn" onclick="showHint('b3')">💡 힌트 보기</button>
   </div>
 
-  <div class="question-card" id="qc-b4"><span class="q-num">19</span>
-    <div class="q-text">Yesterday <input class="blank" id="bi-b4" placeholder="___" data-ans="was" autocomplete="off" style="min-width:80px"> a really bad day for me.</div>
+  <div class="question-card" id="qc-b4"><span class="q-num">19</span><span class="q-type ctx">지문 · 4번</span>
+    <div class="q-text">But the sandwiches
+      <input class="blank" id="bi-b4" placeholder="___" data-ans="weren't" autocomplete="off" style="min-width:130px">
+      fresh — my mom forgot to use new bread! <span class="ex">(be, 부정형)</span>
+    </div>
+    <div class="vocab"><span class="vw">sandwich 샌드위치</span><span class="vw">fresh 신선한</span><span class="vw">bread 빵</span></div>
     <button class="check-btn" onclick="checkBlank('b4')">✔ 확인</button>
-    <div class="answer-hint" id="ah-b4">💡 정답: <strong>was</strong> — Yesterday(단수, 과거) → was<br>📝 해석: 어제는 나에게 정말 힘든 날이었다.</div>
+    <div class="answer-hint" id="ah-b4">💡 정답: <strong>weren't</strong> (또는 were not) — 복수 주어 + 과거 부정<br>📝 해석: 그런데 샌드위치는 신선하지 않았다 — 엄마가 새 빵을 쓰는 걸 깜빡하셨다!</div>
     <button class="hint-btn" onclick="showHint('b4')">💡 힌트 보기</button>
   </div>
 
-  <div class="question-card" id="qc-b5"><span class="q-num">20</span>
-    <div class="q-text">I <input class="blank" id="bi-b5" placeholder="___" data-ans="was" autocomplete="off" style="min-width:80px"> late for school because I missed the bus.</div>
+  <div class="question-card" id="qc-b5"><span class="q-num">20</span><span class="q-type ctx">지문 · 5번</span>
+    <div class="q-text">Still, the whole day
+      <input class="blank" id="bi-b5" placeholder="___" data-ans="was" autocomplete="off" style="min-width:110px">
+      a wonderful memory. <span class="ex">(be)</span>
+    </div>
+    <div class="vocab"><span class="vw">whole 전체의</span><span class="vw">memory 추억</span></div>
     <button class="check-btn" onclick="checkBlank('b5')">✔ 확인</button>
-    <div class="answer-hint" id="ah-b5">💡 정답: <strong>was</strong> — I(1인칭 단수, 과거) → was<br>📝 해석: 나는 버스를 놓쳐서 학교에 지각했다.</div>
+    <div class="answer-hint" id="ah-b5">💡 정답: <strong>was</strong> — the whole day(단수) + 과거 → was<br>📝 해석: 그래도 그날 하루 전체가 멋진 추억이었다.</div>
     <button class="hint-btn" onclick="showHint('b5')">💡 힌트 보기</button>
   </div>
 
-  <div class="question-card" id="qc-b6"><span class="q-num">21</span>
-    <div class="q-text">The bus <input class="blank" id="bi-b6" placeholder="___" data-ans="was" autocomplete="off" style="min-width:80px"> early that morning, and I couldn't catch it.</div>
+  <!-- ── Passage B (b6–b10) ── -->
+  <div class="passage" style="margin-top:18px;">
+    <div class="ptitle">📖 Passage B · At Jaeho's House</div>
+    <span class="num">6</span> you at Jaeho's house last night? I called you, but you <span class="num">7</span> at home. Jaeho's parents <span class="num">8</span> on a trip, so only he and his dog <span class="num">9</span> there. The living room <span class="num">10</span> full of pizza and board games!
+  </div>
+
+  <div class="question-card" id="qc-b6"><span class="q-num">21</span><span class="q-type ctx">지문 · 6번</span>
+    <div class="q-text">
+      <input class="blank" id="bi-b6" placeholder="___" data-ans="were" autocomplete="off" style="min-width:110px">
+      you at Jaeho's house last night? <span class="ex">(be)</span>
+    </div>
+    <div class="vocab"><span class="vw">last night 어젯밤</span></div>
     <button class="check-btn" onclick="checkBlank('b6')">✔ 확인</button>
-    <div class="answer-hint" id="ah-b6">💡 정답: <strong>was</strong> — The bus(단수, 과거) → was<br>📝 해석: 그날 아침 버스가 일찍 왔고, 나는 그것을 탈 수 없었다.</div>
+    <div class="answer-hint" id="ah-b6">💡 정답: <strong>Were</strong> — 주어 you + 과거 의문문 → Were<br>📝 해석: 너는 어젯밤 재호네 집에 있었니?</div>
     <button class="hint-btn" onclick="showHint('b6')">💡 힌트 보기</button>
   </div>
 
-  <div class="question-card" id="qc-b7"><span class="q-num">22</span>
-    <div class="q-text">The costumes <input class="blank" id="bi-b7" placeholder="___" data-ans="were" autocomplete="off" style="min-width:80px"> beautiful.</div>
-    <div class="vocab"><span class="vw">costume 의상</span></div>
+  <div class="question-card" id="qc-b7"><span class="q-num">22</span><span class="q-type ctx">지문 · 7번</span>
+    <div class="q-text">I called you, but you
+      <input class="blank" id="bi-b7" placeholder="___" data-ans="weren't" autocomplete="off" style="min-width:130px">
+      at home. <span class="ex">(be, 부정형)</span>
+    </div>
+    <div class="vocab"><span class="vw">call 전화하다</span></div>
     <button class="check-btn" onclick="checkBlank('b7')">✔ 확인</button>
-    <div class="answer-hint" id="ah-b7">💡 정답: <strong>were</strong> — The costumes(복수, 과거) → were<br>📝 해석: 의상은 아름다웠다.</div>
+    <div class="answer-hint" id="ah-b7">💡 정답: <strong>weren't</strong> (또는 were not) — you + 과거 부정 → weren't<br>📝 해석: 내가 너에게 전화했는데, 너는 집에 없었다.</div>
     <button class="hint-btn" onclick="showHint('b7')">💡 힌트 보기</button>
   </div>
 
-  <div class="question-card" id="qc-b8"><span class="q-num">23</span>
-    <div class="q-text">The actors <input class="blank" id="bi-b8" placeholder="___" data-ans="were" autocomplete="off" style="min-width:80px"> very confident on stage.</div>
-    <div class="vocab"><span class="vw">actor 배우</span><span class="vw">confident 자신감 있는</span><span class="vw">stage 무대</span></div>
+  <div class="question-card" id="qc-b8"><span class="q-num">23</span><span class="q-type ctx">지문 · 8번</span>
+    <div class="q-text">Jaeho's parents
+      <input class="blank" id="bi-b8" placeholder="___" data-ans="were" autocomplete="off" style="min-width:110px">
+      on a trip. <span class="ex">(be)</span>
+    </div>
+    <div class="vocab"><span class="vw">parents 부모님</span><span class="vw">trip 여행</span></div>
     <button class="check-btn" onclick="checkBlank('b8')">✔ 확인</button>
-    <div class="answer-hint" id="ah-b8">💡 정답: <strong>were</strong> — The actors(복수, 과거) → were<br>📝 해석: 배우들은 무대 위에서 매우 자신감이 있었다.</div>
+    <div class="answer-hint" id="ah-b8">💡 정답: <strong>were</strong> — parents(복수) + 과거 → were<br>📝 해석: 재호의 부모님은 여행 중이셨다.</div>
     <button class="hint-btn" onclick="showHint('b8')">💡 힌트 보기</button>
   </div>
 
-  <div class="question-card" id="qc-b9"><span class="q-num">24</span>
-    <div class="q-text">The audience <input class="blank" id="bi-b9" placeholder="___" data-ans="was not" autocomplete="off" style="min-width:110px"> big — only parents and teachers. <span class="ex">(be, 부정형)</span></div>
-    <div class="vocab"><span class="vw">audience 관객</span></div>
+  <div class="question-card" id="qc-b9"><span class="q-num">24</span><span class="q-type ctx">지문 · 9번</span>
+    <div class="q-text">…so only he and his dog
+      <input class="blank" id="bi-b9" placeholder="___" data-ans="were" autocomplete="off" style="min-width:110px">
+      there. <span class="ex">(be)</span>
+    </div>
+    <div class="vocab"><span class="vw">only 오직</span><span class="vw">there 거기에</span></div>
     <button class="check-btn" onclick="checkBlank('b9')">✔ 확인</button>
-    <div class="answer-hint" id="ah-b9">💡 정답: <strong>was not</strong> — The audience(단수 집합명사, 과거 부정) → was not / wasn't도 정답<br>📝 해석: 관객은 많지 않았다 — 부모님과 선생님들뿐이었다.</div>
+    <div class="answer-hint" id="ah-b9">💡 정답: <strong>were</strong> — he and his dog(복수) + 과거 → were<br>📝 해석: 그래서 오직 그와 그의 강아지만 그곳에 있었다.</div>
     <button class="hint-btn" onclick="showHint('b9')">💡 힌트 보기</button>
   </div>
 
-  <div class="question-card" id="qc-b10"><span class="q-num">25</span>
-    <div class="q-text">Everyone <input class="blank" id="bi-b10" placeholder="___" data-ans="was" autocomplete="off" style="min-width:80px"> happy with the performance.</div>
-    <div class="vocab"><span class="vw">everyone 모든 사람</span><span class="vw">performance 공연</span></div>
+  <div class="question-card" id="qc-b10"><span class="q-num">25</span><span class="q-type ctx">지문 · 10번</span>
+    <div class="q-text">The living room
+      <input class="blank" id="bi-b10" placeholder="___" data-ans="was" autocomplete="off" style="min-width:110px">
+      full of pizza and board games! <span class="ex">(be)</span>
+    </div>
+    <div class="vocab"><span class="vw">living room 거실</span><span class="vw">board game 보드게임</span></div>
     <button class="check-btn" onclick="checkBlank('b10')">✔ 확인</button>
-    <div class="answer-hint" id="ah-b10">💡 정답: <strong>was</strong> — Everyone(단수 취급, 과거) → was<br>📝 해석: 모든 사람이 공연에 만족했다.</div>
+    <div class="answer-hint" id="ah-b10">💡 정답: <strong>was</strong> — The living room(단수) + 과거 → was<br>📝 해석: 거실은 피자와 보드게임으로 가득했다!</div>
     <button class="hint-btn" onclick="showHint('b10')">💡 힌트 보기</button>
   </div>
 </div>
@@ -382,7 +527,6 @@ var answered={},correct=0,wrong=0;
 
 function norm(s){
   s=s.trim().toLowerCase().replace(/\s+/g,' ');
-  s=s.replace(/\([a-d]\)\s*/gi,'');
   s=s.replace(/isn't/g,'is not').replace(/aren't/g,'are not')
      .replace(/wasn't/g,'was not').replace(/weren't/g,'were not')
      .replace(/don't/g,'do not').replace(/doesn't/g,'does not')
@@ -396,6 +540,7 @@ function sw(i,btn){
   document.querySelectorAll('.tab').forEach(function(b){b.classList.remove('active');});
   document.getElementById('s'+i).classList.add('show');
   btn.classList.add('active');
+  window.scrollTo({top:0,behavior:'smooth'});
 }
 function showHint(k){document.getElementById('ah-'+k).classList.add('show');}
 
@@ -474,7 +619,6 @@ function showResult(){
       return '<div class="ri">내가 쓴 것: <span class="ma">'+(v.my||'(없음)')+'</span> → 정답: <span class="ca">'+v.right+'</span></div>';
     }).join('');
   }
-  // 섹션별 팝업으로 대체됨
 }
 function toast(msg,type){
   var t=document.getElementById('toast');

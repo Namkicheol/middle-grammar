@@ -410,7 +410,7 @@ function checkBlank(k) {
     let allGot = true;
     inps.forEach(inp => {
         inp.disabled = true;
-        if(!window._norm){window._norm=function(s){s=s.trim().toLowerCase().replace(/\s+/g,' ');s=s.replace(/isn't/g,'is not').replace(/aren't/g,'are not').replace(/wasn't/g,'was not').replace(/weren't/g,'were not').replace(/don't/g,'do not').replace(/doesn't/g,'does not').replace(/didn't/g,'did not').replace(/won't/g,'will not').replace(/shouldn't/g,'should not').replace(/can't/g,'cannot');return s;};}
+        if(!window._norm){window._norm=function(s){s=s.trim().toLowerCase().replace(/\s+/g,' ');s=s.replace(/[''ʼ]/g,"'");s=s.replace(/isn't/g,'is not').replace(/aren't/g,'are not').replace(/wasn't/g,'was not').replace(/weren't/g,'were not').replace(/don't/g,'do not').replace(/doesn't/g,'does not').replace(/didn't/g,'did not').replace(/won't/g,'will not').replace(/shouldn't/g,'should not').replace(/can't/g,'cannot');return s;};}
         var typed = window._norm(inp.value);
         var ans = window._norm(inp.dataset.ans);
         var got = (typed === ans || (inp.dataset.ans2 && typed === window._norm(inp.dataset.ans2)));

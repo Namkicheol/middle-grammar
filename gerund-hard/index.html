@@ -293,7 +293,7 @@ const vocabMap = {
   8:[{w:'fix',k:'고치다'},{w:'computer',k:'컴퓨터'}],
   9:[{w:'mirror',k:'거울'}],
   10:[{w:'restaurant',k:'식당'}],
-  13:[{w:'letter',k:'편지'}],
+
   15:[{w:'lie',k:'거짓말하다'}],
   19:[{w:'piano',k:'피아노'}],
   20:[{w:'shine',k:'빛나다'},{w:'brightly',k:'밝게'}],
@@ -308,7 +308,7 @@ const vocabMap = {
   29:[{w:'Chinese',k:'중국어'},{w:'difficult',k:'어려운'}],
   30:[{w:'mind + -ing',k:'~하는 것을 꺼리다'},{w:'turn off',k:'(불을) 끄다'}],
   32:[{w:'goal',k:'목표'},{w:'master',k:'완전히 익히다'}],
-  33:[{w:'be good at',k:'~를 잘하다'},{w:'solve',k:'풀다'}],
+
   35:[{w:'keep + -ing',k:'계속 ~하다'}],
   36:[{w:'look forward to',k:'~를 고대하다'}],
   39:[{w:'tiring',k:'피곤하게 만드는'}],
@@ -479,7 +479,7 @@ function mark(k, got) {
     var b = document.createElement('div');
     b.className = 'done-badge'; b.textContent = got ? '✅' : '❌';
     card.appendChild(b);
-    var n = parseInt(k.slice(1)), si = n < 20 ? 0 : n < 40 ? 1 : 2;
+    var n = parseInt(k.slice(1)), si = n <= 20 ? 0 : n <= 40 ? 1 : 2;
     if (got) { correct++; secC[si]++; toast('🎉 정답!','ok'); }
     else { wrong++; secW[si]++; document.getElementById('ah-'+k).classList.add('show'); toast('틀렸어요! 정답/해설 확인 👆','ng'); }
     var done = correct+wrong;

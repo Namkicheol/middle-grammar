@@ -1,5 +1,6 @@
 (function () {
   var _ctx = null;
+  var _unlocked = false;
   var _lastResult = 0;
   var _lastOk = 0;
   var _lastNg = 0;
@@ -13,20 +14,37 @@
     return _ctx;
   }
 
-  // iOS Safari 포함 모바일 잠금 해제 — 무음 버퍼 재생
+  // cross-origin iframe + iOS Safari 대응: 모든 주요 제스처에 대해 재시도
   function unlock() {
-    document.removeEventListener('touchstart', unlock, true);
-    document.removeEventListener('click', unlock, true);
     var c = ac(); if (!c) return;
-    var buf = c.createBuffer(1, 1, 22050);
-    var src = c.createBufferSource();
-    src.buffer = buf;
-    src.connect(c.destination);
-    src.start(0);
-    if (c.state === 'suspended') c.resume().catch(function () {});
+    try {
+      var buf = c.createBuffer(1, 1, 22050);
+      var src = c.createBufferSource();
+      src.buffer = buf;
+      src.connect(c.destination);
+      src.start(0);
+    } catch (e) {}
+    if (c.state === 'suspended') {
+      c.resume().then(function () { _unlocked = true; }).catch(function () {});
+    } else if (c.state === 'running') {
+      _unlocked = true;
+    }
+    if (_unlocked) removeUnlockListeners();
   }
-  document.addEventListener('touchstart', unlock, true);
-  document.addEventListener('click', unlock, true);
+  var _events = ['touchstart', 'touchend', 'pointerdown', 'mousedown', 'click', 'keydown'];
+  function addUnlockListeners() {
+    _events.forEach(function (ev) {
+      document.addEventListener(ev, unlock, true);
+      window.addEventListener(ev, unlock, true);
+    });
+  }
+  function removeUnlockListeners() {
+    _events.forEach(function (ev) {
+      document.removeEventListener(ev, unlock, true);
+      window.removeEventListener(ev, unlock, true);
+    });
+  }
+  addUnlockListeners();
 
   function tone(freq, type, t0, dur, vol) {
     var c = ac(); if (!c) return;

@@ -535,6 +535,7 @@ var answered={},correct=0,wrong=0;
 
 function norm(s){
   s=s.trim().toLowerCase().replace(/\s+/g,' ');
+  s=s.replace(/[‘’ʼ]/g,"'");
   s=s.replace(/isn't/g,'is not').replace(/aren't/g,'are not')
      .replace(/wasn't/g,'was not').replace(/weren't/g,'were not')
      .replace(/don't/g,'do not').replace(/doesn't/g,'does not')

@@ -184,15 +184,15 @@ body{font-family:'Baloo 2','Noto Sans KR',sans-serif;background:var(--bg);paddin
 
   <!-- ─── 문맥 파악 mcq (a1-a4) ─── -->
   <div class="question-card" id="qc-a1"><span class="q-num">1</span><span class="q-type ctx">문맥 파악</span>
-    <div class="q-text">Ellie called her sister <em>___</em> her about the party.</div>
-    <div class="vocab"><span class="vw">sister 여동생, 누나</span><span class="vw">party 파티</span></div>
-    <div class="choices" data-qid="a1" data-ans="to tell">
-      <button class="choice" onclick="pickChoice(this)">tell</button>
-      <button class="choice" onclick="pickChoice(this)">to tell</button>
-      <button class="choice" onclick="pickChoice(this)">telling</button>
-      <button class="choice" onclick="pickChoice(this)">told</button>
+    <div class="q-text">Sophia texted her cousin <em>___</em> him to the K-pop concert.</div>
+    <div class="vocab"><span class="vw">text 문자를 보내다</span><span class="vw">cousin 사촌</span><span class="vw">concert 콘서트</span></div>
+    <div class="choices" data-qid="a1" data-ans="to invite">
+      <button class="choice" onclick="pickChoice(this)">invite</button>
+      <button class="choice" onclick="pickChoice(this)">to invite</button>
+      <button class="choice" onclick="pickChoice(this)">inviting</button>
+      <button class="choice" onclick="pickChoice(this)">invited</button>
     </div>
-    <div class="answer-hint" id="ah-a1">💡 정답: <strong>to tell</strong> — 목적 "파티에 대해 말하기 위해"<br>📝 해석: Ellie는 언니에게 파티에 대해 말하려고 전화했다.</div>
+    <div class="answer-hint" id="ah-a1">💡 정답: <strong>to invite</strong> — 목적 "사촌을 초대하기 위해"<br>📝 해석: Sophia는 사촌을 K-pop 콘서트에 초대하려고 문자를 보냈다.</div>
     <button class="hint-btn" onclick="showHint('a1')">💡 힌트 보기</button>
   </div>
 
@@ -210,15 +210,15 @@ body{font-family:'Baloo 2','Noto Sans KR',sans-serif;background:var(--bg);paddin
   </div>
 
   <div class="question-card" id="qc-a3"><span class="q-num">3</span><span class="q-type ctx">문맥 파악</span>
-    <div class="q-text">I looked at <em>___</em> in the hotel mirror last night.</div>
-    <div class="vocab"><span class="vw">hotel 호텔</span><span class="vw">last night 어젯밤</span></div>
+    <div class="q-text">I bought <em>___</em> a small gift on my birthday.</div>
+    <div class="vocab"><span class="vw">bought 샀다(buy의 과거)</span><span class="vw">gift 선물</span><span class="vw">birthday 생일</span></div>
     <div class="choices" data-qid="a3" data-ans="myself">
       <button class="choice" onclick="pickChoice(this)">me</button>
       <button class="choice" onclick="pickChoice(this)">my</button>
       <button class="choice" onclick="pickChoice(this)">myself</button>
       <button class="choice" onclick="pickChoice(this)">I</button>
     </div>
-    <div class="answer-hint" id="ah-a3">💡 정답: <strong>myself</strong> — 주어 I = 목적어 → myself<br>📝 해석: 나는 어젯밤 호텔 거울에서 나 자신을 보았다.</div>
+    <div class="answer-hint" id="ah-a3">💡 정답: <strong>myself</strong> — 주어 I = 간접목적어 → myself (내가 나에게)<br>📝 해석: 나는 생일에 나 자신에게 작은 선물을 샀다.</div>
     <button class="hint-btn" onclick="showHint('a3')">💡 힌트 보기</button>
   </div>
 
@@ -238,13 +238,13 @@ body{font-family:'Baloo 2','Noto Sans KR',sans-serif;background:var(--bg);paddin
   <!-- ─── 오류 수정 (a5-a8) ─── -->
   <div class="question-card" id="qc-a5"><span class="q-num">5</span><span class="q-type fix">오류 수정</span>
     <div class="q-text">
-      <span class="orig">❌ She hurt <span class="wrong">herselves</span> while running yesterday.</span><br>
+      <span class="orig">❌ Emma injured <span class="wrong">herselves</span> during basketball practice.</span><br>
       → 밑줄 친 부분을 바르게 고치세요:
       <input class="blank" id="bi-a5" placeholder="___" data-ans="herself" autocomplete="off" style="min-width:130px">
     </div>
-    <div class="vocab"><span class="vw">hurt 다치게 하다</span><span class="vw">running 달리기</span></div>
+    <div class="vocab"><span class="vw">injure 다치게 하다</span><span class="vw">basketball practice 농구 연습</span></div>
     <button class="check-btn" onclick="checkBlank('a5')">✔ 확인</button>
-    <div class="answer-hint" id="ah-a5">💡 정답: <strong>herself</strong> — she는 단수이므로 -self (herselves라는 형태는 없음)<br>📝 해석: 그녀는 어제 달리다가 자신을 다쳤다.</div>
+    <div class="answer-hint" id="ah-a5">💡 정답: <strong>herself</strong> — Emma는 단수이므로 -self (herselves라는 형태는 없음)<br>📝 해석: Emma는 농구 연습 중에 자신을 다쳤다.</div>
     <button class="hint-btn" onclick="showHint('a5')">💡 힌트 보기</button>
   </div>
 
@@ -300,27 +300,27 @@ body{font-family:'Baloo 2','Noto Sans KR',sans-serif;background:var(--bg);paddin
 
   <div class="question-card" id="qc-a10"><span class="q-num">10</span><span class="q-type trans">문장 합치기</span>
     <div class="q-text">
-      <span class="orig">원문 1: She called the restaurant.<br>원문 2: She wanted to reserve a table.</span><br>
-      → (to부정사로 합치기) She called the restaurant
-      <input class="blank" id="bi-a10" placeholder="___" data-ans="to reserve" autocomplete="off" style="min-width:150px">
-      a table.
+      <span class="orig">원문 1: Dylan called the hotel.<br>원문 2: He wanted to book a room.</span><br>
+      → (to부정사로 합치기) Dylan called the hotel
+      <input class="blank" id="bi-a10" placeholder="___" data-ans="to book" autocomplete="off" style="min-width:130px">
+      a room.
     </div>
-    <div class="vocab"><span class="vw">restaurant 식당</span><span class="vw">reserve 예약하다</span><span class="vw">table 테이블</span></div>
+    <div class="vocab"><span class="vw">hotel 호텔</span><span class="vw">book 예약하다</span><span class="vw">room 객실, 방</span></div>
     <button class="check-btn" onclick="checkBlank('a10')">✔ 확인</button>
-    <div class="answer-hint" id="ah-a10">💡 정답: <strong>to reserve</strong> — 목적 "테이블을 예약하기 위해"<br>📝 해석: 그녀는 테이블을 예약하려고 식당에 전화했다.</div>
+    <div class="answer-hint" id="ah-a10">💡 정답: <strong>to book</strong> — 목적 "객실을 예약하기 위해"<br>📝 해석: Dylan은 객실을 예약하려고 호텔에 전화했다.</div>
     <button class="hint-btn" onclick="showHint('a10')">💡 힌트 보기</button>
   </div>
 
   <div class="question-card" id="qc-a11"><span class="q-num">11</span><span class="q-type trans">문장 합치기</span>
     <div class="q-text">
-      <span class="orig">원문 1: Mandy went to the park.<br>원문 2: She wanted to jog in the morning.</span><br>
-      → (to부정사로 합치기) Mandy went to the park
-      <input class="blank" id="bi-a11" placeholder="___" data-ans="to jog" autocomplete="off" style="min-width:130px">
-      in the morning.
+      <span class="orig">원문 1: Noah went to the riverside trail.<br>원문 2: He wanted to ride his bike on weekends.</span><br>
+      → (to부정사로 합치기) Noah went to the riverside trail
+      <input class="blank" id="bi-a11" placeholder="___" data-ans="to ride" autocomplete="off" style="min-width:130px">
+      his bike on weekends.
     </div>
-    <div class="vocab"><span class="vw">park 공원</span><span class="vw">jog 조깅하다</span></div>
+    <div class="vocab"><span class="vw">riverside trail 강변 산책로</span><span class="vw">ride a bike 자전거를 타다</span><span class="vw">on weekends 주말마다</span></div>
     <button class="check-btn" onclick="checkBlank('a11')">✔ 확인</button>
-    <div class="answer-hint" id="ah-a11">💡 정답: <strong>to jog</strong> — 목적 "조깅하기 위해"<br>📝 해석: Mandy는 아침에 조깅을 하려고 공원에 갔다.</div>
+    <div class="answer-hint" id="ah-a11">💡 정답: <strong>to ride</strong> — 목적 "자전거를 타기 위해"<br>📝 해석: Noah는 주말마다 자전거를 타려고 강변 산책로에 갔다.</div>
     <button class="hint-btn" onclick="showHint('a11')">💡 힌트 보기</button>
   </div>
 

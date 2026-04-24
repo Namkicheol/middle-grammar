@@ -23,9 +23,16 @@ https://namkicheol.github.io/middle-grammar/look-because-basic/
 왼쪽에 귀여운 중학생 캐릭터가 엄지를 들고 환하게 웃는 포즈.
 오른쪽 큰 노란 말풍선 안에 "The soup looks delicious! 😋" 문장.
 아래에 작은 말풍선으로 "because it smelled amazing" 표시.
-상단 흰 배지에 "Unit 07 · 기초 45문제" 굵은 텍스트.
+상단 흰 배지에 "Unit 07 · 기초 42문제" 굵은 텍스트.
 화면 하단 가운데에 "감각동사 look & because" 굵은 흰색 폰트로 크게 표시.
 전체적으로 밝고 에너지 넘치는 느낌.
+
+### ⑤ agent 점검 결과 (2026-04-24)
+
+점검 완료 — 수정 사항 3건 반영됨:
+- 헤더 "총 45문제" → 42문제
+- 탭 레이블 "단어 배열 (5문제)" → (10문제)
+- vocabData c1~c5 단어 뱃지 추가
 
 ---
 
@@ -51,3 +58,9 @@ https://namkicheol.github.io/middle-grammar/look-because-hard/
 캐릭터가 돋보기를 들고 오류를 발견하는 포즈, 골드 색상 의상.
 화면 하단에 "감각동사 look & because 심화" 굵은 골드(#f59e0b) 폰트로 크게 표시.
 전체적으로 세련되고 도전적인 느낌.
+
+### ⑤ agent 점검 결과 (2026-04-24)
+
+점검 완료 — 수정 사항 2건 반영됨:
+- ah-a14, ah-a15 answer-hint에 `📝 해석:` 한국어 번역 추가
+- norm()에 쉼표 제거(`.replace(/,/g,'')`) 추가 (Because절 쉼표 유무 모두 정답 처리)

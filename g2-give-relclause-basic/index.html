@@ -41,6 +41,7 @@ body{font-family:'Baloo 2','Noto Sans KR',sans-serif;background:var(--bg);paddin
 .blank:focus{border-color:var(--purple);}.blank.ok{border-color:var(--green);color:var(--green);background:#f0fdf4;border-radius:6px;}.blank.ng{border-color:var(--red);color:var(--red);background:#fef2f2;border-radius:6px;}
 .ex{font-size:.75rem;color:var(--gray);}
 .choices{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:4px;}
+.choices.full{grid-template-columns:1fr;}
 .choice{padding:10px 12px;border-radius:12px;border:2px solid #e2e8f0;background:var(--bg);color:var(--dark);font-family:inherit;font-weight:600;font-size:.9rem;cursor:pointer;transition:all .15s;text-align:left;}
 .choice:hover:not(:disabled){border-color:var(--blue);background:var(--sky);transform:translateY(-1px);}
 .choice.ok{background:#f0fdf4;border-color:var(--green);color:var(--green);}.choice.ng{background:#fef2f2;border-color:var(--red);color:var(--red);}.choice.reveal{background:#f0fdf4;border-color:var(--green);color:var(--green);}
@@ -79,7 +80,7 @@ body{font-family:'Baloo 2','Noto Sans KR',sans-serif;background:var(--bg);paddin
 <div class="header">
   <div class="hbadge">📝 중2 L1 Grammar</div>
   <h1>수여동사 &amp; 주격 관계대명사</h1>
-  <p>give+IO+DO · to/for/of 전치사 · who/which/that · 총 42문제</p>
+  <p>give+IO+DO · IO 목적격 · who/which/that · 총 42문제</p>
 </div>
 <div class="scoreboard">
   <div class="sc t"><div class="n" id="sc-t">0</div><div class="l">완료</div></div>
@@ -101,154 +102,154 @@ body{font-family:'Baloo 2','Noto Sans KR',sans-serif;background:var(--bg);paddin
   <div class="sec-hdr">
     <div class="lbl">Point A · 20문제</div>
     <h2>수여동사 + 간접목적어 + 직접목적어</h2>
-    <div class="desc">전치사 선택(1–10: 수여동사+DO+전치사+IO에서 to/for/of 고르기) + 전치사 쓰기(11–15) + 문장 완성(16–20: IO 또는 DO 쓰기) · give/tell/show/teach/send/lend→to · buy/get/make/cook→for · ask→of</div>
+    <div class="desc">IO 고르기(1–8: 목적격 대명사 선택) + 어순 고르기(9–12: 맞는 문장 선택) + IO 쓰기(13–16: 빈칸 채우기) + 문장 완성(17–20)</div>
   </div>
 
-  <!-- MCQ 1-10: 전치사 선택 -->
+  <!-- MCQ 1-8: IO 목적격 대명사 고르기 -->
   <div class='question-card' id='qc-a1'><span class='q-num'>1</span>
-    <div class='q-text'>He lent his bicycle ___ a classmate for a week.</div>
-    <div class='choices' data-qid='a1' data-ans='to'><button class="choice" onclick="pickChoice(this)">to</button><button class="choice" onclick="pickChoice(this)">for</button><button class="choice" onclick="pickChoice(this)">of</button><button class="choice" onclick="pickChoice(this)">from</button></div>
-    <div class='answer-hint' id='ah-a1'>💡 정답: <strong>to</strong> — lend(빌려주다)는 to를 씁니다: lend + DO + to + IO<br>📝 해석: 그는 한 주 동안 반 친구에게 자전거를 빌려주었다.</div>
+    <div class='q-text'>She gave <em>___</em> a warm hug after the game.</div>
+    <div class='choices' data-qid='a1' data-ans='me'><button class="choice" onclick="pickChoice(this)">I</button><button class="choice" onclick="pickChoice(this)">me</button><button class="choice" onclick="pickChoice(this)">my</button><button class="choice" onclick="pickChoice(this)">mine</button></div>
+    <div class='answer-hint' id='ah-a1'>💡 정답: <strong>me</strong> — 수여동사 뒤 IO는 목적격! I(주격) → me(목적격)<br>📝 해석: 그녀는 경기 후 나에게 따뜻한 포옹을 해 주었다.</div>
     <button class='hint-btn' onclick="showHint('a1')">💡 힌트 보기</button>
   </div>
 
   <div class='question-card' id='qc-a2'><span class='q-num'>2</span>
-    <div class='q-text'>My aunt cooked a big pot of soup ___ us.</div>
-    <div class='choices' data-qid='a2' data-ans='for'><button class="choice" onclick="pickChoice(this)">to</button><button class="choice" onclick="pickChoice(this)">for</button><button class="choice" onclick="pickChoice(this)">of</button><button class="choice" onclick="pickChoice(this)">by</button></div>
-    <div class='answer-hint' id='ah-a2'>💡 정답: <strong>for</strong> — cook(요리해주다)는 for를 씁니다: cook + DO + for + IO<br>📝 해석: 이모가 우리에게 큰 냄비 수프를 요리해 주었다.</div>
+    <div class='q-text'>My dad told <em>___</em> a funny story before bed.</div>
+    <div class='choices' data-qid='a2' data-ans='us'><button class="choice" onclick="pickChoice(this)">we</button><button class="choice" onclick="pickChoice(this)">our</button><button class="choice" onclick="pickChoice(this)">us</button><button class="choice" onclick="pickChoice(this)">ours</button></div>
+    <div class='answer-hint' id='ah-a2'>💡 정답: <strong>us</strong> — we(주격) → us(목적격)<br>📝 해석: 아빠는 자기 전에 우리에게 재미있는 이야기를 해 주셨다.</div>
     <button class='hint-btn' onclick="showHint('a2')">💡 힌트 보기</button>
   </div>
 
   <div class='question-card' id='qc-a3'><span class='q-num'>3</span>
-    <div class='q-text'>Jake sent a thank-you note ___ his coach after the tournament.</div>
-    <div class='choices' data-qid='a3' data-ans='to'><button class="choice" onclick="pickChoice(this)">for</button><button class="choice" onclick="pickChoice(this)">of</button><button class="choice" onclick="pickChoice(this)">to</button><button class="choice" onclick="pickChoice(this)">with</button></div>
-    <div class='answer-hint' id='ah-a3'>💡 정답: <strong>to</strong> — send(보내다)는 to를 씁니다: send + DO + to + IO<br>📝 해석: Jake는 토너먼트 후에 코치에게 감사 쪽지를 보냈다.</div>
+    <div class='q-text'>Jake showed <em>___</em> his new robot model.</div>
+    <div class='choices' data-qid='a3' data-ans='them'><button class="choice" onclick="pickChoice(this)">they</button><button class="choice" onclick="pickChoice(this)">their</button><button class="choice" onclick="pickChoice(this)">theirs</button><button class="choice" onclick="pickChoice(this)">them</button></div>
+    <div class='answer-hint' id='ah-a3'>💡 정답: <strong>them</strong> — they(주격) → them(목적격)<br>📝 해석: Jake는 그들에게 자신의 새 로봇 모델을 보여주었다.</div>
     <button class='hint-btn' onclick="showHint('a3')">💡 힌트 보기</button>
   </div>
 
   <div class='question-card' id='qc-a4'><span class='q-num'>4</span>
-    <div class='q-text'>Ms. Park got a nice trophy ___ the winning team.</div>
-    <div class='choices' data-qid='a4' data-ans='for'><button class="choice" onclick="pickChoice(this)">to</button><button class="choice" onclick="pickChoice(this)">of</button><button class="choice" onclick="pickChoice(this)">at</button><button class="choice" onclick="pickChoice(this)">for</button></div>
-    <div class='answer-hint' id='ah-a4'>💡 정답: <strong>for</strong> — get(사다/구해주다)은 for를 씁니다: get + DO + for + IO<br>📝 해석: 박 선생님은 우승 팀에게 멋진 트로피를 구해 주었다.</div>
+    <div class='q-text'>Grandma bought <em>___</em> a new winter coat.</div>
+    <div class='choices' data-qid='a4' data-ans='him'><button class="choice" onclick="pickChoice(this)">he</button><button class="choice" onclick="pickChoice(this)">his</button><button class="choice" onclick="pickChoice(this)">him</button><button class="choice" onclick="pickChoice(this)">himself</button></div>
+    <div class='answer-hint' id='ah-a4'>💡 정답: <strong>him</strong> — he(주격) → him(목적격)<br>📝 해석: 할머니가 그에게 새 겨울 코트를 사 주셨다.</div>
     <button class='hint-btn' onclick="showHint('a4')">💡 힌트 보기</button>
   </div>
 
   <div class='question-card' id='qc-a5'><span class='q-num'>5</span>
-    <div class='q-text'>Mia showed her travel photos ___ her grandparents.</div>
-    <div class='choices' data-qid='a5' data-ans='to'><button class="choice" onclick="pickChoice(this)">of</button><button class="choice" onclick="pickChoice(this)">to</button><button class="choice" onclick="pickChoice(this)">for</button><button class="choice" onclick="pickChoice(this)">from</button></div>
-    <div class='answer-hint' id='ah-a5'>💡 정답: <strong>to</strong> — show(보여주다)는 to를 씁니다: show + DO + to + IO<br>📝 해석: Mia는 조부모님께 여행 사진을 보여드렸다.</div>
+    <div class='q-text'>The librarian lent <em>___</em> three books on astronomy.</div>
+    <div class='choices' data-qid='a5' data-ans='her'><button class="choice" onclick="pickChoice(this)">she</button><button class="choice" onclick="pickChoice(this)">her</button><button class="choice" onclick="pickChoice(this)">hers</button><button class="choice" onclick="pickChoice(this)">herself</button></div>
+    <div class='answer-hint' id='ah-a5'>💡 정답: <strong>her</strong> — she(주격) → her(목적격)<br>📝 해석: 사서가 그녀에게 천문학 책 세 권을 빌려주었다.</div>
     <button class='hint-btn' onclick="showHint('a5')">💡 힌트 보기</button>
   </div>
 
   <div class='question-card' id='qc-a6'><span class='q-num'>6</span>
-    <div class='q-text'>The reporter asked a tricky question ___ the mayor.</div>
-    <div class='choices' data-qid='a6' data-ans='of'><button class="choice" onclick="pickChoice(this)">to</button><button class="choice" onclick="pickChoice(this)">for</button><button class="choice" onclick="pickChoice(this)">of</button><button class="choice" onclick="pickChoice(this)">by</button></div>
-    <div class='answer-hint' id='ah-a6'>💡 정답: <strong>of</strong> — ask(a favor/question을)는 of를 씁니다: ask + DO + of + IO<br>📝 해석: 기자는 시장에게 까다로운 질문을 했다.</div>
+    <div class='q-text'>Mom cooked <em>___</em> her special birthday pasta.</div>
+    <div class='choices' data-qid='a6' data-ans='me'><button class="choice" onclick="pickChoice(this)">I</button><button class="choice" onclick="pickChoice(this)">me</button><button class="choice" onclick="pickChoice(this)">my</button><button class="choice" onclick="pickChoice(this)">mine</button></div>
+    <div class='answer-hint' id='ah-a6'>💡 정답: <strong>me</strong> — I(주격) → me(목적격)<br>📝 해석: 엄마가 나에게 특별한 생일 파스타를 만들어 주셨다.</div>
     <button class='hint-btn' onclick="showHint('a6')">💡 힌트 보기</button>
   </div>
 
   <div class='question-card' id='qc-a7'><span class='q-num'>7</span>
-    <div class='q-text'>Dad made a wooden bookshelf ___ my sister.</div>
-    <div class='choices' data-qid='a7' data-ans='for'><button class="choice" onclick="pickChoice(this)">to</button><button class="choice" onclick="pickChoice(this)">for</button><button class="choice" onclick="pickChoice(this)">of</button><button class="choice" onclick="pickChoice(this)">at</button></div>
-    <div class='answer-hint' id='ah-a7'>💡 정답: <strong>for</strong> — make(만들어주다)는 for를 씁니다: make + DO + for + IO<br>📝 해석: 아빠는 내 여동생에게 나무 책장을 만들어 주었다.</div>
+    <div class='q-text'>Our PE teacher taught <em>___</em> a new warm-up routine.</div>
+    <div class='choices' data-qid='a7' data-ans='us'><button class="choice" onclick="pickChoice(this)">we</button><button class="choice" onclick="pickChoice(this)">our</button><button class="choice" onclick="pickChoice(this)">us</button><button class="choice" onclick="pickChoice(this)">ours</button></div>
+    <div class='answer-hint' id='ah-a7'>💡 정답: <strong>us</strong> — we(주격) → us(목적격)<br>📝 해석: 체육 선생님이 우리에게 새로운 준비 운동 방법을 가르쳐 주셨다.</div>
     <button class='hint-btn' onclick="showHint('a7')">💡 힌트 보기</button>
   </div>
 
   <div class='question-card' id='qc-a8'><span class='q-num'>8</span>
-    <div class='q-text'>Our PE teacher taught the rules of volleyball ___ us.</div>
-    <div class='choices' data-qid='a8' data-ans='to'><button class="choice" onclick="pickChoice(this)">for</button><button class="choice" onclick="pickChoice(this)">of</button><button class="choice" onclick="pickChoice(this)">by</button><button class="choice" onclick="pickChoice(this)">to</button></div>
-    <div class='answer-hint' id='ah-a8'>💡 정답: <strong>to</strong> — teach(가르치다)는 to를 씁니다: teach + DO + to + IO<br>📝 해석: 체육 선생님이 우리에게 배구 규칙을 가르쳐 주셨다.</div>
+    <div class='q-text'>Mia sent <em>___</em> a cheerful postcard from her trip.</div>
+    <div class='choices' data-qid='a8' data-ans='him'><button class="choice" onclick="pickChoice(this)">he</button><button class="choice" onclick="pickChoice(this)">his</button><button class="choice" onclick="pickChoice(this)">him</button><button class="choice" onclick="pickChoice(this)">himself</button></div>
+    <div class='answer-hint' id='ah-a8'>💡 정답: <strong>him</strong> — he(주격) → him(목적격)<br>📝 해석: Mia는 여행에서 그에게 밝은 엽서를 보냈다.</div>
     <button class='hint-btn' onclick="showHint('a8')">💡 힌트 보기</button>
   </div>
 
+  <!-- MCQ 9-12: IO+DO 어순 맞는 것 고르기 -->
   <div class='question-card' id='qc-a9'><span class='q-num'>9</span>
-    <div class='q-text'>My older brother passed his old guitar ___ me.</div>
-    <div class='choices' data-qid='a9' data-ans='to'><button class="choice" onclick="pickChoice(this)">to</button><button class="choice" onclick="pickChoice(this)">for</button><button class="choice" onclick="pickChoice(this)">of</button><button class="choice" onclick="pickChoice(this)">with</button></div>
-    <div class='answer-hint' id='ah-a9'>💡 정답: <strong>to</strong> — pass(건네다)는 to를 씁니다: pass + DO + to + IO<br>📝 해석: 형이 나에게 자신의 오래된 기타를 넘겨주었다.</div>
+    <div class='q-text'>다음 중 어법에 맞는 것을 고르세요.</div>
+    <div class='choices choices full' data-qid='a9' data-ans='She made me a paper crane.'><button class="choice" onclick="pickChoice(this)">She made a paper crane me.</button><button class="choice" onclick="pickChoice(this)">She made me a paper crane.</button><button class="choice" onclick="pickChoice(this)">She made a paper crane of me.</button><button class="choice" onclick="pickChoice(this)">She made me to a paper crane.</button></div>
+    <div class='answer-hint' id='ah-a9'>💡 정답: <strong>She made me a paper crane.</strong> — 수여동사 + IO(me) + DO(a paper crane) 순서<br>📝 해석: 그녀는 나에게 종이학을 만들어 주었다.</div>
     <button class='hint-btn' onclick="showHint('a9')">💡 힌트 보기</button>
   </div>
 
   <div class='question-card' id='qc-a10'><span class='q-num'>10</span>
-    <div class='q-text'>Nora bought a warm scarf ___ her younger brother.</div>
-    <div class='choices' data-qid='a10' data-ans='for'><button class="choice" onclick="pickChoice(this)">to</button><button class="choice" onclick="pickChoice(this)">of</button><button class="choice" onclick="pickChoice(this)">at</button><button class="choice" onclick="pickChoice(this)">for</button></div>
-    <div class='answer-hint' id='ah-a10'>💡 정답: <strong>for</strong> — buy(사주다)는 for를 씁니다: buy + DO + for + IO<br>📝 해석: Nora는 남동생에게 따뜻한 스카프를 사 주었다.</div>
+    <div class='q-text'>다음 중 어법에 맞는 것을 고르세요.</div>
+    <div class='choices choices full' data-qid='a10' data-ans='He told us an interesting secret.'><button class="choice" onclick="pickChoice(this)">He told an interesting secret us.</button><button class="choice" onclick="pickChoice(this)">He told to us an interesting secret.</button><button class="choice" onclick="pickChoice(this)">He told us an interesting secret.</button><button class="choice" onclick="pickChoice(this)">He told for us an interesting secret.</button></div>
+    <div class='answer-hint' id='ah-a10'>💡 정답: <strong>He told us an interesting secret.</strong> — tell + IO(us) + DO(an interesting secret)<br>📝 해석: 그는 우리에게 흥미로운 비밀을 말해 주었다.</div>
     <button class='hint-btn' onclick="showHint('a10')">💡 힌트 보기</button>
   </div>
 
-  <!-- input 11-15: 전치사 쓰기 -->
   <div class='question-card' id='qc-a11'><span class='q-num'>11</span>
-    <div class='q-text'>She wrote a long letter <input class="blank" id="bi-a11" placeholder="___" data-ans="to" autocomplete="off" style="min-width:60px"> her pen pal in Canada.</div>
-    <button class='check-btn' onclick="checkBlank('a11')">✔ 확인</button>
-    <div class='answer-hint' id='ah-a11'>💡 정답: <strong>to</strong> — write는 to: write + DO + to + IO<br>📝 해석: 그녀는 캐나다에 있는 펜팔 친구에게 긴 편지를 썼다.</div>
+    <div class='q-text'>다음 중 어법에 맞는 것을 고르세요.</div>
+    <div class='choices choices full' data-qid='a11' data-ans='My brother gave me his old guitar.'><button class="choice" onclick="pickChoice(this)">My brother gave his old guitar me.</button><button class="choice" onclick="pickChoice(this)">My brother gave me his old guitar.</button><button class="choice" onclick="pickChoice(this)">My brother gave of me his old guitar.</button><button class="choice" onclick="pickChoice(this)">My brother gave to his old guitar me.</button></div>
+    <div class='answer-hint' id='ah-a11'>💡 정답: <strong>My brother gave me his old guitar.</strong> — give + IO(me) + DO(his old guitar)<br>📝 해석: 오빠가 나에게 자신의 낡은 기타를 주었다.</div>
     <button class='hint-btn' onclick="showHint('a11')">💡 힌트 보기</button>
   </div>
 
   <div class='question-card' id='qc-a12'><span class='q-num'>12</span>
-    <div class='q-text'>My grandma always cooks traditional rice cakes <input class="blank" id="bi-a12" placeholder="___" data-ans="for" autocomplete="off" style="min-width:60px"> us on holidays.</div>
-    <button class='check-btn' onclick="checkBlank('a12')">✔ 확인</button>
-    <div class='answer-hint' id='ah-a12'>💡 정답: <strong>for</strong> — cook는 for: cook + DO + for + IO<br>📝 해석: 할머니는 명절마다 우리에게 전통 떡을 만들어 주신다.</div>
+    <div class='q-text'>다음 중 어법에 맞는 것을 고르세요.</div>
+    <div class='choices choices full' data-qid='a12' data-ans='Dad bought her a new school bag.'><button class="choice" onclick="pickChoice(this)">Dad bought a new school bag her.</button><button class="choice" onclick="pickChoice(this)">Dad bought to her a new school bag.</button><button class="choice" onclick="pickChoice(this)">Dad bought her a new school bag.</button><button class="choice" onclick="pickChoice(this)">Dad bought her of a new school bag.</button></div>
+    <div class='answer-hint' id='ah-a12'>💡 정답: <strong>Dad bought her a new school bag.</strong> — buy + IO(her) + DO(a new school bag)<br>📝 해석: 아빠가 그녀에게 새 책가방을 사 주셨다.</div>
     <button class='hint-btn' onclick="showHint('a12')">💡 힌트 보기</button>
   </div>
 
+  <!-- input 13-16: IO 목적격 쓰기 -->
   <div class='question-card' id='qc-a13'><span class='q-num'>13</span>
-    <div class='q-text'>The volunteer showed the new route <input class="blank" id="bi-a13" placeholder="___" data-ans="to" autocomplete="off" style="min-width:60px"> the tourists.</div>
+    <div class='q-text'>She showed <input class="blank" id="bi-a13" placeholder="___" data-ans="us" autocomplete="off" style="min-width:60px"> her science project. <span class='ex'>(we → ?)</span></div>
     <button class='check-btn' onclick="checkBlank('a13')">✔ 확인</button>
-    <div class='answer-hint' id='ah-a13'>💡 정답: <strong>to</strong> — show는 to: show + DO + to + IO<br>📝 해석: 자원봉사자가 관광객들에게 새 길을 안내해 주었다.</div>
+    <div class='answer-hint' id='ah-a13'>💡 정답: <strong>us</strong> — we(주격) → us(목적격), 수여동사 뒤는 목적격<br>📝 해석: 그녀는 우리에게 자신의 과학 프로젝트를 보여주었다.</div>
     <button class='hint-btn' onclick="showHint('a13')">💡 힌트 보기</button>
   </div>
 
   <div class='question-card' id='qc-a14'><span class='q-num'>14</span>
-    <div class='q-text'>He asked a big favor <input class="blank" id="bi-a14" placeholder="___" data-ans="of" autocomplete="off" style="min-width:60px"> his best friend.</div>
+    <div class='q-text'>My uncle gave <input class="blank" id="bi-a14" placeholder="___" data-ans="me" autocomplete="off" style="min-width:60px"> a beautiful painting. <span class='ex'>(I → ?)</span></div>
     <button class='check-btn' onclick="checkBlank('a14')">✔ 확인</button>
-    <div class='answer-hint' id='ah-a14'>💡 정답: <strong>of</strong> — ask a favor는 of: ask + a favor + of + IO<br>📝 해석: 그는 절친한 친구에게 큰 부탁을 했다.</div>
+    <div class='answer-hint' id='ah-a14'>💡 정답: <strong>me</strong> — I(주격) → me(목적격)<br>📝 해석: 삼촌이 나에게 아름다운 그림을 주셨다.</div>
     <button class='hint-btn' onclick="showHint('a14')">💡 힌트 보기</button>
   </div>
 
   <div class='question-card' id='qc-a15'><span class='q-num'>15</span>
-    <div class='q-text'>My parents got a new laptop <input class="blank" id="bi-a15" placeholder="___" data-ans="for" autocomplete="off" style="min-width:60px"> me as a graduation gift.</div>
+    <div class='q-text'>The coach taught <input class="blank" id="bi-a15" placeholder="___" data-ans="them" autocomplete="off" style="min-width:60px"> a new defensive strategy. <span class='ex'>(they → ?)</span></div>
     <button class='check-btn' onclick="checkBlank('a15')">✔ 확인</button>
-    <div class='answer-hint' id='ah-a15'>💡 정답: <strong>for</strong> — get는 for: get + DO + for + IO<br>📝 해석: 부모님이 졸업 선물로 나에게 새 노트북을 사 주셨다.</div>
+    <div class='answer-hint' id='ah-a15'>💡 정답: <strong>them</strong> — they(주격) → them(목적격)<br>📝 해석: 코치는 그들에게 새로운 수비 전략을 가르쳐 주었다.</div>
     <button class='hint-btn' onclick="showHint('a15')">💡 힌트 보기</button>
   </div>
 
-  <!-- input 16-20: IO/DO 완성 -->
   <div class='question-card' id='qc-a16'><span class='q-num'>16</span>
-    <div class='q-sub'>She gave + 나에게 + 응원 메시지 → 완성하기</div>
-    <div class='q-text'>She gave <input class="blank" id="bi-a16" placeholder="___" data-ans="me an encouraging message" autocomplete="off" style="min-width:200px">.</div>
+    <div class='q-text'>Jake lent <input class="blank" id="bi-a16" placeholder="___" data-ans="her" autocomplete="off" style="min-width:60px"> his waterproof jacket. <span class='ex'>(she → ?)</span></div>
     <button class='check-btn' onclick="checkBlank('a16')">✔ 확인</button>
-    <div class='answer-hint' id='ah-a16'>💡 정답: <strong>me an encouraging message</strong> — give + IO(me) + DO(an encouraging message)<br>📝 해석: 그녀는 나에게 응원 메시지를 주었다.</div>
+    <div class='answer-hint' id='ah-a16'>💡 정답: <strong>her</strong> — she(주격) → her(목적격)<br>📝 해석: Jake는 그녀에게 방수 재킷을 빌려주었다.</div>
     <button class='hint-btn' onclick="showHint('a16')">💡 힌트 보기</button>
   </div>
 
+  <!-- input 17-20: IO+DO 완성 -->
   <div class='question-card' id='qc-a17'><span class='q-num'>17</span>
-    <div class='q-sub'>Jake told + 우리에게 + 흥미로운 이야기 → 완성하기</div>
-    <div class='q-text'>Jake told <input class="blank" id="bi-a17" placeholder="___" data-ans="us an interesting story" autocomplete="off" style="min-width:200px">.</div>
+    <div class='q-sub'>괄호 안의 말을 이용해 빈칸을 완성하세요.</div>
+    <div class='q-text'>She told <input class="blank" id="bi-a17" placeholder="___" data-ans="us a funny joke" autocomplete="off" style="min-width:180px">. <span class='ex'>(us / a funny joke)</span></div>
     <button class='check-btn' onclick="checkBlank('a17')">✔ 확인</button>
-    <div class='answer-hint' id='ah-a17'>💡 정답: <strong>us an interesting story</strong> — tell + IO(us) + DO(an interesting story)<br>📝 해석: Jake는 우리에게 흥미로운 이야기를 해 주었다.</div>
+    <div class='answer-hint' id='ah-a17'>💡 정답: <strong>us a funny joke</strong> — tell + IO(us) + DO(a funny joke)<br>📝 해석: 그녀는 우리에게 재미있는 농담을 해 주었다.</div>
     <button class='hint-btn' onclick="showHint('a17')">💡 힌트 보기</button>
   </div>
 
   <div class='question-card' id='qc-a18'><span class='q-num'>18</span>
-    <div class='q-sub'>다음을 보고 빈칸에 알맞은 전치사를 써서 문장을 바꿔 쓰세요.<br>My mom bought me new sneakers.</div>
-    <div class='q-text'>My mom bought new sneakers <input class="blank" id="bi-a18" placeholder="___" data-ans="for me" autocomplete="off" style="min-width:80px">.</div>
+    <div class='q-sub'>괄호 안의 말을 이용해 빈칸을 완성하세요.</div>
+    <div class='q-text'>My neighbor gave <input class="blank" id="bi-a18" placeholder="___" data-ans="me some fresh vegetables" autocomplete="off" style="min-width:210px">. <span class='ex'>(me / some fresh vegetables)</span></div>
     <button class='check-btn' onclick="checkBlank('a18')">✔ 확인</button>
-    <div class='answer-hint' id='ah-a18'>💡 정답: <strong>for me</strong> — buy+IO+DO → buy+DO+for+IO<br>📝 해석: 엄마가 나에게 새 운동화를 사 주셨다.</div>
+    <div class='answer-hint' id='ah-a18'>💡 정답: <strong>me some fresh vegetables</strong> — give + IO(me) + DO(some fresh vegetables)<br>📝 해석: 이웃이 나에게 신선한 채소를 좀 주었다.</div>
     <button class='hint-btn' onclick="showHint('a18')">💡 힌트 보기</button>
   </div>
 
   <div class='question-card' id='qc-a19'><span class='q-num'>19</span>
-    <div class='q-sub'>다음을 보고 빈칸에 알맞은 전치사를 써서 문장을 바꿔 쓰세요.<br>He sent me a voice message.</div>
-    <div class='q-text'>He sent a voice message <input class="blank" id="bi-a19" placeholder="___" data-ans="to me" autocomplete="off" style="min-width:80px">.</div>
+    <div class='q-sub'>괄호 안의 말을 이용해 빈칸을 완성하세요.</div>
+    <div class='q-text'>Grandpa made <input class="blank" id="bi-a19" placeholder="___" data-ans="her a wooden toy" autocomplete="off" style="min-width:180px">. <span class='ex'>(her / a wooden toy)</span></div>
     <button class='check-btn' onclick="checkBlank('a19')">✔ 확인</button>
-    <div class='answer-hint' id='ah-a19'>💡 정답: <strong>to me</strong> — send+IO+DO → send+DO+to+IO<br>📝 해석: 그는 나에게 음성 메시지를 보냈다.</div>
+    <div class='answer-hint' id='ah-a19'>💡 정답: <strong>her a wooden toy</strong> — make + IO(her) + DO(a wooden toy)<br>📝 해석: 할아버지가 그녀에게 나무 장난감을 만들어 주셨다.</div>
     <button class='hint-btn' onclick="showHint('a19')">💡 힌트 보기</button>
   </div>
 
   <div class='question-card' id='qc-a20'><span class='q-num'>20</span>
-    <div class='q-sub'>다음을 보고 빈칸에 알맞은 전치사를 써서 문장을 바꿔 쓰세요.<br>Grandpa made me a pair of slippers.</div>
-    <div class='q-text'>Grandpa made a pair of slippers <input class="blank" id="bi-a20" placeholder="___" data-ans="for me" autocomplete="off" style="min-width:80px">.</div>
+    <div class='q-sub'>괄호 안의 말을 이용해 빈칸을 완성하세요.</div>
+    <div class='q-text'>The guide showed <input class="blank" id="bi-a20" placeholder="___" data-ans="them the best viewpoint" autocomplete="off" style="min-width:210px">. <span class='ex'>(them / the best viewpoint)</span></div>
     <button class='check-btn' onclick="checkBlank('a20')">✔ 확인</button>
-    <div class='answer-hint' id='ah-a20'>💡 정답: <strong>for me</strong> — make+IO+DO → make+DO+for+IO<br>📝 해석: 할아버지가 나에게 슬리퍼 한 켤레를 만들어 주셨다.</div>
+    <div class='answer-hint' id='ah-a20'>💡 정답: <strong>them the best viewpoint</strong> — show + IO(them) + DO(the best viewpoint)<br>📝 해석: 가이드가 그들에게 최고의 전망 포인트를 보여주었다.</div>
     <button class='hint-btn' onclick="showHint('a20')">💡 힌트 보기</button>
   </div>
 </div>
@@ -258,93 +259,95 @@ body{font-family:'Baloo 2','Noto Sans KR',sans-serif;background:var(--bg);paddin
   <div class="sec-hdr">
     <div class="lbl">Point B · 12문제</div>
     <h2>주격 관계대명사 who / which / that</h2>
-    <div class="desc">선택형(1–10: 선행사에 맞는 관계대명사 고르기) + 문장 합치기(11–12) · 사람 선행사 → who/that · 사물·동물 선행사 → which/that</div>
+    <div class="desc">괄호에서 고르기(1–8: 선행사에 맞는 관계대명사) + 빈칸 쓰기(9–10) + 두 문장 합치기(11–12)</div>
   </div>
 
+  <!-- MCQ 1-8: 2지선다 who/which -->
   <div class='question-card' id='qc-b1'><span class='q-num'>1</span>
-    <div class='q-text'>I have a cousin <em>___</em> lives in Busan.</div>
+    <div class='q-text'>I have a cousin <em>___</em> plays the violin really well.</div>
     <div class='choices' data-qid='b1' data-ans='who'><button class="choice" onclick="pickChoice(this)">who</button><button class="choice" onclick="pickChoice(this)">which</button><button class="choice" onclick="pickChoice(this)">what</button><button class="choice" onclick="pickChoice(this)">whom</button></div>
-    <div class='answer-hint' id='ah-b1'>💡 정답: <strong>who</strong> — 선행사 a cousin(사람) → 주격 관계대명사 who (또는 that)<br>📝 해석: 나는 부산에 사는 사촌이 있다.</div>
+    <div class='answer-hint' id='ah-b1'>💡 정답: <strong>who</strong> — 선행사 a cousin(사람) → 주격 관계대명사 who<br>📝 해석: 나는 바이올린을 정말 잘 연주하는 사촌이 있다.</div>
     <button class='hint-btn' onclick="showHint('b1')">💡 힌트 보기</button>
   </div>
 
   <div class='question-card' id='qc-b2'><span class='q-num'>2</span>
-    <div class='q-text'>She bought a bag <em>___</em> was made in Italy.</div>
-    <div class='choices' data-qid='b2' data-ans='which'><button class="choice" onclick="pickChoice(this)">who</button><button class="choice" onclick="pickChoice(this)">which</button><button class="choice" onclick="pickChoice(this)">whom</button><button class="choice" onclick="pickChoice(this)">what</button></div>
-    <div class='answer-hint' id='ah-b2'>💡 정답: <strong>which</strong> — 선행사 a bag(사물) → 주격 관계대명사 which (또는 that)<br>📝 해석: 그녀는 이탈리아에서 만들어진 가방을 샀다.</div>
+    <div class='q-text'>We have a robot <em>___</em> can clean the house by itself.</div>
+    <div class='choices' data-qid='b2' data-ans='that'><button class="choice" onclick="pickChoice(this)">who</button><button class="choice" onclick="pickChoice(this)">that</button><button class="choice" onclick="pickChoice(this)">whom</button><button class="choice" onclick="pickChoice(this)">what</button></div>
+    <div class='answer-hint' id='ah-b2'>💡 정답: <strong>that</strong> — 선행사 a robot(사물) → 주격 관계대명사 that (또는 which)<br>📝 해석: 우리는 혼자서 집을 청소할 수 있는 로봇을 가지고 있다.</div>
     <button class='hint-btn' onclick="showHint('b2')">💡 힌트 보기</button>
   </div>
 
   <div class='question-card' id='qc-b3'><span class='q-num'>3</span>
-    <div class='q-text'>He is the student <em>___</em> won the math competition.</div>
-    <div class='choices' data-qid='b3' data-ans='that'><button class="choice" onclick="pickChoice(this)">which</button><button class="choice" onclick="pickChoice(this)">what</button><button class="choice" onclick="pickChoice(this)">that</button><button class="choice" onclick="pickChoice(this)">whom</button></div>
-    <div class='answer-hint' id='ah-b3'>💡 정답: <strong>that</strong> — 선행사 the student(사람) → that (또는 who) 모두 가능<br>📝 해석: 그는 수학 경시대회에서 우승한 학생이다.</div>
+    <div class='q-text'>She is a nurse <em>___</em> works at the children's hospital.</div>
+    <div class='choices' data-qid='b3' data-ans='who'><button class="choice" onclick="pickChoice(this)">which</button><button class="choice" onclick="pickChoice(this)">what</button><button class="choice" onclick="pickChoice(this)">who</button><button class="choice" onclick="pickChoice(this)">whom</button></div>
+    <div class='answer-hint' id='ah-b3'>💡 정답: <strong>who</strong> — 선행사 a nurse(사람) → 주격 관계대명사 who<br>📝 해석: 그녀는 어린이 병원에서 일하는 간호사이다.</div>
     <button class='hint-btn' onclick="showHint('b3')">💡 힌트 보기</button>
   </div>
 
   <div class='question-card' id='qc-b4'><span class='q-num'>4</span>
-    <div class='q-text'>They found a wallet <em>___</em> was lying on the bench.</div>
-    <div class='choices' data-qid='b4' data-ans='that'><button class="choice" onclick="pickChoice(this)">who</button><button class="choice" onclick="pickChoice(this)">whom</button><button class="choice" onclick="pickChoice(this)">what</button><button class="choice" onclick="pickChoice(this)">that</button></div>
-    <div class='answer-hint' id='ah-b4'>💡 정답: <strong>that</strong> — 선행사 a wallet(사물) → that (또는 which) 모두 가능<br>📝 해석: 그들은 벤치 위에 놓여 있는 지갑을 발견했다.</div>
+    <div class='q-text'>He found a stray cat <em>___</em> was hiding under the car.</div>
+    <div class='choices' data-qid='b4' data-ans='which'><button class="choice" onclick="pickChoice(this)">who</button><button class="choice" onclick="pickChoice(this)">which</button><button class="choice" onclick="pickChoice(this)">whom</button><button class="choice" onclick="pickChoice(this)">what</button></div>
+    <div class='answer-hint' id='ah-b4'>💡 정답: <strong>which</strong> — 선행사 a stray cat(동물) → 주격 관계대명사 which (또는 that)<br>📝 해석: 그는 차 밑에 숨어 있던 길고양이를 발견했다.</div>
     <button class='hint-btn' onclick="showHint('b4')">💡 힌트 보기</button>
   </div>
 
   <div class='question-card' id='qc-b5'><span class='q-num'>5</span>
-    <div class='q-text'>We saw a bird <em>___</em> had colorful feathers.</div>
-    <div class='choices' data-qid='b5' data-ans='which'><button class="choice" onclick="pickChoice(this)">who</button><button class="choice" onclick="pickChoice(this)">which</button><button class="choice" onclick="pickChoice(this)">whom</button><button class="choice" onclick="pickChoice(this)">what</button></div>
-    <div class='answer-hint' id='ah-b5'>💡 정답: <strong>which</strong> — 선행사 a bird(동물) → which (또는 that)<br>📝 해석: 우리는 알록달록한 깃털을 가진 새를 보았다.</div>
+    <div class='q-text'>Leo is a student <em>___</em> always arrives early to class.</div>
+    <div class='choices' data-qid='b5' data-ans='who'><button class="choice" onclick="pickChoice(this)">who</button><button class="choice" onclick="pickChoice(this)">which</button><button class="choice" onclick="pickChoice(this)">what</button><button class="choice" onclick="pickChoice(this)">whom</button></div>
+    <div class='answer-hint' id='ah-b5'>💡 정답: <strong>who</strong> — 선행사 a student(사람) → who<br>📝 해석: Leo는 항상 수업에 일찍 오는 학생이다.</div>
     <button class='hint-btn' onclick="showHint('b5')">💡 힌트 보기</button>
   </div>
 
   <div class='question-card' id='qc-b6'><span class='q-num'>6</span>
-    <div class='q-text'>The teacher <em>___</em> coaches our drama club is very talented.</div>
-    <div class='choices' data-qid='b6' data-ans='who'><button class="choice" onclick="pickChoice(this)">which</button><button class="choice" onclick="pickChoice(this)">what</button><button class="choice" onclick="pickChoice(this)">whom</button><button class="choice" onclick="pickChoice(this)">who</button></div>
-    <div class='answer-hint' id='ah-b6'>💡 정답: <strong>who</strong> — 선행사 The teacher(사람) → who (또는 that)<br>📝 해석: 우리 연극반을 지도하는 선생님은 매우 재능 있다.</div>
+    <div class='q-text'>She read a book <em>___</em> was set on a distant planet.</div>
+    <div class='choices' data-qid='b6' data-ans='that'><button class="choice" onclick="pickChoice(this)">who</button><button class="choice" onclick="pickChoice(this)">whom</button><button class="choice" onclick="pickChoice(this)">that</button><button class="choice" onclick="pickChoice(this)">what</button></div>
+    <div class='answer-hint' id='ah-b6'>💡 정답: <strong>that</strong> — 선행사 a book(사물) → that (또는 which)<br>📝 해석: 그녀는 먼 행성을 배경으로 한 책을 읽었다.</div>
     <button class='hint-btn' onclick="showHint('b6')">💡 힌트 보기</button>
   </div>
 
   <div class='question-card' id='qc-b7'><span class='q-num'>7</span>
-    <div class='q-text'>Leo read a novel <em>___</em> was set in ancient Rome.</div>
-    <div class='choices' data-qid='b7' data-ans='that'><button class="choice" onclick="pickChoice(this)">who</button><button class="choice" onclick="pickChoice(this)">that</button><button class="choice" onclick="pickChoice(this)">whom</button><button class="choice" onclick="pickChoice(this)">what</button></div>
-    <div class='answer-hint' id='ah-b7'>💡 정답: <strong>that</strong> — 선행사 a novel(사물) → that (또는 which)<br>📝 해석: Leo는 고대 로마를 배경으로 한 소설을 읽었다.</div>
+    <div class='q-text'>My school has a garden <em>___</em> grows herbs and vegetables.</div>
+    <div class='choices' data-qid='b7' data-ans='that'><button class="choice" onclick="pickChoice(this)">who</button><button class="choice" onclick="pickChoice(this)">whom</button><button class="choice" onclick="pickChoice(this)">what</button><button class="choice" onclick="pickChoice(this)">that</button></div>
+    <div class='answer-hint' id='ah-b7'>💡 정답: <strong>that</strong> — 선행사 a garden(사물) → that (또는 which)<br>📝 해석: 우리 학교에는 허브와 채소를 기르는 정원이 있다.</div>
     <button class='hint-btn' onclick="showHint('b7')">💡 힌트 보기</button>
   </div>
 
   <div class='question-card' id='qc-b8'><span class='q-num'>8</span>
-    <div class='q-text'>She is a chef <em>___</em> trained in Paris for three years.</div>
-    <div class='choices' data-qid='b8' data-ans='who'><button class="choice" onclick="pickChoice(this)">which</button><button class="choice" onclick="pickChoice(this)">what</button><button class="choice" onclick="pickChoice(this)">who</button><button class="choice" onclick="pickChoice(this)">whom</button></div>
-    <div class='answer-hint' id='ah-b8'>💡 정답: <strong>who</strong> — 선행사 a chef(사람) → who (또는 that)<br>📝 해석: 그녀는 3년간 파리에서 훈련을 받은 셰프이다.</div>
+    <div class='q-text'>Nora has a parrot <em>___</em> can say over fifty words.</div>
+    <div class='choices' data-qid='b8' data-ans='that'><button class="choice" onclick="pickChoice(this)">who</button><button class="choice" onclick="pickChoice(this)">whom</button><button class="choice" onclick="pickChoice(this)">what</button><button class="choice" onclick="pickChoice(this)">that</button></div>
+    <div class='answer-hint' id='ah-b8'>💡 정답: <strong>that</strong> — 선행사 a parrot(동물) → that (또는 which)<br>📝 해석: Nora는 50개 이상의 단어를 말할 수 있는 앵무새를 키우고 있다.</div>
     <button class='hint-btn' onclick="showHint('b8')">💡 힌트 보기</button>
   </div>
 
+  <!-- input 9-10: 관계대명사 쓰기 -->
   <div class='question-card' id='qc-b9'><span class='q-num'>9</span>
-    <div class='q-text'>The app <em>___</em> tracks your sleep patterns is very useful.</div>
-    <div class='choices' data-qid='b9' data-ans='that'><button class="choice" onclick="pickChoice(this)">who</button><button class="choice" onclick="pickChoice(this)">whom</button><button class="choice" onclick="pickChoice(this)">what</button><button class="choice" onclick="pickChoice(this)">that</button></div>
-    <div class='answer-hint' id='ah-b9'>💡 정답: <strong>that</strong> — 선행사 The app(사물) → that (또는 which)<br>📝 해석: 수면 패턴을 추적하는 앱은 매우 유용하다.</div>
+    <div class='q-text'>He is a chef <input class="blank" id="bi-b9" placeholder="___" data-ans="who" data-ans2="that" autocomplete="off" style="min-width:70px"> trained in France.</div>
+    <button class='check-btn' onclick="checkBlank('b9')">✔ 확인</button>
+    <div class='answer-hint' id='ah-b9'>💡 정답: <strong>who</strong> (또는 that) — 선행사 a chef(사람) → who/that<br>📝 해석: 그는 프랑스에서 훈련을 받은 셰프이다.</div>
     <button class='hint-btn' onclick="showHint('b9')">💡 힌트 보기</button>
   </div>
 
   <div class='question-card' id='qc-b10'><span class='q-num'>10</span>
-    <div class='q-text'>Sam has a dog <em>___</em> always fetches the newspaper every morning.</div>
-    <div class='choices' data-qid='b10' data-ans='that'><button class="choice" onclick="pickChoice(this)">who</button><button class="choice" onclick="pickChoice(this)">whom</button><button class="choice" onclick="pickChoice(this)">what</button><button class="choice" onclick="pickChoice(this)">that</button></div>
-    <div class='answer-hint' id='ah-b10'>💡 정답: <strong>that</strong> — 선행사 a dog(동물) → that (또는 which)<br>📝 해석: Sam은 매일 아침 신문을 가져오는 개를 키우고 있다.</div>
+    <div class='q-text'>I like the song <input class="blank" id="bi-b10" placeholder="___" data-ans="that" data-ans2="which" autocomplete="off" style="min-width:70px"> plays at the end of the movie.</div>
+    <button class='check-btn' onclick="checkBlank('b10')">✔ 확인</button>
+    <div class='answer-hint' id='ah-b10'>💡 정답: <strong>that</strong> (또는 which) — 선행사 the song(사물) → that/which<br>📝 해석: 나는 영화 마지막에 나오는 그 노래가 좋다.</div>
     <button class='hint-btn' onclick="showHint('b10')">💡 힌트 보기</button>
   </div>
 
   <!-- input 11-12: 두 문장 합치기 -->
   <div class='question-card' id='qc-b11'><span class='q-num'>11</span>
-    <div class='q-sub'>두 문장을 주격 관계대명사를 이용해 한 문장으로 쓰세요.<br>I have a neighbor. + She grows vegetables on her balcony.</div>
-    <div class='q-text'>I have a neighbor <input class="blank" id="bi-b11" placeholder="who/that ..." data-ans="who grows vegetables on her balcony" data-ans2="that grows vegetables on her balcony" autocomplete="off" style="min-width:260px">.</div>
+    <div class='q-sub'>두 문장을 주격 관계대명사로 이어 한 문장으로 쓰세요.<br>I have a neighbor. + She grows flowers on her balcony.</div>
+    <div class='q-text'>I have a neighbor <input class="blank" id="bi-b11" placeholder="who/that ..." data-ans="who grows flowers on her balcony" data-ans2="that grows flowers on her balcony" autocomplete="off" style="min-width:260px">.</div>
     <button class='check-btn' onclick="checkBlank('b11')">✔ 확인</button>
-    <div class='answer-hint' id='ah-b11'>💡 정답: <strong>who grows vegetables on her balcony</strong> — 선행사 a neighbor(사람) → who/that + 동사<br>📝 해석: 나는 발코니에서 채소를 기르는 이웃이 있다.</div>
+    <div class='answer-hint' id='ah-b11'>💡 정답: <strong>who grows flowers on her balcony</strong> — 선행사 a neighbor(사람) → who/that + 동사<br>📝 해석: 나는 발코니에서 꽃을 기르는 이웃이 있다.</div>
     <button class='hint-btn' onclick="showHint('b11')">💡 힌트 보기</button>
   </div>
 
   <div class='question-card' id='qc-b12'><span class='q-num'>12</span>
-    <div class='q-sub'>두 문장을 주격 관계대명사를 이용해 한 문장으로 쓰세요.<br>He uses a planner. + It helps him stay organized.</div>
-    <div class='q-text'>He uses a planner <input class="blank" id="bi-b12" placeholder="which/that ..." data-ans="which helps him stay organized" data-ans2="that helps him stay organized" autocomplete="off" style="min-width:260px">.</div>
+    <div class='q-sub'>두 문장을 주격 관계대명사로 이어 한 문장으로 쓰세요.<br>He uses an app. + It tracks his daily steps.</div>
+    <div class='q-text'>He uses an app <input class="blank" id="bi-b12" placeholder="which/that ..." data-ans="which tracks his daily steps" data-ans2="that tracks his daily steps" autocomplete="off" style="min-width:240px">.</div>
     <button class='check-btn' onclick="checkBlank('b12')">✔ 확인</button>
-    <div class='answer-hint' id='ah-b12'>💡 정답: <strong>which helps him stay organized</strong> — 선행사 a planner(사물) → which/that + 동사<br>📝 해석: 그는 체계적으로 생활하는 데 도움이 되는 플래너를 사용한다.</div>
+    <div class='answer-hint' id='ah-b12'>💡 정답: <strong>which tracks his daily steps</strong> — 선행사 an app(사물) → which/that + 동사<br>📝 해석: 그는 매일 걸음 수를 추적하는 앱을 사용한다.</div>
     <button class='hint-btn' onclick="showHint('b12')">💡 힌트 보기</button>
   </div>
 </div>
@@ -354,163 +357,168 @@ body{font-family:'Baloo 2','Noto Sans KR',sans-serif;background:var(--bg);paddin
   <div class="sec-hdr">
     <div class="lbl">혼합 · 10문제</div>
     <h2>단어 배열하기</h2>
-    <div class="desc">단어 칩 클릭 → 문장 완성! (다시 클릭하면 취소) · 수여동사 어순 + 주격 관계대명사 혼합</div>
+    <div class="desc">단어 칩 클릭 → 문장 완성! · 수여동사 어순 + 주격 관계대명사 혼합</div>
   </div>
 
   <div class='question-card' id='qc-c1'><span class='q-num'>1</span>
-    <div class='q-text'>📌 그녀는 나에게 따뜻한 머플러를 사 주었다.</div>
+    <div class='q-text'>📌 그는 나에게 재미있는 수수께끼를 말해 주었다.</div>
     <div class='word-pool' id='pool-c1'>
-      <button class="chip pool-chip" id="wc-c1-0" onclick="moveWord('c1',0,this)">me</button>
-      <button class="chip pool-chip" id="wc-c1-1" onclick="moveWord('c1',1,this)">She</button>
-      <button class="chip pool-chip" id="wc-c1-2" onclick="moveWord('c1',2,this)">warm</button>
+      <button class="chip pool-chip" id="wc-c1-0" onclick="moveWord('c1',0,this)">funny</button>
+      <button class="chip pool-chip" id="wc-c1-1" onclick="moveWord('c1',1,this)">riddle</button>
+      <button class="chip pool-chip" id="wc-c1-2" onclick="moveWord('c1',2,this)">told</button>
       <button class="chip pool-chip" id="wc-c1-3" onclick="moveWord('c1',3,this)">a</button>
-      <button class="chip pool-chip" id="wc-c1-4" onclick="moveWord('c1',4,this)">bought</button>
-      <button class="chip pool-chip" id="wc-c1-5" onclick="moveWord('c1',5,this)">muffler</button>
+      <button class="chip pool-chip" id="wc-c1-4" onclick="moveWord('c1',4,this)">He</button>
+      <button class="chip pool-chip" id="wc-c1-5" onclick="moveWord('c1',5,this)">me</button>
     </div>
     <div class='answer-area' id='area-c1'><span class='area-ph'>여기에 단어를 놓으세요 →</span></div>
-    <button class='check-btn' data-qid='c1' data-ans='She bought me a warm muffler' onclick="checkArrange(this)">✔ 확인</button>
-    <div class='answer-hint' id='ah-c1'>💡 정답: <strong>She bought me a warm muffler</strong><br>📌 구조: buy + IO(me) + DO(a warm muffler)</div>
+    <button class='check-btn' data-qid='c1' data-ans='He told me a funny riddle' onclick="checkArrange(this)">✔ 확인</button>
+    <div class='answer-hint' id='ah-c1'>💡 정답: <strong>He told me a funny riddle</strong><br>📌 구조: tell + IO(me) + DO(a funny riddle)</div>
     <button class='hint-btn' onclick="showHint('c1')">💡 힌트 보기</button>
   </div>
 
   <div class='question-card' id='qc-c2'><span class='q-num'>2</span>
-    <div class='q-text'>📌 Jake는 역사를 가르치는 선생님이다.</div>
+    <div class='q-text'>📌 그는 방을 청소하는 로봇을 만들었다.</div>
     <div class='word-pool' id='pool-c2'>
-      <button class="chip pool-chip" id="wc-c2-0" onclick="moveWord('c2',0,this)">history</button>
-      <button class="chip pool-chip" id="wc-c2-1" onclick="moveWord('c2',1,this)">who</button>
+      <button class="chip pool-chip" id="wc-c2-0" onclick="moveWord('c2',0,this)">that</button>
+      <button class="chip pool-chip" id="wc-c2-1" onclick="moveWord('c2',1,this)">rooms</button>
       <button class="chip pool-chip" id="wc-c2-2" onclick="moveWord('c2',2,this)">a</button>
-      <button class="chip pool-chip" id="wc-c2-3" onclick="moveWord('c2',3,this)">is</button>
-      <button class="chip pool-chip" id="wc-c2-4" onclick="moveWord('c2',4,this)">teaches</button>
-      <button class="chip pool-chip" id="wc-c2-5" onclick="moveWord('c2',5,this)">Jake</button>
-      <button class="chip pool-chip" id="wc-c2-6" onclick="moveWord('c2',6,this)">teacher</button>
+      <button class="chip pool-chip" id="wc-c2-3" onclick="moveWord('c2',3,this)">built</button>
+      <button class="chip pool-chip" id="wc-c2-4" onclick="moveWord('c2',4,this)">cleans</button>
+      <button class="chip pool-chip" id="wc-c2-5" onclick="moveWord('c2',5,this)">He</button>
+      <button class="chip pool-chip" id="wc-c2-6" onclick="moveWord('c2',6,this)">robot</button>
     </div>
     <div class='answer-area' id='area-c2'><span class='area-ph'>여기에 단어를 놓으세요 →</span></div>
-    <button class='check-btn' data-qid='c2' data-ans='Jake is a teacher who teaches history' onclick="checkArrange(this)">✔ 확인</button>
-    <div class='answer-hint' id='ah-c2'>💡 정답: <strong>Jake is a teacher who teaches history</strong><br>📝 선행사 a teacher(사람) → 주격 관계대명사 who</div>
+    <button class='check-btn' data-qid='c2' data-ans='He built a robot that cleans rooms' onclick="checkArrange(this)">✔ 확인</button>
+    <div class='answer-hint' id='ah-c2'>💡 정답: <strong>He built a robot that cleans rooms</strong><br>📌 구조: 선행사 a robot(사물) → that</div>
     <button class='hint-btn' onclick="showHint('c2')">💡 힌트 보기</button>
   </div>
 
   <div class='question-card' id='qc-c3'><span class='q-num'>3</span>
-    <div class='q-text'>📌 선생님은 우리에게 실험을 보여주셨다.</div>
+    <div class='q-text'>📌 엄마가 우리에게 특별한 저녁을 만들어 주셨다.</div>
     <div class='word-pool' id='pool-c3'>
-      <button class="chip pool-chip" id="wc-c3-0" onclick="moveWord('c3',0,this)">teacher</button>
-      <button class="chip pool-chip" id="wc-c3-1" onclick="moveWord('c3',1,this)">an</button>
-      <button class="chip pool-chip" id="wc-c3-2" onclick="moveWord('c3',2,this)">showed</button>
-      <button class="chip pool-chip" id="wc-c3-3" onclick="moveWord('c3',3,this)">experiment</button>
-      <button class="chip pool-chip" id="wc-c3-4" onclick="moveWord('c3',4,this)">Our</button>
-      <button class="chip pool-chip" id="wc-c3-5" onclick="moveWord('c3',5,this)">us</button>
+      <button class="chip pool-chip" id="wc-c3-0" onclick="moveWord('c3',0,this)">us</button>
+      <button class="chip pool-chip" id="wc-c3-1" onclick="moveWord('c3',1,this)">special</button>
+      <button class="chip pool-chip" id="wc-c3-2" onclick="moveWord('c3',2,this)">made</button>
+      <button class="chip pool-chip" id="wc-c3-3" onclick="moveWord('c3',3,this)">a</button>
+      <button class="chip pool-chip" id="wc-c3-4" onclick="moveWord('c3',4,this)">dinner</button>
+      <button class="chip pool-chip" id="wc-c3-5" onclick="moveWord('c3',5,this)">Mom</button>
     </div>
     <div class='answer-area' id='area-c3'><span class='area-ph'>여기에 단어를 놓으세요 →</span></div>
-    <button class='check-btn' data-qid='c3' data-ans='Our teacher showed us an experiment' onclick="checkArrange(this)">✔ 확인</button>
-    <div class='answer-hint' id='ah-c3'>💡 정답: <strong>Our teacher showed us an experiment</strong><br>📌 구조: show + IO(us) + DO(an experiment)</div>
+    <button class='check-btn' data-qid='c3' data-ans='Mom made us a special dinner' onclick="checkArrange(this)">✔ 확인</button>
+    <div class='answer-hint' id='ah-c3'>💡 정답: <strong>Mom made us a special dinner</strong><br>📌 구조: make + IO(us) + DO(a special dinner)</div>
     <button class='hint-btn' onclick="showHint('c3')">💡 힌트 보기</button>
   </div>
 
   <div class='question-card' id='qc-c4'><span class='q-num'>4</span>
-    <div class='q-text'>📌 이것은 세계 최고층 빌딩이 있는 도시이다.</div>
+    <div class='q-text'>📌 나는 바다 근처에 사는 친구가 있다.</div>
     <div class='word-pool' id='pool-c4'>
-      <button class="chip pool-chip" id="wc-c4-0" onclick="moveWord('c4',0,this)">tallest</button>
-      <button class="chip pool-chip" id="wc-c4-1" onclick="moveWord('c4',1,this)">is</button>
-      <button class="chip pool-chip" id="wc-c4-2" onclick="moveWord('c4',2,this)">building</button>
-      <button class="chip pool-chip" id="wc-c4-3" onclick="moveWord('c4',3,this)">a</button>
-      <button class="chip pool-chip" id="wc-c4-4" onclick="moveWord('c4',4,this)">the</button>
-      <button class="chip pool-chip" id="wc-c4-5" onclick="moveWord('c4',5,this)">has</button>
-      <button class="chip pool-chip" id="wc-c4-6" onclick="moveWord('c4',6,this)">This</button>
-      <button class="chip pool-chip" id="wc-c4-7" onclick="moveWord('c4',7,this)">city</button>
-      <button class="chip pool-chip" id="wc-c4-8" onclick="moveWord('c4',8,this)">that</button>
+      <button class="chip pool-chip" id="wc-c4-0" onclick="moveWord('c4',0,this)">lives</button>
+      <button class="chip pool-chip" id="wc-c4-1" onclick="moveWord('c4',1,this)">a</button>
+      <button class="chip pool-chip" id="wc-c4-2" onclick="moveWord('c4',2,this)">near</button>
+      <button class="chip pool-chip" id="wc-c4-3" onclick="moveWord('c4',3,this)">I</button>
+      <button class="chip pool-chip" id="wc-c4-4" onclick="moveWord('c4',4,this)">friend</button>
+      <button class="chip pool-chip" id="wc-c4-5" onclick="moveWord('c4',5,this)">who</button>
+      <button class="chip pool-chip" id="wc-c4-6" onclick="moveWord('c4',6,this)">have</button>
+      <button class="chip pool-chip" id="wc-c4-7" onclick="moveWord('c4',7,this)">the</button>
+      <button class="chip pool-chip" id="wc-c4-8" onclick="moveWord('c4',8,this)">sea</button>
     </div>
     <div class='answer-area' id='area-c4'><span class='area-ph'>여기에 단어를 놓으세요 →</span></div>
-    <button class='check-btn' data-qid='c4' data-ans='This is a city that has the tallest building' onclick="checkArrange(this)">✔ 확인</button>
-    <div class='answer-hint' id='ah-c4'>💡 정답: <strong>This is a city that has the tallest building</strong><br>📌 구조: 선행사 a city(사물) → 주격 관계대명사 that</div>
+    <button class='check-btn' data-qid='c4' data-ans='I have a friend who lives near the sea' onclick="checkArrange(this)">✔ 확인</button>
+    <div class='answer-hint' id='ah-c4'>💡 정답: <strong>I have a friend who lives near the sea</strong><br>📌 구조: 선행사 a friend(사람) → who</div>
     <button class='hint-btn' onclick="showHint('c4')">💡 힌트 보기</button>
   </div>
 
   <div class='question-card' id='qc-c5'><span class='q-num'>5</span>
-    <div class='q-text'>📌 아빠가 내 친구에게 피자를 만들어 주셨다.</div>
+    <div class='q-text'>📌 아빠가 그에게 새 자전거를 사 주셨다.</div>
     <div class='word-pool' id='pool-c5'>
-      <button class="chip pool-chip" id="wc-c5-0" onclick="moveWord('c5',0,this)">my</button>
-      <button class="chip pool-chip" id="wc-c5-1" onclick="moveWord('c5',1,this)">friend</button>
+      <button class="chip pool-chip" id="wc-c5-0" onclick="moveWord('c5',0,this)">bike</button>
+      <button class="chip pool-chip" id="wc-c5-1" onclick="moveWord('c5',1,this)">him</button>
       <button class="chip pool-chip" id="wc-c5-2" onclick="moveWord('c5',2,this)">a</button>
       <button class="chip pool-chip" id="wc-c5-3" onclick="moveWord('c5',3,this)">Dad</button>
-      <button class="chip pool-chip" id="wc-c5-4" onclick="moveWord('c5',4,this)">pizza</button>
-      <button class="chip pool-chip" id="wc-c5-5" onclick="moveWord('c5',5,this)">made</button>
+      <button class="chip pool-chip" id="wc-c5-4" onclick="moveWord('c5',4,this)">new</button>
+      <button class="chip pool-chip" id="wc-c5-5" onclick="moveWord('c5',5,this)">bought</button>
     </div>
     <div class='answer-area' id='area-c5'><span class='area-ph'>여기에 단어를 놓으세요 →</span></div>
-    <button class='check-btn' data-qid='c5' data-ans='Dad made my friend a pizza' onclick="checkArrange(this)">✔ 확인</button>
-    <div class='answer-hint' id='ah-c5'>💡 정답: <strong>Dad made my friend a pizza</strong><br>📌 구조: make + IO(my friend) + DO(a pizza)</div>
+    <button class='check-btn' data-qid='c5' data-ans='Dad bought him a new bike' onclick="checkArrange(this)">✔ 확인</button>
+    <div class='answer-hint' id='ah-c5'>💡 정답: <strong>Dad bought him a new bike</strong><br>📌 구조: buy + IO(him) + DO(a new bike)</div>
     <button class='hint-btn' onclick="showHint('c5')">💡 힌트 보기</button>
   </div>
 
   <div class='question-card' id='qc-c6'><span class='q-num'>6</span>
-    <div class='q-text'>📌 Mia는 늦게까지 공부하는 학생이다.</div>
+    <div class='q-text'>📌 이것은 태양열로 달리는 버스이다.</div>
     <div class='word-pool' id='pool-c6'>
-      <button class="chip pool-chip" id="wc-c6-0" onclick="moveWord('c6',0,this)">late</button>
-      <button class="chip pool-chip" id="wc-c6-1" onclick="moveWord('c6',1,this)">who</button>
-      <button class="chip pool-chip" id="wc-c6-2" onclick="moveWord('c6',2,this)">studies</button>
-      <button class="chip pool-chip" id="wc-c6-3" onclick="moveWord('c6',3,this)">is</button>
-      <button class="chip pool-chip" id="wc-c6-4" onclick="moveWord('c6',4,this)">Mia</button>
-      <button class="chip pool-chip" id="wc-c6-5" onclick="moveWord('c6',5,this)">a</button>
-      <button class="chip pool-chip" id="wc-c6-6" onclick="moveWord('c6',6,this)">student</button>
+      <button class="chip pool-chip" id="wc-c6-0" onclick="moveWord('c6',0,this)">solar</button>
+      <button class="chip pool-chip" id="wc-c6-1" onclick="moveWord('c6',1,this)">a</button>
+      <button class="chip pool-chip" id="wc-c6-2" onclick="moveWord('c6',2,this)">runs</button>
+      <button class="chip pool-chip" id="wc-c6-3" onclick="moveWord('c6',3,this)">bus</button>
+      <button class="chip pool-chip" id="wc-c6-4" onclick="moveWord('c6',4,this)">on</button>
+      <button class="chip pool-chip" id="wc-c6-5" onclick="moveWord('c6',5,this)">which</button>
+      <button class="chip pool-chip" id="wc-c6-6" onclick="moveWord('c6',6,this)">is</button>
+      <button class="chip pool-chip" id="wc-c6-7" onclick="moveWord('c6',7,this)">This</button>
+      <button class="chip pool-chip" id="wc-c6-8" onclick="moveWord('c6',8,this)">power</button>
     </div>
     <div class='answer-area' id='area-c6'><span class='area-ph'>여기에 단어를 놓으세요 →</span></div>
-    <button class='check-btn' data-qid='c6' data-ans='Mia is a student who studies late' onclick="checkArrange(this)">✔ 확인</button>
-    <div class='answer-hint' id='ah-c6'>💡 정답: <strong>Mia is a student who studies late</strong><br>📌 구조: 선행사 a student(사람) → 주격 관계대명사 who</div>
+    <button class='check-btn' data-qid='c6' data-ans='This is a bus which runs on solar power' onclick="checkArrange(this)">✔ 확인</button>
+    <div class='answer-hint' id='ah-c6'>💡 정답: <strong>This is a bus which runs on solar power</strong><br>📌 구조: 선행사 a bus(사물) → which</div>
     <button class='hint-btn' onclick="showHint('c6')">💡 힌트 보기</button>
   </div>
 
   <div class='question-card' id='qc-c7'><span class='q-num'>7</span>
-    <div class='q-text'>📌 그는 나에게 자신의 여행 이야기를 들려주었다.</div>
+    <div class='q-text'>📌 선생님이 우리에게 새로운 게임을 가르쳐 주셨다.</div>
     <div class='word-pool' id='pool-c7'>
-      <button class="chip pool-chip" id="wc-c7-0" onclick="moveWord('c7',0,this)">travel</button>
-      <button class="chip pool-chip" id="wc-c7-1" onclick="moveWord('c7',1,this)">me</button>
-      <button class="chip pool-chip" id="wc-c7-2" onclick="moveWord('c7',2,this)">stories</button>
-      <button class="chip pool-chip" id="wc-c7-3" onclick="moveWord('c7',3,this)">told</button>
-      <button class="chip pool-chip" id="wc-c7-4" onclick="moveWord('c7',4,this)">his</button>
-      <button class="chip pool-chip" id="wc-c7-5" onclick="moveWord('c7',5,this)">He</button>
+      <button class="chip pool-chip" id="wc-c7-0" onclick="moveWord('c7',0,this)">game</button>
+      <button class="chip pool-chip" id="wc-c7-1" onclick="moveWord('c7',1,this)">Our</button>
+      <button class="chip pool-chip" id="wc-c7-2" onclick="moveWord('c7',2,this)">a</button>
+      <button class="chip pool-chip" id="wc-c7-3" onclick="moveWord('c7',3,this)">us</button>
+      <button class="chip pool-chip" id="wc-c7-4" onclick="moveWord('c7',4,this)">new</button>
+      <button class="chip pool-chip" id="wc-c7-5" onclick="moveWord('c7',5,this)">teacher</button>
+      <button class="chip pool-chip" id="wc-c7-6" onclick="moveWord('c7',6,this)">taught</button>
     </div>
     <div class='answer-area' id='area-c7'><span class='area-ph'>여기에 단어를 놓으세요 →</span></div>
-    <button class='check-btn' data-qid='c7' data-ans='He told me his travel stories' onclick="checkArrange(this)">✔ 확인</button>
-    <div class='answer-hint' id='ah-c7'>💡 정답: <strong>He told me his travel stories</strong><br>📌 구조: tell + IO(me) + DO(his travel stories)</div>
+    <button class='check-btn' data-qid='c7' data-ans='Our teacher taught us a new game' onclick="checkArrange(this)">✔ 확인</button>
+    <div class='answer-hint' id='ah-c7'>💡 정답: <strong>Our teacher taught us a new game</strong><br>📌 구조: teach + IO(us) + DO(a new game)</div>
     <button class='hint-btn' onclick="showHint('c7')">💡 힌트 보기</button>
   </div>
 
   <div class='question-card' id='qc-c8'><span class='q-num'>8</span>
-    <div class='q-text'>📌 이것은 강변을 따라 달리는 버스이다.</div>
+    <div class='q-text'>📌 Mia는 제일 좋은 요리법을 아는 요리사이다.</div>
     <div class='word-pool' id='pool-c8'>
-      <button class="chip pool-chip" id="wc-c8-0" onclick="moveWord('c8',0,this)">runs</button>
-      <button class="chip pool-chip" id="wc-c8-1" onclick="moveWord('c8',1,this)">the</button>
-      <button class="chip pool-chip" id="wc-c8-2" onclick="moveWord('c8',2,this)">along</button>
-      <button class="chip pool-chip" id="wc-c8-3" onclick="moveWord('c8',3,this)">which</button>
-      <button class="chip pool-chip" id="wc-c8-4" onclick="moveWord('c8',4,this)">is</button>
-      <button class="chip pool-chip" id="wc-c8-5" onclick="moveWord('c8',5,this)">This</button>
-      <button class="chip pool-chip" id="wc-c8-6" onclick="moveWord('c8',6,this)">river</button>
-      <button class="chip pool-chip" id="wc-c8-7" onclick="moveWord('c8',7,this)">a</button>
-      <button class="chip pool-chip" id="wc-c8-8" onclick="moveWord('c8',8,this)">bus</button>
+      <button class="chip pool-chip" id="wc-c8-0" onclick="moveWord('c8',0,this)">recipes</button>
+      <button class="chip pool-chip" id="wc-c8-1" onclick="moveWord('c8',1,this)">is</button>
+      <button class="chip pool-chip" id="wc-c8-2" onclick="moveWord('c8',2,this)">a</button>
+      <button class="chip pool-chip" id="wc-c8-3" onclick="moveWord('c8',3,this)">best</button>
+      <button class="chip pool-chip" id="wc-c8-4" onclick="moveWord('c8',4,this)">knows</button>
+      <button class="chip pool-chip" id="wc-c8-5" onclick="moveWord('c8',5,this)">the</button>
+      <button class="chip pool-chip" id="wc-c8-6" onclick="moveWord('c8',6,this)">cook</button>
+      <button class="chip pool-chip" id="wc-c8-7" onclick="moveWord('c8',7,this)">who</button>
+      <button class="chip pool-chip" id="wc-c8-8" onclick="moveWord('c8',8,this)">Mia</button>
     </div>
     <div class='answer-area' id='area-c8'><span class='area-ph'>여기에 단어를 놓으세요 →</span></div>
-    <button class='check-btn' data-qid='c8' data-ans='This is a bus which runs along the river' onclick="checkArrange(this)">✔ 확인</button>
-    <div class='answer-hint' id='ah-c8'>💡 정답: <strong>This is a bus which runs along the river</strong><br>📌 구조: 선행사 a bus(사물) → 주격 관계대명사 which</div>
+    <button class='check-btn' data-qid='c8' data-ans='Mia is a cook who knows the best recipes' onclick="checkArrange(this)">✔ 확인</button>
+    <div class='answer-hint' id='ah-c8'>💡 정답: <strong>Mia is a cook who knows the best recipes</strong><br>📌 구조: 선행사 a cook(사람) → who</div>
     <button class='hint-btn' onclick="showHint('c8')">💡 힌트 보기</button>
   </div>
 
   <div class='question-card' id='qc-c9'><span class='q-num'>9</span>
-    <div class='q-text'>📌 나는 이모에게 직접 만든 쿠키를 보냈다.</div>
+    <div class='q-text'>📌 Jake가 그녀에게 따뜻한 차 한 잔을 가져다 주었다.</div>
     <div class='word-pool' id='pool-c9'>
-      <button class="chip pool-chip" id="wc-c9-0" onclick="moveWord('c9',0,this)">homemade</button>
-      <button class="chip pool-chip" id="wc-c9-1" onclick="moveWord('c9',1,this)">my</button>
-      <button class="chip pool-chip" id="wc-c9-2" onclick="moveWord('c9',2,this)">sent</button>
-      <button class="chip pool-chip" id="wc-c9-3" onclick="moveWord('c9',3,this)">cookies</button>
-      <button class="chip pool-chip" id="wc-c9-4" onclick="moveWord('c9',4,this)">aunt</button>
-      <button class="chip pool-chip" id="wc-c9-5" onclick="moveWord('c9',5,this)">I</button>
+      <button class="chip pool-chip" id="wc-c9-0" onclick="moveWord('c9',0,this)">warm</button>
+      <button class="chip pool-chip" id="wc-c9-1" onclick="moveWord('c9',1,this)">her</button>
+      <button class="chip pool-chip" id="wc-c9-2" onclick="moveWord('c9',2,this)">a</button>
+      <button class="chip pool-chip" id="wc-c9-3" onclick="moveWord('c9',3,this)">Jake</button>
+      <button class="chip pool-chip" id="wc-c9-4" onclick="moveWord('c9',4,this)">brought</button>
+      <button class="chip pool-chip" id="wc-c9-5" onclick="moveWord('c9',5,this)">of</button>
+      <button class="chip pool-chip" id="wc-c9-6" onclick="moveWord('c9',6,this)">tea</button>
+      <button class="chip pool-chip" id="wc-c9-7" onclick="moveWord('c9',7,this)">cup</button>
     </div>
     <div class='answer-area' id='area-c9'><span class='area-ph'>여기에 단어를 놓으세요 →</span></div>
-    <button class='check-btn' data-qid='c9' data-ans='I sent my aunt homemade cookies' onclick="checkArrange(this)">✔ 확인</button>
-    <div class='answer-hint' id='ah-c9'>💡 정답: <strong>I sent my aunt homemade cookies</strong><br>📌 구조: send + IO(my aunt) + DO(homemade cookies)</div>
+    <button class='check-btn' data-qid='c9' data-ans='Jake brought her a warm cup of tea' onclick="checkArrange(this)">✔ 확인</button>
+    <div class='answer-hint' id='ah-c9'>💡 정답: <strong>Jake brought her a warm cup of tea</strong><br>📌 구조: bring + IO(her) + DO(a warm cup of tea)</div>
     <button class='hint-btn' onclick="showHint('c9')">💡 힌트 보기</button>
   </div>
 
   <div class='question-card' id='qc-c10'><span class='q-num'>10</span>
-    <div class='q-text'>📌 나는 매일 아침 조깅하는 이웃을 안다.</div>
+    <div class='q-text'>📌 나는 아침마다 조깅하는 이웃을 안다.</div>
     <div class='word-pool' id='pool-c10'>
       <button class="chip pool-chip" id="wc-c10-0" onclick="moveWord('c10',0,this)">morning</button>
       <button class="chip pool-chip" id="wc-c10-1" onclick="moveWord('c10',1,this)">a</button>
@@ -523,7 +531,7 @@ body{font-family:'Baloo 2','Noto Sans KR',sans-serif;background:var(--bg);paddin
     </div>
     <div class='answer-area' id='area-c10'><span class='area-ph'>여기에 단어를 놓으세요 →</span></div>
     <button class='check-btn' data-qid='c10' data-ans='I know a neighbor who jogs every morning' onclick="checkArrange(this)">✔ 확인</button>
-    <div class='answer-hint' id='ah-c10'>💡 정답: <strong>I know a neighbor who jogs every morning</strong><br>📌 구조: 선행사 a neighbor(사람) → 주격 관계대명사 who</div>
+    <div class='answer-hint' id='ah-c10'>💡 정답: <strong>I know a neighbor who jogs every morning</strong><br>📌 구조: 선행사 a neighbor(사람) → who</div>
     <button class='hint-btn' onclick="showHint('c10')">💡 힌트 보기</button>
   </div>
 </div>
@@ -685,68 +693,6 @@ function toast(msg,type){
   t.textContent=msg;t.className='show '+(type||'');
   clearTimeout(t._t);t._t=setTimeout(function(){t.classList.remove('show');},1800);
 }
-</script>
-<script>
-var vocabData={
-  'a1':[{w:'lent',k:'빌려주었다(lend 과거)'},{w:'classmate',k:'반 친구'}],
-  'a2':[{w:'pot',k:'냄비'},{w:'soup',k:'수프'}],
-  'a3':[{w:'thank-you note',k:'감사 쪽지'},{w:'tournament',k:'토너먼트, 대회'}],
-  'a4':[{w:'trophy',k:'트로피'},{w:'winning team',k:'우승 팀'}],
-  'a5':[{w:'travel photos',k:'여행 사진'},{w:'grandparents',k:'조부모님'}],
-  'a6':[{w:'reporter',k:'기자'},{w:'tricky',k:'까다로운'},{w:'mayor',k:'시장(市長)'}],
-  'a7':[{w:'wooden',k:'나무로 된'},{w:'bookshelf',k:'책장'}],
-  'a8':[{w:'PE teacher',k:'체육 선생님'},{w:'rules',k:'규칙'}],
-  'a9':[{w:'passed',k:'건네주었다(pass 과거)'},{w:'guitar',k:'기타'}],
-  'a10':[{w:'scarf',k:'스카프'},{w:'warm',k:'따뜻한'}],
-  'a11':[{w:'pen pal',k:'펜팔 친구'},{w:'wrote',k:'썼다(write 과거)'}],
-  'a12':[{w:'traditional',k:'전통적인'},{w:'rice cakes',k:'떡'},{w:'holidays',k:'명절, 휴일'}],
-  'a13':[{w:'volunteer',k:'자원봉사자'},{w:'route',k:'길, 노선'},{w:'tourists',k:'관광객들'}],
-  'a14':[{w:'favor',k:'부탁'},{w:'best friend',k:'절친한 친구'}],
-  'a15':[{w:'laptop',k:'노트북'},{w:'graduation gift',k:'졸업 선물'}],
-  'a16':[{w:'encouraging',k:'응원하는, 격려하는'},{w:'message',k:'메시지'}],
-  'a17':[{w:'interesting',k:'흥미로운'},{w:'story',k:'이야기'}],
-  'a18':[{w:'sneakers',k:'운동화'},{w:'bought',k:'샀다(buy 과거)'}],
-  'a19':[{w:'voice message',k:'음성 메시지'},{w:'sent',k:'보냈다(send 과거)'}],
-  'a20':[{w:'slippers',k:'슬리퍼'},{w:'a pair of',k:'한 켤레의'}],
-  'b1':[{w:'cousin',k:'사촌'}],
-  'b2':[{w:'was made in',k:'~에서 만들어졌다'}],
-  'b3':[{w:'math competition',k:'수학 경시대회'},{w:'won',k:'우승했다(win 과거)'}],
-  'b4':[{w:'wallet',k:'지갑'},{w:'bench',k:'벤치'}],
-  'b5':[{w:'colorful',k:'알록달록한'},{w:'feathers',k:'깃털'}],
-  'b6':[{w:'coaches',k:'지도하다, 코치하다'},{w:'drama club',k:'연극반'},{w:'talented',k:'재능 있는'}],
-  'b7':[{w:'novel',k:'소설'},{w:'ancient',k:'고대의'},{w:'Rome',k:'로마'}],
-  'b8':[{w:'chef',k:'셰프, 요리사'},{w:'trained',k:'훈련받았다(train 과거)'}],
-  'b9':[{w:'app',k:'앱'},{w:'tracks',k:'추적하다'},{w:'sleep patterns',k:'수면 패턴'}],
-  'b10':[{w:'fetches',k:'가져오다'},{w:'newspaper',k:'신문'}],
-  'b11':[{w:'neighbor',k:'이웃'},{w:'grows',k:'기르다, 재배하다'},{w:'balcony',k:'발코니'}],
-  'b12':[{w:'planner',k:'플래너, 계획 수첩'},{w:'organized',k:'체계적인, 정돈된'}],
-  'c1':[{w:'bought',k:'샀다(buy 과거)'},{w:'muffler',k:'머플러'}],
-  'c2':[{w:'teacher',k:'선생님'},{w:'teaches',k:'가르치다(3인칭 단수)'}],
-  'c3':[{w:'showed',k:'보여주었다(show 과거)'},{w:'experiment',k:'실험'}],
-  'c4':[{w:'tallest',k:'가장 높은'},{w:'building',k:'건물'}],
-  'c5':[{w:'made',k:'만들었다(make 과거)'},{w:'pizza',k:'피자'}],
-  'c6':[{w:'student',k:'학생'},{w:'studies',k:'공부하다(3인칭 단수)'}],
-  'c7':[{w:'told',k:'말해주었다(tell 과거)'},{w:'travel stories',k:'여행 이야기들'}],
-  'c8':[{w:'runs',k:'달리다(3인칭 단수)'},{w:'along',k:'~을 따라'},{w:'river',k:'강'}],
-  'c9':[{w:'sent',k:'보냈다(send 과거)'},{w:'homemade',k:'직접 만든, 홈메이드'}],
-  'c10':[{w:'neighbor',k:'이웃'},{w:'jogs',k:'조깅하다(3인칭 단수)'}]
-};
-document.addEventListener('DOMContentLoaded',function(){
-  var st=document.createElement('style');
-  st.textContent='.vi-vw{font-size:.72rem;background:#fef3c7;color:#92400e;border-radius:6px;padding:2px 8px;font-weight:600;margin:1px 2px;}';
-  document.head.appendChild(st);
-  Object.keys(vocabData).forEach(function(id){
-    var items=vocabData[id];
-    if(!items.length)return;
-    var card=document.getElementById('qc-'+id);
-    if(!card)return;
-    var hint=card.querySelector('.answer-hint');
-    if(!hint)return;
-    var vocHtml='<br><br>📖 <strong>단어:</strong> '+
-      items.map(function(v){return'<span class="vi-vw">'+v.w+' '+v.k+'</span>';}).join(' ');
-    hint.innerHTML+=vocHtml;
-  });
-});
 </script>
 <script src="../score-popup.js"></script>
 <script src="../sounds.js"></script>

@@ -18,11 +18,14 @@ https://namkicheol.github.io/middle-grammar/g2-give-relclause-hard/
 오른쪽 아래에 캐릭터: 진지하게 공부하는 중학생 캐릭터, 형광펜 들고 있음
 말풍선: "which → who!"
 
-## ⑤ agent 점검 결과 (2026-04-24)
+## ⑤ agent 점검 결과 (2026-04-24, 2차)
 answer-checker 실행 결과 — 전 항목 통과 (오류 0):
-- norm() 함수 완전 (9개 축약형 포함)
+- norm() 함수 완전 (9개 축약형 + can't 포함)
 - checkBlank / checkArrange 빈 입력 방지 정상
 - Section A 오류 수정 8문제 ans 전부 정확 (to/for 전치사, who/which/that 관계대명사)
-- Section B 문장 전환 7문제 ans + ans2 모두 문법적으로 올바름
+- Section B 재설계: 문법 용어(IO/DO) 제거 → 자연어 안내, 두 문장 합치기 4단계 점진적 스캐폴딩
+  - b1~b3: "같은 의미가 되도록 빈칸 채우세요 (to/for/전치사 없이)" 형식
+  - b4: which 제공 → 관계절만 빈칸; b5: who 제공 → 관계절만 빈칸
+  - b6: 주절만 → which/that+관계절 빈칸; b7: 전체 빈칸
 - Section C 단어 배열 10문제 칩 순서 전부 셔플됨
 - 헤더 장식 요소 8종 (h-letter×4, h-orb×2, ::before, ::after) 전부 존재

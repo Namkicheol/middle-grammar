@@ -241,76 +241,76 @@ body{font-family:'Baloo 2','Noto Sans KR',sans-serif;background:var(--bg);paddin
   </div>
 </div>
 
-<!-- ── Section B: 문장 전환 ── -->
+<!-- ── Section B: 문장 바꾸기 ── -->
 <div class="sec" id="s1">
   <div class="sec-hdr">
     <div class="lbl">Section B · 7문제</div>
-    <h2>문장 전환</h2>
-    <div class="desc">수여동사 전환(1–3: IO+DO ↔ DO+전치사+IO) + 두 문장 합치기(4–7: 주격 관계대명사 이용)</div>
+    <h2>문장 바꾸기 &amp; 두 문장 합치기</h2>
+    <div class="desc">같은 의미로 바꾸기(1–3: 받는 사람 위치 이동) + 두 문장 합치기(4–7: 주격 관계대명사 이용)</div>
   </div>
 
   <!-- 수여동사 전환 1-3 -->
   <div class='question-card' id='qc-b1'>
-    <span class='q-num'>1</span><span class='q-type trans'>문장 전환</span>
-    <div class='q-sub'>다음 문장을 「수여동사 + DO + 전치사 + IO」 형태로 바꾸세요.<br>She gave me some useful tips for the exam.</div>
-    <div class='q-text'>She gave some useful tips <input class="blank" id="bi-b1" placeholder="전치사+IO" data-ans="to me" autocomplete="off" style="min-width:100px"> for the exam.</div>
+    <span class='q-num'>1</span><span class='q-type trans'>문장 바꾸기</span>
+    <div class='q-sub'>같은 의미가 되도록 빈칸을 채우세요. <em>(to 사용)</em><br>She gave me some useful tips for the exam.</div>
+    <div class='q-text'>She gave some useful tips <input class="blank" id="bi-b1" placeholder="to + 받는 사람" data-ans="to me" autocomplete="off" style="min-width:100px"> for the exam.</div>
     <button class='check-btn' onclick="checkBlank('b1')">✔ 확인</button>
-    <div class='answer-hint' id='ah-b1'>💡 정답: <strong>to me</strong> — give + DO + to + IO<br>📝 해석: 그녀는 나에게 시험에 유용한 팁을 몇 가지 알려주었다.</div>
+    <div class='answer-hint' id='ah-b1'>💡 정답: <strong>to me</strong> — give는 받는 사람 앞에 to를 씁니다.<br>📝 해석: 그녀는 나에게 시험에 유용한 팁을 몇 가지 알려주었다.</div>
     <button class='hint-btn' onclick="showHint('b1')">💡 힌트 보기</button>
   </div>
 
   <div class='question-card' id='qc-b2'>
-    <span class='q-num'>2</span><span class='q-type trans'>문장 전환</span>
-    <div class='q-sub'>다음 문장을 「수여동사 + DO + 전치사 + IO」 형태로 바꾸세요.<br>His grandfather made him a handmade chess set.</div>
-    <div class='q-text'>His grandfather made a handmade chess set <input class="blank" id="bi-b2" placeholder="전치사+IO" data-ans="for him" autocomplete="off" style="min-width:100px">.</div>
+    <span class='q-num'>2</span><span class='q-type trans'>문장 바꾸기</span>
+    <div class='q-sub'>같은 의미가 되도록 빈칸을 채우세요. <em>(for 사용)</em><br>His grandfather made him a handmade chess set.</div>
+    <div class='q-text'>His grandfather made a handmade chess set <input class="blank" id="bi-b2" placeholder="for + 받는 사람" data-ans="for him" autocomplete="off" style="min-width:100px">.</div>
     <button class='check-btn' onclick="checkBlank('b2')">✔ 확인</button>
-    <div class='answer-hint' id='ah-b2'>💡 정답: <strong>for him</strong> — make + DO + for + IO<br>📝 해석: 그의 할아버지가 그를 위해 직접 만든 체스 세트를 만들어 주셨다.</div>
+    <div class='answer-hint' id='ah-b2'>💡 정답: <strong>for him</strong> — make는 받는 사람 앞에 for를 씁니다.<br>📝 해석: 그의 할아버지가 그를 위해 직접 만든 체스 세트를 만들어 주셨다.</div>
     <button class='hint-btn' onclick="showHint('b2')">💡 힌트 보기</button>
   </div>
 
   <div class='question-card' id='qc-b3'>
-    <span class='q-num'>3</span><span class='q-type trans'>문장 전환</span>
-    <div class='q-sub'>다음 문장을 「수여동사 + IO + DO」 형태로 바꾸세요.<br>He lent his rain jacket to his friend.</div>
-    <div class='q-text'>He lent <input class="blank" id="bi-b3" placeholder="IO+DO" data-ans="his friend his rain jacket" autocomplete="off" style="min-width:220px">.</div>
+    <span class='q-num'>3</span><span class='q-type trans'>문장 바꾸기</span>
+    <div class='q-sub'>같은 의미가 되도록 빈칸을 채우세요. <em>(전치사 없이, 받는 사람을 앞에)</em><br>He lent his rain jacket to his friend.</div>
+    <div class='q-text'>He lent <input class="blank" id="bi-b3" placeholder="받는 사람 + 빌려준 것" data-ans="his friend his rain jacket" autocomplete="off" style="min-width:220px">.</div>
     <button class='check-btn' onclick="checkBlank('b3')">✔ 확인</button>
-    <div class='answer-hint' id='ah-b3'>💡 정답: <strong>his friend his rain jacket</strong> — lend + IO + DO (to 없이)<br>📝 해석: 그는 친구에게 자신의 레인 재킷을 빌려주었다.</div>
+    <div class='answer-hint' id='ah-b3'>💡 정답: <strong>his friend his rain jacket</strong> — lend는 전치사 없이 받는 사람을 바로 쓸 수 있습니다.<br>📝 해석: 그는 친구에게 자신의 레인 재킷을 빌려주었다.</div>
     <button class='hint-btn' onclick="showHint('b3')">💡 힌트 보기</button>
   </div>
 
-  <!-- 두 문장 합치기 4-7 -->
+  <!-- 두 문장 합치기 4-7 (점진적 스캐폴딩) -->
   <div class='question-card' id='qc-b4'>
     <span class='q-num'>4</span><span class='q-type combine'>두 문장 합치기</span>
     <div class='q-sub'>주격 관계대명사를 이용해 한 문장으로 만드세요.<br>She composed a melody. + It became the school anthem.</div>
-    <div class='q-text'><input class="blank" id="bi-b4" placeholder="한 문장으로..." data-ans="She composed a melody which became the school anthem" data-ans2="She composed a melody that became the school anthem" autocomplete="off" style="min-width:100%;display:block;margin-top:6px"></div>
+    <div class='q-text'>She composed a melody which <input class="blank" id="bi-b4" placeholder="학교 교가가 ..." data-ans="became the school anthem" autocomplete="off" style="min-width:180px">.</div>
     <button class='check-btn' onclick="checkBlank('b4')">✔ 확인</button>
-    <div class='answer-hint' id='ah-b4'>💡 정답: <strong>She composed a melody which became the school anthem</strong><br>📝 해석: 그녀는 학교 교가가 된 멜로디를 작곡했다.</div>
+    <div class='answer-hint' id='ah-b4'>💡 정답: <strong>became the school anthem</strong> — a melody(사물) → which 사용<br>📝 해석: 그녀는 학교 교가가 된 멜로디를 작곡했다.</div>
     <button class='hint-btn' onclick="showHint('b4')">💡 힌트 보기</button>
   </div>
 
   <div class='question-card' id='qc-b5'>
     <span class='q-num'>5</span><span class='q-type combine'>두 문장 합치기</span>
     <div class='q-sub'>주격 관계대명사를 이용해 한 문장으로 만드세요.<br>I met a scientist. + He studies ocean pollution.</div>
-    <div class='q-text'><input class="blank" id="bi-b5" placeholder="한 문장으로..." data-ans="I met a scientist who studies ocean pollution" data-ans2="I met a scientist that studies ocean pollution" autocomplete="off" style="min-width:100%;display:block;margin-top:6px"></div>
+    <div class='q-text'>I met a scientist who <input class="blank" id="bi-b5" placeholder="해양 오염을 ..." data-ans="studies ocean pollution" autocomplete="off" style="min-width:180px">.</div>
     <button class='check-btn' onclick="checkBlank('b5')">✔ 확인</button>
-    <div class='answer-hint' id='ah-b5'>💡 정답: <strong>I met a scientist who studies ocean pollution</strong><br>📝 해석: 나는 해양 오염을 연구하는 과학자를 만났다.</div>
+    <div class='answer-hint' id='ah-b5'>💡 정답: <strong>studies ocean pollution</strong> — a scientist(사람) → who 사용<br>📝 해석: 나는 해양 오염을 연구하는 과학자를 만났다.</div>
     <button class='hint-btn' onclick="showHint('b5')">💡 힌트 보기</button>
   </div>
 
   <div class='question-card' id='qc-b6'>
     <span class='q-num'>6</span><span class='q-type combine'>두 문장 합치기</span>
     <div class='q-sub'>주격 관계대명사를 이용해 한 문장으로 만드세요.<br>They launched a drone. + It can deliver medicine to remote villages.</div>
-    <div class='q-text'><input class="blank" id="bi-b6" placeholder="한 문장으로..." data-ans="They launched a drone which can deliver medicine to remote villages" data-ans2="They launched a drone that can deliver medicine to remote villages" autocomplete="off" style="min-width:100%;display:block;margin-top:6px"></div>
+    <div class='q-text'>They launched a drone <input class="blank" id="bi-b6" placeholder="which/that + ..." data-ans="which can deliver medicine to remote villages" data-ans2="that can deliver medicine to remote villages" autocomplete="off" style="min-width:100%;display:block;margin-top:6px">.</div>
     <button class='check-btn' onclick="checkBlank('b6')">✔ 확인</button>
-    <div class='answer-hint' id='ah-b6'>💡 정답: <strong>They launched a drone which can deliver medicine to remote villages</strong><br>📝 해석: 그들은 외딴 마을에 약품을 배달할 수 있는 드론을 출시했다.</div>
+    <div class='answer-hint' id='ah-b6'>💡 정답: <strong>which can deliver medicine to remote villages</strong> — a drone(사물) → which/that 사용<br>📝 해석: 그들은 외딴 마을에 약품을 배달할 수 있는 드론을 출시했다.</div>
     <button class='hint-btn' onclick="showHint('b6')">💡 힌트 보기</button>
   </div>
 
   <div class='question-card' id='qc-b7'>
     <span class='q-num'>7</span><span class='q-type combine'>두 문장 합치기</span>
     <div class='q-sub'>주격 관계대명사를 이용해 한 문장으로 만드세요.<br>Jake volunteers at a shelter. + It takes care of rescued animals.</div>
-    <div class='q-text'><input class="blank" id="bi-b7" placeholder="한 문장으로..." data-ans="Jake volunteers at a shelter which takes care of rescued animals" data-ans2="Jake volunteers at a shelter that takes care of rescued animals" autocomplete="off" style="min-width:100%;display:block;margin-top:6px"></div>
+    <div class='q-text'><input class="blank" id="bi-b7" placeholder="한 문장으로 완성하세요..." data-ans="Jake volunteers at a shelter which takes care of rescued animals" data-ans2="Jake volunteers at a shelter that takes care of rescued animals" autocomplete="off" style="min-width:100%;display:block;margin-top:6px"></div>
     <button class='check-btn' onclick="checkBlank('b7')">✔ 확인</button>
-    <div class='answer-hint' id='ah-b7'>💡 정답: <strong>Jake volunteers at a shelter which takes care of rescued animals</strong><br>📝 해석: Jake는 구조된 동물들을 돌보는 보호소에서 봉사활동을 한다.</div>
+    <div class='answer-hint' id='ah-b7'>💡 정답: <strong>Jake volunteers at a shelter which takes care of rescued animals</strong> — a shelter(사물) → which/that 사용<br>📝 해석: Jake는 구조된 동물들을 돌보는 보호소에서 봉사활동을 한다.</div>
     <button class='hint-btn' onclick="showHint('b7')">💡 힌트 보기</button>
   </div>
 </div>

@@ -18,11 +18,12 @@ https://namkicheol.github.io/middle-grammar/g2-give-relclause-basic/
 오른쪽 아래에 캐릭터: 밝게 웃는 중학생 캐릭터가 책을 들고 있는 모습
 말풍선: "He gave me a book!"
 
-## ⑤ agent 점검 결과 (2026-04-24)
-answer-checker 실행 결과 — 핵심 항목 전부 통과:
-- norm() 함수 완전 (9개 축약형 포함)
+## ⑤ agent 점검 결과 (2026-04-24, 2차)
+answer-checker 실행 결과 — 전 항목 통과 (오류 0):
+- norm() 함수 완전 (9개 축약형 + can't 포함)
 - checkBlank / checkArrange 빈 입력 방지 정상
 - 모든 MCQ data-ans ↔ 버튼 텍스트 일치
-- scramble 단어 칩 순서 전부 셔플됨
-- ans2 사용 문제(b11, b12): who/that, which/that 보조 정답 모두 문법적으로 올바름
-- Section C answer-hint: 📌 구조: 레이블로 수정 완료 (scramble 예외 규칙 적용)
+- scramble 단어 칩 순서 전부 셔플됨 (c1·c3·c7 재배치 포함)
+- ans2 사용 문제(b9~b12): who/that, which/that 보조 정답 모두 문법적으로 올바름
+- Section C answer-hint: 📌 구조: 레이블 적용 (scramble 예외 규칙)
+- Section B 기초 수준 재설계: IO 대명사 선택(a1~a8) + 어순 MCQ(a9~a12) + 대명사 쓰기(a13~a16) + IO+DO 완성(a17~a20)

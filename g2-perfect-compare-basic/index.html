@@ -34,9 +34,10 @@ body{font-family:'Baloo 2','Noto Sans KR',sans-serif;background:var(--bg);paddin
 .question-card::before{content:'';position:absolute;top:0;left:0;width:4px;height:100%;background:#e2e8f0;transition:background .3s;}
 .question-card.ok::before{background:var(--green);}.question-card.ng::before{background:var(--red);}
 .q-num{display:inline-flex;align-items:center;justify-content:center;width:28px;height:28px;background:var(--sky);color:var(--blue);border-radius:8px;font-size:.82rem;font-weight:800;margin-bottom:10px;}
-.q-text{font-size:1rem;font-weight:600;color:var(--dark);margin-bottom:12px;line-height:1.7;}
+.q-text{font-size:1rem;font-weight:600;color:var(--dark);margin-bottom:8px;line-height:1.7;}
 .q-text em{font-style:normal;color:var(--blue);font-weight:800;border-bottom:2px dotted var(--blue);}
 .q-sub{font-size:.85rem;color:#64748b;font-weight:500;margin-bottom:10px;padding:6px 10px;background:#f8fafc;border-radius:8px;border-left:3px solid #cbd5e1;}
+.q-kor{font-size:.82rem;color:#1e6fa0;font-weight:600;margin-bottom:10px;padding:4px 10px;background:#e0f2fe;border-radius:6px;}
 .blank{border:none;border-bottom:2.5px solid var(--blue);background:transparent;font-family:inherit;font-size:.95rem;font-weight:700;color:var(--dark);padding:2px 8px;min-width:80px;text-align:center;outline:none;transition:.2s;display:inline-block;}
 .blank:focus{border-color:var(--purple);}.blank.ok{border-color:var(--green);color:var(--green);background:#f0fdf4;border-radius:6px;}.blank.ng{border-color:var(--red);color:var(--red);background:#fef2f2;border-radius:6px;}
 .ex{font-size:.75rem;color:var(--gray);}
@@ -109,6 +110,7 @@ body{font-family:'Baloo 2','Noto Sans KR',sans-serif;background:var(--bg);paddin
   <!-- MCQ 1-5: have/has 선택 -->
   <div class='question-card' id='qc-a1'><span class='q-num'>1</span>
     <div class='q-text'>I <em>___</em> seen this film before.</div>
+    <div class='q-kor'>나는 이 영화를 전에 본 적이 있다.</div>
     <div class='choices' data-qid='a1' data-ans='have'><button class="choice" onclick="pickChoice(this)">have</button><button class="choice" onclick="pickChoice(this)">has</button><button class="choice" onclick="pickChoice(this)">had</button><button class="choice" onclick="pickChoice(this)">am</button></div>
     <div class='answer-hint' id='ah-a1'>💡 정답: <strong>have</strong> — 주어 I → have를 씁니다.<br>📝 해석: 나는 이 영화를 전에 본 적이 있다.</div>
     <button class='hint-btn' onclick="showHint('a1')">💡 힌트 보기</button>
@@ -116,6 +118,7 @@ body{font-family:'Baloo 2','Noto Sans KR',sans-serif;background:var(--bg);paddin
 
   <div class='question-card' id='qc-a2'><span class='q-num'>2</span>
     <div class='q-text'>She <em>___</em> just finished her homework.</div>
+    <div class='q-kor'>그녀는 방금 숙제를 끝냈다.</div>
     <div class='choices' data-qid='a2' data-ans='has'><button class="choice" onclick="pickChoice(this)">have</button><button class="choice" onclick="pickChoice(this)">has</button><button class="choice" onclick="pickChoice(this)">had</button><button class="choice" onclick="pickChoice(this)">is</button></div>
     <div class='answer-hint' id='ah-a2'>💡 정답: <strong>has</strong> — 주어 She(3인칭 단수) → has를 씁니다.<br>📝 해석: 그녀는 방금 숙제를 끝냈다.</div>
     <button class='hint-btn' onclick="showHint('a2')">💡 힌트 보기</button>
@@ -123,6 +126,7 @@ body{font-family:'Baloo 2','Noto Sans KR',sans-serif;background:var(--bg);paddin
 
   <div class='question-card' id='qc-a3'><span class='q-num'>3</span>
     <div class='q-text'>They <em>___</em> lived here for ten years.</div>
+    <div class='q-kor'>그들은 10년 동안 여기서 살아 왔다.</div>
     <div class='choices' data-qid='a3' data-ans='have'><button class="choice" onclick="pickChoice(this)">have</button><button class="choice" onclick="pickChoice(this)">has</button><button class="choice" onclick="pickChoice(this)">had</button><button class="choice" onclick="pickChoice(this)">are</button></div>
     <div class='answer-hint' id='ah-a3'>💡 정답: <strong>have</strong> — 주어 They(복수) → have를 씁니다.<br>📝 해석: 그들은 10년 동안 여기서 살아 왔다.</div>
     <button class='hint-btn' onclick="showHint('a3')">💡 힌트 보기</button>
@@ -130,6 +134,7 @@ body{font-family:'Baloo 2','Noto Sans KR',sans-serif;background:var(--bg);paddin
 
   <div class='question-card' id='qc-a4'><span class='q-num'>4</span>
     <div class='q-text'>My dad <em>___</em> already eaten dinner.</div>
+    <div class='q-kor'>우리 아빠는 이미 저녁을 드셨다.</div>
     <div class='choices' data-qid='a4' data-ans='has'><button class="choice" onclick="pickChoice(this)">have</button><button class="choice" onclick="pickChoice(this)">has</button><button class="choice" onclick="pickChoice(this)">had</button><button class="choice" onclick="pickChoice(this)">was</button></div>
     <div class='answer-hint' id='ah-a4'>💡 정답: <strong>has</strong> — 주어 My dad(3인칭 단수) → has를 씁니다.<br>📝 해석: 우리 아빠는 이미 저녁을 드셨다.</div>
     <button class='hint-btn' onclick="showHint('a4')">💡 힌트 보기</button>
@@ -137,6 +142,7 @@ body{font-family:'Baloo 2','Noto Sans KR',sans-serif;background:var(--bg);paddin
 
   <div class='question-card' id='qc-a5'><span class='q-num'>5</span>
     <div class='q-text'>Jake and I <em>___</em> never tried sushi.</div>
+    <div class='q-kor'>Jake와 나는 한 번도 초밥을 먹어본 적이 없다.</div>
     <div class='choices' data-qid='a5' data-ans='have'><button class="choice" onclick="pickChoice(this)">have</button><button class="choice" onclick="pickChoice(this)">has</button><button class="choice" onclick="pickChoice(this)">had</button><button class="choice" onclick="pickChoice(this)">were</button></div>
     <div class='answer-hint' id='ah-a5'>💡 정답: <strong>have</strong> — 주어 Jake and I(복수) → have를 씁니다.<br>📝 해석: Jake와 나는 한 번도 초밥을 먹어본 적이 없다.</div>
     <button class='hint-btn' onclick="showHint('a5')">💡 힌트 보기</button>
@@ -145,6 +151,7 @@ body{font-family:'Baloo 2','Noto Sans KR',sans-serif;background:var(--bg);paddin
   <!-- MCQ 6-9: 현재완료 형태 선택 -->
   <div class='question-card' id='qc-a6'><span class='q-num'>6</span>
     <div class='q-text'>Mia <em>___</em> three novels this year.</div>
+    <div class='q-kor'>Mia는 올해 소설 세 편을 썼다.</div>
     <div class='choices' data-qid='a6' data-ans='has written'><button class="choice" onclick="pickChoice(this)">has written</button><button class="choice" onclick="pickChoice(this)">has wrote</button><button class="choice" onclick="pickChoice(this)">have written</button><button class="choice" onclick="pickChoice(this)">is writing</button></div>
     <div class='answer-hint' id='ah-a6'>💡 정답: <strong>has written</strong> — Mia(단수) → has + write의 과거분사 written<br>📝 해석: Mia는 올해 소설 세 편을 썼다.</div>
     <button class='hint-btn' onclick="showHint('a6')">💡 힌트 보기</button>
@@ -152,6 +159,7 @@ body{font-family:'Baloo 2','Noto Sans KR',sans-serif;background:var(--bg);paddin
 
   <div class='question-card' id='qc-a7'><span class='q-num'>7</span>
     <div class='q-text'>We <em>___</em> this song before.</div>
+    <div class='q-kor'>우리는 이 노래를 전에 들어본 적이 있다.</div>
     <div class='choices' data-qid='a7' data-ans='have heard'><button class="choice" onclick="pickChoice(this)">have hear</button><button class="choice" onclick="pickChoice(this)">have heard</button><button class="choice" onclick="pickChoice(this)">has heard</button><button class="choice" onclick="pickChoice(this)">are heard</button></div>
     <div class='answer-hint' id='ah-a7'>💡 정답: <strong>have heard</strong> — We(복수) → have + hear의 과거분사 heard<br>📝 해석: 우리는 이 노래를 전에 들어본 적이 있다.</div>
     <button class='hint-btn' onclick="showHint('a7')">💡 힌트 보기</button>
@@ -159,6 +167,7 @@ body{font-family:'Baloo 2','Noto Sans KR',sans-serif;background:var(--bg);paddin
 
   <div class='question-card' id='qc-a8'><span class='q-num'>8</span>
     <div class='q-text'>He <em>___</em> his phone again.</div>
+    <div class='q-kor'>그는 또 휴대폰을 망가뜨렸다.</div>
     <div class='choices' data-qid='a8' data-ans='has broken'><button class="choice" onclick="pickChoice(this)">has broke</button><button class="choice" onclick="pickChoice(this)">has broken</button><button class="choice" onclick="pickChoice(this)">have broken</button><button class="choice" onclick="pickChoice(this)">was broken</button></div>
     <div class='answer-hint' id='ah-a8'>💡 정답: <strong>has broken</strong> — He(단수) → has + break의 과거분사 broken<br>📝 해석: 그는 또 휴대폰을 망가뜨렸다.</div>
     <button class='hint-btn' onclick="showHint('a8')">💡 힌트 보기</button>
@@ -166,6 +175,7 @@ body{font-family:'Baloo 2','Noto Sans KR',sans-serif;background:var(--bg);paddin
 
   <div class='question-card' id='qc-a9'><span class='q-num'>9</span>
     <div class='q-text'>She <em>___</em> the guitar since she was little.</div>
+    <div class='q-kor'>그녀는 어렸을 때부터 기타를 연주해 왔다.</div>
     <div class='choices' data-qid='a9' data-ans='has played'><button class="choice" onclick="pickChoice(this)">has playing</button><button class="choice" onclick="pickChoice(this)">has played</button><button class="choice" onclick="pickChoice(this)">is played</button><button class="choice" onclick="pickChoice(this)">have played</button></div>
     <div class='answer-hint' id='ah-a9'>💡 정답: <strong>has played</strong> — She(단수) → has + play의 과거분사 played<br>📝 해석: 그녀는 어렸을 때부터 기타를 연주해 왔다.</div>
     <button class='hint-btn' onclick="showHint('a9')">💡 힌트 보기</button>
@@ -174,6 +184,7 @@ body{font-family:'Baloo 2','Noto Sans KR',sans-serif;background:var(--bg);paddin
   <!-- MCQ 10-12: 어법에 맞는 문장 고르기 -->
   <div class='question-card' id='qc-a10'><span class='q-num'>10</span>
     <div class='q-text'>다음 중 어법에 맞는 것을 고르세요.</div>
+    <div class='q-kor'>그녀는 지난여름에 제주를 방문했다.</div>
     <div class='choices choices full' data-qid='a10' data-ans='She visited Jeju last summer.'><button class="choice" onclick="pickChoice(this)">She has visited Jeju last summer.</button><button class="choice" onclick="pickChoice(this)">She visited Jeju last summer.</button><button class="choice" onclick="pickChoice(this)">She have visited Jeju last summer.</button><button class="choice" onclick="pickChoice(this)">She has visit Jeju last summer.</button></div>
     <div class='answer-hint' id='ah-a10'>💡 정답: <strong>She visited Jeju last summer.</strong> — "last summer"처럼 과거 시점을 나타내는 표현은 현재완료가 아닌 과거시제와 씁니다.<br>📝 해석: 그녀는 지난여름에 제주를 방문했다.</div>
     <button class='hint-btn' onclick="showHint('a10')">💡 힌트 보기</button>
@@ -181,6 +192,7 @@ body{font-family:'Baloo 2','Noto Sans KR',sans-serif;background:var(--bg);paddin
 
   <div class='question-card' id='qc-a11'><span class='q-num'>11</span>
     <div class='q-text'>다음 중 어법에 맞는 것을 고르세요.</div>
+    <div class='q-kor'>그는 5년 동안 여기서 살아 왔다.</div>
     <div class='choices choices full' data-qid='a11' data-ans='He has lived here for five years.'><button class="choice" onclick="pickChoice(this)">He have lived here for five years.</button><button class="choice" onclick="pickChoice(this)">He has live here for five years.</button><button class="choice" onclick="pickChoice(this)">He has lived here for five years.</button><button class="choice" onclick="pickChoice(this)">He has lived here since five years.</button></div>
     <div class='answer-hint' id='ah-a11'>💡 정답: <strong>He has lived here for five years.</strong> — He(단수)→has, live의 과거분사 lived, 기간 앞에는 for<br>📝 해석: 그는 5년 동안 여기서 살아 왔다.</div>
     <button class='hint-btn' onclick="showHint('a11')">💡 힌트 보기</button>
@@ -188,6 +200,7 @@ body{font-family:'Baloo 2','Noto Sans KR',sans-serif;background:var(--bg);paddin
 
   <div class='question-card' id='qc-a12'><span class='q-num'>12</span>
     <div class='q-text'>다음 중 어법에 맞는 것을 고르세요.</div>
+    <div class='q-kor'>Tom은 한국 음식을 먹어본 적이 전혀 없다.</div>
     <div class='choices choices full' data-qid='a12' data-ans='Tom has never eaten Korean food.'><button class="choice" onclick="pickChoice(this)">Tom has never eat Korean food.</button><button class="choice" onclick="pickChoice(this)">Tom have never eaten Korean food.</button><button class="choice" onclick="pickChoice(this)">Tom has never eaten Korean food.</button><button class="choice" onclick="pickChoice(this)">Tom never has eaten Korean food.</button></div>
     <div class='answer-hint' id='ah-a12'>💡 정답: <strong>Tom has never eaten Korean food.</strong> — Tom(단수)→has, eat의 과거분사 eaten, never는 has와 과거분사 사이<br>📝 해석: Tom은 한국 음식을 먹어본 적이 전혀 없다.</div>
     <button class='hint-btn' onclick="showHint('a12')">💡 힌트 보기</button>
@@ -197,14 +210,16 @@ body{font-family:'Baloo 2','Noto Sans KR',sans-serif;background:var(--bg);paddin
   <div class='question-card' id='qc-a13'><span class='q-num'>13</span>
     <div class='q-sub'>괄호 안의 동사를 현재완료로 빈칸을 채우세요.</div>
     <div class='q-text'>My cat <input class="blank" id="bi-a13" placeholder="___" data-ans="has slept" autocomplete="off" style="min-width:100px"> on that sofa all day. <span class='ex'>(sleep)</span></div>
+    <div class='q-kor'>내 고양이는 하루 종일 저 소파에서 잠을 잤다.</div>
     <button class='check-btn' onclick="checkBlank('a13')">✔ 확인</button>
-    <div class='answer-hint' id='ah-a13'>💡 정답: <strong>has slept</strong> — My cat(단수)→has, sleep의 과거분사 slept<br>📝 해석: 내 고양이는 하루 종일 저 소파에서 잠을 자고 있다.</div>
+    <div class='answer-hint' id='ah-a13'>💡 정답: <strong>has slept</strong> — My cat(단수)→has, sleep의 과거분사 slept<br>📝 해석: 내 고양이는 하루 종일 저 소파에서 잠을 잤다.</div>
     <button class='hint-btn' onclick="showHint('a13')">💡 힌트 보기</button>
   </div>
 
   <div class='question-card' id='qc-a14'><span class='q-num'>14</span>
     <div class='q-sub'>괄호 안의 동사를 현재완료로 빈칸을 채우세요.</div>
     <div class='q-text'>We <input class="blank" id="bi-a14" placeholder="___" data-ans="have not finished" autocomplete="off" style="min-width:150px"> the project yet. <span class='ex'>(not, finish)</span></div>
+    <div class='q-kor'>우리는 아직 그 프로젝트를 끝내지 못했다.</div>
     <button class='check-btn' onclick="checkBlank('a14')">✔ 확인</button>
     <div class='answer-hint' id='ah-a14'>💡 정답: <strong>have not finished</strong> — We(복수)→have not(부정) + finish의 과거분사 finished<br>📝 해석: 우리는 아직 그 프로젝트를 끝내지 못했다.</div>
     <button class='hint-btn' onclick="showHint('a14')">💡 힌트 보기</button>
@@ -213,6 +228,7 @@ body{font-family:'Baloo 2','Noto Sans KR',sans-serif;background:var(--bg);paddin
   <div class='question-card' id='qc-a15'><span class='q-num'>15</span>
     <div class='q-sub'>괄호 안의 동사를 현재완료로 빈칸을 채우세요.</div>
     <div class='q-text'>She <input class="blank" id="bi-a15" placeholder="___" data-ans="has visited" autocomplete="off" style="min-width:110px"> six countries so far. <span class='ex'>(visit)</span></div>
+    <div class='q-kor'>그녀는 지금까지 여섯 나라를 방문했다.</div>
     <button class='check-btn' onclick="checkBlank('a15')">✔ 확인</button>
     <div class='answer-hint' id='ah-a15'>💡 정답: <strong>has visited</strong> — She(단수)→has + visit의 과거분사 visited<br>📝 해석: 그녀는 지금까지 여섯 나라를 방문했다.</div>
     <button class='hint-btn' onclick="showHint('a15')">💡 힌트 보기</button>
@@ -221,6 +237,7 @@ body{font-family:'Baloo 2','Noto Sans KR',sans-serif;background:var(--bg);paddin
   <div class='question-card' id='qc-a16'><span class='q-num'>16</span>
     <div class='q-sub'>괄호 안의 동사를 현재완료로 빈칸을 채우세요.</div>
     <div class='q-text'>I <input class="blank" id="bi-a16" placeholder="___" data-ans="have known" autocomplete="off" style="min-width:110px"> him since we were in elementary school. <span class='ex'>(know)</span></div>
+    <div class='q-kor'>나는 초등학교 때부터 그를 알아 왔다.</div>
     <button class='check-btn' onclick="checkBlank('a16')">✔ 확인</button>
     <div class='answer-hint' id='ah-a16'>💡 정답: <strong>have known</strong> — I(복수)→have + know의 과거분사 known<br>📝 해석: 나는 초등학교 때부터 그를 알아 왔다.</div>
     <button class='hint-btn' onclick="showHint('a16')">💡 힌트 보기</button>
@@ -229,6 +246,7 @@ body{font-family:'Baloo 2','Noto Sans KR',sans-serif;background:var(--bg);paddin
   <!-- MCQ 17-20: since/for 선택 -->
   <div class='question-card' id='qc-a17'><span class='q-num'>17</span>
     <div class='q-text'>Jake has studied Korean <em>___</em> three months.</div>
+    <div class='q-kor'>Jake는 세 달 동안 한국어를 공부해 왔다.</div>
     <div class='choices' data-qid='a17' data-ans='for'><button class="choice" onclick="pickChoice(this)">since</button><button class="choice" onclick="pickChoice(this)">for</button><button class="choice" onclick="pickChoice(this)">in</button><button class="choice" onclick="pickChoice(this)">at</button></div>
     <div class='answer-hint' id='ah-a17'>💡 정답: <strong>for</strong> — "three months"처럼 기간(얼마 동안)을 나타낼 때는 for<br>📝 해석: Jake는 세 달 동안 한국어를 공부해 왔다.</div>
     <button class='hint-btn' onclick="showHint('a17')">💡 힌트 보기</button>
@@ -236,6 +254,7 @@ body{font-family:'Baloo 2','Noto Sans KR',sans-serif;background:var(--bg);paddin
 
   <div class='question-card' id='qc-a18'><span class='q-num'>18</span>
     <div class='q-text'>She has lived in Seoul <em>___</em> 2021.</div>
+    <div class='q-kor'>그녀는 2021년부터 서울에 살아 왔다.</div>
     <div class='choices' data-qid='a18' data-ans='since'><button class="choice" onclick="pickChoice(this)">since</button><button class="choice" onclick="pickChoice(this)">for</button><button class="choice" onclick="pickChoice(this)">during</button><button class="choice" onclick="pickChoice(this)">from</button></div>
     <div class='answer-hint' id='ah-a18'>💡 정답: <strong>since</strong> — "2021"처럼 시작 시점을 나타낼 때는 since<br>📝 해석: 그녀는 2021년부터 서울에 살아 왔다.</div>
     <button class='hint-btn' onclick="showHint('a18')">💡 힌트 보기</button>
@@ -243,6 +262,7 @@ body{font-family:'Baloo 2','Noto Sans KR',sans-serif;background:var(--bg);paddin
 
   <div class='question-card' id='qc-a19'><span class='q-num'>19</span>
     <div class='q-text'>I have not eaten anything <em>___</em> this morning.</div>
+    <div class='q-kor'>나는 오늘 아침부터 아무것도 먹지 않았다.</div>
     <div class='choices' data-qid='a19' data-ans='since'><button class="choice" onclick="pickChoice(this)">for</button><button class="choice" onclick="pickChoice(this)">since</button><button class="choice" onclick="pickChoice(this)">at</button><button class="choice" onclick="pickChoice(this)">in</button></div>
     <div class='answer-hint' id='ah-a19'>💡 정답: <strong>since</strong> — "this morning"은 시작 시점 → since<br>📝 해석: 나는 오늘 아침부터 아무것도 먹지 않았다.</div>
     <button class='hint-btn' onclick="showHint('a19')">💡 힌트 보기</button>
@@ -250,6 +270,7 @@ body{font-family:'Baloo 2','Noto Sans KR',sans-serif;background:var(--bg);paddin
 
   <div class='question-card' id='qc-a20'><span class='q-num'>20</span>
     <div class='q-text'>We have been best friends <em>___</em> many years.</div>
+    <div class='q-kor'>우리는 오랜 세월 동안 절친한 친구로 지내 왔다.</div>
     <div class='choices' data-qid='a20' data-ans='for'><button class="choice" onclick="pickChoice(this)">since</button><button class="choice" onclick="pickChoice(this)">for</button><button class="choice" onclick="pickChoice(this)">during</button><button class="choice" onclick="pickChoice(this)">from</button></div>
     <div class='answer-hint' id='ah-a20'>💡 정답: <strong>for</strong> — "many years"는 기간 → for<br>📝 해석: 우리는 오랜 세월 동안 절친한 친구로 지내 왔다.</div>
     <button class='hint-btn' onclick="showHint('a20')">💡 힌트 보기</button>
@@ -267,6 +288,7 @@ body{font-family:'Baloo 2','Noto Sans KR',sans-serif;background:var(--bg);paddin
   <!-- MCQ 1-5: 비교급 형태 -->
   <div class='question-card' id='qc-b1'><span class='q-num'>1</span>
     <div class='q-text'>This bag is <em>___</em> (light) than mine.</div>
+    <div class='q-kor'>이 가방이 내 것보다 더 가볍다.</div>
     <div class='choices' data-qid='b1' data-ans='lighter'><button class="choice" onclick="pickChoice(this)">lighter</button><button class="choice" onclick="pickChoice(this)">more light</button><button class="choice" onclick="pickChoice(this)">lightest</button><button class="choice" onclick="pickChoice(this)">most light</button></div>
     <div class='answer-hint' id='ah-b1'>💡 정답: <strong>lighter</strong> — 짧은 1음절 형용사는 -er을 붙여 비교급: light → lighter<br>📝 해석: 이 가방이 내 것보다 더 가볍다.</div>
     <button class='hint-btn' onclick="showHint('b1')">💡 힌트 보기</button>
@@ -274,6 +296,7 @@ body{font-family:'Baloo 2','Noto Sans KR',sans-serif;background:var(--bg);paddin
 
   <div class='question-card' id='qc-b2'><span class='q-num'>2</span>
     <div class='q-text'>Math is <em>___</em> (difficult) than English for me.</div>
+    <div class='q-kor'>나에게는 수학이 영어보다 더 어렵다.</div>
     <div class='choices' data-qid='b2' data-ans='more difficult'><button class="choice" onclick="pickChoice(this)">difficulter</button><button class="choice" onclick="pickChoice(this)">more difficult</button><button class="choice" onclick="pickChoice(this)">most difficult</button><button class="choice" onclick="pickChoice(this)">difficultly</button></div>
     <div class='answer-hint' id='ah-b2'>💡 정답: <strong>more difficult</strong> — 3음절 이상 또는 -ous/-ful/-ive 등으로 끝나면 앞에 more를 붙임<br>📝 해석: 나에게는 수학이 영어보다 더 어렵다.</div>
     <button class='hint-btn' onclick="showHint('b2')">💡 힌트 보기</button>
@@ -281,6 +304,7 @@ body{font-family:'Baloo 2','Noto Sans KR',sans-serif;background:var(--bg);paddin
 
   <div class='question-card' id='qc-b3'><span class='q-num'>3</span>
     <div class='q-text'>She runs <em>___</em> (fast) than her brother.</div>
+    <div class='q-kor'>그녀는 오빠보다 더 빨리 달린다.</div>
     <div class='choices' data-qid='b3' data-ans='faster'><button class="choice" onclick="pickChoice(this)">more fast</button><button class="choice" onclick="pickChoice(this)">faster</button><button class="choice" onclick="pickChoice(this)">fastest</button><button class="choice" onclick="pickChoice(this)">most fast</button></div>
     <div class='answer-hint' id='ah-b3'>💡 정답: <strong>faster</strong> — fast는 1음절 → -er: faster<br>📝 해석: 그녀는 오빠보다 더 빨리 달린다.</div>
     <button class='hint-btn' onclick="showHint('b3')">💡 힌트 보기</button>
@@ -288,6 +312,7 @@ body{font-family:'Baloo 2','Noto Sans KR',sans-serif;background:var(--bg);paddin
 
   <div class='question-card' id='qc-b4'><span class='q-num'>4</span>
     <div class='q-text'>This sofa is <em>___</em> (comfortable) than that chair.</div>
+    <div class='q-kor'>이 소파가 저 의자보다 더 편안하다.</div>
     <div class='choices' data-qid='b4' data-ans='more comfortable'><button class="choice" onclick="pickChoice(this)">comfortabler</button><button class="choice" onclick="pickChoice(this)">more comfortable</button><button class="choice" onclick="pickChoice(this)">most comfortable</button><button class="choice" onclick="pickChoice(this)">comfortablest</button></div>
     <div class='answer-hint' id='ah-b4'>💡 정답: <strong>more comfortable</strong> — comfortable(4음절) → more를 앞에<br>📝 해석: 이 소파가 저 의자보다 더 편안하다.</div>
     <button class='hint-btn' onclick="showHint('b4')">💡 힌트 보기</button>
@@ -295,6 +320,7 @@ body{font-family:'Baloo 2','Noto Sans KR',sans-serif;background:var(--bg);paddin
 
   <div class='question-card' id='qc-b5'><span class='q-num'>5</span>
     <div class='q-text'>Today is <em>___</em> (hot) than yesterday.</div>
+    <div class='q-kor'>오늘은 어제보다 더 덥다.</div>
     <div class='choices' data-qid='b5' data-ans='hotter'><button class="choice" onclick="pickChoice(this)">more hot</button><button class="choice" onclick="pickChoice(this)">hotter</button><button class="choice" onclick="pickChoice(this)">hottest</button><button class="choice" onclick="pickChoice(this)">hoter</button></div>
     <div class='answer-hint' id='ah-b5'>💡 정답: <strong>hotter</strong> — 단모음+단자음으로 끝나면 자음 한 번 더 쓰고 -er: hot → hotter<br>📝 해석: 오늘은 어제보다 더 덥다.</div>
     <button class='hint-btn' onclick="showHint('b5')">💡 힌트 보기</button>
@@ -303,6 +329,7 @@ body{font-family:'Baloo 2','Noto Sans KR',sans-serif;background:var(--bg);paddin
   <!-- MCQ 6-8: 최상급 형태 -->
   <div class='question-card' id='qc-b6'><span class='q-num'>6</span>
     <div class='q-text'>He is <em>___</em> (tall) player on the team.</div>
+    <div class='q-kor'>그는 팀에서 가장 키가 큰 선수다.</div>
     <div class='choices' data-qid='b6' data-ans='the tallest'><button class="choice" onclick="pickChoice(this)">taller</button><button class="choice" onclick="pickChoice(this)">tallest</button><button class="choice" onclick="pickChoice(this)">the tallest</button><button class="choice" onclick="pickChoice(this)">most tallest</button></div>
     <div class='answer-hint' id='ah-b6'>💡 정답: <strong>the tallest</strong> — 최상급은 앞에 the를 붙임: the + tallest<br>📝 해석: 그는 팀에서 가장 키가 큰 선수다.</div>
     <button class='hint-btn' onclick="showHint('b6')">💡 힌트 보기</button>
@@ -310,6 +337,7 @@ body{font-family:'Baloo 2','Noto Sans KR',sans-serif;background:var(--bg);paddin
 
   <div class='question-card' id='qc-b7'><span class='q-num'>7</span>
     <div class='q-text'>This is <em>___</em> (expensive) watch in the shop.</div>
+    <div class='q-kor'>이것은 가게에서 가장 비싼 시계다.</div>
     <div class='choices' data-qid='b7' data-ans='the most expensive'><button class="choice" onclick="pickChoice(this)">more expensive</button><button class="choice" onclick="pickChoice(this)">most expensive</button><button class="choice" onclick="pickChoice(this)">the most expensive</button><button class="choice" onclick="pickChoice(this)">expensivest</button></div>
     <div class='answer-hint' id='ah-b7'>💡 정답: <strong>the most expensive</strong> — expensive(3음절) → the most expensive<br>📝 해석: 이것은 가게에서 가장 비싼 시계다.</div>
     <button class='hint-btn' onclick="showHint('b7')">💡 힌트 보기</button>
@@ -317,6 +345,7 @@ body{font-family:'Baloo 2','Noto Sans KR',sans-serif;background:var(--bg);paddin
 
   <div class='question-card' id='qc-b8'><span class='q-num'>8</span>
     <div class='q-text'>She is <em>___</em> (good) student in our class.</div>
+    <div class='q-kor'>그녀는 우리 반에서 가장 우수한 학생이다.</div>
     <div class='choices' data-qid='b8' data-ans='the best'><button class="choice" onclick="pickChoice(this)">the better</button><button class="choice" onclick="pickChoice(this)">the best</button><button class="choice" onclick="pickChoice(this)">the most good</button><button class="choice" onclick="pickChoice(this)">gooder</button></div>
     <div class='answer-hint' id='ah-b8'>💡 정답: <strong>the best</strong> — good의 최상급은 불규칙: good → better → best<br>📝 해석: 그녀는 우리 반에서 가장 우수한 학생이다.</div>
     <button class='hint-btn' onclick="showHint('b8')">💡 힌트 보기</button>
@@ -326,6 +355,7 @@ body{font-family:'Baloo 2','Noto Sans KR',sans-serif;background:var(--bg);paddin
   <div class='question-card' id='qc-b9'><span class='q-num'>9</span>
     <div class='q-sub'>괄호 안의 단어를 알맞은 형태로 바꿔 빈칸을 채우세요.</div>
     <div class='q-text'>Mount Everest is <input class="blank" id="bi-b9" placeholder="___" data-ans="the highest" autocomplete="off" style="min-width:120px"> mountain in the world. <span class='ex'>(high)</span></div>
+    <div class='q-kor'>에베레스트산은 세계에서 가장 높은 산이다.</div>
     <button class='check-btn' onclick="checkBlank('b9')">✔ 확인</button>
     <div class='answer-hint' id='ah-b9'>💡 정답: <strong>the highest</strong> — high → higher → the highest (최상급)<br>📝 해석: 에베레스트산은 세계에서 가장 높은 산이다.</div>
     <button class='hint-btn' onclick="showHint('b9')">💡 힌트 보기</button>
@@ -334,6 +364,7 @@ body{font-family:'Baloo 2','Noto Sans KR',sans-serif;background:var(--bg);paddin
   <div class='question-card' id='qc-b10'><span class='q-num'>10</span>
     <div class='q-sub'>괄호 안의 단어를 알맞은 형태로 바꿔 빈칸을 채우세요.</div>
     <div class='q-text'>My dog is <input class="blank" id="bi-b10" placeholder="___" data-ans="smaller" autocomplete="off" style="min-width:100px"> than yours. <span class='ex'>(small)</span></div>
+    <div class='q-kor'>내 개가 네 것보다 더 작다.</div>
     <button class='check-btn' onclick="checkBlank('b10')">✔ 확인</button>
     <div class='answer-hint' id='ah-b10'>💡 정답: <strong>smaller</strong> — small → smaller (비교급, -er)<br>📝 해석: 내 개가 네 것보다 더 작다.</div>
     <button class='hint-btn' onclick="showHint('b10')">💡 힌트 보기</button>
@@ -342,6 +373,7 @@ body{font-family:'Baloo 2','Noto Sans KR',sans-serif;background:var(--bg);paddin
   <!-- MCQ 11-12: 어법에 맞는 문장 -->
   <div class='question-card' id='qc-b11'><span class='q-num'>11</span>
     <div class='q-text'>다음 중 어법에 맞는 것을 고르세요.</div>
+    <div class='q-kor'>그녀는 학교에서 가장 똑똑한 학생이다.</div>
     <div class='choices choices full' data-qid='b11' data-ans='She is the smartest girl in school.'><button class="choice" onclick="pickChoice(this)">She is the most smartest girl in school.</button><button class="choice" onclick="pickChoice(this)">She is the smartest girl in school.</button><button class="choice" onclick="pickChoice(this)">She is most smart girl in school.</button><button class="choice" onclick="pickChoice(this)">She is the more smart girl in school.</button></div>
     <div class='answer-hint' id='ah-b11'>💡 정답: <strong>She is the smartest girl in school.</strong> — smart → the smartest (이중 최상급 "the most smartest" 오류)<br>📝 해석: 그녀는 학교에서 가장 똑똑한 학생이다.</div>
     <button class='hint-btn' onclick="showHint('b11')">💡 힌트 보기</button>
@@ -349,6 +381,7 @@ body{font-family:'Baloo 2','Noto Sans KR',sans-serif;background:var(--bg);paddin
 
   <div class='question-card' id='qc-b12'><span class='q-num'>12</span>
     <div class='q-text'>다음 중 어법에 맞는 것을 고르세요.</div>
+    <div class='q-kor'>이 도로가 저것보다 더 길다.</div>
     <div class='choices choices full' data-qid='b12' data-ans='This road is longer than that one.'><button class="choice" onclick="pickChoice(this)">This road is more longer than that one.</button><button class="choice" onclick="pickChoice(this)">This road is longer than that one.</button><button class="choice" onclick="pickChoice(this)">This road is the longer than that one.</button><button class="choice" onclick="pickChoice(this)">This road is most long than that one.</button></div>
     <div class='answer-hint' id='ah-b12'>💡 정답: <strong>This road is longer than that one.</strong> — long → longer (이중 비교급 "more longer" 오류)<br>📝 해석: 이 도로가 저것보다 더 길다.</div>
     <button class='hint-btn' onclick="showHint('b12')">💡 힌트 보기</button>

@@ -18,7 +18,7 @@ https://namkicheol.github.io/middle-grammar/g2-perfect-compare-basic/
 오른쪽 아래에 캐릭터: 밝게 웃는 중학생 캐릭터가 노트를 들고 있는 모습
 말풍선: "I have visited Paris!"
 
-## ⑤ agent 점검 결과 (2026-04-24)
+## ⑤ agent 점검 결과 (2026-04-25, 2차)
 answer-checker 실행 결과 — 전 항목 통과 (오류 1건 수정 후):
 - norm() 함수 완전 (기본 10개 축약형 + haven't·hasn't 현재완료 전용 2개 추가)
 - checkBlank / checkArrange 빈 입력 방지 정상
@@ -26,3 +26,6 @@ answer-checker 실행 결과 — 전 항목 통과 (오류 1건 수정 후):
 - scramble 단어 칩 순서 전부 셔플됨 (c1~c8 모두)
 - answer-hint: MCQ/input 문항 전부 📝 해석: 포함, scramble은 📌 형식 예외 적용
 - a14번 data-ans2="haven't finished" 제거 (norm()으로 자동 처리되므로 불필요)
+- 기초 문제 내 한국어 해석 추가: MCQ·input 전 문항(a1~a20, b1~b12)에 .q-kor div 삽입
+  - "어법에 맞는 것 고르기"(a10~a12, b11~b12)는 정답 문장의 의미 표시
+  - scramble(c1~c8)은 이미 📌 한국어 형식이므로 제외

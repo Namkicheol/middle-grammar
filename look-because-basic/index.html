@@ -92,7 +92,7 @@ body{font-family:'Baloo 2','Noto Sans KR',sans-serif;background:var(--bg);paddin
 </div>
 <div class="tabs">
   <button class="tab active" onclick="sw(0,this)">📌 look + 형용사 (20문제)</button>
-  <button class="tab" onclick="sw(1,this)">📌 because (15문제)</button>
+  <button class="tab" onclick="sw(1,this)">📌 because (7문제)</button>
   <button class="tab" onclick="sw(2,this)">🔀 단어 배열 (5문제)</button>
 </div>
 
@@ -243,7 +243,7 @@ body{font-family:'Baloo 2','Noto Sans KR',sans-serif;background:var(--bg);paddin
 
 <!-- ── Section B: because ── -->
 <div class="sec" id="s1">
-  <div class="sec-hdr"><div class="lbl">Point B · 15문제</div><h2>이유 접속사 because</h2><div class="desc">선택형(1–5) + 영작(6–7) + because채우기(8–11) + 2지선다(12–15) · because로 이유 표현</div></div>
+  <div class="sec-hdr"><div class="lbl">Point B · 7문제</div><h2>이유 접속사 because</h2><div class="desc">선택형(1–5) + 영작(6–7) · because + 원인 절로 이유 표현</div></div>
 
   <div class='question-card' id='qc-b1'><span class='q-num'>1</span>
     <div class='q-text'>We stayed inside <em>___</em>.</div>
@@ -296,61 +296,6 @@ body{font-family:'Baloo 2','Noto Sans KR',sans-serif;background:var(--bg);paddin
     <button class='hint-btn' onclick="showHint('b7')">💡 힌트 보기</button>
   </div>
 
-  <div class='question-card' id='qc-b8'><span class='q-num'>8</span>
-    <div class='q-text'>I stayed home <input class="blank" id="bi-b8" placeholder="___" data-ans="because" autocomplete="off" style="min-width:100px"> I had a cold. <span class='ex'>(because / Because)</span></div>
-    <button class='check-btn' onclick="checkBlank('b8')">✔ 확인</button>
-    <div class='answer-hint' id='ah-b8'>💡 정답: <strong>because</strong> — 이유 접속사 because · 문장 중간에 오면 소문자<br>📝 해석: 나는 감기에 걸렸기 때문에 집에 있었다.</div>
-    <button class='hint-btn' onclick="showHint('b8')">💡 힌트 보기</button>
-  </div>
-
-  <div class='question-card' id='qc-b9'><span class='q-num'>9</span>
-    <div class='q-text'><input class="blank" id="bi-b9" placeholder="___" data-ans="Because" autocomplete="off" style="min-width:100px"> the food looked good, we tried it. <span class='ex'>(because / Because)</span></div>
-    <button class='check-btn' onclick="checkBlank('b9')">✔ 확인</button>
-    <div class='answer-hint' id='ah-b9'>💡 정답: <strong>Because</strong> — 문장 맨 앞에 오면 Because (대문자)<br>📝 해석: 음식이 좋아 보였기 때문에 우리는 먹어봤다.</div>
-    <button class='hint-btn' onclick="showHint('b9')">💡 힌트 보기</button>
-  </div>
-
-  <div class='question-card' id='qc-b10'><span class='q-num'>10</span>
-    <div class='q-text'>She wore a coat <input class="blank" id="bi-b10" placeholder="___" data-ans="because" autocomplete="off" style="min-width:100px"> it was cold outside. <span class='ex'>(because / Because)</span></div>
-    <button class='check-btn' onclick="checkBlank('b10')">✔ 확인</button>
-    <div class='answer-hint' id='ah-b10'>💡 정답: <strong>because</strong> — 이유 접속사 because · 문장 중간에 오면 소문자<br>📝 해석: 밖이 추웠기 때문에 그녀는 코트를 입었다.</div>
-    <button class='hint-btn' onclick="showHint('b10')">💡 힌트 보기</button>
-  </div>
-
-  <div class='question-card' id='qc-b11'><span class='q-num'>11</span>
-    <div class='q-text'><input class="blank" id="bi-b11" placeholder="___" data-ans="Because" autocomplete="off" style="min-width:100px"> he studied hard, he passed the test. <span class='ex'>(because / Because)</span></div>
-    <button class='check-btn' onclick="checkBlank('b11')">✔ 확인</button>
-    <div class='answer-hint' id='ah-b11'>💡 정답: <strong>Because</strong> — 문장 맨 앞에 오면 Because (대문자)<br>📝 해석: 그가 열심히 공부했기 때문에 시험에 합격했다.</div>
-    <button class='hint-btn' onclick="showHint('b11')">💡 힌트 보기</button>
-  </div>
-
-  <div class='question-card' id='qc-b12'><span class='q-num'>12</span>
-    <div class='q-text'>He was happy <em>___</em> he got a present.</div>
-    <div class='choices' data-qid='b12' data-ans='because'><button class="choice" onclick="pickChoice(this)">because</button><button class="choice" onclick="pickChoice(this)">but</button></div>
-    <div class='answer-hint' id='ah-b12'>💡 정답: <strong>because</strong> — 이유·원인을 나타낼 때 because (but은 역접)<br>📝 해석: 그는 선물을 받았기 때문에 행복했다.</div>
-    <button class='hint-btn' onclick="showHint('b12')">💡 힌트 보기</button>
-  </div>
-
-  <div class='question-card' id='qc-b13'><span class='q-num'>13</span>
-    <div class='q-text'><em>___</em> it was raining, they stayed inside.</div>
-    <div class='choices' data-qid='b13' data-ans='Because'><button class="choice" onclick="pickChoice(this)">Because</button><button class="choice" onclick="pickChoice(this)">And</button></div>
-    <div class='answer-hint' id='ah-b13'>💡 정답: <strong>Because</strong> — 이유 접속사 because · 문장 앞에 오면 대문자<br>📝 해석: 비가 왔기 때문에 그들은 안에 있었다.</div>
-    <button class='hint-btn' onclick="showHint('b13')">💡 힌트 보기</button>
-  </div>
-
-  <div class='question-card' id='qc-b14'><span class='q-num'>14</span>
-    <div class='q-text'>She cried <em>___</em> the movie was sad.</div>
-    <div class='choices' data-qid='b14' data-ans='because'><button class="choice" onclick="pickChoice(this)">because</button><button class="choice" onclick="pickChoice(this)">so</button></div>
-    <div class='answer-hint' id='ah-b14'>💡 정답: <strong>because</strong> — "왜 울었나?" 이유가 뒤에 오므로 because (so는 결과 표현)<br>📝 해석: 영화가 슬펐기 때문에 그녀는 울었다.</div>
-    <button class='hint-btn' onclick="showHint('b14')">💡 힌트 보기</button>
-  </div>
-
-  <div class='question-card' id='qc-b15'><span class='q-num'>15</span>
-    <div class='q-text'>We were late <em>___</em> the bus broke down.</div>
-    <div class='choices' data-qid='b15' data-ans='because'><button class="choice" onclick="pickChoice(this)">and</button><button class="choice" onclick="pickChoice(this)">because</button></div>
-    <div class='answer-hint' id='ah-b15'>💡 정답: <strong>because</strong> — 늦은 원인을 나타내므로 because (and는 나열)<br>📝 해석: 버스가 고장났기 때문에 우리는 늦었다.</div>
-    <button class='hint-btn' onclick="showHint('b15')">💡 힌트 보기</button>
-  </div>
 </div>
 
 <!-- ── Section C: 단어 배열 ── -->
@@ -535,7 +480,7 @@ body{font-family:'Baloo 2','Noto Sans KR',sans-serif;background:var(--bg);paddin
 </div>
 
 <script>
-var TOTAL=45,SECTOTALS={a:20,b:15,c:10},secC={a:0,b:0,c:0},secW={a:0,b:0,c:0};
+var TOTAL=37,SECTOTALS={a:20,b:7,c:10},secC={a:0,b:0,c:0},secW={a:0,b:0,c:0};
 var placed={"c1":[],"c2":[],"c3":[],"c4":[],"c5":[],"c6":[],"c7":[],"c8":[],"c9":[],"c10":[]},answered={},correct=0,wrong=0;
 
 function norm(s){
@@ -708,14 +653,6 @@ var vocabData={
   'b5':[{w:'picnic',k:'소풍'},{w:'storm',k:'폭풍'}],
   'b6':[{w:'thirsty',k:'목이 마른'},{w:'glasses of water',k:'물 잔'}],
   'b7':[{w:'forgot',k:'잊었다'},{w:'lunch box',k:'도시락'}],
-  'b8':[{w:'stayed home',k:'집에 있었다'},{w:'cold',k:'감기'}],
-  'b9':[{w:'food',k:'음식'},{w:'tried',k:'먹어봤다, 시도했다'}],
-  'b10':[{w:'coat',k:'코트'},{w:'cold',k:'추운'}],
-  'b11':[{w:'studied hard',k:'열심히 공부했다'},{w:'passed',k:'합격했다'}],
-  'b12':[{w:'present',k:'선물'},{w:'happy',k:'행복한'}],
-  'b13':[{w:'raining',k:'비가 오는'},{w:'stayed inside',k:'안에 있었다'}],
-  'b14':[{w:'cried',k:'울었다'},{w:'sad',k:'슬픈'}],
-  'b15':[{w:'late',k:'늦은'},{w:'broke down',k:'고장났다'}],
   'c6':[{w:'colorful',k:'알록달록한'},{w:'garden',k:'정원'}],
   'c7':[{w:'stayed home',k:'집에 있었다'},{w:'felt sick',k:'몸이 아팠다'}],
   'c8':[{w:'castle',k:'성'},{w:'mysterious',k:'신비로운'}],

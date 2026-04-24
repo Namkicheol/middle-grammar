@@ -92,7 +92,7 @@ body{font-family:'Baloo 2','Noto Sans KR',sans-serif;background:var(--bg);paddin
 </div>
 <div class="tabs">
   <button class="tab active" onclick="sw(0,this)">📌 look + 형용사 (20문제)</button>
-  <button class="tab" onclick="sw(1,this)">📌 because (7문제)</button>
+  <button class="tab" onclick="sw(1,this)">📌 because (12문제)</button>
   <button class="tab" onclick="sw(2,this)">🔀 단어 배열 (5문제)</button>
 </div>
 
@@ -243,7 +243,7 @@ body{font-family:'Baloo 2','Noto Sans KR',sans-serif;background:var(--bg);paddin
 
 <!-- ── Section B: because ── -->
 <div class="sec" id="s1">
-  <div class="sec-hdr"><div class="lbl">Point B · 7문제</div><h2>이유 접속사 because</h2><div class="desc">선택형(1–5) + 영작(6–7) · because + 원인 절로 이유 표현</div></div>
+  <div class="sec-hdr"><div class="lbl">Point B · 12문제</div><h2>이유 접속사 because</h2><div class="desc">선택형(1–10) + 영작(11–12) · because + 원인 절로 이유 표현</div></div>
 
   <div class='question-card' id='qc-b1'><span class='q-num'>1</span>
     <div class='q-text'>We stayed inside <em>___</em>.</div>
@@ -281,19 +281,54 @@ body{font-family:'Baloo 2','Noto Sans KR',sans-serif;background:var(--bg);paddin
   </div>
 
   <div class='question-card' id='qc-b6'><span class='q-num'>6</span>
-    <div class='q-sub'>Chris was very thirsty. → He drank three glasses of water.</div>
-    <div class='q-text'>Chris drank three glasses of water <input class="blank" id="bi-b6" placeholder="because ..." data-ans="because he was very thirsty" autocomplete="off" style="min-width:210px">.</div>
-    <button class='check-btn' onclick="checkBlank('b6')">✔ 확인</button>
-    <div class='answer-hint' id='ah-b6'>💡 정답: <strong>because he was very thirsty</strong> — 이유 접속사 because + 절<br>📝 해석: Chris는 매우 목이 말랐기 때문에 물 세 잔을 마셨다.</div>
+    <div class='q-text'>Leo borrowed my umbrella <em>___</em>.</div>
+    <div class='choices' data-qid='b6' data-ans='because he forgot his own'><button class="choice" onclick="pickChoice(this)">because it was a hot day</button><button class="choice" onclick="pickChoice(this)">because he forgot his own</button><button class="choice" onclick="pickChoice(this)">because he had one already</button><button class="choice" onclick="pickChoice(this)">because it wasn't raining</button></div>
+    <div class='answer-hint' id='ah-b6'>💡 정답: <strong>because he forgot his own</strong> — 우산을 빌린 이유 = 자기 것을 잊었기 때문<br>📝 해석: Leo는 자기 우산을 잊었기 때문에 내 우산을 빌렸다.</div>
     <button class='hint-btn' onclick="showHint('b6')">💡 힌트 보기</button>
   </div>
 
   <div class='question-card' id='qc-b7'><span class='q-num'>7</span>
-    <div class='q-sub'>Ben forgot his lunch box. → He was hungry all day.</div>
-    <div class='q-text'>Ben was hungry all day <input class="blank" id="bi-b7" placeholder="because ..." data-ans="because he forgot his lunch box" autocomplete="off" style="min-width:230px">.</div>
-    <button class='check-btn' onclick="checkBlank('b7')">✔ 확인</button>
-    <div class='answer-hint' id='ah-b7'>💡 정답: <strong>because he forgot his lunch box</strong><br>📝 해석: Ben은 도시락을 잊었기 때문에 하루 종일 배가 고팠다.</div>
+    <div class='q-text'>Amy got a perfect score on the test <em>___</em>.</div>
+    <div class='choices' data-qid='b7' data-ans='because she reviewed her notes every day'><button class="choice" onclick="pickChoice(this)">because she didn't study at all</button><button class="choice" onclick="pickChoice(this)">because she played all day</button><button class="choice" onclick="pickChoice(this)">because she reviewed her notes every day</button><button class="choice" onclick="pickChoice(this)">because she forgot the material</button></div>
+    <div class='answer-hint' id='ah-b7'>💡 정답: <strong>because she reviewed her notes every day</strong> — 만점의 이유 = 매일 필기를 복습했기 때문<br>📝 해석: Amy는 매일 필기를 복습했기 때문에 시험에서 만점을 받았다.</div>
     <button class='hint-btn' onclick="showHint('b7')">💡 힌트 보기</button>
+  </div>
+
+  <div class='question-card' id='qc-b8'><span class='q-num'>8</span>
+    <div class='q-text'><em>___</em>, we ordered extra chairs.</div>
+    <div class='choices' data-qid='b8' data-ans='Because we were expecting many visitors'><button class="choice" onclick="pickChoice(this)">Because there were enough seats</button><button class="choice" onclick="pickChoice(this)">Because only a few guests came</button><button class="choice" onclick="pickChoice(this)">Because we were expecting many visitors</button><button class="choice" onclick="pickChoice(this)">Because the room was empty</button></div>
+    <div class='answer-hint' id='ah-b8'>💡 정답: <strong>Because we were expecting many visitors</strong> — 의자를 추가한 이유 = 방문객이 많을 것으로 예상했기 때문<br>📝 해석: 많은 방문객을 예상했기 때문에 우리는 추가 의자를 주문했다.</div>
+    <button class='hint-btn' onclick="showHint('b8')">💡 힌트 보기</button>
+  </div>
+
+  <div class='question-card' id='qc-b9'><span class='q-num'>9</span>
+    <div class='q-text'>Sam put on sunscreen <em>___</em>.</div>
+    <div class='choices' data-qid='b9' data-ans='because the sun was very strong'><button class="choice" onclick="pickChoice(this)">because it was a cloudy day</button><button class="choice" onclick="pickChoice(this)">because the sun was very strong</button><button class="choice" onclick="pickChoice(this)">because he didn't like the beach</button><button class="choice" onclick="pickChoice(this)">because he wanted to stay inside</button></div>
+    <div class='answer-hint' id='ah-b9'>💡 정답: <strong>because the sun was very strong</strong> — 자외선 차단제를 바른 이유 = 햇빛이 매우 강했기 때문<br>📝 해석: Sam은 햇빛이 매우 강했기 때문에 자외선 차단제를 발랐다.</div>
+    <button class='hint-btn' onclick="showHint('b9')">💡 힌트 보기</button>
+  </div>
+
+  <div class='question-card' id='qc-b10'><span class='q-num'>10</span>
+    <div class='q-text'>Nora went to bed early <em>___</em>.</div>
+    <div class='choices' data-qid='b10' data-ans='because she had an early practice the next day'><button class="choice" onclick="pickChoice(this)">because she wasn't tired</button><button class="choice" onclick="pickChoice(this)">because she wanted to stay up late</button><button class="choice" onclick="pickChoice(this)">because she had an early practice the next day</button><button class="choice" onclick="pickChoice(this)">because she finished homework late</button></div>
+    <div class='answer-hint' id='ah-b10'>💡 정답: <strong>because she had an early practice the next day</strong> — 일찍 잔 이유 = 다음날 이른 연습이 있었기 때문<br>📝 해석: Nora는 다음날 이른 연습이 있었기 때문에 일찍 잠자리에 들었다.</div>
+    <button class='hint-btn' onclick="showHint('b10')">💡 힌트 보기</button>
+  </div>
+
+  <div class='question-card' id='qc-b11'><span class='q-num'>11</span>
+    <div class='q-sub'>Chris was very thirsty. → He drank three glasses of water.</div>
+    <div class='q-text'>Chris drank three glasses of water <input class="blank" id="bi-b11" placeholder="because ..." data-ans="because he was very thirsty" autocomplete="off" style="min-width:210px">.</div>
+    <button class='check-btn' onclick="checkBlank('b11')">✔ 확인</button>
+    <div class='answer-hint' id='ah-b11'>💡 정답: <strong>because he was very thirsty</strong> — 이유 접속사 because + 절<br>📝 해석: Chris는 매우 목이 말랐기 때문에 물 세 잔을 마셨다.</div>
+    <button class='hint-btn' onclick="showHint('b11')">💡 힌트 보기</button>
+  </div>
+
+  <div class='question-card' id='qc-b12'><span class='q-num'>12</span>
+    <div class='q-sub'>Ben forgot his lunch box. → He was hungry all day.</div>
+    <div class='q-text'>Ben was hungry all day <input class="blank" id="bi-b12" placeholder="because ..." data-ans="because he forgot his lunch box" autocomplete="off" style="min-width:230px">.</div>
+    <button class='check-btn' onclick="checkBlank('b12')">✔ 확인</button>
+    <div class='answer-hint' id='ah-b12'>💡 정답: <strong>because he forgot his lunch box</strong><br>📝 해석: Ben은 도시락을 잊었기 때문에 하루 종일 배가 고팠다.</div>
+    <button class='hint-btn' onclick="showHint('b12')">💡 힌트 보기</button>
   </div>
 
 </div>
@@ -480,7 +515,7 @@ body{font-family:'Baloo 2','Noto Sans KR',sans-serif;background:var(--bg);paddin
 </div>
 
 <script>
-var TOTAL=37,SECTOTALS={a:20,b:7,c:10},secC={a:0,b:0,c:0},secW={a:0,b:0,c:0};
+var TOTAL=42,SECTOTALS={a:20,b:12,c:10},secC={a:0,b:0,c:0},secW={a:0,b:0,c:0};
 var placed={"c1":[],"c2":[],"c3":[],"c4":[],"c5":[],"c6":[],"c7":[],"c8":[],"c9":[],"c10":[]},answered={},correct=0,wrong=0;
 
 function norm(s){
@@ -651,8 +686,13 @@ var vocabData={
   'b3':[{w:'missed',k:'놓쳤다'},{w:'school bus',k:'통학 버스'}],
   'b4':[{w:'turn off',k:'끄다'},{w:'needed to study',k:'공부해야 했다'}],
   'b5':[{w:'picnic',k:'소풍'},{w:'storm',k:'폭풍'}],
-  'b6':[{w:'thirsty',k:'목이 마른'},{w:'glasses of water',k:'물 잔'}],
-  'b7':[{w:'forgot',k:'잊었다'},{w:'lunch box',k:'도시락'}],
+  'b6':[{w:'borrow',k:'빌리다'},{w:'umbrella',k:'우산'},{w:'forgot',k:'잊었다'}],
+  'b7':[{w:'perfect score',k:'만점'},{w:'reviewed',k:'복습했다'},{w:'notes',k:'필기'}],
+  'b8':[{w:'ordered',k:'주문했다'},{w:'extra chairs',k:'추가 의자들'},{w:'expecting',k:'예상하다'}],
+  'b9':[{w:'put on',k:'바르다'},{w:'sunscreen',k:'자외선 차단제'},{w:'strong',k:'강한'}],
+  'b10':[{w:'early practice',k:'이른 연습'},{w:'the next day',k:'다음날'}],
+  'b11':[{w:'thirsty',k:'목이 마른'},{w:'glasses of water',k:'물 잔'}],
+  'b12':[{w:'forgot',k:'잊었다'},{w:'lunch box',k:'도시락'}],
   'c6':[{w:'colorful',k:'알록달록한'},{w:'garden',k:'정원'}],
   'c7':[{w:'stayed home',k:'집에 있었다'},{w:'felt sick',k:'몸이 아팠다'}],
   'c8':[{w:'castle',k:'성'},{w:'mysterious',k:'신비로운'}],

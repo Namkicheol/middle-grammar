@@ -1,4 +1,4 @@
-# Unit 07 · 감각동사 look + because 블로그 배포 자료
+# 감각동사 look + because 블로그 배포 자료
 
 ---
 

@@ -72,28 +72,38 @@ body{font-family:'Baloo 2','Noto Sans KR',sans-serif;background:var(--bg);paddin
 .sec-hdr h2{font-size:1.18rem;font-weight:800;color:var(--navy);margin-bottom:5px;}
 .sec-hdr .desc{font-size:.95rem;color:#5a6b8a;font-weight:500;line-height:1.55;}
 
+.passage{background:linear-gradient(180deg,#f8faff 0%,#f0f4fb 100%);border-radius:16px;padding:18px 20px;margin-bottom:14px;font-size:1.02rem;color:#2d3d6b;line-height:1.9;border-left:4px solid var(--navy-m);box-shadow:0 2px 8px rgba(0,0,0,.04);}
+.passage .ptitle{font-size:.78rem;font-weight:800;color:var(--gold-d);letter-spacing:1.5px;text-transform:uppercase;margin-bottom:10px;}
+.passage .num{display:inline-block;width:22px;height:22px;background:var(--gold);color:var(--navy-d);border-radius:50%;font-size:.7rem;font-weight:800;text-align:center;line-height:22px;margin:0 2px;}
+
 .question-card{background:var(--white);border-radius:18px;padding:18px 20px;margin-bottom:12px;box-shadow:0 2px 12px rgba(0,0,0,.06);position:relative;overflow:hidden;}
 .question-card::before{content:'';position:absolute;top:0;left:0;width:4px;height:100%;background:#e2e8f0;transition:background .3s;}
 .question-card.ok::before{background:var(--green);}.question-card.ng::before{background:var(--red);}
 .q-num{display:inline-flex;align-items:center;justify-content:center;width:28px;height:28px;background:var(--gold-l);color:var(--gold-d);border-radius:8px;font-size:.82rem;font-weight:800;margin-bottom:8px;}
-.q-type{display:inline-block;margin-left:6px;font-size:.68rem;font-weight:700;padding:3px 9px;border-radius:10px;letter-spacing:.5px;vertical-align:middle;}
+.q-type{display:inline-block;margin-left:6px;font-size:.68rem;font-weight:700;background:#eef2ff;color:#4338ca;padding:3px 9px;border-radius:10px;letter-spacing:.5px;vertical-align:middle;}
 .q-type.fix{background:#fee2e2;color:#b91c1c;}
 .q-type.trans{background:#dcfce7;color:#15803d;}
-.q-type.combine{background:#e0e7ff;color:#4338ca;}
+.q-type.kor{background:#fef3c7;color:#92400e;}
+.q-type.ctx{background:#e0e7ff;color:#4338ca;}
 .q-text{font-size:1rem;font-weight:600;color:var(--navy);margin-bottom:10px;line-height:1.75;}
 .q-text em{font-style:normal;color:var(--gold-d);font-weight:800;border-bottom:2px dotted var(--gold);}
 .q-text .wrong{color:var(--red);text-decoration:underline;text-decoration-style:wavy;font-weight:800;}
-.q-sub{font-size:.88rem;color:#64748b;font-weight:500;margin-bottom:10px;padding:7px 11px;background:#f8fafc;border-radius:8px;border-left:3px solid #cbd5e1;line-height:1.65;}
+.q-text .orig{color:#4a5a7a;font-size:.9em;}
+.q-text .kor-hint{display:block;background:#fef9c3;border-left:3px solid var(--gold);padding:6px 10px;border-radius:0 8px 8px 0;margin-bottom:8px;color:#854d0e;font-size:.9rem;font-weight:700;}
+
+.vocab{display:none;flex-wrap:wrap;gap:5px;margin-bottom:10px;}
+.vocab.show{display:flex;}
+.vw{font-size:.74rem;background:var(--gold-l);color:#92400e;border-radius:6px;padding:2px 8px;font-weight:600;}
+.vocab-toggle{background:none;border:1.5px solid var(--gold-d);color:var(--gold-d);border-radius:8px;padding:3px 10px;font-family:inherit;font-size:.72rem;font-weight:700;cursor:pointer;margin-bottom:6px;transition:all .15s;display:block;}
+.vocab-toggle:hover{background:var(--gold-l);}
+
 .blank{border:none;border-bottom:2.5px solid var(--gold-d);background:transparent;font-family:inherit;font-size:1rem;font-weight:700;color:var(--navy);padding:2px 8px;min-width:100px;text-align:center;outline:none;transition:.2s;display:inline-block;}
 .blank:focus{border-color:var(--navy);}.blank.ok{border-color:var(--green);color:var(--green);background:#f0fdf4;border-radius:6px;}.blank.ng{border-color:var(--red);color:var(--red);background:#fef2f2;border-radius:6px;}
 .ex{font-size:.75rem;color:var(--gray);}
-.word-pool{display:flex;flex-wrap:wrap;gap:7px;margin-bottom:10px;min-height:44px;padding:8px;background:var(--gold-l);border-radius:12px;border:1px solid rgba(245,158,11,.25);}
-.answer-area{display:flex;flex-wrap:wrap;gap:7px;min-height:44px;padding:8px;background:#f8fafc;border-radius:12px;border:2px dashed #cbd5e1;margin-bottom:10px;align-items:center;}
-.area-ph{color:var(--gray);font-size:.8rem;font-weight:600;}
-.chip{padding:6px 13px;border-radius:20px;font-family:inherit;font-weight:700;font-size:.85rem;cursor:pointer;border:none;transition:all .15s;user-select:none;}
-.pool-chip{background:var(--white);color:var(--navy);box-shadow:0 2px 6px rgba(0,0,0,.08);}.pool-chip:hover{background:var(--gold);color:var(--navy-d);transform:scale(1.05);}
-.ans-chip{background:var(--navy);color:#fff;}.ans-chip:hover{opacity:.8;}
-.ok-chip{background:var(--green);color:#fff;cursor:default;}.ng-chip{background:var(--red);color:#fff;cursor:default;}
+.choices{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:4px;}
+.choice{padding:10px 12px;border-radius:12px;border:2px solid #e2e8f0;background:var(--bg);color:var(--navy);font-family:inherit;font-weight:600;font-size:.9rem;cursor:pointer;transition:all .15s;text-align:left;}
+.choice:hover:not(:disabled){border-color:var(--gold);background:var(--gold-l);transform:translateY(-1px);}
+.choice.ok{background:#f0fdf4;border-color:var(--green);color:var(--green);}.choice.ng{background:#fef2f2;border-color:var(--red);color:var(--red);}.choice.reveal{background:#f0fdf4;border-color:var(--green);color:var(--green);}
 .answer-hint{display:none;margin-top:8px;padding:8px 14px;background:#fef9c3;border-radius:10px;font-size:.82rem;font-weight:600;color:#854d0e;}
 .answer-hint.show{display:block;}
 .check-btn{display:block;width:100%;margin-top:12px;padding:11px;border-radius:12px;border:none;background:var(--navy);color:#fff;font-family:inherit;font-weight:800;font-size:.92rem;cursor:pointer;transition:all .15s;}
@@ -117,21 +127,23 @@ body{font-family:'Baloo 2','Noto Sans KR',sans-serif;background:var(--bg);paddin
 #toast.show{transform:translateX(-50%) translateY(0);}#toast.ok{background:var(--green);}#toast.ng{background:var(--red);}
 @keyframes fadein{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}
 @keyframes pop{0%{transform:scale(.8)}70%{transform:scale(1.1)}100%{transform:scale(1)}}
+@media(max-width:480px){.header h1{font-size:1.7rem;}.h-letter.l-a{font-size:90px;}.h-letter.l-b{font-size:60px;}.h-letter.l-c{font-size:70px;}.h-letter.l-d{font-size:52px;}}
 </style>
 </head>
 <body>
 <div id="toast"></div>
+
 <div class="header">
+  <div class="h-orb o1"></div>
+  <div class="h-orb o2"></div>
   <div class="h-letter l-a">T</div>
   <div class="h-letter l-b">O</div>
   <div class="h-letter l-c">I</div>
   <div class="h-letter l-d">F</div>
-  <div class="h-orb o1"></div>
-  <div class="h-orb o2"></div>
   <div class="header-inner">
-    <div class="hbadge"><span class="hbadge-dot"></span>중2 L3 Advanced</div>
+    <div class="hbadge"><span class="hbadge-dot"></span>중2 L3 · Advanced</div>
     <h1>형용사적 to부정사 &amp; <em>접속사 if</em> 심화</h1>
-    <p>오류 수정 · 문장 완성 · 단어 배열 · 총 25문제</p>
+    <p>문맥 파악 · 오류 수정 · 문장 전환 · 짧은 지문 · 총 25문제</p>
   </div>
 </div>
 
@@ -145,366 +157,334 @@ body{font-family:'Baloo 2','Noto Sans KR',sans-serif;background:var(--bg);paddin
   <div class="pbg"><div class="pfill" id="pf" style="width:0%"></div></div>
 </div>
 <div class="tabs">
-  <button class="tab active" onclick="sw(0,this)">🔧 오류 수정 (8문제)</button>
-  <button class="tab" onclick="sw(1,this)">✍️ 문장 완성 (7문제)</button>
-  <button class="tab" onclick="sw(2,this)">🔀 단어 배열 (10문제)</button>
+  <button class="tab active" onclick="sw(0,this)">⚡ 종합 훈련 (15문제)</button>
+  <button class="tab" onclick="sw(1,this)">📖 짧은 지문 (10문제)</button>
 </div>
 
-<!-- ── Section A: 오류 수정 ── -->
+<!-- ═══ Section A : 종합 훈련 15문제
+     a1-a4  : 문맥 파악 MCQ
+     a5-a8  : 오류 수정
+     a9-a11 : 문장 전환 (두 문장 합치기)
+     a12-a15: 우리말 영작 ═══ -->
 <div class="sec show" id="s0">
   <div class="sec-hdr">
-    <div class="lbl">Section A · 8문제</div>
-    <h2>오류 수정 — 밑줄 친 부분을 바르게 고쳐 쓰세요</h2>
-    <div class="desc">to부정사 오류(1–4) + 접속사 if 시제 오류(5–8)</div>
+    <div class="lbl">Part 1 · 15문제</div>
+    <h2>종합 문법 훈련</h2>
+    <div class="desc">문맥 파악 · 오류 수정 · 문장 전환 · 우리말 영작</div>
   </div>
 
-  <div class='question-card' id='qc-a1'>
-    <span class='q-num'>1</span><span class='q-type fix'>오류 수정</span>
-    <div class='q-text'>I need a chair <span class='wrong'>to sit</span>.</div>
-    <input class="blank" id="bi-a1" placeholder="바른 형태" data-ans="to sit on" autocomplete="off" style="min-width:110px">
-    <button class='check-btn' onclick="checkBlank('a1')">✔ 확인</button>
-    <div class='answer-hint' id='ah-a1'>💡 정답: <strong>to sit on</strong> — "의자에 앉다"는 sit on a chair이므로, to sit만 쓰면 전치사 on이 빠진 오류.<br>📝 해석: 나는 앉을 의자가 필요하다.</div>
-    <button class='hint-btn' onclick="showHint('a1')">💡 힌트 보기</button>
+  <!-- 문맥 파악 (a1-a4) -->
+  <div class="question-card" id="qc-a1"><span class="q-num">1</span><span class="q-type ctx">문맥 파악</span>
+    <div class="q-text">Jake needs something <em>___</em> on the long bus ride.</div>
+    <div class="vocab"><span class="vw">long 긴</span><span class="vw">bus ride 버스 여행</span></div>
+    <div class="choices" data-qid="a1" data-ans="to read">
+      <button class="choice" onclick="pickChoice(this)">to read</button>
+      <button class="choice" onclick="pickChoice(this)">to reading</button>
+      <button class="choice" onclick="pickChoice(this)">reading</button>
+      <button class="choice" onclick="pickChoice(this)">reads</button>
+    </div>
+    <div class="answer-hint" id="ah-a1">💡 정답: <strong>to read</strong> — something(명사) + to read: 형용사적 to부정사<br>📝 해석: Jake는 긴 버스 여행 중에 읽을 것이 필요하다.</div>
+    <button class="hint-btn" onclick="showHint('a1')">💡 힌트 보기</button>
   </div>
 
-  <div class='question-card' id='qc-a2'>
-    <span class='q-num'>2</span><span class='q-type fix'>오류 수정</span>
-    <div class='q-text'>He brought a pen <span class='wrong'>to write</span>.</div>
-    <input class="blank" id="bi-a2" placeholder="바른 형태" data-ans="to write with" autocomplete="off" style="min-width:130px">
-    <button class='check-btn' onclick="checkBlank('a2')">✔ 확인</button>
-    <div class='answer-hint' id='ah-a2'>💡 정답: <strong>to write with</strong> — "펜으로 쓰다"는 write with a pen이므로, with가 빠지면 오류.<br>📝 해석: 그는 필기할 펜을 가져왔다.</div>
-    <button class='hint-btn' onclick="showHint('a2')">💡 힌트 보기</button>
+  <div class="question-card" id="qc-a2"><span class="q-num">2</span><span class="q-type ctx">문맥 파악</span>
+    <div class="q-text">We are looking for a bench <em>___</em> in the sun.</div>
+    <div class="vocab"><span class="vw">bench 벤치</span><span class="vw">in the sun 햇볕 아래</span></div>
+    <div class="choices" data-qid="a2" data-ans="to sit on">
+      <button class="choice" onclick="pickChoice(this)">sitting on</button>
+      <button class="choice" onclick="pickChoice(this)">to sit on</button>
+      <button class="choice" onclick="pickChoice(this)">to sitting on</button>
+      <button class="choice" onclick="pickChoice(this)">sits on</button>
+    </div>
+    <div class="answer-hint" id="ah-a2">💡 정답: <strong>to sit on</strong> — bench(명사) + to sit on: "앉을 벤치". sit on a bench → on 필수<br>📝 해석: 우리는 햇볕 아래 앉을 벤치를 찾고 있다.</div>
+    <button class="hint-btn" onclick="showHint('a2')">💡 힌트 보기</button>
   </div>
 
-  <div class='question-card' id='qc-a3'>
-    <span class='q-num'>3</span><span class='q-type fix'>오류 수정</span>
-    <div class='q-text'>There is nothing <span class='wrong'>eating</span> in the fridge.</div>
-    <input class="blank" id="bi-a3" placeholder="바른 형태" data-ans="to eat" autocomplete="off" style="min-width:80px">
-    <button class='check-btn' onclick="checkBlank('a3')">✔ 확인</button>
-    <div class='answer-hint' id='ah-a3'>💡 정답: <strong>to eat</strong> — nothing을 꾸미는 형용사적 to부정사. eating(-ing형)은 명사 수식에 쓰지 않음.<br>📝 해석: 냉장고에 먹을 것이 없다.</div>
-    <button class='hint-btn' onclick="showHint('a3')">💡 힌트 보기</button>
+  <div class="question-card" id="qc-a3"><span class="q-num">3</span><span class="q-type ctx">문맥 파악</span>
+    <div class="q-text">If it <em>___</em> this Saturday, the sports day will be rescheduled.</div>
+    <div class="vocab"><span class="vw">sports day 체육대회</span><span class="vw">reschedule 일정 변경</span></div>
+    <div class="choices" data-qid="a3" data-ans="rains">
+      <button class="choice" onclick="pickChoice(this)">rains</button>
+      <button class="choice" onclick="pickChoice(this)">will rain</button>
+      <button class="choice" onclick="pickChoice(this)">is raining</button>
+      <button class="choice" onclick="pickChoice(this)">rained</button>
+    </div>
+    <div class="answer-hint" id="ah-a3">💡 정답: <strong>rains</strong> — if절에서 미래 의미라도 현재시제: will rain → rains<br>📝 해석: 이번 토요일에 비가 오면 체육대회 일정이 변경될 것이다.</div>
+    <button class="hint-btn" onclick="showHint('a3')">💡 힌트 보기</button>
   </div>
 
-  <div class='question-card' id='qc-a4'>
-    <span class='q-num'>4</span><span class='q-type fix'>오류 수정</span>
-    <div class='q-text'>We need someone <span class='wrong'>helping</span> us move the boxes.</div>
-    <input class="blank" id="bi-a4" placeholder="바른 형태" data-ans="to help" autocomplete="off" style="min-width:80px">
-    <button class='check-btn' onclick="checkBlank('a4')">✔ 확인</button>
-    <div class='answer-hint' id='ah-a4'>💡 정답: <strong>to help</strong> — someone을 꾸미는 형용사적 to부정사. helping(-ing형)은 명사 수식에 쓰지 않음.<br>📝 해석: 우리는 상자들을 옮기는 것을 도와줄 누군가가 필요하다.</div>
-    <button class='hint-btn' onclick="showHint('a4')">💡 힌트 보기</button>
+  <div class="question-card" id="qc-a4"><span class="q-num">4</span><span class="q-type ctx">문맥 파악</span>
+    <div class="q-text">You can keep the book if you <em>___</em> it by next week.</div>
+    <div class="vocab"><span class="vw">keep 가지고 있다</span><span class="vw">return 반납하다</span></div>
+    <div class="choices" data-qid="a4" data-ans="return">
+      <button class="choice" onclick="pickChoice(this)">will return</button>
+      <button class="choice" onclick="pickChoice(this)">return</button>
+      <button class="choice" onclick="pickChoice(this)">returned</button>
+      <button class="choice" onclick="pickChoice(this)">to return</button>
+    </div>
+    <div class="answer-hint" id="ah-a4">💡 정답: <strong>return</strong> — if절 안에서 you + 현재시제: will return → return<br>📝 해석: 다음 주까지 반납하면 그 책을 가지고 있어도 된다.</div>
+    <button class="hint-btn" onclick="showHint('a4')">💡 힌트 보기</button>
   </div>
 
-  <div class='question-card' id='qc-a5'>
-    <span class='q-num'>5</span><span class='q-type fix'>오류 수정</span>
-    <div class='q-text'>If it <span class='wrong'>will snow</span> tomorrow, we will build a snowman.</div>
-    <input class="blank" id="bi-a5" placeholder="바른 형태" data-ans="snows" autocomplete="off" style="min-width:80px">
-    <button class='check-btn' onclick="checkBlank('a5')">✔ 확인</button>
-    <div class='answer-hint' id='ah-a5'>💡 정답: <strong>snows</strong> — 조건 if절에서는 미래를 나타내더라도 현재시제 사용. will snow → snows<br>📝 해석: 내일 눈이 오면, 우리는 눈사람을 만들 것이다.</div>
-    <button class='hint-btn' onclick="showHint('a5')">💡 힌트 보기</button>
+  <!-- 오류 수정 (a5-a8) -->
+  <div class="question-card" id="qc-a5"><span class="q-num">5</span><span class="q-type fix">오류 수정</span>
+    <div class="q-text">
+      <span class="orig">❌ I need a chair <span class="wrong">to sit</span>.</span><br>
+      → 밑줄 친 부분을 바르게 고치세요:
+      <input class="blank" id="bi-a5" placeholder="___" data-ans="to sit on" autocomplete="off" style="min-width:120px">
+    </div>
+    <div class="vocab"><span class="vw">chair 의자</span></div>
+    <button class="check-btn" onclick="checkBlank('a5')">✔ 확인</button>
+    <div class="answer-hint" id="ah-a5">💡 정답: <strong>to sit on</strong> — "의자에 앉다" = sit on a chair → to sit on (on 필수)<br>📝 해석: 나는 앉을 의자가 필요하다.</div>
+    <button class="hint-btn" onclick="showHint('a5')">💡 힌트 보기</button>
   </div>
 
-  <div class='question-card' id='qc-a6'>
-    <span class='q-num'>6</span><span class='q-type fix'>오류 수정</span>
-    <div class='q-text'>She will do well if she <span class='wrong'>will practice</span> more.</div>
-    <input class="blank" id="bi-a6" placeholder="바른 형태" data-ans="practices" autocomplete="off" style="min-width:100px">
-    <button class='check-btn' onclick="checkBlank('a6')">✔ 확인</button>
-    <div class='answer-hint' id='ah-a6'>💡 정답: <strong>practices</strong> — if절 안에서 she(3인칭 단수) + 현재시제: will practice → practices<br>📝 해석: 더 연습하면, 그녀는 잘 할 것이다.</div>
-    <button class='hint-btn' onclick="showHint('a6')">💡 힌트 보기</button>
+  <div class="question-card" id="qc-a6"><span class="q-num">6</span><span class="q-type fix">오류 수정</span>
+    <div class="q-text">
+      <span class="orig">❌ He brought a pen <span class="wrong">to write</span>.</span><br>
+      → 밑줄 친 부분을 바르게 고치세요:
+      <input class="blank" id="bi-a6" placeholder="___" data-ans="to write with" autocomplete="off" style="min-width:130px">
+    </div>
+    <div class="vocab"><span class="vw">bring 가져오다</span></div>
+    <button class="check-btn" onclick="checkBlank('a6')">✔ 확인</button>
+    <div class="answer-hint" id="ah-a6">💡 정답: <strong>to write with</strong> — "펜으로 쓰다" = write with a pen → to write with (with 필수)<br>📝 해석: 그는 필기할 펜을 가져왔다.</div>
+    <button class="hint-btn" onclick="showHint('a6')">💡 힌트 보기</button>
   </div>
 
-  <div class='question-card' id='qc-a7'>
-    <span class='q-num'>7</span><span class='q-type fix'>오류 수정</span>
-    <div class='q-text'>If you <span class='wrong'>will not hurry</span>, you'll miss the train.</div>
-    <input class="blank" id="bi-a7" placeholder="바른 형태" data-ans="don't hurry" data-ans2="do not hurry" autocomplete="off" style="min-width:120px">
-    <button class='check-btn' onclick="checkBlank('a7')">✔ 확인</button>
-    <div class='answer-hint' id='ah-a7'>💡 정답: <strong>don't hurry</strong> (= do not hurry) — if절 부정에서도 will not → don't/do not<br>📝 해석: 서두르지 않으면, 기차를 놓칠 것이다.</div>
-    <button class='hint-btn' onclick="showHint('a7')">💡 힌트 보기</button>
+  <div class="question-card" id="qc-a7"><span class="q-num">7</span><span class="q-type fix">오류 수정</span>
+    <div class="q-text">
+      <span class="orig">❌ There is nothing <span class="wrong">eating</span> in the fridge.</span><br>
+      → 밑줄 친 부분을 바르게 고치세요:
+      <input class="blank" id="bi-a7" placeholder="___" data-ans="to eat" autocomplete="off" style="min-width:80px">
+    </div>
+    <div class="vocab"><span class="vw">fridge 냉장고</span></div>
+    <button class="check-btn" onclick="checkBlank('a7')">✔ 확인</button>
+    <div class="answer-hint" id="ah-a7">💡 정답: <strong>to eat</strong> — nothing(명사) 수식 → 형용사적 to부정사: eating(-ing형) → to eat<br>📝 해석: 냉장고에 먹을 것이 없다.</div>
+    <button class="hint-btn" onclick="showHint('a7')">💡 힌트 보기</button>
   </div>
 
-  <div class='question-card' id='qc-a8'>
-    <span class='q-num'>8</span><span class='q-type fix'>오류 수정</span>
-    <div class='q-text'>Call me if you <span class='wrong'>will need</span> any help.</div>
-    <input class="blank" id="bi-a8" placeholder="바른 형태" data-ans="need" autocomplete="off" style="min-width:70px">
-    <button class='check-btn' onclick="checkBlank('a8')">✔ 확인</button>
-    <div class='answer-hint' id='ah-a8'>💡 정답: <strong>need</strong> — if절 안에서 you + 현재시제: will need → need<br>📝 해석: 도움이 필요하면 나에게 전화해.</div>
-    <button class='hint-btn' onclick="showHint('a8')">💡 힌트 보기</button>
+  <div class="question-card" id="qc-a8"><span class="q-num">8</span><span class="q-type fix">오류 수정</span>
+    <div class="q-text">
+      <span class="orig">❌ If it <span class="wrong">will rain</span> tomorrow, we will cancel the trip.</span><br>
+      → 밑줄 친 부분을 바르게 고치세요:
+      <input class="blank" id="bi-a8" placeholder="___" data-ans="rains" autocomplete="off" style="min-width:80px">
+    </div>
+    <div class="vocab"><span class="vw">cancel 취소하다</span><span class="vw">trip 여행</span></div>
+    <button class="check-btn" onclick="checkBlank('a8')">✔ 확인</button>
+    <div class="answer-hint" id="ah-a8">💡 정답: <strong>rains</strong> — if절에서 미래 의미라도 현재시제: will rain → rains<br>📝 해석: 내일 비가 오면 우리는 여행을 취소할 것이다.</div>
+    <button class="hint-btn" onclick="showHint('a8')">💡 힌트 보기</button>
+  </div>
+
+  <!-- 문장 전환 (a9-a11) -->
+  <div class="question-card" id="qc-a9"><span class="q-num">9</span><span class="q-type trans">문장 전환</span>
+    <div class="q-text">
+      <span class="orig">두 문장 합치기: She needs a bag. / She can put her books in it.</span><br>
+      → (to부정사로) She needs a bag
+      <input class="blank" id="bi-a9" placeholder="to부정사로..." data-ans="to put her books in" autocomplete="off" style="min-width:180px">.
+    </div>
+    <button class="check-btn" onclick="checkBlank('a9')">✔ 확인</button>
+    <div class="answer-hint" id="ah-a9">💡 정답: <strong>to put her books in</strong> — "가방에 책을 넣다" = put books in a bag → in 필수<br>📝 해석: 그녀는 책을 넣을 가방이 필요하다.</div>
+    <button class="hint-btn" onclick="showHint('a9')">💡 힌트 보기</button>
+  </div>
+
+  <div class="question-card" id="qc-a10"><span class="q-num">10</span><span class="q-type trans">문장 전환</span>
+    <div class="q-text">
+      <span class="orig">두 문장 합치기: Jake needs time. / He can review his notes.</span><br>
+      → (to부정사로) Jake needs time
+      <input class="blank" id="bi-a10" placeholder="to부정사로..." data-ans="to review his notes" autocomplete="off" style="min-width:180px">.
+    </div>
+    <div class="vocab"><span class="vw">review 복습하다</span><span class="vw">notes 필기</span></div>
+    <button class="check-btn" onclick="checkBlank('a10')">✔ 확인</button>
+    <div class="answer-hint" id="ah-a10">💡 정답: <strong>to review his notes</strong> — time(명사) + to review: "복습할 시간"<br>📝 해석: Jake는 필기를 복습할 시간이 필요하다.</div>
+    <button class="hint-btn" onclick="showHint('a10')">💡 힌트 보기</button>
+  </div>
+
+  <div class="question-card" id="qc-a11"><span class="q-num">11</span><span class="q-type trans">문장 전환</span>
+    <div class="q-text">
+      <span class="orig">두 문장 합치기: Study hard. / Then you will get a good grade.</span><br>
+      → (if를 사용해) You will get a good grade
+      <input class="blank" id="bi-a11" placeholder="if절로..." data-ans="if you study hard" autocomplete="off" style="min-width:180px">.
+    </div>
+    <div class="vocab"><span class="vw">grade 점수</span></div>
+    <button class="check-btn" onclick="checkBlank('a11')">✔ 확인</button>
+    <div class="answer-hint" id="ah-a11">💡 정답: <strong>if you study hard</strong> — if절 안에서 현재시제: study (✓)<br>📝 해석: 열심히 공부하면 좋은 점수를 받을 것이다.</div>
+    <button class="hint-btn" onclick="showHint('a11')">💡 힌트 보기</button>
+  </div>
+
+  <!-- 우리말 영작 (a12-a15) -->
+  <div class="question-card" id="qc-a12"><span class="q-num">12</span><span class="q-type kor">우리말 영작</span>
+    <div class="q-text">
+      <span class="kor-hint">🇰🇷 나는 읽을 책이 없다.</span>
+      I have no book
+      <input class="blank" id="bi-a12" placeholder="___" data-ans="to read" autocomplete="off" style="min-width:90px">. <span class="ex">(read)</span>
+    </div>
+    <button class="check-btn" onclick="checkBlank('a12')">✔ 확인</button>
+    <div class="answer-hint" id="ah-a12">💡 정답: <strong>to read</strong> — no book(명사) + to read: 형용사적 to부정사<br>📝 해석: 나는 읽을 책이 없다.</div>
+    <button class="hint-btn" onclick="showHint('a12')">💡 힌트 보기</button>
+  </div>
+
+  <div class="question-card" id="qc-a13"><span class="q-num">13</span><span class="q-type kor">우리말 영작</span>
+    <div class="q-text">
+      <span class="kor-hint">🇰🇷 그녀는 이야기할 누군가가 필요하다.</span>
+      She needs someone
+      <input class="blank" id="bi-a13" placeholder="___" data-ans="to talk to" autocomplete="off" style="min-width:120px">. <span class="ex">(talk)</span>
+    </div>
+    <button class="check-btn" onclick="checkBlank('a13')">✔ 확인</button>
+    <div class="answer-hint" id="ah-a13">💡 정답: <strong>to talk to</strong> — "누군가에게 말하다" = talk to someone → to 필수<br>📝 해석: 그녀는 이야기할 누군가가 필요하다.</div>
+    <button class="hint-btn" onclick="showHint('a13')">💡 힌트 보기</button>
+  </div>
+
+  <div class="question-card" id="qc-a14"><span class="q-num">14</span><span class="q-type kor">우리말 영작</span>
+    <div class="q-text">
+      <span class="kor-hint">🇰🇷 지금 출발하면 제때 도착할 것이다.</span>
+      <input class="blank" id="bi-a14" placeholder="If절로..." data-ans="if you leave now" autocomplete="off" style="min-width:200px">, you will arrive on time. <span class="ex">(if / leave)</span>
+    </div>
+    <button class="check-btn" onclick="checkBlank('a14')">✔ 확인</button>
+    <div class="answer-hint" id="ah-a14">💡 정답: <strong>If you leave now</strong> — if절이 앞에 오면 콤마로 구분. if절 현재시제: leave<br>📝 해석: 지금 출발하면 제때 도착할 것이다.</div>
+    <button class="hint-btn" onclick="showHint('a14')">💡 힌트 보기</button>
+  </div>
+
+  <div class="question-card" id="qc-a15"><span class="q-num">15</span><span class="q-type kor">우리말 영작</span>
+    <div class="q-text">
+      <span class="kor-hint">🇰🇷 더 많이 연습하지 않으면 그는 다음 대회를 이기지 못할 것이다.</span>
+      He will not win the next contest
+      <input class="blank" id="bi-a15" placeholder="if절로..." data-ans="if he doesn't practice more" data-ans2="if he does not practice more" autocomplete="off" style="min-width:240px">. <span class="ex">(if / practice / not)</span>
+    </div>
+    <button class="check-btn" onclick="checkBlank('a15')">✔ 확인</button>
+    <div class="answer-hint" id="ah-a15">💡 정답: <strong>if he doesn't practice more</strong> — if절 부정: he(3인칭 단수) → doesn't<br>📝 해석: 더 많이 연습하지 않으면 그는 다음 대회를 이기지 못할 것이다.</div>
+    <button class="hint-btn" onclick="showHint('a15')">💡 힌트 보기</button>
   </div>
 </div>
 
-<!-- ── Section B: 문장 완성 ── -->
+<!-- ═══ Section B : 짧은 지문 10문제
+     b1-b5  : Passage A — 형용사적 to부정사
+     b6-b10 : Passage B — 접속사 if ═══ -->
 <div class="sec" id="s1">
   <div class="sec-hdr">
-    <div class="lbl">Section B · 7문제</div>
-    <h2>문장 완성하기</h2>
-    <div class="desc">두 문장 합치기 — to부정사(1–3) + if절 완성(4–7)</div>
+    <div class="lbl">Part 2 · 10문제</div>
+    <h2>짧은 지문 읽고 빈칸 채우기</h2>
+    <div class="desc">지문의 흐름을 파악하고 알맞은 형태를 써넣으세요</div>
   </div>
 
-  <!-- to부정사: 두 문장 합치기 1-3 -->
-  <div class='question-card' id='qc-b1'>
-    <span class='q-num'>1</span><span class='q-type combine'>두 문장 합치기</span>
-    <div class='q-sub'>두 문장을 to부정사를 이용해 하나로 합치세요.<br>Mia has a jacket. She wears it in winter.</div>
-    <div class='q-text'>Mia has a jacket <input class="blank" id="bi-b1" placeholder="to부정사로..." data-ans="to wear in winter" autocomplete="off" style="min-width:150px">.</div>
-    <button class='check-btn' onclick="checkBlank('b1')">✔ 확인</button>
-    <div class='answer-hint' id='ah-b1'>💡 정답: <strong>to wear in winter</strong> — a jacket(명사) + to wear: "겨울에 입을 재킷"<br>📝 해석: Mia는 겨울에 입을 재킷이 있다.</div>
-    <button class='hint-btn' onclick="showHint('b1')">💡 힌트 보기</button>
+  <!-- Passage A (b1-b5) -->
+  <div class="passage">
+    <div class="ptitle">📖 Passage A · Mia's School Bag</div>
+    Mia had many things <span class="num">1</span> to her classes today. She packed her notebook <span class="num">2</span> during lessons. She also brought a water bottle <span class="num">3</span>. In her bag, there was a novel <span class="num">4</span> on the bus ride home. But when she arrived at her club, she had nothing <span class="num">5</span> — she had forgotten her snack box!
   </div>
 
-  <div class='question-card' id='qc-b2'>
-    <span class='q-num'>2</span><span class='q-type combine'>두 문장 합치기</span>
-    <div class='q-sub'>두 문장을 to부정사를 이용해 하나로 합치세요.<br>They found a café. They can have lunch there.</div>
-    <div class='q-text'>They found a café <input class="blank" id="bi-b2" placeholder="to부정사로..." data-ans="to have lunch at" autocomplete="off" style="min-width:160px">.</div>
-    <button class='check-btn' onclick="checkBlank('b2')">✔ 확인</button>
-    <div class='answer-hint' id='ah-b2'>💡 정답: <strong>to have lunch at</strong> — "카페에서 점심을 먹다"는 have lunch at a café → at이 빠지면 오류.<br>📝 해석: 그들은 점심을 먹을 수 있는 카페를 찾았다.</div>
-    <button class='hint-btn' onclick="showHint('b2')">💡 힌트 보기</button>
-  </div>
-
-  <div class='question-card' id='qc-b3'>
-    <span class='q-num'>3</span><span class='q-type trans'>문장 완성</span>
-    <div class='q-sub'>우리말과 같은 뜻이 되도록 빈칸을 채우세요. (괄호 단어 사용)<br>그에게는 이번 주말에 방문할 친구가 없다. (visit)</div>
-    <div class='q-text'>He has no friend <input class="blank" id="bi-b3" placeholder="to부정사로..." data-ans="to visit" autocomplete="off" style="min-width:100px"> this weekend.</div>
-    <button class='check-btn' onclick="checkBlank('b3')">✔ 확인</button>
-    <div class='answer-hint' id='ah-b3'>💡 정답: <strong>to visit</strong> — no friend(명사) + to visit: "방문할 친구"<br>📝 해석: 그에게는 이번 주말에 방문할 친구가 없다.</div>
-    <button class='hint-btn' onclick="showHint('b3')">💡 힌트 보기</button>
-  </div>
-
-  <!-- if절 완성 4-7 -->
-  <div class='question-card' id='qc-b4'>
-    <span class='q-num'>4</span><span class='q-type combine'>두 문장 합치기</span>
-    <div class='q-sub'>if를 사용해 두 문장을 하나로 합치세요.<br>Study hard. Then you will pass the exam.</div>
-    <div class='q-text'>You will pass the exam <input class="blank" id="bi-b4" placeholder="if절로..." data-ans="if you study hard" autocomplete="off" style="min-width:160px">.</div>
-    <button class='check-btn' onclick="checkBlank('b4')">✔ 확인</button>
-    <div class='answer-hint' id='ah-b4'>💡 정답: <strong>if you study hard</strong> — if절 안에서 미래라도 현재시제: study (✓)<br>📝 해석: 열심히 공부하면 시험에 합격할 것이다.</div>
-    <button class='hint-btn' onclick="showHint('b4')">💡 힌트 보기</button>
-  </div>
-
-  <div class='question-card' id='qc-b5'>
-    <span class='q-num'>5</span><span class='q-type combine'>두 문장 합치기</span>
-    <div class='q-sub'>if를 사용해 두 문장을 하나로 합치세요.<br>The wind gets stronger. We will close all the windows.</div>
-    <div class='q-text'>We will close all the windows <input class="blank" id="bi-b5" placeholder="if절로..." data-ans="if the wind gets stronger" autocomplete="off" style="min-width:200px">.</div>
-    <button class='check-btn' onclick="checkBlank('b5')">✔ 확인</button>
-    <div class='answer-hint' id='ah-b5'>💡 정답: <strong>if the wind gets stronger</strong> — if절 안에서 현재시제: gets<br>📝 해석: 바람이 더 강해지면, 우리는 창문을 모두 닫을 것이다.</div>
-    <button class='hint-btn' onclick="showHint('b5')">💡 힌트 보기</button>
-  </div>
-
-  <div class='question-card' id='qc-b6'>
-    <span class='q-num'>6</span><span class='q-type trans'>문장 완성</span>
-    <div class='q-sub'>우리말과 같은 뜻이 되도록 빈칸을 채우세요.<br>충분히 자지 않으면, 내일 집중하기 어려울 것이다. (you / sleep / not)</div>
-    <div class='q-text'><input class="blank" id="bi-b6" placeholder="if절로..." data-ans="If you don't sleep enough" data-ans2="If you do not sleep enough" autocomplete="off" style="min-width:100%;display:block;margin-bottom:8px">, it will be hard to focus tomorrow.</div>
-    <button class='check-btn' onclick="checkBlank('b6')">✔ 확인</button>
-    <div class='answer-hint' id='ah-b6'>💡 정답: <strong>If you don't sleep enough</strong> — if절이 앞에 오면 콤마(,)를 붙임. 부정은 don't/do not<br>📝 해석: 충분히 자지 않으면, 내일 집중하기 어려울 것이다.</div>
-    <button class='hint-btn' onclick="showHint('b6')">💡 힌트 보기</button>
-  </div>
-
-  <div class='question-card' id='qc-b7'>
-    <span class='q-num'>7</span><span class='q-type trans'>문장 완성</span>
-    <div class='q-sub'>괄호 안의 단어를 이용해 빈칸을 채우세요.<br>버튼을 누르면 기계가 시작될 것이다. (you / press / the button)</div>
-    <div class='q-text'>The machine will start <input class="blank" id="bi-b7" placeholder="if절로..." data-ans="if you press the button" autocomplete="off" style="min-width:200px">.</div>
-    <button class='check-btn' onclick="checkBlank('b7')">✔ 확인</button>
-    <div class='answer-hint' id='ah-b7'>💡 정답: <strong>if you press the button</strong> — if절 안에서 현재시제: press<br>📝 해석: 버튼을 누르면 기계가 시작될 것이다.</div>
-    <button class='hint-btn' onclick="showHint('b7')">💡 힌트 보기</button>
-  </div>
-</div>
-
-<!-- ── Section C: 단어 배열 ── -->
-<div class="sec" id="s2">
-  <div class="sec-hdr">
-    <div class="lbl">Section C · 10문제</div>
-    <h2>단어 배열하기</h2>
-    <div class="desc">형용사적 to부정사(1–5) + 접속사 if(6–10) · 단어 칩 클릭 → 문장 완성</div>
-  </div>
-
-  <div class='question-card' id='qc-c1'><span class='q-num'>1</span>
-    <div class='q-text'>📌 그는 그 강을 건널 다리가 필요했다.</div>
-    <div class='word-pool' id='pool-c1'>
-      <button class="chip pool-chip" id="wc-c1-0" onclick="moveWord('c1',0,this)">cross</button>
-      <button class="chip pool-chip" id="wc-c1-1" onclick="moveWord('c1',1,this)">river</button>
-      <button class="chip pool-chip" id="wc-c1-2" onclick="moveWord('c1',2,this)">needed</button>
-      <button class="chip pool-chip" id="wc-c1-3" onclick="moveWord('c1',3,this)">He</button>
-      <button class="chip pool-chip" id="wc-c1-4" onclick="moveWord('c1',4,this)">to</button>
-      <button class="chip pool-chip" id="wc-c1-5" onclick="moveWord('c1',5,this)">a</button>
-      <button class="chip pool-chip" id="wc-c1-6" onclick="moveWord('c1',6,this)">bridge</button>
-      <button class="chip pool-chip" id="wc-c1-7" onclick="moveWord('c1',7,this)">the</button>
+  <div class="question-card" id="qc-b1"><span class="q-num">16</span><span class="q-type ctx">지문 · 1번</span>
+    <div class="q-text">Mia had many things
+      <input class="blank" id="bi-b1" placeholder="___" data-ans="to carry" autocomplete="off" style="min-width:100px">
+      to her classes today. <span class="ex">(carry)</span>
     </div>
-    <div class='answer-area' id='area-c1'><span class='area-ph'>여기에 단어를 놓으세요 →</span></div>
-    <button class='check-btn' data-qid='c1' data-ans='He needed a bridge to cross the river' onclick="checkArrange(this)">✔ 확인</button>
-    <div class='answer-hint' id='ah-c1'>💡 정답: <strong>He needed a bridge to cross the river</strong><br>📌 구조: a bridge(명사) + to cross(형용사적 to부정사) + the river</div>
-    <button class='hint-btn' onclick="showHint('c1')">💡 힌트 보기</button>
+    <div class="vocab"><span class="vw">carry 들고 다니다</span></div>
+    <button class="check-btn" onclick="checkBlank('b1')">✔ 확인</button>
+    <div class="answer-hint" id="ah-b1">💡 정답: <strong>to carry</strong> — many things(명사) + to carry: "들고 다닐 것들"<br>📝 해석: Mia는 오늘 수업에 가져갈 것이 많았다.</div>
+    <button class="hint-btn" onclick="showHint('b1')">💡 힌트 보기</button>
   </div>
 
-  <div class='question-card' id='qc-c2'><span class='q-num'>2</span>
-    <div class='q-text'>📌 우리는 이번 겨울 동안 지낼 따뜻한 장소를 찾고 있다.</div>
-    <div class='word-pool' id='pool-c2'>
-      <button class="chip pool-chip" id="wc-c2-0" onclick="moveWord('c2',0,this)">stay</button>
-      <button class="chip pool-chip" id="wc-c2-1" onclick="moveWord('c2',1,this)">warm</button>
-      <button class="chip pool-chip" id="wc-c2-2" onclick="moveWord('c2',2,this)">this</button>
-      <button class="chip pool-chip" id="wc-c2-3" onclick="moveWord('c2',3,this)">for</button>
-      <button class="chip pool-chip" id="wc-c2-4" onclick="moveWord('c2',4,this)">looking</button>
-      <button class="chip pool-chip" id="wc-c2-5" onclick="moveWord('c2',5,this)">a</button>
-      <button class="chip pool-chip" id="wc-c2-6" onclick="moveWord('c2',6,this)">are</button>
-      <button class="chip pool-chip" id="wc-c2-7" onclick="moveWord('c2',7,this)">place</button>
-      <button class="chip pool-chip" id="wc-c2-8" onclick="moveWord('c2',8,this)">to</button>
-      <button class="chip pool-chip" id="wc-c2-9" onclick="moveWord('c2',9,this)">We</button>
-      <button class="chip pool-chip" id="wc-c2-10" onclick="moveWord('c2',10,this)">winter</button>
+  <div class="question-card" id="qc-b2"><span class="q-num">17</span><span class="q-type ctx">지문 · 2번</span>
+    <div class="q-text">She packed her notebook
+      <input class="blank" id="bi-b2" placeholder="___" data-ans="to write in" autocomplete="off" style="min-width:120px">
+      during lessons. <span class="ex">(write)</span>
     </div>
-    <div class='answer-area' id='area-c2'><span class='area-ph'>여기에 단어를 놓으세요 →</span></div>
-    <button class='check-btn' data-qid='c2' data-ans='We are looking for a warm place to stay this winter' onclick="checkArrange(this)">✔ 확인</button>
-    <div class='answer-hint' id='ah-c2'>💡 정답: <strong>We are looking for a warm place to stay this winter</strong><br>📌 구조: a warm place(명사구) + to stay(형용사적 to부정사) + this winter</div>
-    <button class='hint-btn' onclick="showHint('c2')">💡 힌트 보기</button>
+    <div class="vocab"><span class="vw">notebook 공책</span><span class="vw">lesson 수업</span></div>
+    <button class="check-btn" onclick="checkBlank('b2')">✔ 확인</button>
+    <div class="answer-hint" id="ah-b2">💡 정답: <strong>to write in</strong> — "공책에 필기하다" = write in a notebook → in 필수<br>📝 해석: 그녀는 수업 중에 필기할 공책을 챙겼다.</div>
+    <button class="hint-btn" onclick="showHint('b2')">💡 힌트 보기</button>
   </div>
 
-  <div class='question-card' id='qc-c3'><span class='q-num'>3</span>
-    <div class='q-text'>📌 그녀는 그 편지를 넣을 봉투가 없었다.</div>
-    <div class='word-pool' id='pool-c3'>
-      <button class="chip pool-chip" id="wc-c3-0" onclick="moveWord('c3',0,this)">to</button>
-      <button class="chip pool-chip" id="wc-c3-1" onclick="moveWord('c3',1,this)">had</button>
-      <button class="chip pool-chip" id="wc-c3-2" onclick="moveWord('c3',2,this)">put</button>
-      <button class="chip pool-chip" id="wc-c3-3" onclick="moveWord('c3',3,this)">envelope</button>
-      <button class="chip pool-chip" id="wc-c3-4" onclick="moveWord('c3',4,this)">the</button>
-      <button class="chip pool-chip" id="wc-c3-5" onclick="moveWord('c3',5,this)">She</button>
-      <button class="chip pool-chip" id="wc-c3-6" onclick="moveWord('c3',6,this)">no</button>
-      <button class="chip pool-chip" id="wc-c3-7" onclick="moveWord('c3',7,this)">in</button>
-      <button class="chip pool-chip" id="wc-c3-8" onclick="moveWord('c3',8,this)">letter</button>
+  <div class="question-card" id="qc-b3"><span class="q-num">18</span><span class="q-type ctx">지문 · 3번</span>
+    <div class="q-text">She also brought a water bottle
+      <input class="blank" id="bi-b3" placeholder="___" data-ans="to drink from" autocomplete="off" style="min-width:130px">. <span class="ex">(drink)</span>
     </div>
-    <div class='answer-area' id='area-c3'><span class='area-ph'>여기에 단어를 놓으세요 →</span></div>
-    <button class='check-btn' data-qid='c3' data-ans='She had no envelope to put the letter in' onclick="checkArrange(this)">✔ 확인</button>
-    <div class='answer-hint' id='ah-c3'>💡 정답: <strong>She had no envelope to put the letter in</strong><br>📌 구조: no envelope + to put ~ in (put ~ in an envelope → in 필수)</div>
-    <button class='hint-btn' onclick="showHint('c3')">💡 힌트 보기</button>
+    <div class="vocab"><span class="vw">water bottle 물병</span></div>
+    <button class="check-btn" onclick="checkBlank('b3')">✔ 확인</button>
+    <div class="answer-hint" id="ah-b3">💡 정답: <strong>to drink from</strong> — "병에서 마시다" = drink from a bottle → from 필수<br>📝 해석: 그녀는 마실 물병도 가져왔다.</div>
+    <button class="hint-btn" onclick="showHint('b3')">💡 힌트 보기</button>
   </div>
 
-  <div class='question-card' id='qc-c4'><span class='q-num'>4</span>
-    <div class='q-text'>📌 나는 캠핑 여행에서 마실 물이 충분히 있다.</div>
-    <div class='word-pool' id='pool-c4'>
-      <button class="chip pool-chip" id="wc-c4-0" onclick="moveWord('c4',0,this)">drink</button>
-      <button class="chip pool-chip" id="wc-c4-1" onclick="moveWord('c4',1,this)">enough</button>
-      <button class="chip pool-chip" id="wc-c4-2" onclick="moveWord('c4',2,this)">the</button>
-      <button class="chip pool-chip" id="wc-c4-3" onclick="moveWord('c4',3,this)">camping</button>
-      <button class="chip pool-chip" id="wc-c4-4" onclick="moveWord('c4',4,this)">have</button>
-      <button class="chip pool-chip" id="wc-c4-5" onclick="moveWord('c4',5,this)">to</button>
-      <button class="chip pool-chip" id="wc-c4-6" onclick="moveWord('c4',6,this)">on</button>
-      <button class="chip pool-chip" id="wc-c4-7" onclick="moveWord('c4',7,this)">I</button>
-      <button class="chip pool-chip" id="wc-c4-8" onclick="moveWord('c4',8,this)">water</button>
-      <button class="chip pool-chip" id="wc-c4-9" onclick="moveWord('c4',9,this)">trip</button>
+  <div class="question-card" id="qc-b4"><span class="q-num">19</span><span class="q-type ctx">지문 · 4번</span>
+    <div class="q-text">In her bag, there was a novel
+      <input class="blank" id="bi-b4" placeholder="___" data-ans="to read" autocomplete="off" style="min-width:90px">
+      on the bus ride home. <span class="ex">(read)</span>
     </div>
-    <div class='answer-area' id='area-c4'><span class='area-ph'>여기에 단어를 놓으세요 →</span></div>
-    <button class='check-btn' data-qid='c4' data-ans='I have enough water to drink on the camping trip' onclick="checkArrange(this)">✔ 확인</button>
-    <div class='answer-hint' id='ah-c4'>💡 정답: <strong>I have enough water to drink on the camping trip</strong><br>📌 구조: enough water(명사구) + to drink(형용사적 to부정사) + on the camping trip</div>
-    <button class='hint-btn' onclick="showHint('c4')">💡 힌트 보기</button>
+    <div class="vocab"><span class="vw">novel 소설</span><span class="vw">bus ride 버스 탑승</span></div>
+    <button class="check-btn" onclick="checkBlank('b4')">✔ 확인</button>
+    <div class="answer-hint" id="ah-b4">💡 정답: <strong>to read</strong> — a novel(명사) + to read: "읽을 소설"<br>📝 해석: 가방 안에는 집에 가는 버스에서 읽을 소설이 있었다.</div>
+    <button class="hint-btn" onclick="showHint('b4')">💡 힌트 보기</button>
   </div>
 
-  <div class='question-card' id='qc-c5'><span class='q-num'>5</span>
-    <div class='q-text'>📌 Jake는 그 기념식에서 이야기할 것이 있었다.</div>
-    <div class='word-pool' id='pool-c5'>
-      <button class="chip pool-chip" id="wc-c5-0" onclick="moveWord('c5',0,this)">say</button>
-      <button class="chip pool-chip" id="wc-c5-1" onclick="moveWord('c5',1,this)">had</button>
-      <button class="chip pool-chip" id="wc-c5-2" onclick="moveWord('c5',2,this)">at</button>
-      <button class="chip pool-chip" id="wc-c5-3" onclick="moveWord('c5',3,this)">to</button>
-      <button class="chip pool-chip" id="wc-c5-4" onclick="moveWord('c5',4,this)">the</button>
-      <button class="chip pool-chip" id="wc-c5-5" onclick="moveWord('c5',5,this)">Jake</button>
-      <button class="chip pool-chip" id="wc-c5-6" onclick="moveWord('c5',6,this)">ceremony</button>
-      <button class="chip pool-chip" id="wc-c5-7" onclick="moveWord('c5',7,this)">something</button>
+  <div class="question-card" id="qc-b5"><span class="q-num">20</span><span class="q-type ctx">지문 · 5번</span>
+    <div class="q-text">She had nothing
+      <input class="blank" id="bi-b5" placeholder="___" data-ans="to eat" autocomplete="off" style="min-width:80px">
+      — she had forgotten her snack box! <span class="ex">(eat)</span>
     </div>
-    <div class='answer-area' id='area-c5'><span class='area-ph'>여기에 단어를 놓으세요 →</span></div>
-    <button class='check-btn' data-qid='c5' data-ans='Jake had something to say at the ceremony' onclick="checkArrange(this)">✔ 확인</button>
-    <div class='answer-hint' id='ah-c5'>💡 정답: <strong>Jake had something to say at the ceremony</strong><br>📌 구조: something(명사) + to say(형용사적 to부정사) + at the ceremony</div>
-    <button class='hint-btn' onclick="showHint('c5')">💡 힌트 보기</button>
+    <div class="vocab"><span class="vw">snack box 간식 상자</span><span class="vw">forget 잊어버리다</span></div>
+    <button class="check-btn" onclick="checkBlank('b5')">✔ 확인</button>
+    <div class="answer-hint" id="ah-b5">💡 정답: <strong>to eat</strong> — nothing(명사) + to eat: "먹을 것"<br>📝 해석: 그녀는 먹을 것이 없었다 — 간식 상자를 잊어버린 것이다!</div>
+    <button class="hint-btn" onclick="showHint('b5')">💡 힌트 보기</button>
   </div>
 
-  <div class='question-card' id='qc-c6'><span class='q-num'>6</span>
-    <div class='q-text'>📌 더 빨리 달리면, 너는 경주에서 이길 수 있다.</div>
-    <div class='word-pool' id='pool-c6'>
-      <button class="chip pool-chip" id="wc-c6-0" onclick="moveWord('c6',0,this)">win</button>
-      <button class="chip pool-chip" id="wc-c6-1" onclick="moveWord('c6',1,this)">faster</button>
-      <button class="chip pool-chip" id="wc-c6-2" onclick="moveWord('c6',2,this)">you</button>
-      <button class="chip pool-chip" id="wc-c6-3" onclick="moveWord('c6',3,this)">the</button>
-      <button class="chip pool-chip" id="wc-c6-4" onclick="moveWord('c6',4,this)">run</button>
-      <button class="chip pool-chip" id="wc-c6-5" onclick="moveWord('c6',5,this)">If</button>
-      <button class="chip pool-chip" id="wc-c6-6" onclick="moveWord('c6',6,this)">race</button>
-      <button class="chip pool-chip" id="wc-c6-7" onclick="moveWord('c6',7,this)">you</button>
-      <button class="chip pool-chip" id="wc-c6-8" onclick="moveWord('c6',8,this)">can</button>
-    </div>
-    <div class='answer-area' id='area-c6'><span class='area-ph'>여기에 단어를 놓으세요 →</span></div>
-    <button class='check-btn' data-qid='c6' data-ans='If you run faster you can win the race' onclick="checkArrange(this)">✔ 확인</button>
-    <div class='answer-hint' id='ah-c6'>💡 정답: <strong>If you run faster, you can win the race</strong><br>📌 구조: if절(현재시제 run) + 주절(can win)</div>
-    <button class='hint-btn' onclick="showHint('c6')">💡 힌트 보기</button>
+  <!-- Passage B (b6-b10) -->
+  <div class="passage" style="margin-top:18px;">
+    <div class="ptitle">📖 Passage B · Jake's Weekend Plan</div>
+    If the weather <span class="num">6</span> fine this Sunday, Jake will go to the park. His friend Mia will come if she <span class="num">7</span> her homework by noon. If Jake <span class="num">8</span> his water bottle, Mia will share hers. They will take a break if they <span class="num">9</span> tired. But if it <span class="num">10</span> in the afternoon, they will go to an indoor café instead.
   </div>
 
-  <div class='question-card' id='qc-c7'><span class='q-num'>7</span>
-    <div class='q-text'>📌 그녀는 시간이 있으면 우리와 함께 올 것이다.</div>
-    <div class='word-pool' id='pool-c7'>
-      <button class="chip pool-chip" id="wc-c7-0" onclick="moveWord('c7',0,this)">She</button>
-      <button class="chip pool-chip" id="wc-c7-1" onclick="moveWord('c7',1,this)">time</button>
-      <button class="chip pool-chip" id="wc-c7-2" onclick="moveWord('c7',2,this)">with</button>
-      <button class="chip pool-chip" id="wc-c7-3" onclick="moveWord('c7',3,this)">will</button>
-      <button class="chip pool-chip" id="wc-c7-4" onclick="moveWord('c7',4,this)">if</button>
-      <button class="chip pool-chip" id="wc-c7-5" onclick="moveWord('c7',5,this)">us</button>
-      <button class="chip pool-chip" id="wc-c7-6" onclick="moveWord('c7',6,this)">has</button>
-      <button class="chip pool-chip" id="wc-c7-7" onclick="moveWord('c7',7,this)">come</button>
-      <button class="chip pool-chip" id="wc-c7-8" onclick="moveWord('c7',8,this)">she</button>
+  <div class="question-card" id="qc-b6"><span class="q-num">21</span><span class="q-type ctx">지문 · 6번</span>
+    <div class="q-text">If the weather
+      <input class="blank" id="bi-b6" placeholder="___" data-ans="is" autocomplete="off" style="min-width:70px">
+      fine this Sunday, Jake will go to the park. <span class="ex">(be)</span>
     </div>
-    <div class='answer-area' id='area-c7'><span class='area-ph'>여기에 단어를 놓으세요 →</span></div>
-    <button class='check-btn' data-qid='c7' data-ans='She will come with us if she has time' onclick="checkArrange(this)">✔ 확인</button>
-    <div class='answer-hint' id='ah-c7'>💡 정답: <strong>She will come with us if she has time</strong><br>📌 구조: 주절(will come) + if절(현재시제 has)</div>
-    <button class='hint-btn' onclick="showHint('c7')">💡 힌트 보기</button>
+    <div class="vocab"><span class="vw">fine 화창한</span><span class="vw">weather 날씨</span></div>
+    <button class="check-btn" onclick="checkBlank('b6')">✔ 확인</button>
+    <div class="answer-hint" id="ah-b6">💡 정답: <strong>is</strong> — if절 안에서 the weather(단수) + 현재시제: be → is<br>📝 해석: 이번 일요일 날씨가 좋으면 Jake는 공원에 갈 것이다.</div>
+    <button class="hint-btn" onclick="showHint('b6')">💡 힌트 보기</button>
   </div>
 
-  <div class='question-card' id='qc-c8'><span class='q-num'>8</span>
-    <div class='q-text'>📌 더 연습하지 않으면, 그는 오디션을 통과하지 못할 것이다.</div>
-    <div class='word-pool' id='pool-c8'>
-      <button class="chip pool-chip" id="wc-c8-0" onclick="moveWord('c8',0,this)">audition</button>
-      <button class="chip pool-chip" id="wc-c8-1" onclick="moveWord('c8',1,this)">the</button>
-      <button class="chip pool-chip" id="wc-c8-2" onclick="moveWord('c8',2,this)">pass</button>
-      <button class="chip pool-chip" id="wc-c8-3" onclick="moveWord('c8',3,this)">He</button>
-      <button class="chip pool-chip" id="wc-c8-4" onclick="moveWord('c8',4,this)">more</button>
-      <button class="chip pool-chip" id="wc-c8-5" onclick="moveWord('c8',5,this)">doesn't</button>
-      <button class="chip pool-chip" id="wc-c8-6" onclick="moveWord('c8',6,this)">if</button>
-      <button class="chip pool-chip" id="wc-c8-7" onclick="moveWord('c8',7,this)">won't</button>
-      <button class="chip pool-chip" id="wc-c8-8" onclick="moveWord('c8',8,this)">practice</button>
-      <button class="chip pool-chip" id="wc-c8-9" onclick="moveWord('c8',9,this)">he</button>
+  <div class="question-card" id="qc-b7"><span class="q-num">22</span><span class="q-type ctx">지문 · 7번</span>
+    <div class="q-text">Mia will come if she
+      <input class="blank" id="bi-b7" placeholder="___" data-ans="finishes" autocomplete="off" style="min-width:100px">
+      her homework by noon. <span class="ex">(finish)</span>
     </div>
-    <div class='answer-area' id='area-c8'><span class='area-ph'>여기에 단어를 놓으세요 →</span></div>
-    <button class='check-btn' data-qid='c8' data-ans="He won't pass the audition if he doesn't practice more" onclick="checkArrange(this)">✔ 확인</button>
-    <div class='answer-hint' id='ah-c8'>💡 정답: <strong>He won't pass the audition if he doesn't practice more</strong><br>📌 구조: 주절(won't pass) + if절(현재시제 doesn't practice)</div>
-    <button class='hint-btn' onclick="showHint('c8')">💡 힌트 보기</button>
+    <div class="vocab"><span class="vw">by noon 정오까지</span></div>
+    <button class="check-btn" onclick="checkBlank('b7')">✔ 확인</button>
+    <div class="answer-hint" id="ah-b7">💡 정답: <strong>finishes</strong> — if절 안에서 she(3인칭 단수) + 현재시제: finish → finishes<br>📝 해석: Mia는 정오까지 숙제를 끝내면 올 것이다.</div>
+    <button class="hint-btn" onclick="showHint('b7')">💡 힌트 보기</button>
   </div>
 
-  <div class='question-card' id='qc-c9'><span class='q-num'>9</span>
-    <div class='q-text'>📌 도서관이 문을 닫으면, 우리는 카페에서 공부할 것이다.</div>
-    <div class='word-pool' id='pool-c9'>
-      <button class="chip pool-chip" id="wc-c9-0" onclick="moveWord('c9',0,this)">the</button>
-      <button class="chip pool-chip" id="wc-c9-1" onclick="moveWord('c9',1,this)">closes</button>
-      <button class="chip pool-chip" id="wc-c9-2" onclick="moveWord('c9',2,this)">if</button>
-      <button class="chip pool-chip" id="wc-c9-3" onclick="moveWord('c9',3,this)">café</button>
-      <button class="chip pool-chip" id="wc-c9-4" onclick="moveWord('c9',4,this)">at</button>
-      <button class="chip pool-chip" id="wc-c9-5" onclick="moveWord('c9',5,this)">We</button>
-      <button class="chip pool-chip" id="wc-c9-6" onclick="moveWord('c9',6,this)">library</button>
-      <button class="chip pool-chip" id="wc-c9-7" onclick="moveWord('c9',7,this)">will</button>
-      <button class="chip pool-chip" id="wc-c9-8" onclick="moveWord('c9',8,this)">study</button>
-      <button class="chip pool-chip" id="wc-c9-9" onclick="moveWord('c9',9,this)">the</button>
+  <div class="question-card" id="qc-b8"><span class="q-num">23</span><span class="q-type ctx">지문 · 8번</span>
+    <div class="q-text">If Jake
+      <input class="blank" id="bi-b8" placeholder="___" data-ans="forgets" autocomplete="off" style="min-width:90px">
+      his water bottle, Mia will share hers. <span class="ex">(forget)</span>
     </div>
-    <div class='answer-area' id='area-c9'><span class='area-ph'>여기에 단어를 놓으세요 →</span></div>
-    <button class='check-btn' data-qid='c9' data-ans='We will study at the café if the library closes' onclick="checkArrange(this)">✔ 확인</button>
-    <div class='answer-hint' id='ah-c9'>💡 정답: <strong>We will study at the café if the library closes</strong><br>📌 구조: 주절(will study) + if절(현재시제 closes)</div>
-    <button class='hint-btn' onclick="showHint('c9')">💡 힌트 보기</button>
+    <div class="vocab"><span class="vw">forget 잊어버리다</span><span class="vw">share 나누다</span></div>
+    <button class="check-btn" onclick="checkBlank('b8')">✔ 확인</button>
+    <div class="answer-hint" id="ah-b8">💡 정답: <strong>forgets</strong> — if절 안에서 Jake(3인칭 단수) + 현재시제: forget → forgets<br>📝 해석: Jake가 물병을 잊어버리면 Mia가 자신의 것을 나눠줄 것이다.</div>
+    <button class="hint-btn" onclick="showHint('b8')">💡 힌트 보기</button>
   </div>
 
-  <div class='question-card' id='qc-c10'><span class='q-num'>10</span>
-    <div class='q-text'>📌 지금 주문하지 않으면 할인을 놓칠 것이다.</div>
-    <div class='word-pool' id='pool-c10'>
-      <button class="chip pool-chip" id="wc-c10-0" onclick="moveWord('c10',0,this)">the</button>
-      <button class="chip pool-chip" id="wc-c10-1" onclick="moveWord('c10',1,this)">miss</button>
-      <button class="chip pool-chip" id="wc-c10-2" onclick="moveWord('c10',2,this)">discount</button>
-      <button class="chip pool-chip" id="wc-c10-3" onclick="moveWord('c10',3,this)">order</button>
-      <button class="chip pool-chip" id="wc-c10-4" onclick="moveWord('c10',4,this)">if</button>
-      <button class="chip pool-chip" id="wc-c10-5" onclick="moveWord('c10',5,this)">You</button>
-      <button class="chip pool-chip" id="wc-c10-6" onclick="moveWord('c10',6,this)">don't</button>
-      <button class="chip pool-chip" id="wc-c10-7" onclick="moveWord('c10',7,this)">now</button>
-      <button class="chip pool-chip" id="wc-c10-8" onclick="moveWord('c10',8,this)">will</button>
-      <button class="chip pool-chip" id="wc-c10-9" onclick="moveWord('c10',9,this)">you</button>
+  <div class="question-card" id="qc-b9"><span class="q-num">24</span><span class="q-type ctx">지문 · 9번</span>
+    <div class="q-text">They will take a break if they
+      <input class="blank" id="bi-b9" placeholder="___" data-ans="get" autocomplete="off" style="min-width:70px">
+      tired. <span class="ex">(get)</span>
     </div>
-    <div class='answer-area' id='area-c10'><span class='area-ph'>여기에 단어를 놓으세요 →</span></div>
-    <button class='check-btn' data-qid='c10' data-ans="You will miss the discount if you don't order now" onclick="checkArrange(this)">✔ 확인</button>
-    <div class='answer-hint' id='ah-c10'>💡 정답: <strong>You will miss the discount if you don't order now</strong><br>📌 구조: 주절(will miss) + if절(현재시제 don't order)</div>
-    <button class='hint-btn' onclick="showHint('c10')">💡 힌트 보기</button>
+    <div class="vocab"><span class="vw">take a break 휴식을 취하다</span><span class="vw">tired 피곤한</span></div>
+    <button class="check-btn" onclick="checkBlank('b9')">✔ 확인</button>
+    <div class="answer-hint" id="ah-b9">💡 정답: <strong>get</strong> — if절 안에서 they(복수) + 현재시제: get (3인칭 단수 s 없음 주의)<br>📝 해석: 피곤해지면 그들은 휴식을 취할 것이다.</div>
+    <button class="hint-btn" onclick="showHint('b9')">💡 힌트 보기</button>
+  </div>
+
+  <div class="question-card" id="qc-b10"><span class="q-num">25</span><span class="q-type ctx">지문 · 10번</span>
+    <div class="q-text">But if it
+      <input class="blank" id="bi-b10" placeholder="___" data-ans="rains" autocomplete="off" style="min-width:80px">
+      in the afternoon, they will go to an indoor café. <span class="ex">(rain)</span>
+    </div>
+    <div class="vocab"><span class="vw">indoor 실내</span><span class="vw">instead 대신</span></div>
+    <button class="check-btn" onclick="checkBlank('b10')">✔ 확인</button>
+    <div class="answer-hint" id="ah-b10">💡 정답: <strong>rains</strong> — if절 안에서 it(단수) + 현재시제: rain → rains<br>📝 해석: 오후에 비가 오면 그들은 대신 실내 카페에 갈 것이다.</div>
+    <button class="hint-btn" onclick="showHint('b10')">💡 힌트 보기</button>
   </div>
 </div>
 
@@ -522,18 +502,17 @@ body{font-family:'Baloo 2','Noto Sans KR',sans-serif;background:var(--bg);paddin
 </div>
 
 <script>
-var TOTAL=25,SECTOTALS={a:8,b:7,c:10},secC={a:0,b:0,c:0},secW={a:0,b:0,c:0};
-var placed={"c1":[],"c2":[],"c3":[],"c4":[],"c5":[],"c6":[],"c7":[],"c8":[],"c9":[],"c10":[]},answered={},correct=0,wrong=0;
+var TOTAL=25,SECTOTALS={a:15,b:10},secC={a:0,b:0},secW={a:0,b:0};
+var answered={},correct=0,wrong=0;
 
 function norm(s){
   s=s.trim().toLowerCase().replace(/\s+/g,' ');
-  s=s.replace(/[.!?]$/,'');
+  s=s.replace(/,$/,'');
   s=s.replace(/isn't/g,'is not').replace(/aren't/g,'are not')
      .replace(/wasn't/g,'was not').replace(/weren't/g,'were not')
      .replace(/don't/g,'do not').replace(/doesn't/g,'does not')
      .replace(/didn't/g,'did not').replace(/won't/g,'will not')
-     .replace(/shouldn't/g,'should not').replace(/can't/g,'cannot')
-     .replace(/haven't/g,'have not').replace(/hasn't/g,'has not');
+     .replace(/shouldn't/g,'should not').replace(/can't/g,'cannot');
   return s;
 }
 
@@ -542,8 +521,23 @@ function sw(i,btn){
   document.querySelectorAll('.tab').forEach(function(b){b.classList.remove('active');});
   document.getElementById('s'+i).classList.add('show');
   btn.classList.add('active');
+  window.scrollTo({top:0,behavior:'smooth'});
 }
 function showHint(k){document.getElementById('ah-'+k).classList.add('show');}
+
+function pickChoice(btn){
+  var div=btn.parentElement;
+  var ans=div.dataset.ans;
+  var k=div.dataset.qid;
+  var card=document.getElementById('qc-'+k);
+  if(card.classList.contains('ok')||card.classList.contains('ng'))return;
+  var btns=div.querySelectorAll('.choice');
+  btns.forEach(function(b){b.disabled=true;});
+  var got=norm(btn.textContent.trim())===norm(ans);
+  btn.classList.add(got?'ok':'ng');
+  if(!got)btns.forEach(function(b){if(norm(b.textContent.trim())===norm(ans))b.classList.add('reveal');});
+  mark(k,got,btn.textContent.trim(),ans);
+}
 
 function checkBlank(k){
   var inp=document.getElementById('bi-'+k);
@@ -551,55 +545,16 @@ function checkBlank(k){
   if(card.classList.contains('ok')||card.classList.contains('ng'))return;
   if(!inp.value.trim()){toast('답을 입력하세요!','ng');inp.focus();return;}
   inp.disabled=true;
-  var cb=card.querySelector('.check-btn');if(cb)cb.disabled=true;
+  card.querySelector('.check-btn').disabled=true;
   var got=norm(inp.value)===norm(inp.dataset.ans);
   if(!got&&inp.dataset.ans2)got=norm(inp.value)===norm(inp.dataset.ans2);
   inp.classList.add(got?'ok':'ng');
   mark(k,got,inp.value.trim(),inp.dataset.ans);
 }
-
 document.addEventListener('keydown',function(e){
   if(e.key==='Enter'&&e.target.classList.contains('blank'))
     checkBlank(e.target.id.replace('bi-',''));
 });
-
-function moveWord(k,i,btn){
-  if(btn.style.visibility==='hidden'||btn.disabled)return;
-  btn.style.visibility='hidden';
-  placed[k].push({i:i,w:btn.textContent});
-  refreshArea(k);
-}
-function removeWord(k,pos){
-  var it=placed[k].splice(pos,1)[0];
-  var btn=document.getElementById('wc-'+k+'-'+it.i);
-  if(btn)btn.style.visibility='visible';
-  refreshArea(k);
-}
-function refreshArea(k){
-  var area=document.getElementById('area-'+k);
-  if(!placed[k].length){area.innerHTML='<span class="area-ph">여기에 단어를 놓으세요 →</span>';return;}
-  area.innerHTML='';
-  placed[k].forEach(function(it,pos){
-    var c=document.createElement('button');
-    c.className='chip ans-chip';c.textContent=it.w;
-    c.onclick=(function(p){return function(){removeWord(k,p);};})(pos);
-    area.appendChild(c);
-  });
-}
-function checkArrange(btn){
-  var k=btn.dataset.qid;
-  var ans=btn.dataset.ans;
-  var card=document.getElementById('qc-'+k);
-  if(card.classList.contains('ok')||card.classList.contains('ng'))return;
-  if(!placed[k].length){toast('단어를 배열하세요!','ng');return;}
-  var typed=placed[k].map(function(i){return i.w;}).join(' ');
-  btn.disabled=true;
-  document.querySelectorAll('#pool-'+k+' .pool-chip').forEach(function(c){c.style.visibility='hidden';c.disabled=true;});
-  var chips=document.querySelectorAll('#area-'+k+' .ans-chip');
-  var got=norm(typed)===norm(ans);
-  chips.forEach(function(c){c.classList.remove('ans-chip');c.classList.add(got?'ok-chip':'ng-chip');c.onclick=null;});
-  mark(k,got,typed,ans);
-}
 
 function mark(k,got,my,right){
   if(answered[k])return;
@@ -621,8 +576,7 @@ function mark(k,got,my,right){
     (function(p,sc){
       setTimeout(function(){
         var opts={};
-        if(p==='a') opts={nextText:'문장 완성 탭으로 →',onNextClick:function(){var ol=document.getElementById('sp-overlay');if(ol)ol.remove();sw(1,document.querySelectorAll('.tab')[1]);}};
-        else if(p==='b') opts={nextText:'단어 배열 탭으로 →',onNextClick:function(){var ol=document.getElementById('sp-overlay');if(ol)ol.remove();sw(2,document.querySelectorAll('.tab')[2]);}};
+        if(p==='a')opts={nextText:'짧은 지문 탭으로 →',onNextClick:function(){var ol=document.getElementById('sp-overlay');if(ol)ol.remove();sw(1,document.querySelectorAll('.tab')[1]);}};
         showScorePopup(sc,SECTOTALS[p],opts);
       },800);
     })(pre,secC[pre]);
@@ -653,6 +607,19 @@ function toast(msg,type){
   t.textContent=msg;t.className='show '+(type||'');
   clearTimeout(t._t);t._t=setTimeout(function(){t.classList.remove('show');},1800);
 }
+</script>
+<script>
+document.addEventListener('DOMContentLoaded',function(){
+  document.querySelectorAll('.vocab').forEach(function(v){
+    var btn=document.createElement('button');
+    btn.className='vocab-toggle';btn.textContent='📖 단어 보기 ▾';
+    btn.onclick=function(){
+      v.classList.toggle('show');
+      btn.textContent=v.classList.contains('show')?'📖 단어 닫기 ▴':'📖 단어 보기 ▾';
+    };
+    v.parentNode.insertBefore(btn,v);
+  });
+});
 </script>
 <script src="../score-popup.js"></script>
 <script src="../sounds.js"></script>

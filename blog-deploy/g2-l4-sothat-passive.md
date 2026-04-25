@@ -139,6 +139,82 @@
 
 > 💡 <span style="color:#dd6b20;">**현직쌤 팁**</span>: `is making`(능동 진행형)과 `is made`(수동태)는 완전히 달라. "The bread **is making** with …" 이런 실수 엄청 많이 나와. 수동태는 반드시 **be + p.p.** 형태!
 
+**능동 ↔ 수동, 주어와 목적어가 이렇게 바뀌어!**
+
+<p align="center">
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 680 340" width="680" style="max-width:100%;height:auto;">
+  <rect width="680" height="340" fill="#fafafa" rx="12" stroke="#e2e8f0"/>
+  <text x="340" y="26" text-anchor="middle" font-size="14" font-weight="bold" fill="#2d3748" font-family="sans-serif">능동태 ↔ 수동태 변환 원리</text>
+
+  <!-- 능동태 행 -->
+  <text x="14" y="62" font-size="11" font-weight="bold" fill="#dd6b20" font-family="sans-serif">능동태</text>
+  <!-- 주어/행위자 박스 -->
+  <rect x="60" y="44" width="140" height="44" rx="8" fill="#fef5e7" stroke="#dd6b20" stroke-width="2"/>
+  <text x="130" y="62" text-anchor="middle" font-size="10" fill="#c05621" font-family="sans-serif" font-weight="bold">주어 (행위자)</text>
+  <text x="130" y="79" text-anchor="middle" font-size="12" fill="#744210" font-family="sans-serif" font-weight="bold">Jake</text>
+  <!-- 동사 박스 -->
+  <rect x="220" y="44" width="120" height="44" rx="8" fill="#ebf8ff" stroke="#3182ce" stroke-width="2"/>
+  <text x="280" y="62" text-anchor="middle" font-size="10" fill="#2b6cb0" font-family="sans-serif" font-weight="bold">동사</text>
+  <text x="280" y="79" text-anchor="middle" font-size="12" fill="#2b6cb0" font-family="sans-serif" font-weight="bold">broke</text>
+  <!-- 목적어/대상 박스 -->
+  <rect x="360" y="44" width="160" height="44" rx="8" fill="#f0fff4" stroke="#38a169" stroke-width="2"/>
+  <text x="440" y="62" text-anchor="middle" font-size="10" fill="#276749" font-family="sans-serif" font-weight="bold">목적어 (대상)</text>
+  <text x="440" y="79" text-anchor="middle" font-size="12" fill="#276749" font-family="sans-serif" font-weight="bold">the window</text>
+
+  <!-- 능동→수동 아래 화살표 (행위자 → by+행위자) -->
+  <path d="M130,90 Q130,120 130,155" stroke="#dd6b20" stroke-width="2" fill="none" stroke-dasharray="5,3" marker-end="url(#ora)"/>
+  <!-- 동사 변환 화살표 -->
+  <path d="M280,90 L280,155" stroke="#3182ce" stroke-width="2" fill="none" marker-end="url(#bla)"/>
+  <!-- 목적어 → 주어 화살표 (대각선) -->
+  <path d="M440,90 Q440,120 310,155" stroke="#38a169" stroke-width="2.5" fill="none" marker-end="url(#gra)"/>
+
+  <!-- 변환 레이블 가운데 -->
+  <text x="340" y="130" text-anchor="middle" font-size="18" fill="#94a3b8" font-family="sans-serif">↓ 능동 → 수동</text>
+
+  <!-- 수동태 행 -->
+  <text x="14" y="202" font-size="11" font-weight="bold" fill="#3182ce" font-family="sans-serif">수동태</text>
+  <!-- 주어/대상 박스 -->
+  <rect x="60" y="164" width="160" height="44" rx="8" fill="#f0fff4" stroke="#38a169" stroke-width="2"/>
+  <text x="140" y="182" text-anchor="middle" font-size="10" fill="#276749" font-family="sans-serif" font-weight="bold">주어 (대상)</text>
+  <text x="140" y="199" text-anchor="middle" font-size="12" fill="#276749" font-family="sans-serif" font-weight="bold">The window</text>
+  <!-- be+p.p. 박스 -->
+  <rect x="240" y="164" width="160" height="44" rx="8" fill="#ebf8ff" stroke="#3182ce" stroke-width="2"/>
+  <text x="320" y="182" text-anchor="middle" font-size="10" fill="#2b6cb0" font-family="sans-serif" font-weight="bold">be + p.p.</text>
+  <text x="320" y="199" text-anchor="middle" font-size="12" fill="#2b6cb0" font-family="sans-serif" font-weight="bold">was broken</text>
+  <!-- by+행위자 박스 -->
+  <rect x="420" y="164" width="140" height="44" rx="8" fill="#fef5e7" stroke="#dd6b20" stroke-width="2"/>
+  <text x="490" y="182" text-anchor="middle" font-size="10" fill="#c05621" font-family="sans-serif" font-weight="bold">by + 행위자</text>
+  <text x="490" y="199" text-anchor="middle" font-size="12" fill="#744210" font-family="sans-serif" font-weight="bold">by Jake</text>
+
+  <!-- 수동→능동 아래 화살표 -->
+  <path d="M490,210 Q490,250 130,275" stroke="#dd6b20" stroke-width="2" fill="none" stroke-dasharray="5,3" marker-end="url(#ora2)"/>
+  <path d="M320,210 L280,275" stroke="#3182ce" stroke-width="2" fill="none" marker-end="url(#bla2)"/>
+  <path d="M140,210 Q140,248 440,275" stroke="#38a169" stroke-width="2.5" fill="none" marker-end="url(#gra2)"/>
+
+  <!-- 수동→능동 레이블 -->
+  <text x="340" y="248" text-anchor="middle" font-size="18" fill="#94a3b8" font-family="sans-serif">↓ 수동 → 능동</text>
+
+  <!-- 결과 라벨 -->
+  <text x="130" y="293" text-anchor="middle" font-size="10" fill="#c05621" font-family="sans-serif" font-weight="bold">주어(행위자)</text>
+  <text x="130" y="307" text-anchor="middle" font-size="11" fill="#744210" font-family="sans-serif">Jake</text>
+  <text x="280" y="293" text-anchor="middle" font-size="10" fill="#2b6cb0" font-family="sans-serif" font-weight="bold">동사(원형시제)</text>
+  <text x="280" y="307" text-anchor="middle" font-size="11" fill="#2b6cb0" font-family="sans-serif">broke</text>
+  <text x="440" y="293" text-anchor="middle" font-size="10" fill="#276749" font-family="sans-serif" font-weight="bold">목적어(대상)</text>
+  <text x="440" y="307" text-anchor="middle" font-size="11" fill="#276749" font-family="sans-serif">the window</text>
+
+  <text x="340" y="330" text-anchor="middle" font-size="10" fill="#c53030" font-family="sans-serif">⚠ 색깔이 같은 칸끼리 연결돼! 초록(대상) · 주황(행위자) · 파랑(동사) 위치만 바뀌는 거야.</text>
+
+  <defs>
+    <marker id="ora" markerWidth="7" markerHeight="7" refX="3.5" refY="3.5" orient="auto"><path d="M0,0 L7,3.5 L0,7 Z" fill="#dd6b20"/></marker>
+    <marker id="bla" markerWidth="7" markerHeight="7" refX="3.5" refY="3.5" orient="auto"><path d="M0,0 L7,3.5 L0,7 Z" fill="#3182ce"/></marker>
+    <marker id="gra" markerWidth="7" markerHeight="7" refX="3.5" refY="3.5" orient="auto"><path d="M0,0 L7,3.5 L0,7 Z" fill="#38a169"/></marker>
+    <marker id="ora2" markerWidth="7" markerHeight="7" refX="3.5" refY="3.5" orient="auto"><path d="M0,0 L7,3.5 L0,7 Z" fill="#dd6b20"/></marker>
+    <marker id="bla2" markerWidth="7" markerHeight="7" refX="3.5" refY="3.5" orient="auto"><path d="M0,0 L7,3.5 L0,7 Z" fill="#3182ce"/></marker>
+    <marker id="gra2" markerWidth="7" markerHeight="7" refX="3.5" refY="3.5" orient="auto"><path d="M0,0 L7,3.5 L0,7 Z" fill="#38a169"/></marker>
+  </defs>
+</svg>
+</p>
+
 <p align="center"><img src="https://raw.githubusercontent.com/namkicheol/middle-grammar/main/blog-images/2026-04-25/img2-sothat-passive.png" width="600" alt="so that 수동태 문법 구조 설명"></p>
 
 ---

@@ -1,0 +1,610 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>중2 L4 심화 · so ~ that &amp; 수동태</title>
+<link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@400;600;700;800;900&family=Noto+Sans+KR:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --navy:#1e2a4a;--navy-d:#111827;--navy-m:#2d3d6b;
+  --gold:#f59e0b;--gold-l:#fffbeb;--gold-d:#d97706;
+  --green:#22c55e;--red:#ef4444;
+  --bg:#f0f2f8;--white:#fff;--gray:#94a3b8;
+}
+*{margin:0;padding:0;box-sizing:border-box;}
+body{font-family:'Baloo 2','Noto Sans KR',sans-serif;background:var(--bg);padding-bottom:60px;}
+
+.header{
+  background:linear-gradient(135deg,var(--navy-d) 0%,var(--navy) 55%,var(--navy-m) 100%);
+  padding:44px 20px 54px;text-align:center;position:relative;overflow:hidden;
+}
+.header::before{
+  content:'';position:absolute;inset:0;
+  background-image:radial-gradient(rgba(245,158,11,.07) 1px,transparent 1px);
+  background-size:22px 22px;pointer-events:none;
+}
+.header::after{
+  content:'';position:absolute;bottom:-1px;left:50%;
+  transform:translateX(-50%);width:140%;height:48px;
+  background:var(--bg);border-radius:50% 50% 0 0;
+}
+.h-letter{
+  position:absolute;font-family:'Baloo 2',sans-serif;font-weight:900;
+  color:rgba(245,158,11,.14);pointer-events:none;user-select:none;
+  line-height:1;letter-spacing:-2px;
+}
+.h-letter.l-a{font-size:118px;top:-14px;left:4%;animation:floatL 9s ease-in-out infinite;}
+.h-letter.l-b{font-size:76px;top:22px;right:7%;animation:floatL 11s ease-in-out infinite reverse;}
+.h-letter.l-c{font-size:94px;bottom:8px;left:12%;animation:floatL 7s ease-in-out infinite;}
+.h-letter.l-d{font-size:62px;bottom:32px;right:16%;animation:floatL 13s ease-in-out infinite reverse;}
+@keyframes floatL{
+  0%,100%{transform:translateY(0) rotate(0deg);}
+  40%{transform:translateY(-12px) rotate(5deg);}
+  70%{transform:translateY(7px) rotate(-3deg);}
+}
+.h-orb{position:absolute;border-radius:50%;pointer-events:none;filter:blur(50px);}
+.h-orb.o1{width:220px;height:220px;background:radial-gradient(circle,rgba(245,158,11,.35) 0%,transparent 70%);top:-60px;right:-40px;}
+.h-orb.o2{width:180px;height:180px;background:radial-gradient(circle,rgba(99,102,241,.28) 0%,transparent 70%);bottom:-40px;left:-30px;}
+.header-inner{position:relative;z-index:2;}
+.hbadge{display:inline-flex;align-items:center;gap:8px;background:rgba(245,158,11,.2);color:var(--gold);font-size:11.5px;font-weight:700;letter-spacing:2.2px;padding:6px 18px;border-radius:20px;margin-bottom:12px;border:1px solid rgba(245,158,11,.3);text-transform:uppercase;}
+.hbadge-dot{width:6px;height:6px;background:var(--gold);border-radius:50%;box-shadow:0 0 8px var(--gold);animation:pulse 2s ease-in-out infinite;}
+@keyframes pulse{0%,100%{opacity:1;transform:scale(1);}50%{opacity:.6;transform:scale(1.3);}}
+.header h1{color:#fff;font-size:2rem;font-weight:900;margin-bottom:6px;letter-spacing:-.5px;}
+.header h1 em{color:var(--gold);font-style:normal;filter:drop-shadow(0 0 12px rgba(245,158,11,.5));}
+.header p{color:rgba(255,255,255,.72);font-size:.88rem;line-height:1.6;}
+
+.scoreboard{display:flex;justify-content:center;gap:12px;margin:-20px 20px 20px;position:relative;z-index:10;}
+.sc{background:var(--white);border-radius:16px;padding:12px 20px;text-align:center;box-shadow:0 4px 20px rgba(0,0,0,.1);flex:1;max-width:110px;}
+.sc .n{font-size:1.8rem;font-weight:800;line-height:1;}.sc .l{font-size:.68rem;color:var(--gray);font-weight:600;margin-top:2px;}
+.sc.t .n{color:var(--navy);}.sc.c .n{color:var(--green);}.sc.w .n{color:var(--red);}
+.pw{padding:0 20px;margin-bottom:18px;}
+.plabel{display:flex;justify-content:space-between;font-size:.78rem;font-weight:700;color:var(--gray);margin-bottom:6px;}
+.pbg{background:#e2e8f0;border-radius:99px;height:8px;overflow:hidden;}
+.pfill{height:100%;border-radius:99px;background:linear-gradient(90deg,var(--gold-d),var(--gold));transition:width .4s;}
+.tabs{display:flex;gap:8px;padding:0 20px;margin-bottom:18px;overflow-x:auto;scrollbar-width:none;}
+.tabs::-webkit-scrollbar{display:none;}
+.tab{flex-shrink:0;padding:8px 18px;border-radius:20px;border:2px solid #e2e8f0;background:var(--white);color:var(--gray);font-family:inherit;font-weight:700;font-size:.82rem;cursor:pointer;transition:all .2s;}
+.tab.active{background:var(--gold);border-color:var(--gold-d);color:var(--navy-d);box-shadow:0 4px 12px rgba(245,158,11,.4);}
+.sec{display:none;padding:0 20px;}.sec.show{display:block;}
+.sec-hdr{background:var(--white);border-radius:18px;padding:16px 20px;margin-bottom:14px;border-left:5px solid var(--gold);box-shadow:0 2px 12px rgba(0,0,0,.06);}
+.sec-hdr .lbl{font-size:.78rem;font-weight:700;color:var(--gold-d);letter-spacing:1px;text-transform:uppercase;margin-bottom:5px;}
+.sec-hdr h2{font-size:1.18rem;font-weight:800;color:var(--navy);margin-bottom:5px;}
+.sec-hdr .desc{font-size:.95rem;color:#5a6b8a;font-weight:500;line-height:1.55;}
+
+.passage{background:linear-gradient(180deg,#f8faff 0%,#f0f4fb 100%);border-radius:16px;padding:18px 20px;margin-bottom:14px;font-size:1.02rem;color:#2d3d6b;line-height:1.9;border-left:4px solid var(--navy-m);box-shadow:0 2px 8px rgba(0,0,0,.04);}
+.passage .ptitle{font-size:.78rem;font-weight:800;color:var(--gold-d);letter-spacing:1.5px;text-transform:uppercase;margin-bottom:10px;}
+.passage .num{display:inline-block;width:22px;height:22px;background:var(--gold);color:var(--navy-d);border-radius:50%;font-size:.7rem;font-weight:800;text-align:center;line-height:22px;margin:0 2px;}
+
+.question-card{background:var(--white);border-radius:18px;padding:18px 20px;margin-bottom:12px;box-shadow:0 2px 12px rgba(0,0,0,.06);position:relative;overflow:hidden;}
+.question-card::before{content:'';position:absolute;top:0;left:0;width:4px;height:100%;background:#e2e8f0;transition:background .3s;}
+.question-card.ok::before{background:var(--green);}.question-card.ng::before{background:var(--red);}
+.q-num{display:inline-flex;align-items:center;justify-content:center;width:28px;height:28px;background:var(--gold-l);color:var(--gold-d);border-radius:8px;font-size:.82rem;font-weight:800;margin-bottom:8px;}
+.q-type{display:inline-block;margin-left:6px;font-size:.68rem;font-weight:700;background:#eef2ff;color:#4338ca;padding:3px 9px;border-radius:10px;letter-spacing:.5px;vertical-align:middle;}
+.q-type.fix{background:#fee2e2;color:#b91c1c;}
+.q-type.trans{background:#dcfce7;color:#15803d;}
+.q-type.kor{background:#fef3c7;color:#92400e;}
+.q-type.ctx{background:#e0e7ff;color:#4338ca;}
+.q-text{font-size:1rem;font-weight:600;color:var(--navy);margin-bottom:10px;line-height:1.75;}
+.q-text em{font-style:normal;color:var(--gold-d);font-weight:800;border-bottom:2px dotted var(--gold);}
+.q-text .wrong{color:var(--red);text-decoration:underline;text-decoration-style:wavy;font-weight:800;}
+.q-text .orig{color:#4a5a7a;font-size:.9em;}
+.q-text .kor-hint{display:block;background:#fef9c3;border-left:3px solid var(--gold);padding:6px 10px;border-radius:0 8px 8px 0;margin-bottom:8px;color:#854d0e;font-size:.9rem;font-weight:700;}
+.q-sub{font-size:.85rem;color:#64748b;font-weight:500;margin-bottom:10px;padding:6px 10px;background:#f8fafc;border-radius:8px;border-left:3px solid #cbd5e1;}
+
+.vocab{display:none;flex-wrap:wrap;gap:5px;margin-bottom:10px;}
+.vocab.show{display:flex;}
+.vw{font-size:.74rem;background:var(--gold-l);color:#92400e;border-radius:6px;padding:2px 8px;font-weight:600;}
+.vocab-toggle{background:none;border:1.5px solid var(--gold-d);color:var(--gold-d);border-radius:8px;padding:3px 10px;font-family:inherit;font-size:.72rem;font-weight:700;cursor:pointer;margin-bottom:6px;transition:all .15s;display:block;}
+.vocab-toggle:hover{background:var(--gold-l);}
+
+.blank{border:none;border-bottom:2.5px solid var(--gold-d);background:transparent;font-family:inherit;font-size:1rem;font-weight:700;color:var(--navy);padding:2px 8px;min-width:100px;text-align:center;outline:none;transition:.2s;display:inline-block;}
+.blank:focus{border-color:var(--navy);}.blank.ok{border-color:var(--green);color:var(--green);background:#f0fdf4;border-radius:6px;}.blank.ng{border-color:var(--red);color:var(--red);background:#fef2f2;border-radius:6px;}
+.ex{font-size:.75rem;color:var(--gray);}
+.choices{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:4px;}
+.choice{padding:10px 12px;border-radius:12px;border:2px solid #e2e8f0;background:var(--bg);color:var(--navy);font-family:inherit;font-weight:600;font-size:.9rem;cursor:pointer;transition:all .15s;text-align:left;}
+.choice:hover:not(:disabled){border-color:var(--gold);background:var(--gold-l);transform:translateY(-1px);}
+.choice.ok{background:#f0fdf4;border-color:var(--green);color:var(--green);}.choice.ng{background:#fef2f2;border-color:var(--red);color:var(--red);}.choice.reveal{background:#f0fdf4;border-color:var(--green);color:var(--green);}
+.answer-hint{display:none;margin-top:8px;padding:8px 14px;background:#fef9c3;border-radius:10px;font-size:.82rem;font-weight:600;color:#854d0e;}
+.answer-hint.show{display:block;}
+.check-btn{display:block;width:100%;margin-top:12px;padding:11px;border-radius:12px;border:none;background:var(--navy);color:#fff;font-family:inherit;font-weight:800;font-size:.92rem;cursor:pointer;transition:all .15s;}
+.check-btn:hover{filter:brightness(1.1);transform:translateY(-1px);}.check-btn:disabled{background:#e2e8f0;color:var(--gray);cursor:default;transform:none;}
+.hint-btn{background:none;border:none;color:var(--gray);font-family:inherit;font-size:.75rem;font-weight:600;cursor:pointer;padding:4px 0;margin-top:4px;display:block;}
+.hint-btn:hover{color:var(--gold-d);}
+.done-badge{position:absolute;top:12px;right:14px;font-size:1.2rem;animation:pop .3s ease;}
+
+#result{display:none;padding:0 20px;animation:fadein .4s;}
+.rc{background:linear-gradient(135deg,var(--navy-d),var(--navy-m));border-radius:24px;padding:28px 20px;text-align:center;color:#fff;margin-bottom:16px;}
+.rc .emoji{font-size:4rem;margin-bottom:8px;}.rc .title{font-size:1.5rem;font-weight:800;margin-bottom:4px;}
+.rc .score{font-size:3rem;font-weight:800;color:var(--gold);margin-bottom:4px;}.rc .sub{font-size:.85rem;opacity:.85;margin-bottom:16px;}
+.rg{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:16px;}
+.rs{background:rgba(255,255,255,.15);border-radius:14px;padding:12px;}.rs .n{font-size:1.8rem;font-weight:800;}.rs .l{font-size:.68rem;opacity:.85;}
+.rev{background:var(--white);border-radius:18px;padding:16px 18px;box-shadow:0 2px 12px rgba(0,0,0,.06);margin-bottom:14px;}
+.rev h3{font-size:.95rem;font-weight:800;color:var(--red);margin-bottom:12px;}
+.ri{padding:9px 12px;border-radius:10px;background:#fef2f2;margin-bottom:7px;font-size:.83rem;line-height:1.6;}
+.ri .ma{color:var(--red);font-weight:700;text-decoration:line-through;}.ri .ca{color:var(--green);font-weight:700;}
+.rb{display:block;width:100%;padding:14px;border-radius:16px;border:none;background:var(--gold);color:var(--navy-d);font-family:inherit;font-weight:800;font-size:1rem;cursor:pointer;box-shadow:0 4px 14px rgba(245,158,11,.4);}
+#toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%) translateY(80px);background:var(--navy-d);color:#fff;padding:10px 22px;border-radius:20px;font-weight:700;font-size:.88rem;transition:transform .3s;z-index:999;pointer-events:none;white-space:nowrap;}
+#toast.show{transform:translateX(-50%) translateY(0);}#toast.ok{background:var(--green);}#toast.ng{background:var(--red);}
+@keyframes fadein{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}
+@keyframes pop{0%{transform:scale(.8)}70%{transform:scale(1.1)}100%{transform:scale(1)}}
+@media(max-width:480px){.header h1{font-size:1.7rem;}.h-letter.l-a{font-size:90px;}.h-letter.l-b{font-size:60px;}.h-letter.l-c{font-size:70px;}.h-letter.l-d{font-size:52px;}}
+</style>
+</head>
+<body>
+<div id="toast"></div>
+
+<div class="header">
+  <div class="h-orb o1"></div>
+  <div class="h-orb o2"></div>
+  <div class="h-letter l-a">S</div>
+  <div class="h-letter l-b">P</div>
+  <div class="h-letter l-c">T</div>
+  <div class="h-letter l-d">V</div>
+  <div class="header-inner">
+    <div class="hbadge"><span class="hbadge-dot"></span>중2 L4 · Advanced</div>
+    <h1>so ~ that &amp; <em>수동태</em> 심화</h1>
+    <p>문맥 파악 · 오류 수정 · 문장 전환 · 짧은 지문 · 총 25문제</p>
+  </div>
+</div>
+
+<div class="scoreboard">
+  <div class="sc t"><div class="n" id="sc-t">0</div><div class="l">완료</div></div>
+  <div class="sc c"><div class="n" id="sc-c">0</div><div class="l">✅ 정답</div></div>
+  <div class="sc w"><div class="n" id="sc-w">0</div><div class="l">❌ 오답</div></div>
+</div>
+<div class="pw">
+  <div class="plabel"><span>진행률</span><span id="pt">0 / 25</span></div>
+  <div class="pbg"><div class="pfill" id="pf" style="width:0%"></div></div>
+</div>
+<div class="tabs">
+  <button class="tab active" onclick="sw(0,this)">⚡ 종합 훈련 (15문제)</button>
+  <button class="tab" onclick="sw(1,this)">📖 짧은 지문 (10문제)</button>
+</div>
+
+<!-- ═══ Section A : 종합 훈련 15문제
+     a1–a4  : 문맥 파악 MCQ
+     a5–a8  : 오류 수정
+     a9–a11 : 문장 전환
+     a12–a15: 우리말 영작 ═══ -->
+<div class="sec show" id="s0">
+  <div class="sec-hdr">
+    <div class="lbl">Part 1 · 15문제</div>
+    <h2>종합 문법 훈련</h2>
+    <div class="desc">문맥 파악 · 오류 수정 · 문장 전환 · 우리말 영작</div>
+  </div>
+
+  <!-- 문맥 파악 (a1-a4) -->
+  <div class="question-card" id="qc-a1"><span class="q-num">1</span><span class="q-type ctx">문맥 파악</span>
+    <div class="q-text">Jake's room was <em>___</em> messy that his mom refused to enter.</div>
+    <div class="vocab"><span class="vw">messy 지저분한</span><span class="vw">refuse 거부하다</span></div>
+    <div class="choices" data-qid="a1" data-ans="so">
+      <button class="choice" onclick="pickChoice(this)">so</button>
+      <button class="choice" onclick="pickChoice(this)">very</button>
+      <button class="choice" onclick="pickChoice(this)">too</button>
+      <button class="choice" onclick="pickChoice(this)">quite</button>
+    </div>
+    <div class="answer-hint" id="ah-a1">💡 정답: <strong>so</strong> — so ~ that 구문: so + 형용사(messy) + that + 결과절. very/too/quite는 that절을 이끌지 않아요.<br>📝 해석: Jake의 방은 너무 지저분해서 그의 엄마가 들어가길 거부했다.</div>
+    <button class="hint-btn" onclick="showHint('a1')">💡 힌트 보기</button>
+  </div>
+
+  <div class="question-card" id="qc-a2"><span class="q-num">2</span><span class="q-type ctx">문맥 파악</span>
+    <div class="q-text">The windows <em>___</em> cleaned by the maintenance team last Saturday.</div>
+    <div class="vocab"><span class="vw">maintenance team 관리팀</span></div>
+    <div class="choices" data-qid="a2" data-ans="were">
+      <button class="choice" onclick="pickChoice(this)">is</button>
+      <button class="choice" onclick="pickChoice(this)">was</button>
+      <button class="choice" onclick="pickChoice(this)">are</button>
+      <button class="choice" onclick="pickChoice(this)">were</button>
+    </div>
+    <div class="answer-hint" id="ah-a2">💡 정답: <strong>were</strong> — 주어(The windows)가 복수이고 과거(last Saturday) → were + p.p.(cleaned).<br>📝 해석: 창문들이 지난 토요일 관리팀에 의해 청소되었다.</div>
+    <button class="hint-btn" onclick="showHint('a2')">💡 힌트 보기</button>
+  </div>
+
+  <div class="question-card" id="qc-a3"><span class="q-num">3</span><span class="q-type ctx">문맥 파악</span>
+    <div class="q-text">Yuna's speech was so well-prepared <em>___</em> her teacher gave her extra credit.</div>
+    <div class="vocab"><span class="vw">well-prepared 잘 준비된</span><span class="vw">extra credit 추가 점수</span></div>
+    <div class="choices" data-qid="a3" data-ans="that">
+      <button class="choice" onclick="pickChoice(this)">when</button>
+      <button class="choice" onclick="pickChoice(this)">because</button>
+      <button class="choice" onclick="pickChoice(this)">which</button>
+      <button class="choice" onclick="pickChoice(this)">that</button>
+    </div>
+    <div class="answer-hint" id="ah-a3">💡 정답: <strong>that</strong> — so well-prepared + that + 결과절. "너무 잘 준비되어서 ~". that이 결과절을 이끕니다.<br>📝 해석: Yuna의 발표는 너무 잘 준비되어서 선생님이 그녀에게 추가 점수를 주었다.</div>
+    <button class="hint-btn" onclick="showHint('a3')">💡 힌트 보기</button>
+  </div>
+
+  <div class="question-card" id="qc-a4"><span class="q-num">4</span><span class="q-type ctx">문맥 파악</span>
+    <div class="q-text">This special award <em>___</em> given to only one student each year.</div>
+    <div class="vocab"><span class="vw">award 상</span><span class="vw">each year 매년</span></div>
+    <div class="choices" data-qid="a4" data-ans="is given">
+      <button class="choice" onclick="pickChoice(this)">gave</button>
+      <button class="choice" onclick="pickChoice(this)">are given</button>
+      <button class="choice" onclick="pickChoice(this)">were given</button>
+      <button class="choice" onclick="pickChoice(this)">is given</button>
+    </div>
+    <div class="answer-hint" id="ah-a4">💡 정답: <strong>is given</strong> — 주어(This special award)가 단수이고 현재 습관(each year) → is + p.p.(given).<br>📝 해석: 이 특별상은 매년 한 명의 학생에게만 주어진다.</div>
+    <button class="hint-btn" onclick="showHint('a4')">💡 힌트 보기</button>
+  </div>
+
+  <!-- 오류 수정 (a5-a8) -->
+  <div class="question-card" id="qc-a5"><span class="q-num">5</span><span class="q-type fix">오류 수정</span>
+    <div class="q-sub">밑줄 친 부분을 바르게 고쳐 빈칸에 쓰세요.</div>
+    <div class="q-text">The parcel <span class="wrong">send</span> by the post office yesterday.<br>→ <input class="blank" id="bi-a5" placeholder="___" data-ans="was sent" autocomplete="off" style="min-width:110px"></div>
+    <button class="check-btn" onclick="checkBlank('a5')">✔ 확인</button>
+    <div class="answer-hint" id="ah-a5">💡 정답: <strong>was sent</strong> — 주어(The parcel)가 발송된 것이므로 수동태. 과거 → was + p.p.(sent). send의 과거분사는 sent.<br>📝 해석: 소포가 어제 우체국에 의해 발송되었다.</div>
+    <button class="hint-btn" onclick="showHint('a5')">💡 힌트 보기</button>
+  </div>
+
+  <div class="question-card" id="qc-a6"><span class="q-num">6</span><span class="q-type fix">오류 수정</span>
+    <div class="q-sub">밑줄 친 부분을 바르게 고쳐 빈칸에 쓰세요.</div>
+    <div class="q-text">The bread <span class="wrong">is making</span> with fresh ingredients.<br>→ <input class="blank" id="bi-a6" placeholder="___" data-ans="is made" autocomplete="off" style="min-width:90px"></div>
+    <button class="check-btn" onclick="checkBlank('a6')">✔ 확인</button>
+    <div class="answer-hint" id="ah-a6">💡 정답: <strong>is made</strong> — 수동태는 be + p.p. 형태. is making(능동 진행형) → is made(수동 현재).<br>📝 해석: 그 빵은 신선한 재료로 만들어진다.</div>
+    <button class="hint-btn" onclick="showHint('a6')">💡 힌트 보기</button>
+  </div>
+
+  <div class="question-card" id="qc-a7"><span class="q-num">7</span><span class="q-type fix">오류 수정</span>
+    <div class="q-sub">밑줄 친 부분을 바르게 고쳐 빈칸에 쓰세요.</div>
+    <div class="q-text">Jake spoke so fast <span class="wrong">which</span> nobody could understand him.<br>→ <input class="blank" id="bi-a7" placeholder="___" data-ans="that" autocomplete="off" style="min-width:70px"></div>
+    <button class="check-btn" onclick="checkBlank('a7')">✔ 확인</button>
+    <div class="answer-hint" id="ah-a7">💡 정답: <strong>that</strong> — so ~ that 구문에서 결과절을 이끄는 접속사는 that. which는 관계대명사이므로 여기에 쓸 수 없어요.<br>📝 해석: Jake는 너무 빠르게 말해서 아무도 그를 이해할 수 없었다.</div>
+    <button class="hint-btn" onclick="showHint('a7')">💡 힌트 보기</button>
+  </div>
+
+  <div class="question-card" id="qc-a8"><span class="q-num">8</span><span class="q-type fix">오류 수정</span>
+    <div class="q-sub">밑줄 친 부분을 바르게 고쳐 빈칸에 쓰세요.</div>
+    <div class="q-text">The cakes <span class="wrong">was baked</span> by Mia and her sister last Sunday.<br>→ <input class="blank" id="bi-a8" placeholder="___" data-ans="were baked" autocomplete="off" style="min-width:120px"></div>
+    <button class="check-btn" onclick="checkBlank('a8')">✔ 확인</button>
+    <div class="answer-hint" id="ah-a8">💡 정답: <strong>were baked</strong> — 주어(The cakes)가 복수이므로 was → were. 과거 수동태: were + p.p.(baked).<br>📝 해석: 케이크들은 지난 일요일 Mia와 그녀의 언니에 의해 구워졌다.</div>
+    <button class="hint-btn" onclick="showHint('a8')">💡 힌트 보기</button>
+  </div>
+
+  <!-- 문장 전환 (a9-a11) -->
+  <div class="question-card" id="qc-a9"><span class="q-num">9</span><span class="q-type trans">문장 전환</span>
+    <div class="q-sub">능동태 문장을 수동태로 바꿔 빈칸을 채우세요.</div>
+    <div class="q-text">
+      <span class="orig">Jake's team scored three goals.</span><br>
+      → Three goals <input class="blank" id="bi-a9" placeholder="___" data-ans="were scored" autocomplete="off" style="min-width:130px"> by Jake's team.
+    </div>
+    <button class="check-btn" onclick="checkBlank('a9')">✔ 확인</button>
+    <div class="answer-hint" id="ah-a9">💡 정답: <strong>were scored</strong> — 목적어(three goals)를 주어로. 복수 + 과거 → were + p.p.(scored).<br>📝 해석: Jake의 팀이 세 골을 득점했다. → 세 골이 Jake의 팀에 의해 득점되었다.</div>
+    <button class="hint-btn" onclick="showHint('a9')">💡 힌트 보기</button>
+  </div>
+
+  <div class="question-card" id="qc-a10"><span class="q-num">10</span><span class="q-type trans">문장 전환</span>
+    <div class="q-sub">두 문장을 so ~ that을 이용하여 한 문장으로 연결하세요.</div>
+    <div class="q-text">
+      <span class="orig">The traffic was very heavy. We arrived late.</span><br>
+      → The traffic was <input class="blank" id="bi-a10" placeholder="so ___ that" data-ans="so heavy that" autocomplete="off" style="min-width:145px"> we arrived late.
+    </div>
+    <button class="check-btn" onclick="checkBlank('a10')">✔ 확인</button>
+    <div class="answer-hint" id="ah-a10">💡 정답: <strong>so heavy that</strong> — very heavy → so heavy that + 결과절. "너무 심해서 우리는 늦게 도착했다."<br>📝 해석: 교통이 너무 심해서 우리는 늦게 도착했다.</div>
+    <button class="hint-btn" onclick="showHint('a10')">💡 힌트 보기</button>
+  </div>
+
+  <div class="question-card" id="qc-a11"><span class="q-num">11</span><span class="q-type trans">문장 전환</span>
+    <div class="q-sub">능동태 문장을 수동태로 바꿔 빈칸을 채우세요.</div>
+    <div class="q-text">
+      <span class="orig">The chef prepares a new menu every season.</span><br>
+      → A new menu <input class="blank" id="bi-a11" placeholder="___" data-ans="is prepared" autocomplete="off" style="min-width:120px"> by the chef every season.
+    </div>
+    <button class="check-btn" onclick="checkBlank('a11')">✔ 확인</button>
+    <div class="answer-hint" id="ah-a11">💡 정답: <strong>is prepared</strong> — 목적어(a new menu)를 주어로. 단수 + 현재 → is + p.p.(prepared).<br>📝 해석: 주방장이 매 시즌마다 새 메뉴를 준비한다. → 새 메뉴가 매 시즌마다 주방장에 의해 준비된다.</div>
+    <button class="hint-btn" onclick="showHint('a11')">💡 힌트 보기</button>
+  </div>
+
+  <!-- 우리말 영작 (a12-a15) -->
+  <div class="question-card" id="qc-a12"><span class="q-num">12</span><span class="q-type kor">우리말 영작</span>
+    <div class="q-text">
+      <span class="kor-hint">🇰🇷 그 박물관은 1950년에 세워졌다.</span>
+      The museum <input class="blank" id="bi-a12" placeholder="___" data-ans="was built in 1950" autocomplete="off" style="min-width:200px">. <span class="ex">(build / 1950)</span>
+    </div>
+    <button class="check-btn" onclick="checkBlank('a12')">✔ 확인</button>
+    <div class="answer-hint" id="ah-a12">💡 정답: <strong>was built in 1950</strong> — 단수 주어 + 과거 수동태: was + p.p.(built). build의 과거분사는 built.<br>📝 해석: 그 박물관은 1950년에 세워졌다.</div>
+    <button class="hint-btn" onclick="showHint('a12')">💡 힌트 보기</button>
+  </div>
+
+  <div class="question-card" id="qc-a13"><span class="q-num">13</span><span class="q-type kor">우리말 영작</span>
+    <div class="q-text">
+      <span class="kor-hint">🇰🇷 그 노래는 너무 아름다워서 모두가 눈물을 흘렸다.</span>
+      The song was <input class="blank" id="bi-a13" placeholder="so ___ that ___" data-ans="so beautiful that everyone cried" autocomplete="off" style="min-width:280px">. <span class="ex">(so ~ that / beautiful / cry)</span>
+    </div>
+    <button class="check-btn" onclick="checkBlank('a13')">✔ 확인</button>
+    <div class="answer-hint" id="ah-a13">💡 정답: <strong>so beautiful that everyone cried</strong> — so + 형용사(beautiful) + that + 결과절(everyone cried).<br>📝 해석: 그 노래는 너무 아름다워서 모두가 눈물을 흘렸다.</div>
+    <button class="hint-btn" onclick="showHint('a13')">💡 힌트 보기</button>
+  </div>
+
+  <div class="question-card" id="qc-a14"><span class="q-num">14</span><span class="q-type kor">우리말 영작</span>
+    <div class="q-text">
+      <span class="kor-hint">🇰🇷 이 학교는 Mia의 아버지에 의해 설계되었다.</span>
+      This school <input class="blank" id="bi-a14" placeholder="___" data-ans="was designed by Mia's father" autocomplete="off" style="min-width:250px">. <span class="ex">(design / Mia's father)</span>
+    </div>
+    <button class="check-btn" onclick="checkBlank('a14')">✔ 확인</button>
+    <div class="answer-hint" id="ah-a14">💡 정답: <strong>was designed by Mia's father</strong> — 단수 + 과거 수동태: was + p.p.(designed) + by + 행위자.<br>📝 해석: 이 학교는 Mia의 아버지에 의해 설계되었다.</div>
+    <button class="hint-btn" onclick="showHint('a14')">💡 힌트 보기</button>
+  </div>
+
+  <div class="question-card" id="qc-a15"><span class="q-num">15</span><span class="q-type kor">우리말 영작</span>
+    <div class="q-text">
+      <span class="kor-hint">🇰🇷 영화가 너무 길어서 우리는 다 보지 못했다.</span>
+      The movie was <input class="blank" id="bi-a15" placeholder="so ___ that ___" data-ans="so long that we couldn't finish it" data-ans2="so long that we could not finish it" autocomplete="off" style="min-width:285px">. <span class="ex">(so ~ that / long / finish)</span>
+    </div>
+    <button class="check-btn" onclick="checkBlank('a15')">✔ 확인</button>
+    <div class="answer-hint" id="ah-a15">💡 정답: <strong>so long that we couldn't finish it</strong> — so + 형용사(long) + that + 결과절(we couldn't finish it).<br>📝 해석: 영화가 너무 길어서 우리는 다 보지 못했다.</div>
+    <button class="hint-btn" onclick="showHint('a15')">💡 힌트 보기</button>
+  </div>
+</div>
+
+<!-- ═══ Section B : 짧은 지문 10문제
+     b1–b5  : Passage A — so ~ that
+     b6–b10 : Passage B — 수동태 ═══ -->
+<div class="sec" id="s1">
+  <div class="sec-hdr">
+    <div class="lbl">Part 2 · 10문제</div>
+    <h2>짧은 지문 읽고 빈칸 채우기</h2>
+    <div class="desc">지문의 흐름을 파악하고 알맞은 형태를 써넣으세요</div>
+  </div>
+
+  <!-- Passage A (b1-b5): so ~ that -->
+  <div class="passage">
+    <div class="ptitle">📖 Passage A · Jake's Market Visit</div>
+    Jake visited an outdoor market last Saturday. The vegetables were <span class="num">1</span> fresh that he bought more than he had planned. The homemade bread smelled so <span class="num">2</span> that everyone nearby was attracted to the stall. A street band played <span class="num">3</span> loudly that the whole market could hear them. Jake felt so <span class="num">4</span> that he decided to come back the next week. By the time he left, his bags were so heavy <span class="num">5</span> he had to take a taxi.
+  </div>
+
+  <div class="question-card" id="qc-b1"><span class="q-num">16</span><span class="q-type ctx">지문 · 1번</span>
+    <div class="q-text">The vegetables were
+      <input class="blank" id="bi-b1" placeholder="___" data-ans="so" autocomplete="off" style="min-width:60px">
+      fresh that he bought more than he had planned. <span class="ex">(so / very)</span>
+    </div>
+    <div class="vocab"><span class="vw">vegetable 야채</span><span class="vw">plan 계획하다</span></div>
+    <button class="check-btn" onclick="checkBlank('b1')">✔ 확인</button>
+    <div class="answer-hint" id="ah-b1">💡 정답: <strong>so</strong> — so ~ that 구문. ___ fresh that: so fresh that "너무 신선해서 ~"<br>📝 해석: 야채들이 너무 신선해서 그는 계획했던 것보다 더 많이 샀다.</div>
+    <button class="hint-btn" onclick="showHint('b1')">💡 힌트 보기</button>
+  </div>
+
+  <div class="question-card" id="qc-b2"><span class="q-num">17</span><span class="q-type ctx">지문 · 2번</span>
+    <div class="q-text">The homemade bread smelled so
+      <input class="blank" id="bi-b2" placeholder="___" data-ans="good" autocomplete="off" style="min-width:70px">
+      that everyone nearby was attracted. <span class="ex">(good / well)</span>
+    </div>
+    <div class="vocab"><span class="vw">homemade 직접 만든</span><span class="vw">attract 끌어당기다</span><span class="vw">stall 가판대</span></div>
+    <button class="check-btn" onclick="checkBlank('b2')">✔ 확인</button>
+    <div class="answer-hint" id="ah-b2">💡 정답: <strong>good</strong> — smell(감각동사) 뒤에 형용사. "냄새가 좋다" = smell good. so good that "너무 좋은 냄새가 나서 ~"<br>📝 해석: 직접 만든 빵이 너무 좋은 냄새가 나서 근처의 모든 사람들이 가판대로 끌렸다.</div>
+    <button class="hint-btn" onclick="showHint('b2')">💡 힌트 보기</button>
+  </div>
+
+  <div class="question-card" id="qc-b3"><span class="q-num">18</span><span class="q-type ctx">지문 · 3번</span>
+    <div class="q-text">A street band played
+      <input class="blank" id="bi-b3" placeholder="___" data-ans="so" autocomplete="off" style="min-width:60px">
+      loudly that the whole market could hear them. <span class="ex">(so / very)</span>
+    </div>
+    <div class="vocab"><span class="vw">street band 거리 밴드</span></div>
+    <button class="check-btn" onclick="checkBlank('b3')">✔ 확인</button>
+    <div class="answer-hint" id="ah-b3">💡 정답: <strong>so</strong> — ___ loudly that: so loudly that "너무 크게 연주해서 ~". 결과절(that절)이 있으므로 so.<br>📝 해석: 거리 밴드가 너무 크게 연주해서 시장 전체가 그들을 들을 수 있었다.</div>
+    <button class="hint-btn" onclick="showHint('b3')">💡 힌트 보기</button>
+  </div>
+
+  <div class="question-card" id="qc-b4"><span class="q-num">19</span><span class="q-type ctx">지문 · 4번</span>
+    <div class="q-text">Jake felt so
+      <input class="blank" id="bi-b4" placeholder="___" data-ans="happy" autocomplete="off" style="min-width:80px">
+      that he decided to come back the next week. <span class="ex">(happy / happily)</span>
+    </div>
+    <div class="vocab"><span class="vw">decide 결정하다</span></div>
+    <button class="check-btn" onclick="checkBlank('b4')">✔ 확인</button>
+    <div class="answer-hint" id="ah-b4">💡 정답: <strong>happy</strong> — feel(감각동사) 뒤에 형용사. so happy that "너무 행복해서 ~". happily(부사)는 feel 뒤에 쓰지 않아요.<br>📝 해석: Jake는 너무 행복해서 다음 주에 다시 오기로 결정했다.</div>
+    <button class="hint-btn" onclick="showHint('b4')">💡 힌트 보기</button>
+  </div>
+
+  <div class="question-card" id="qc-b5"><span class="q-num">20</span><span class="q-type ctx">지문 · 5번</span>
+    <div class="q-text">His bags were so heavy
+      <input class="blank" id="bi-b5" placeholder="___" data-ans="that" autocomplete="off" style="min-width:65px">
+      he had to take a taxi. <span class="ex">(that / which)</span>
+    </div>
+    <div class="vocab"><span class="vw">by the time ~할 즈음</span><span class="vw">take a taxi 택시를 타다</span></div>
+    <button class="check-btn" onclick="checkBlank('b5')">✔ 확인</button>
+    <div class="answer-hint" id="ah-b5">💡 정답: <strong>that</strong> — so heavy + that + 결과절. "너무 무거워서 ~". which는 관계대명사이므로 결과절에 쓸 수 없어요.<br>📝 해석: 가방이 너무 무거워서 그는 택시를 타야 했다.</div>
+    <button class="hint-btn" onclick="showHint('b5')">💡 힌트 보기</button>
+  </div>
+
+  <!-- Passage B (b6-b10): 수동태 -->
+  <div class="passage" style="margin-top:18px;">
+    <div class="ptitle">📖 Passage B · School Talent Show</div>
+    Every year, the school talent show <span class="num">6</span> organized by the student council. This year, the gym <span class="num">7</span> decorated beautifully by the art club. Many acts <span class="num">8</span> performed on stage, from singing to magic tricks. All the performances <span class="num">9</span> filmed by the school media team. Finally, the best performer award <span class="num">10</span> given to a first-year student named Yuna.
+  </div>
+
+  <div class="question-card" id="qc-b6"><span class="q-num">21</span><span class="q-type ctx">지문 · 6번</span>
+    <div class="q-text">Every year, the school talent show
+      <input class="blank" id="bi-b6" placeholder="___" data-ans="is" autocomplete="off" style="min-width:60px">
+      organized by the student council. <span class="ex">(is / was)</span>
+    </div>
+    <div class="vocab"><span class="vw">talent show 장기자랑</span><span class="vw">student council 학생회</span></div>
+    <button class="check-btn" onclick="checkBlank('b6')">✔ 확인</button>
+    <div class="answer-hint" id="ah-b6">💡 정답: <strong>is</strong> — 단수(the school talent show) + 현재 습관(every year) → is + p.p.(organized).<br>📝 해석: 매년, 학교 장기자랑은 학생회에 의해 기획된다.</div>
+    <button class="hint-btn" onclick="showHint('b6')">💡 힌트 보기</button>
+  </div>
+
+  <div class="question-card" id="qc-b7"><span class="q-num">22</span><span class="q-type ctx">지문 · 7번</span>
+    <div class="q-text">This year, the gym
+      <input class="blank" id="bi-b7" placeholder="___" data-ans="was" autocomplete="off" style="min-width:65px">
+      decorated beautifully by the art club. <span class="ex">(was / were)</span>
+    </div>
+    <div class="vocab"><span class="vw">gym 체육관</span><span class="vw">decorate 장식하다</span><span class="vw">art club 미술부</span></div>
+    <button class="check-btn" onclick="checkBlank('b7')">✔ 확인</button>
+    <div class="answer-hint" id="ah-b7">💡 정답: <strong>was</strong> — 단수(the gym) + 과거(this year → 이미 지난 올해) → was + p.p.(decorated).<br>📝 해석: 올해, 체육관이 미술부에 의해 아름답게 장식되었다.</div>
+    <button class="hint-btn" onclick="showHint('b7')">💡 힌트 보기</button>
+  </div>
+
+  <div class="question-card" id="qc-b8"><span class="q-num">23</span><span class="q-type ctx">지문 · 8번</span>
+    <div class="q-text">Many acts
+      <input class="blank" id="bi-b8" placeholder="___" data-ans="were" autocomplete="off" style="min-width:65px">
+      performed on stage, from singing to magic tricks. <span class="ex">(was / were)</span>
+    </div>
+    <div class="vocab"><span class="vw">act 공연 순서</span><span class="vw">magic trick 마술</span></div>
+    <button class="check-btn" onclick="checkBlank('b8')">✔ 확인</button>
+    <div class="answer-hint" id="ah-b8">💡 정답: <strong>were</strong> — 복수(Many acts) + 과거 → were + p.p.(performed).<br>📝 해석: 노래부터 마술까지 많은 순서들이 무대에서 공연되었다.</div>
+    <button class="hint-btn" onclick="showHint('b8')">💡 힌트 보기</button>
+  </div>
+
+  <div class="question-card" id="qc-b9"><span class="q-num">24</span><span class="q-type ctx">지문 · 9번</span>
+    <div class="q-text">All the performances
+      <input class="blank" id="bi-b9" placeholder="___" data-ans="were" autocomplete="off" style="min-width:65px">
+      filmed by the school media team. <span class="ex">(was / were)</span>
+    </div>
+    <div class="vocab"><span class="vw">performance 공연</span><span class="vw">film 촬영하다</span><span class="vw">media team 미디어팀</span></div>
+    <button class="check-btn" onclick="checkBlank('b9')">✔ 확인</button>
+    <div class="answer-hint" id="ah-b9">💡 정답: <strong>were</strong> — 복수(All the performances) + 과거 → were + p.p.(filmed).<br>📝 해석: 모든 공연이 학교 미디어팀에 의해 촬영되었다.</div>
+    <button class="hint-btn" onclick="showHint('b9')">💡 힌트 보기</button>
+  </div>
+
+  <div class="question-card" id="qc-b10"><span class="q-num">25</span><span class="q-type ctx">지문 · 10번</span>
+    <div class="q-text">The best performer award
+      <input class="blank" id="bi-b10" placeholder="___" data-ans="was" autocomplete="off" style="min-width:65px">
+      given to a first-year student named Yuna. <span class="ex">(was / were)</span>
+    </div>
+    <div class="vocab"><span class="vw">performer 공연자</span><span class="vw">award 상</span></div>
+    <button class="check-btn" onclick="checkBlank('b10')">✔ 확인</button>
+    <div class="answer-hint" id="ah-b10">💡 정답: <strong>was</strong> — 단수(The best performer award) + 과거 → was + p.p.(given).<br>📝 해석: 최고 공연자 상이 Yuna라는 이름의 1학년 학생에게 주어졌다.</div>
+    <button class="hint-btn" onclick="showHint('b10')">💡 힌트 보기</button>
+  </div>
+</div>
+
+<div id="result">
+  <div class="rc">
+    <div class="emoji" id="re">🎉</div><div class="title" id="rt">완료!</div>
+    <div class="score" id="rs">0점</div><div class="sub" id="rsub"></div>
+    <div class="rg">
+      <div class="rs"><div class="n" id="rc2">0</div><div class="l">✅ 정답</div></div>
+      <div class="rs"><div class="n" id="rw2">0</div><div class="l">❌ 오답</div></div>
+    </div>
+  </div>
+  <div class="rev" id="revbox" style="display:none"><h3>❌ 오답 복습</h3><div id="revitems"></div></div>
+  <button class="rb" onclick="location.reload()">🔄 다시 풀기</button>
+</div>
+
+<script>
+var TOTAL=25,SECTOTALS={a:15,b:10},secC={a:0,b:0},secW={a:0,b:0};
+var answered={},correct=0,wrong=0;
+
+function norm(s){
+  s=s.trim().toLowerCase().replace(/\s+/g,' ');
+  s=s.replace(/[.,!?]$/,'');
+  s=s.replace(/isn't/g,'is not').replace(/aren't/g,'are not')
+     .replace(/wasn't/g,'was not').replace(/weren't/g,'were not')
+     .replace(/don't/g,'do not').replace(/doesn't/g,'does not')
+     .replace(/didn't/g,'did not').replace(/won't/g,'will not')
+     .replace(/shouldn't/g,'should not').replace(/can't/g,'cannot')
+     .replace(/couldn't/g,'could not')
+     .replace(/haven't/g,'have not').replace(/hasn't/g,'has not');
+  return s;
+}
+
+function sw(i,btn){
+  document.querySelectorAll('.sec').forEach(function(s){s.classList.remove('show');});
+  document.querySelectorAll('.tab').forEach(function(b){b.classList.remove('active');});
+  document.getElementById('s'+i).classList.add('show');
+  btn.classList.add('active');
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+function showHint(k){document.getElementById('ah-'+k).classList.add('show');}
+
+function pickChoice(btn){
+  var div=btn.parentElement;
+  var ans=div.dataset.ans;
+  var k=div.dataset.qid;
+  var card=document.getElementById('qc-'+k);
+  if(card.classList.contains('ok')||card.classList.contains('ng'))return;
+  var btns=div.querySelectorAll('.choice');
+  btns.forEach(function(b){b.disabled=true;});
+  var got=norm(btn.textContent.trim())===norm(ans);
+  btn.classList.add(got?'ok':'ng');
+  if(!got)btns.forEach(function(b){if(norm(b.textContent.trim())===norm(ans))b.classList.add('reveal');});
+  mark(k,got,btn.textContent.trim(),ans);
+}
+
+function checkBlank(k){
+  var inp=document.getElementById('bi-'+k);
+  var card=document.getElementById('qc-'+k);
+  if(card.classList.contains('ok')||card.classList.contains('ng'))return;
+  if(!inp.value.trim()){toast('답을 입력하세요!','ng');inp.focus();return;}
+  inp.disabled=true;
+  card.querySelector('.check-btn').disabled=true;
+  var got=norm(inp.value)===norm(inp.dataset.ans);
+  if(!got&&inp.dataset.ans2)got=norm(inp.value)===norm(inp.dataset.ans2);
+  inp.classList.add(got?'ok':'ng');
+  mark(k,got,inp.value.trim(),inp.dataset.ans);
+}
+document.addEventListener('keydown',function(e){
+  if(e.key==='Enter'&&e.target.classList.contains('blank'))
+    checkBlank(e.target.id.replace('bi-',''));
+});
+
+function mark(k,got,my,right){
+  if(answered[k])return;
+  answered[k]={got:got,my:my,right:right};
+  var card=document.getElementById('qc-'+k);
+  card.classList.add(got?'ok':'ng');
+  var b=document.createElement('div');b.className='done-badge';b.textContent=got?'✅':'❌';card.appendChild(b);
+  var pre=k[0];
+  if(got){correct++;secC[pre]++;toast('🎉 정답!','ok');}
+  else{wrong++;secW[pre]++;document.getElementById('ah-'+k).classList.add('show');toast('틀렸어요! 힌트 확인 👆','ng');}
+  var done=correct+wrong;
+  document.getElementById('sc-t').textContent=done;
+  document.getElementById('sc-c').textContent=correct;
+  document.getElementById('sc-w').textContent=wrong;
+  document.getElementById('pt').textContent=done+' / '+TOTAL;
+  document.getElementById('pf').style.width=(done/TOTAL*100)+'%';
+  var secDone=secC[pre]+secW[pre];
+  if(secDone===SECTOTALS[pre]){
+    (function(p,sc){
+      setTimeout(function(){
+        var opts={};
+        if(p==='a')opts={nextText:'짧은 지문 탭으로 →',onNextClick:function(){var ol=document.getElementById('sp-overlay');if(ol)ol.remove();sw(1,document.querySelectorAll('.tab')[1]);}};
+        showScorePopup(sc,SECTOTALS[p],opts);
+      },800);
+    })(pre,secC[pre]);
+  }
+  if(done===TOTAL)setTimeout(showResult,800);
+}
+function showResult(){
+  document.querySelectorAll('.sec').forEach(function(s){s.style.display='none';});
+  document.querySelector('.tabs').style.display='none';
+  document.getElementById('result').style.display='block';
+  var sc=Math.round(correct/TOTAL*100),e='😊',t='수고했어요!';
+  if(sc>=90){e='🏆';t='완벽해요!';}else if(sc>=70){e='🎉';t='잘 했어요!';}else if(sc>=50){e='💪';t='절반 이상 맞았어요!';}
+  document.getElementById('re').textContent=e;document.getElementById('rt').textContent=t;
+  document.getElementById('rs').textContent=sc+'점';
+  document.getElementById('rsub').textContent=correct+'문제 정답 / '+TOTAL+'문제';
+  document.getElementById('rc2').textContent=correct;document.getElementById('rw2').textContent=wrong;
+  var ws=Object.keys(answered).filter(function(k){return !answered[k].got;});
+  if(ws.length){
+    document.getElementById('revbox').style.display='block';
+    document.getElementById('revitems').innerHTML=ws.map(function(k){
+      var v=answered[k];
+      return '<div class="ri">내가 쓴 것: <span class="ma">'+(v.my||'(없음)')+'</span> → 정답: <span class="ca">'+v.right+'</span></div>';
+    }).join('');
+  }
+}
+function toast(msg,type){
+  var t=document.getElementById('toast');
+  t.textContent=msg;t.className='show '+(type||'');
+  clearTimeout(t._t);t._t=setTimeout(function(){t.classList.remove('show');},1800);
+}
+</script>
+<script>
+document.addEventListener('DOMContentLoaded',function(){
+  document.querySelectorAll('.vocab').forEach(function(v){
+    var btn=document.createElement('button');
+    btn.className='vocab-toggle';btn.textContent='📖 단어 보기 ▾';
+    btn.onclick=function(){
+      v.classList.toggle('show');
+      btn.textContent=v.classList.contains('show')?'📖 단어 닫기 ▴':'📖 단어 보기 ▾';
+    };
+    v.parentNode.insertBefore(btn,v);
+  });
+});
+</script>
+<script src="../score-popup.js"></script>
+<script src="../sounds.js"></script>
+</body>
+</html>

@@ -90,7 +90,8 @@ body{font-family:'Baloo 2','Noto Sans KR',sans-serif;background:var(--bg);paddin
 .q-text .wrong{color:var(--red);text-decoration:underline;text-decoration-style:wavy;font-weight:800;}
 .q-text .orig{color:#4a5a7a;font-size:.9em;}
 .q-text .kor-hint{display:block;background:#fef9c3;border-left:3px solid var(--gold);padding:6px 10px;border-radius:0 8px 8px 0;margin-bottom:8px;color:#854d0e;font-size:.9rem;font-weight:700;}
-.vw-box{display:flex;flex-wrap:wrap;gap:5px;margin-bottom:10px;}
+.vw-box{display:none;flex-wrap:wrap;gap:5px;margin-bottom:10px;}.vw-box.show{display:flex;}
+.vocab-toggle{background:none;border:1.5px solid var(--gold-d);color:var(--gold-d);border-radius:8px;padding:5px 12px;font-family:inherit;font-size:.82rem;font-weight:700;cursor:pointer;margin-bottom:8px;transition:all .15s;display:block;}.vocab-toggle:hover{background:var(--gold-l);}
 .vw{font-size:.74rem;background:var(--gold-l);color:#92400e;border-radius:6px;padding:2px 8px;font-weight:600;}
 .blank{border:none;border-bottom:2.5px solid var(--gold-d);background:transparent;font-family:inherit;font-size:1rem;font-weight:700;color:var(--navy);padding:2px 8px;min-width:100px;text-align:center;outline:none;transition:.2s;display:inline-block;}
 .blank:focus{border-color:var(--navy);}.blank.ok{border-color:var(--green);color:var(--green);background:#f0fdf4;border-radius:6px;}.blank.ng{border-color:var(--red);color:var(--red);background:#fef2f2;border-radius:6px;}
@@ -625,6 +626,19 @@ function toast(msg,type){
   t.textContent=msg;t.className='show '+(type||'');
   clearTimeout(t._t);t._t=setTimeout(function(){t.classList.remove('show');},1800);
 }
+</script>
+<script>
+document.addEventListener('DOMContentLoaded',function(){
+  document.querySelectorAll('.vw-box').forEach(function(v){
+    var btn=document.createElement('button');
+    btn.className='vocab-toggle';btn.textContent='📖 단어 보기 ▾';
+    btn.onclick=function(){
+      v.classList.toggle('show');
+      btn.textContent=v.classList.contains('show')?'📖 단어 닫기 ▴':'📖 단어 보기 ▾';
+    };
+    v.parentNode.insertBefore(btn,v);
+  });
+});
 </script>
 <script src="../score-popup.js"></script>
 <script src="../sounds.js"></script>

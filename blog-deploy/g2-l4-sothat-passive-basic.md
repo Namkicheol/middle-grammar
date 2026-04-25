@@ -18,7 +18,12 @@ https://namkicheol.github.io/middle-grammar/g2-sothat-passive-basic/
 오른쪽 아래에 캐릭터: 밝게 웃는 중학생 캐릭터가 노트를 들고 있는 모습
 말풍선: "It was so cold that I wore a coat!"
 
-## ⑤ agent 점검 결과 (2026-04-25)
+## ⑤ Pencil 생성 이미지 (2026-04-25)
+
+- 썸네일: `blog-images/2026-04-25/thumbnail-sothat-passive-basic.png`
+- 블로그 이미지: `blog-images/2026-04-25/img1~3-sothat-passive.png`
+
+## ⑥ agent 점검 결과 (2026-04-25)
 answer-checker 실행 결과 — 전 항목 통과 (오류 0):
 - norm() 함수 완전 (couldn't 포함 확장형)
 - checkBlank / checkArrange 빈 입력 방지 정상

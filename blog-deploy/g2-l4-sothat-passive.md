@@ -1,3 +1,5 @@
+<p style="font-size:13px;color:#a0aec0;margin-bottom:4px;">2026년 4월 25일</p>
+
 # [중2 영문법] so ~ that & 수동태 기초 라이브워크시트 (40문제)
 
 **태그**: 중2영어, 중2영문법, so~that, 수동태, 수동태기초, 영문법연습, 중학영어문법, 라이브워크시트, 자동채점
@@ -12,6 +14,8 @@
 
 오늘은 이 두 문법을 한 번에 연습할 수 있는 **자동채점 라이브워크시트**를 소개할게.
 클릭 하나로 바로 채점되니까 교실에서도, 집에서도 바로 쓸 수 있어!
+
+<p align="center"><img src="https://raw.githubusercontent.com/namkicheol/middle-grammar/main/blog-images/2026-04-25/img1-sothat-passive.png" width="600" alt="so that 수동태 워크시트 공부하는 학생"></p>
 
 ---
 
@@ -135,6 +139,8 @@
 
 > 💡 <span style="color:#dd6b20;">**현직쌤 팁**</span>: `is making`(능동 진행형)과 `is made`(수동태)는 완전히 달라. "The bread **is making** with …" 이런 실수 엄청 많이 나와. 수동태는 반드시 **be + p.p.** 형태!
 
+<p align="center"><img src="https://raw.githubusercontent.com/namkicheol/middle-grammar/main/blog-images/2026-04-25/img2-sothat-passive.png" width="600" alt="so that 수동태 문법 구조 설명"></p>
+
 ---
 
 ## 워크시트 구성
@@ -146,6 +152,8 @@
 | 🃏 단어 배열 | so~that + 수동태 혼합 | 8문제 |
 
 틀리면 바로 힌트와 해석이 뜨니까 복습까지 한 번에 끝낼 수 있어.
+
+<p align="center"><img src="https://raw.githubusercontent.com/namkicheol/middle-grammar/main/blog-images/2026-04-25/img3-sothat-passive.png" width="600" alt="워크시트 완성 후 기뻐하는 학생들"></p>
 
 ▶ **바로 풀러 가기**
 

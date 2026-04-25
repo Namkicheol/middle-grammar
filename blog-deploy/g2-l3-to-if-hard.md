@@ -18,7 +18,11 @@ https://namkicheol.github.io/middle-grammar/g2-to-if-hard/
 오른쪽 아래에 캐릭터: 돋보기를 들고 오류를 발견하는 중학생 캐릭터, 골드 의상
 말풍선: "will rain → rains! ✓"
 
-## ⑤ agent 점검 결과 (2026-04-25)
+## ⑤ Pencil 썸네일 (2026-04-25)
+
+- `blog-images/2026-04-25/thumbnail-to-if-hard.png`
+
+## ⑥ agent 점검 결과 (2026-04-25)
 answer-checker 실행 결과 — 오류 1건 수정 후 전 항목 통과:
 - norm() 함수 완전 (기본 10개 축약형 포함)
 - checkBlank / checkArrange 빈 입력 방지 정상

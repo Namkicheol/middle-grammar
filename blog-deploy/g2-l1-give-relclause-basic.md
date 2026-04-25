@@ -18,7 +18,11 @@ https://namkicheol.github.io/middle-grammar/g2-give-relclause-basic/
 오른쪽 아래에 캐릭터: 밝게 웃는 중학생 캐릭터가 책을 들고 있는 모습
 말풍선: "He gave me a book!"
 
-## ⑤ agent 점검 결과 (2026-04-24, 2차)
+## ⑤ Pencil 썸네일 (2026-04-25)
+
+- `blog-images/2026-04-25/thumbnail-give-relclause-basic.png`
+
+## ⑥ agent 점검 결과 (2026-04-24, 2차)
 answer-checker 실행 결과 — 전 항목 통과 (오류 0):
 - norm() 함수 완전 (9개 축약형 + can't 포함)
 - checkBlank / checkArrange 빈 입력 방지 정상

@@ -18,7 +18,11 @@ https://namkicheol.github.io/middle-grammar/g2-perfect-compare-hard/
 오른쪽 아래에 캐릭터: 진지하게 공부하는 중학생 캐릭터, 형광펜 들고 있음
 말풍선: "most tallest → tallest!"
 
-## ⑤ agent 점검 결과 (2026-04-24)
+## ⑤ Pencil 썸네일 (2026-04-25)
+
+- `blog-images/2026-04-25/thumbnail-perfect-compare-hard.png`
+
+## ⑥ agent 점검 결과 (2026-04-24)
 answer-checker 실행 결과 — 전 항목 통과 (오류 0):
 - norm() 함수 완전 (기본 10개 축약형 + haven't·hasn't 현재완료 전용 2개 추가)
 - checkBlank / checkArrange 빈 입력 방지 정상

@@ -4,6 +4,7 @@
 # Claude 로컬 설정
 .claude/*
 !.claude/skills
+!.claude/agents
 
 # NE능률 교과서 원본 자료 (저작권 — 로컬 참고용만, 커밋 금지)
 Ne교과서 md파일/

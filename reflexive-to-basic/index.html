@@ -71,7 +71,8 @@ body{font-family:'Baloo 2','Noto Sans KR',sans-serif;background:var(--bg);paddin
 #toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%) translateY(80px);background:var(--dark);color:#fff;padding:10px 22px;border-radius:20px;font-weight:700;font-size:.88rem;transition:transform .3s;z-index:999;pointer-events:none;white-space:nowrap;}
 #toast.show{transform:translateX(-50%) translateY(0);}#toast.ok{background:var(--green);}#toast.ng{background:var(--red);}
 @keyframes fadein{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}
-@keyframes pop{0%{transform:scale(.8)}70%{transform:scale(1.1)}100%{transform:scale(1)}}</style>
+@keyframes pop{0%{transform:scale(.8)}70%{transform:scale(1.1)}100%{transform:scale(1)}}
+.q-kor{font-size:.82rem;color:#1e6fa0;font-weight:600;margin-bottom:10px;padding:4px 10px;background:#e0f2fe;border-radius:6px;}</style>
 </head>
 <body>
 <div id="toast"></div>
@@ -101,6 +102,7 @@ body{font-family:'Baloo 2','Noto Sans KR',sans-serif;background:var(--bg);paddin
 
   <div class='question-card' id='qc-a1'><span class='q-num'>1</span>
     <div class='q-text'>Sarah bought a new bag for <em>___</em>.</div>
+    <div class='q-kor'>Sarah는 자기 자신을 위해 새 가방을 샀다.</div>
     <div class='choices' data-qid='a1' data-ans='herself'><button class="choice" onclick="pickChoice(this)">her</button><button class="choice" onclick="pickChoice(this)">herself</button><button class="choice" onclick="pickChoice(this)">hers</button><button class="choice" onclick="pickChoice(this)">she</button></div>
     <div class='answer-hint' id='ah-a1'>💡 정답: <strong>herself</strong> — 주어 Sarah(여성 단수) = 목적어 → herself<br>📝 해석: Sarah는 자기 자신을 위해 새 가방을 샀다.</div>
     <button class='hint-btn' onclick="showHint('a1')">💡 힌트 보기</button>
@@ -108,6 +110,7 @@ body{font-family:'Baloo 2','Noto Sans KR',sans-serif;background:var(--bg);paddin
 
   <div class='question-card' id='qc-a2'><span class='q-num'>2</span>
     <div class='q-text'>I hurt <em>___</em> while hiking last weekend.</div>
+    <div class='q-kor'>나는 지난 주말 하이킹 중에 다쳤다.</div>
     <div class='choices' data-qid='a2' data-ans='myself'><button class="choice" onclick="pickChoice(this)">me</button><button class="choice" onclick="pickChoice(this)">my</button><button class="choice" onclick="pickChoice(this)">myself</button><button class="choice" onclick="pickChoice(this)">mine</button></div>
     <div class='answer-hint' id='ah-a2'>💡 정답: <strong>myself</strong> — 주어 I = 목적어 → myself<br>📝 해석: 나는 지난 주말 등산하다가 다쳤다.</div>
     <button class='hint-btn' onclick="showHint('a2')">💡 힌트 보기</button>
@@ -115,6 +118,7 @@ body{font-family:'Baloo 2','Noto Sans KR',sans-serif;background:var(--bg);paddin
 
   <div class='question-card' id='qc-a3'><span class='q-num'>3</span>
     <div class='q-text'>We believe in <em>___</em> every day.</div>
+    <div class='q-kor'>우리는 매일 우리 자신을 믿는다.</div>
     <div class='choices' data-qid='a3' data-ans='ourselves'><button class="choice" onclick="pickChoice(this)">us</button><button class="choice" onclick="pickChoice(this)">our</button><button class="choice" onclick="pickChoice(this)">ourself</button><button class="choice" onclick="pickChoice(this)">ourselves</button></div>
     <div class='answer-hint' id='ah-a3'>💡 정답: <strong>ourselves</strong> — we의 재귀대명사 (복수형 -selves)<br>📝 해석: 우리는 매일 우리 자신을 믿는다.</div>
     <button class='hint-btn' onclick="showHint('a3')">💡 힌트 보기</button>
@@ -122,6 +126,7 @@ body{font-family:'Baloo 2','Noto Sans KR',sans-serif;background:var(--bg);paddin
 
   <div class='question-card' id='qc-a4'><span class='q-num'>4</span>
     <div class='q-text'>Boys, please introduce <em>___</em> to the class.</div>
+    <div class='q-kor'>남학생들, 반 친구들에게 자기소개를 해 주세요.</div>
     <div class='choices' data-qid='a4' data-ans='yourselves'><button class="choice" onclick="pickChoice(this)">yourself</button><button class="choice" onclick="pickChoice(this)">yourselves</button><button class="choice" onclick="pickChoice(this)">yours</button><button class="choice" onclick="pickChoice(this)">yourselve</button></div>
     <div class='answer-hint' id='ah-a4'>💡 정답: <strong>yourselves</strong> — "Boys"는 복수 → yourselves<br>📝 해석: 소년들아, 반에 너희 자신을 소개하세요.</div>
     <button class='hint-btn' onclick="showHint('a4')">💡 힌트 보기</button>
@@ -129,6 +134,7 @@ body{font-family:'Baloo 2','Noto Sans KR',sans-serif;background:var(--bg);paddin
 
   <div class='question-card' id='qc-a5'><span class='q-num'>5</span>
     <div class='q-text'>The cat sees <em>___</em> in the mirror.</div>
+    <div class='q-kor'>고양이가 거울에서 자기 자신을 본다.</div>
     <div class='choices' data-qid='a5' data-ans='itself'><button class="choice" onclick="pickChoice(this)">it</button><button class="choice" onclick="pickChoice(this)">its</button><button class="choice" onclick="pickChoice(this)">itself</button><button class="choice" onclick="pickChoice(this)">itselves</button></div>
     <div class='answer-hint' id='ah-a5'>💡 정답: <strong>itself</strong> — it의 재귀대명사<br>📝 해석: 고양이가 거울에서 자신을 본다.</div>
     <button class='hint-btn' onclick="showHint('a5')">💡 힌트 보기</button>
@@ -136,6 +142,7 @@ body{font-family:'Baloo 2','Noto Sans KR',sans-serif;background:var(--bg);paddin
 
   <div class='question-card' id='qc-a6'><span class='q-num'>6</span>
     <div class='q-text'>The students fixed the broken chairs by <em>___</em>.</div>
+    <div class='q-kor'>학생들이 직접 부서진 의자를 고쳤다.</div>
     <div class='choices' data-qid='a6' data-ans='themselves'><button class="choice" onclick="pickChoice(this)">themself</button><button class="choice" onclick="pickChoice(this)">themselves</button><button class="choice" onclick="pickChoice(this)">they</button><button class="choice" onclick="pickChoice(this)">theirs</button></div>
     <div class='answer-hint' id='ah-a6'>💡 정답: <strong>themselves</strong> — The students(복수) → themselves (by oneself = 스스로)<br>📝 해석: 그 학생들은 부서진 의자들을 스스로 고쳤다.</div>
     <button class='hint-btn' onclick="showHint('a6')">💡 힌트 보기</button>
@@ -143,6 +150,7 @@ body{font-family:'Baloo 2','Noto Sans KR',sans-serif;background:var(--bg);paddin
 
   <div class='question-card' id='qc-a7'><span class='q-num'>7</span>
     <div class='q-text'>My brother saw <em>___</em> on the news yesterday.</div>
+    <div class='q-kor'>내 남동생은 어제 뉴스에서 자신을 보았다.</div>
     <div class='choices' data-qid='a7' data-ans='himself'><button class="choice" onclick="pickChoice(this)">him</button><button class="choice" onclick="pickChoice(this)">himself</button><button class="choice" onclick="pickChoice(this)">his</button><button class="choice" onclick="pickChoice(this)">he</button></div>
     <div class='answer-hint' id='ah-a7'>💡 정답: <strong>himself</strong> — 주어 My brother(남성 단수) = 목적어 → himself<br>📝 해석: 내 형은 어제 뉴스에서 자신을 보았다.</div>
     <button class='hint-btn' onclick="showHint('a7')">💡 힌트 보기</button>
@@ -150,6 +158,7 @@ body{font-family:'Baloo 2','Noto Sans KR',sans-serif;background:var(--bg);paddin
 
   <div class='question-card' id='qc-a8'><span class='q-num'>8</span>
     <div class='q-text'>Tell me about <em>___</em>, Mia.</div>
+    <div class='q-kor'>나에게 네 자신에 대해 말해 줘, Mia.</div>
     <div class='choices' data-qid='a8' data-ans='yourself'><button class="choice" onclick="pickChoice(this)">you</button><button class="choice" onclick="pickChoice(this)">your</button><button class="choice" onclick="pickChoice(this)">yourself</button><button class="choice" onclick="pickChoice(this)">yourselves</button></div>
     <div class='answer-hint' id='ah-a8'>💡 정답: <strong>yourself</strong> — Mia 한 명에게 말하는 것 → yourself (단수)<br>📝 해석: Mia, 너 자신에 대해 말해 줘.</div>
     <button class='hint-btn' onclick="showHint('a8')">💡 힌트 보기</button>
@@ -157,6 +166,7 @@ body{font-family:'Baloo 2','Noto Sans KR',sans-serif;background:var(--bg);paddin
 
   <div class='question-card' id='qc-a9'><span class='q-num'>9</span>
     <div class='q-text'>The robot turned <em>___</em> off.</div>
+    <div class='q-kor'>로봇이 스스로 전원을 껐다.</div>
     <div class='choices' data-qid='a9' data-ans='itself'><button class="choice" onclick="pickChoice(this)">it</button><button class="choice" onclick="pickChoice(this)">its</button><button class="choice" onclick="pickChoice(this)">itself</button><button class="choice" onclick="pickChoice(this)">themself</button></div>
     <div class='answer-hint' id='ah-a9'>💡 정답: <strong>itself</strong> — 주어 The robot(사물) → itself<br>📝 해석: 그 로봇은 스스로 전원을 껐다.</div>
     <button class='hint-btn' onclick="showHint('a9')">💡 힌트 보기</button>
@@ -164,6 +174,7 @@ body{font-family:'Baloo 2','Noto Sans KR',sans-serif;background:var(--bg);paddin
 
   <div class='question-card' id='qc-a10'><span class='q-num'>10</span>
     <div class='q-text'>The children washed <em>___</em> after playing.</div>
+    <div class='q-kor'>아이들은 놀고 나서 스스로 몸을 씻었다.</div>
     <div class='choices' data-qid='a10' data-ans='themselves'><button class="choice" onclick="pickChoice(this)">them</button><button class="choice" onclick="pickChoice(this)">themself</button><button class="choice" onclick="pickChoice(this)">themselves</button><button class="choice" onclick="pickChoice(this)">their</button></div>
     <div class='answer-hint' id='ah-a10'>💡 정답: <strong>themselves</strong> — The children(복수) → themselves<br>📝 해석: 아이들은 놀고 나서 자신들을 씻었다.</div>
     <button class='hint-btn' onclick="showHint('a10')">💡 힌트 보기</button>
@@ -171,6 +182,7 @@ body{font-family:'Baloo 2','Noto Sans KR',sans-serif;background:var(--bg);paddin
 
   <div class='question-card' id='qc-a11'><span class='q-num'>11</span>
     <div class='q-text'>Lucas enjoyed <input class="blank" id="bi-a11" placeholder="___" data-ans="himself" autocomplete="off" style="min-width:110px"> at the festival. <span class='ex'>(he)</span></div>
+    <div class='q-kor'>Lucas는 축제에서 즐거운 시간을 보냈다.</div>
     <button class='check-btn' onclick="checkBlank('a11')">✔ 확인</button>
     <div class='answer-hint' id='ah-a11'>💡 정답: <strong>himself</strong> — he의 재귀대명사 (enjoy oneself = 즐기다)<br>📝 해석: Lucas는 축제에서 즐거운 시간을 보냈다.</div>
     <button class='hint-btn' onclick="showHint('a11')">💡 힌트 보기</button>
@@ -178,6 +190,7 @@ body{font-family:'Baloo 2','Noto Sans KR',sans-serif;background:var(--bg);paddin
 
   <div class='question-card' id='qc-a12'><span class='q-num'>12</span>
     <div class='q-text'>Grandma made this scarf <input class="blank" id="bi-a12" placeholder="___" data-ans="herself" autocomplete="off" style="min-width:110px">. <span class='ex'>(she · 강조)</span></div>
+    <div class='q-kor'>할머니가 직접 이 스카프를 만드셨다.</div>
     <button class='check-btn' onclick="checkBlank('a12')">✔ 확인</button>
     <div class='answer-hint' id='ah-a12'>💡 정답: <strong>herself</strong> — 강조 용법 "직접" (생략 가능)<br>📝 해석: 할머니가 이 스카프를 직접 만드셨다.</div>
     <button class='hint-btn' onclick="showHint('a12')">💡 힌트 보기</button>
@@ -185,6 +198,7 @@ body{font-family:'Baloo 2','Noto Sans KR',sans-serif;background:var(--bg);paddin
 
   <div class='question-card' id='qc-a13'><span class='q-num'>13</span>
     <div class='q-text'>Please sit down and make <input class="blank" id="bi-a13" placeholder="___" data-ans="yourself" autocomplete="off" style="min-width:110px"> at home. <span class='ex'>(you, 단수)</span></div>
+    <div class='q-kor'>앉아서 편하게 계세요.</div>
     <button class='check-btn' onclick="checkBlank('a13')">✔ 확인</button>
     <div class='answer-hint' id='ah-a13'>💡 정답: <strong>yourself</strong> — make yourself at home = 편히 계세요<br>📝 해석: 앉아서 편히 계세요.</div>
     <button class='hint-btn' onclick="showHint('a13')">💡 힌트 보기</button>
@@ -192,6 +206,7 @@ body{font-family:'Baloo 2','Noto Sans KR',sans-serif;background:var(--bg);paddin
 
   <div class='question-card' id='qc-a14'><span class='q-num'>14</span>
     <div class='q-text'>The seventh graders prepared the school concert <input class="blank" id="bi-a14" placeholder="___" data-ans="themselves" autocomplete="off" style="min-width:130px">. <span class='ex'>(they · 강조)</span></div>
+    <div class='q-kor'>7학년 학생들이 직접 학교 콘서트를 준비했다.</div>
     <button class='check-btn' onclick="checkBlank('a14')">✔ 확인</button>
     <div class='answer-hint' id='ah-a14'>💡 정답: <strong>themselves</strong> — 7학년 학생들(복수)이 "직접" 준비함<br>📝 해석: 7학년 학생들은 학교 콘서트를 직접 준비했다.</div>
     <button class='hint-btn' onclick="showHint('a14')">💡 힌트 보기</button>
@@ -199,6 +214,7 @@ body{font-family:'Baloo 2','Noto Sans KR',sans-serif;background:var(--bg);paddin
 
   <div class='question-card' id='qc-a15'><span class='q-num'>15</span>
     <div class='q-text'>Hana smiled at <input class="blank" id="bi-a15" placeholder="___" data-ans="herself" autocomplete="off" style="min-width:110px"> in the shop window downtown. <span class='ex'>(she)</span></div>
+    <div class='q-kor'>하나는 시내 상점 유리창에 비친 자신을 보고 미소 지었다.</div>
     <button class='check-btn' onclick="checkBlank('a15')">✔ 확인</button>
     <div class='answer-hint' id='ah-a15'>💡 정답: <strong>herself</strong> — 주어 Hana = 목적어 → herself<br>📝 해석: Hana는 시내 상점 쇼윈도에 비친 자신을 보고 미소 지었다.</div>
     <button class='hint-btn' onclick="showHint('a15')">💡 힌트 보기</button>
@@ -206,6 +222,7 @@ body{font-family:'Baloo 2','Noto Sans KR',sans-serif;background:var(--bg);paddin
 
   <div class='question-card' id='qc-a16'><span class='q-num'>16</span>
     <div class='q-text'>I took this picture <input class="blank" id="bi-a16" placeholder="___" data-ans="myself" autocomplete="off" style="min-width:110px">. <span class='ex'>(I · 강조)</span></div>
+    <div class='q-kor'>나는 직접 이 사진을 찍었다.</div>
     <button class='check-btn' onclick="checkBlank('a16')">✔ 확인</button>
     <div class='answer-hint' id='ah-a16'>💡 정답: <strong>myself</strong> — 강조 용법 "직접"<br>📝 해석: 내가 이 사진을 직접 찍었다.</div>
     <button class='hint-btn' onclick="showHint('a16')">💡 힌트 보기</button>
@@ -213,6 +230,7 @@ body{font-family:'Baloo 2','Noto Sans KR',sans-serif;background:var(--bg);paddin
 
   <div class='question-card' id='qc-a17'><span class='q-num'>17</span>
     <div class='q-text'>The old dog lay down by <input class="blank" id="bi-a17" placeholder="___" data-ans="itself" autocomplete="off" style="min-width:110px">. <span class='ex'>(it)</span></div>
+    <div class='q-kor'>늙은 개가 혼자 누웠다.</div>
     <button class='check-btn' onclick="checkBlank('a17')">✔ 확인</button>
     <div class='answer-hint' id='ah-a17'>💡 정답: <strong>itself</strong> — by itself = 홀로, 혼자<br>📝 해석: 늙은 개가 홀로 누웠다.</div>
     <button class='hint-btn' onclick="showHint('a17')">💡 힌트 보기</button>
@@ -220,6 +238,7 @@ body{font-family:'Baloo 2','Noto Sans KR',sans-serif;background:var(--bg);paddin
 
   <div class='question-card' id='qc-a18'><span class='q-num'>18</span>
     <div class='q-text'>We bought gifts for <input class="blank" id="bi-a18" placeholder="___" data-ans="ourselves" autocomplete="off" style="min-width:120px">. <span class='ex'>(we)</span></div>
+    <div class='q-kor'>우리는 우리 자신을 위해 선물을 샀다.</div>
     <button class='check-btn' onclick="checkBlank('a18')">✔ 확인</button>
     <div class='answer-hint' id='ah-a18'>💡 정답: <strong>ourselves</strong> — 주어 We = 목적어 → ourselves<br>📝 해석: 우리는 우리 자신에게 선물을 샀다.</div>
     <button class='hint-btn' onclick="showHint('a18')">💡 힌트 보기</button>
@@ -227,6 +246,7 @@ body{font-family:'Baloo 2','Noto Sans KR',sans-serif;background:var(--bg);paddin
 
   <div class='question-card' id='qc-a19'><span class='q-num'>19</span>
     <div class='q-text'>Henry wrote the song <input class="blank" id="bi-a19" placeholder="___" data-ans="himself" autocomplete="off" style="min-width:110px">. <span class='ex'>(he · 강조)</span></div>
+    <div class='q-kor'>Henry는 직접 그 노래를 썼다.</div>
     <button class='check-btn' onclick="checkBlank('a19')">✔ 확인</button>
     <div class='answer-hint' id='ah-a19'>💡 정답: <strong>himself</strong> — 강조 용법 "직접"<br>📝 해석: Henry가 그 노래를 직접 썼다.</div>
     <button class='hint-btn' onclick="showHint('a19')">💡 힌트 보기</button>
@@ -234,6 +254,7 @@ body{font-family:'Baloo 2','Noto Sans KR',sans-serif;background:var(--bg);paddin
 
   <div class='question-card' id='qc-a20'><span class='q-num'>20</span>
     <div class='q-text'>Did you teach <input class="blank" id="bi-a20" placeholder="___" data-ans="yourself" autocomplete="off" style="min-width:110px"> Spanish, Ava? <span class='ex'>(you, 단수)</span></div>
+    <div class='q-kor'>Ava, 스페인어를 스스로 배웠나요?</div>
     <button class='check-btn' onclick="checkBlank('a20')">✔ 확인</button>
     <div class='answer-hint' id='ah-a20'>💡 정답: <strong>yourself</strong> — teach oneself = 독학하다 (Ava 한 명)<br>📝 해석: Ava, 너는 스페인어를 독학했니?</div>
     <button class='hint-btn' onclick="showHint('a20')">💡 힌트 보기</button>
@@ -242,10 +263,11 @@ body{font-family:'Baloo 2','Noto Sans KR',sans-serif;background:var(--bg);paddin
 
 <!-- ── Section B: 목적의 to부정사 ── -->
 <div class="sec" id="s1">
-  <div class="sec-hdr"><div class="lbl">Point B · 20문제</div><h2>목적의 to부정사 — ~하기 위해</h2><div class="desc">선택형(1–10) + 빈칸(11–20) · to + 동사원형</div></div>
+  <div class="sec-hdr"><div class="lbl">Point B · 20문제</div><h2>목적의 to부정사 — ~하기 위해</h2><div class="desc">선택형(1–10) + 빈칸(11–20) · 목적 표현 + 용법 구분 포함</div></div>
 
   <div class='question-card' id='qc-b1'><span class='q-num'>1</span>
     <div class='q-text'>Yuna went to the library <em>___</em> a book.</div>
+    <div class='q-kor'>유나는 책을 읽으러 도서관에 갔다.</div>
     <div class='choices' data-qid='b1' data-ans='to read'><button class="choice" onclick="pickChoice(this)">read</button><button class="choice" onclick="pickChoice(this)">to read</button><button class="choice" onclick="pickChoice(this)">reading</button><button class="choice" onclick="pickChoice(this)">reads</button></div>
     <div class='answer-hint' id='ah-b1'>💡 정답: <strong>to read</strong> — 목적 "책을 읽기 위해" = to + 동사원형<br>📝 해석: 유나는 책을 읽기 위해 도서관에 갔다.</div>
     <button class='hint-btn' onclick="showHint('b1')">💡 힌트 보기</button>
@@ -253,20 +275,22 @@ body{font-family:'Baloo 2','Noto Sans KR',sans-serif;background:var(--bg);paddin
 
   <div class='question-card' id='qc-b2'><span class='q-num'>2</span>
     <div class='q-text'>Emily worked part-time <em>___</em> a tablet for drawing.</div>
+    <div class='q-kor'>에밀리는 그림용 태블릿을 사기 위해 아르바이트를 했다.</div>
     <div class='choices' data-qid='b2' data-ans='to buy'><button class="choice" onclick="pickChoice(this)">buy</button><button class="choice" onclick="pickChoice(this)">bought</button><button class="choice" onclick="pickChoice(this)">to buy</button><button class="choice" onclick="pickChoice(this)">buys</button></div>
     <div class='answer-hint' id='ah-b2'>💡 정답: <strong>to buy</strong> — "태블릿을 사기 위해" 목적<br>📝 해석: Emily는 그림을 그리기 위한 태블릿을 사려고 아르바이트를 했다.</div>
     <button class='hint-btn' onclick="showHint('b2')">💡 힌트 보기</button>
   </div>
 
   <div class='question-card' id='qc-b3'><span class='q-num'>3</span>
-    <div class='q-text'>The family flew to Jeju Island <em>___</em> the beach in summer.</div>
-    <div class='choices' data-qid='b3' data-ans='to enjoy'><button class="choice" onclick="pickChoice(this)">enjoy</button><button class="choice" onclick="pickChoice(this)">to enjoy</button><button class="choice" onclick="pickChoice(this)">enjoying</button><button class="choice" onclick="pickChoice(this)">enjoys</button></div>
-    <div class='answer-hint' id='ah-b3'>💡 정답: <strong>to enjoy</strong> — "해변을 즐기기 위해" 목적<br>📝 해석: 그 가족은 여름에 해변을 즐기려고 제주도로 날아갔다.</div>
+    <div class='q-text'>목적('~하기 위해')의 to부정사가 쓰인 문장을 고르시오.</div>
+    <div class='choices' data-qid='b3' data-ans='He studied hard to pass the exam.'><button class="choice" onclick="pickChoice(this)">I want to visit Paris.</button><button class="choice" onclick="pickChoice(this)">She plans to become a nurse.</button><button class="choice" onclick="pickChoice(this)">He studied hard to pass the exam.</button><button class="choice" onclick="pickChoice(this)">We decided to move to Busan.</button></div>
+    <div class='answer-hint' id='ah-b3'>💡 정답: <strong>He studied hard to pass the exam.</strong><br>📝 해석: 그는 시험에 합격하기 위해 열심히 공부했다.<br>👉 want/plan/decide + to부정사 → 동사의 목적어, 동사 뒤 to부정사 → 목적(~하기 위해)</div>
     <button class='hint-btn' onclick="showHint('b3')">💡 힌트 보기</button>
   </div>
 
   <div class='question-card' id='qc-b4'><span class='q-num'>4</span>
     <div class='q-text'>Noah texted his teacher <em>___</em> his absence.</div>
+    <div class='q-kor'>Noah는 결석을 설명하기 위해 선생님께 문자를 보냈다.</div>
     <div class='choices' data-qid='b4' data-ans='to explain'><button class="choice" onclick="pickChoice(this)">explain</button><button class="choice" onclick="pickChoice(this)">explained</button><button class="choice" onclick="pickChoice(this)">to explain</button><button class="choice" onclick="pickChoice(this)">explaining</button></div>
     <div class='answer-hint' id='ah-b4'>💡 정답: <strong>to explain</strong> — "결석을 설명하기 위해" 목적<br>📝 해석: Noah는 결석한 이유를 설명하려고 선생님에게 문자를 보냈다.</div>
     <button class='hint-btn' onclick="showHint('b4')">💡 힌트 보기</button>
@@ -274,20 +298,22 @@ body{font-family:'Baloo 2','Noto Sans KR',sans-serif;background:var(--bg);paddin
 
   <div class='question-card' id='qc-b5'><span class='q-num'>5</span>
     <div class='q-text'>She practiced every day <em>___</em> the contest.</div>
+    <div class='q-kor'>그녀는 대회에서 이기기 위해 매일 연습했다.</div>
     <div class='choices' data-qid='b5' data-ans='to win'><button class="choice" onclick="pickChoice(this)">win</button><button class="choice" onclick="pickChoice(this)">to win</button><button class="choice" onclick="pickChoice(this)">winning</button><button class="choice" onclick="pickChoice(this)">wins</button></div>
     <div class='answer-hint' id='ah-b5'>💡 정답: <strong>to win</strong> — "대회에서 이기기 위해" 목적<br>📝 해석: 그녀는 대회에서 우승하기 위해 매일 연습했다.</div>
     <button class='hint-btn' onclick="showHint('b5')">💡 힌트 보기</button>
   </div>
 
   <div class='question-card' id='qc-b6'><span class='q-num'>6</span>
-    <div class='q-text'>Jake stood up <em>___</em> his opinion.</div>
-    <div class='choices' data-qid='b6' data-ans='to share'><button class="choice" onclick="pickChoice(this)">share</button><button class="choice" onclick="pickChoice(this)">shared</button><button class="choice" onclick="pickChoice(this)">sharing</button><button class="choice" onclick="pickChoice(this)">to share</button></div>
-    <div class='answer-hint' id='ah-b6'>💡 정답: <strong>to share</strong> — "의견을 공유하기 위해" 목적<br>📝 해석: Jake는 자신의 의견을 나누기 위해 일어섰다.</div>
+    <div class='q-text'>다음 문장의 올바른 해석을 고르시오.<br>She went to the market to buy vegetables.</div>
+    <div class='choices' data-qid='b6' data-ans='그녀는 채소를 사기 위해 시장에 갔다.'><button class="choice" onclick="pickChoice(this)">그녀는 채소를 사는 것을 좋아해서 시장에 갔다.</button><button class="choice" onclick="pickChoice(this)">그녀는 채소를 사기 위해 시장에 갔다.</button><button class="choice" onclick="pickChoice(this)">그녀는 시장에 가서 채소를 사기로 결정했다.</button><button class="choice" onclick="pickChoice(this)">그녀는 채소를 팔기 위해 시장에 갔다.</button></div>
+    <div class='answer-hint' id='ah-b6'>💡 정답: <strong>그녀는 채소를 사기 위해 시장에 갔다.</strong> — to buy vegetables = '채소를 사기 위해' (목적의 to부정사)<br>📝 went(동작)의 목적을 설명하는 to부정사: ~하기 위해</div>
     <button class='hint-btn' onclick="showHint('b6')">💡 힌트 보기</button>
   </div>
 
   <div class='question-card' id='qc-b7'><span class='q-num'>7</span>
     <div class='q-text'>They left early <em>___</em> the traffic.</div>
+    <div class='q-kor'>그들은 교통체증을 피하기 위해 일찍 출발했다.</div>
     <div class='choices' data-qid='b7' data-ans='to avoid'><button class="choice" onclick="pickChoice(this)">avoid</button><button class="choice" onclick="pickChoice(this)">to avoid</button><button class="choice" onclick="pickChoice(this)">avoiding</button><button class="choice" onclick="pickChoice(this)">avoids</button></div>
     <div class='answer-hint' id='ah-b7'>💡 정답: <strong>to avoid</strong> — "교통 체증을 피하기 위해" 목적<br>📝 해석: 그들은 교통 체증을 피하려고 일찍 떠났다.</div>
     <button class='hint-btn' onclick="showHint('b7')">💡 힌트 보기</button>
@@ -295,20 +321,22 @@ body{font-family:'Baloo 2','Noto Sans KR',sans-serif;background:var(--bg);paddin
 
   <div class='question-card' id='qc-b8'><span class='q-num'>8</span>
     <div class='q-text'>Mom cooked dinner <em>___</em> us all.</div>
+    <div class='q-kor'>엄마는 우리 모두를 위해 저녁을 요리하셨다.</div>
     <div class='choices' data-qid='b8' data-ans='to feed'><button class="choice" onclick="pickChoice(this)">feed</button><button class="choice" onclick="pickChoice(this)">to feed</button><button class="choice" onclick="pickChoice(this)">feeding</button><button class="choice" onclick="pickChoice(this)">feeds</button></div>
     <div class='answer-hint' id='ah-b8'>💡 정답: <strong>to feed</strong> — "우리 모두를 먹이기 위해" 목적<br>📝 해석: 엄마는 우리 모두를 먹이려고 저녁을 요리하셨다.</div>
     <button class='hint-btn' onclick="showHint('b8')">💡 힌트 보기</button>
   </div>
 
   <div class='question-card' id='qc-b9'><span class='q-num'>9</span>
-    <div class='q-text'>The class took a bus <em>___</em> the museum.</div>
-    <div class='choices' data-qid='b9' data-ans='to visit'><button class="choice" onclick="pickChoice(this)">visit</button><button class="choice" onclick="pickChoice(this)">to visit</button><button class="choice" onclick="pickChoice(this)">visiting</button><button class="choice" onclick="pickChoice(this)">visited</button></div>
-    <div class='answer-hint' id='ah-b9'>💡 정답: <strong>to visit</strong> — "박물관을 방문하기 위해" 목적<br>📝 해석: 그 반은 박물관을 방문하기 위해 버스를 탔다.</div>
+    <div class='q-text'>밑줄 친 to부정사가 '목적(~하기 위해)'으로 쓰인 것을 고르시오.</div>
+    <div class='choices' data-qid='b9' data-ans='They turned off the lights to save power.'><button class="choice" onclick="pickChoice(this)">I need to sleep more.</button><button class="choice" onclick="pickChoice(this)">She plans to travel to Japan.</button><button class="choice" onclick="pickChoice(this)">They turned off the lights to save power.</button><button class="choice" onclick="pickChoice(this)">Tom promised to be on time.</button></div>
+    <div class='answer-hint' id='ah-b9'>💡 정답: <strong>They turned off the lights to save power.</strong><br>📝 해석: 그들은 전기를 절약하기 위해 불을 껐다.<br>👉 need/plan/promise + to부정사 → 동사의 목적어, 동작 뒤 to부정사 → 목적(~하기 위해)</div>
     <button class='hint-btn' onclick="showHint('b9')">💡 힌트 보기</button>
   </div>
 
   <div class='question-card' id='qc-b10'><span class='q-num'>10</span>
     <div class='q-text'>I use this app <em>___</em> new words. <span class="ex">(to부정사)</span></div>
+    <div class='q-kor'>나는 새로운 단어를 배우기 위해 이 앱을 사용한다.</div>
     <div class='choices' data-qid='b10' data-ans='to learn'><button class="choice" onclick="pickChoice(this)">learn</button><button class="choice" onclick="pickChoice(this)">learned</button><button class="choice" onclick="pickChoice(this)">learning</button><button class="choice" onclick="pickChoice(this)">to learn</button></div>
     <div class='answer-hint' id='ah-b10'>💡 정답: <strong>to learn</strong> — "새 단어를 배우기 위해" 목적<br>📝 해석: 나는 새 단어를 배우기 위해 이 앱을 사용한다.</div>
     <button class='hint-btn' onclick="showHint('b10')">💡 힌트 보기</button>
@@ -316,6 +344,7 @@ body{font-family:'Baloo 2','Noto Sans KR',sans-serif;background:var(--bg);paddin
 
   <div class='question-card' id='qc-b11'><span class='q-num'>11</span>
     <div class='q-text'>Lena turned on the computer <input class="blank" id="bi-b11" placeholder="___" data-ans="to check" autocomplete="off" style="min-width:120px"> her email. <span class='ex'>(check)</span></div>
+    <div class='q-kor'>Lena는 이메일을 확인하기 위해 컴퓨터를 켰다.</div>
     <button class='check-btn' onclick="checkBlank('b11')">✔ 확인</button>
     <div class='answer-hint' id='ah-b11'>💡 정답: <strong>to check</strong> — "이메일을 확인하기 위해" 목적<br>📝 해석: Lena는 이메일을 확인하기 위해 컴퓨터를 켰다.</div>
     <button class='hint-btn' onclick="showHint('b11')">💡 힌트 보기</button>
@@ -323,6 +352,7 @@ body{font-family:'Baloo 2','Noto Sans KR',sans-serif;background:var(--bg);paddin
 
   <div class='question-card' id='qc-b12'><span class='q-num'>12</span>
     <div class='q-text'>He went to the cafe <input class="blank" id="bi-b12" placeholder="___" data-ans="to meet" autocomplete="off" style="min-width:120px"> his friend. <span class='ex'>(meet)</span></div>
+    <div class='q-kor'>그는 친구를 만나기 위해 카페에 갔다.</div>
     <button class='check-btn' onclick="checkBlank('b12')">✔ 확인</button>
     <div class='answer-hint' id='ah-b12'>💡 정답: <strong>to meet</strong> — "친구를 만나기 위해" 목적<br>📝 해석: 그는 친구를 만나러 카페에 갔다.</div>
     <button class='hint-btn' onclick="showHint('b12')">💡 힌트 보기</button>
@@ -330,6 +360,7 @@ body{font-family:'Baloo 2','Noto Sans KR',sans-serif;background:var(--bg);paddin
 
   <div class='question-card' id='qc-b13'><span class='q-num'>13</span>
     <div class='q-text'>Olivia baked cookies <input class="blank" id="bi-b13" placeholder="___" data-ans="to make" autocomplete="off" style="min-width:120px"> her brother happy. <span class='ex'>(make)</span></div>
+    <div class='q-kor'>Olivia는 오빠를 행복하게 하기 위해 쿠키를 구웠다.</div>
     <button class='check-btn' onclick="checkBlank('b13')">✔ 확인</button>
     <div class='answer-hint' id='ah-b13'>💡 정답: <strong>to make</strong> — "동생을 행복하게 만들기 위해" 목적<br>📝 해석: Olivia는 남동생을 행복하게 하려고 쿠키를 구웠다.</div>
     <button class='hint-btn' onclick="showHint('b13')">💡 힌트 보기</button>
@@ -337,6 +368,7 @@ body{font-family:'Baloo 2','Noto Sans KR',sans-serif;background:var(--bg);paddin
 
   <div class='question-card' id='qc-b14'><span class='q-num'>14</span>
     <div class='q-text'>I turned off the light <input class="blank" id="bi-b14" placeholder="___" data-ans="to save" autocomplete="off" style="min-width:120px"> power. <span class='ex'>(save)</span></div>
+    <div class='q-kor'>나는 전기를 절약하기 위해 불을 껐다.</div>
     <button class='check-btn' onclick="checkBlank('b14')">✔ 확인</button>
     <div class='answer-hint' id='ah-b14'>💡 정답: <strong>to save</strong> — "전기를 아끼기 위해" 목적<br>📝 해석: 나는 전기를 아끼려고 불을 껐다.</div>
     <button class='hint-btn' onclick="showHint('b14')">💡 힌트 보기</button>
@@ -344,6 +376,7 @@ body{font-family:'Baloo 2','Noto Sans KR',sans-serif;background:var(--bg);paddin
 
   <div class='question-card' id='qc-b15'><span class='q-num'>15</span>
     <div class='q-text'>The team worked hard <input class="blank" id="bi-b15" placeholder="___" data-ans="to win" autocomplete="off" style="min-width:110px"> the game. <span class='ex'>(win)</span></div>
+    <div class='q-kor'>팀은 경기에서 이기기 위해 열심히 연습했다.</div>
     <button class='check-btn' onclick="checkBlank('b15')">✔ 확인</button>
     <div class='answer-hint' id='ah-b15'>💡 정답: <strong>to win</strong> — "경기를 이기기 위해" 목적<br>📝 해석: 그 팀은 경기에서 이기려고 열심히 노력했다.</div>
     <button class='hint-btn' onclick="showHint('b15')">💡 힌트 보기</button>
@@ -351,6 +384,7 @@ body{font-family:'Baloo 2','Noto Sans KR',sans-serif;background:var(--bg);paddin
 
   <div class='question-card' id='qc-b16'><span class='q-num'>16</span>
     <div class='q-text'>Ben raised his hand <input class="blank" id="bi-b16" placeholder="___" data-ans="to ask" autocomplete="off" style="min-width:110px"> a question. <span class='ex'>(ask)</span></div>
+    <div class='q-kor'>Ben은 질문을 하기 위해 손을 들었다.</div>
     <button class='check-btn' onclick="checkBlank('b16')">✔ 확인</button>
     <div class='answer-hint' id='ah-b16'>💡 정답: <strong>to ask</strong> — "질문을 하기 위해" 목적<br>📝 해석: Ben은 질문을 하려고 손을 들었다.</div>
     <button class='hint-btn' onclick="showHint('b16')">💡 힌트 보기</button>
@@ -358,6 +392,7 @@ body{font-family:'Baloo 2','Noto Sans KR',sans-serif;background:var(--bg);paddin
 
   <div class='question-card' id='qc-b17'><span class='q-num'>17</span>
     <div class='q-text'>They walked fast <input class="blank" id="bi-b17" placeholder="___" data-ans="to catch" autocomplete="off" style="min-width:120px"> the bus. <span class='ex'>(catch)</span></div>
+    <div class='q-kor'>그들은 버스를 잡기 위해 빠르게 걸었다.</div>
     <button class='check-btn' onclick="checkBlank('b17')">✔ 확인</button>
     <div class='answer-hint' id='ah-b17'>💡 정답: <strong>to catch</strong> — "버스를 잡기 위해" 목적<br>📝 해석: 그들은 버스를 타려고 빠르게 걸었다.</div>
     <button class='hint-btn' onclick="showHint('b17')">💡 힌트 보기</button>
@@ -365,6 +400,7 @@ body{font-family:'Baloo 2','Noto Sans KR',sans-serif;background:var(--bg);paddin
 
   <div class='question-card' id='qc-b18'><span class='q-num'>18</span>
     <div class='q-text'>We opened the window <input class="blank" id="bi-b18" placeholder="___" data-ans="to get" autocomplete="off" style="min-width:110px"> fresh air. <span class='ex'>(get)</span></div>
+    <div class='q-kor'>우리는 신선한 공기를 마시기 위해 창문을 열었다.</div>
     <button class='check-btn' onclick="checkBlank('b18')">✔ 확인</button>
     <div class='answer-hint' id='ah-b18'>💡 정답: <strong>to get</strong> — "신선한 공기를 얻기 위해" 목적<br>📝 해석: 우리는 신선한 공기를 들이려고 창문을 열었다.</div>
     <button class='hint-btn' onclick="showHint('b18')">💡 힌트 보기</button>
@@ -372,6 +408,7 @@ body{font-family:'Baloo 2','Noto Sans KR',sans-serif;background:var(--bg);paddin
 
   <div class='question-card' id='qc-b19'><span class='q-num'>19</span>
     <div class='q-text'>Sam downloaded the app <input class="blank" id="bi-b19" placeholder="___" data-ans="to study" autocomplete="off" style="min-width:120px"> Korean. <span class='ex'>(study)</span></div>
+    <div class='q-kor'>Sam은 한국어를 공부하기 위해 그 앱을 다운로드했다.</div>
     <button class='check-btn' onclick="checkBlank('b19')">✔ 확인</button>
     <div class='answer-hint' id='ah-b19'>💡 정답: <strong>to study</strong> — "한국어를 공부하기 위해" 목적<br>📝 해석: Sam은 한국어를 공부하려고 그 앱을 다운로드했다.</div>
     <button class='hint-btn' onclick="showHint('b19')">💡 힌트 보기</button>
@@ -379,6 +416,7 @@ body{font-family:'Baloo 2','Noto Sans KR',sans-serif;background:var(--bg);paddin
 
   <div class='question-card' id='qc-b20'><span class='q-num'>20</span>
     <div class='q-text'>Mia borrowed my book <input class="blank" id="bi-b20" placeholder="___" data-ans="to prepare" autocomplete="off" style="min-width:130px"> for the test. <span class='ex'>(prepare)</span></div>
+    <div class='q-kor'>Mia는 시험을 준비하기 위해 내 책을 빌렸다.</div>
     <button class='check-btn' onclick="checkBlank('b20')">✔ 확인</button>
     <div class='answer-hint' id='ah-b20'>💡 정답: <strong>to prepare</strong> — "시험을 준비하기 위해" 목적<br>📝 해석: Mia는 시험을 준비하려고 내 책을 빌렸다.</div>
     <button class='hint-btn' onclick="showHint('b20')">💡 힌트 보기</button>
@@ -661,13 +699,13 @@ var vocabData={
   'a20':[{w:'teach',k:'가르치다'},{w:'teach oneself',k:'독학하다'}],
   'b1':[{w:'library',k:'도서관'}],
   'b2':[{w:'work part-time',k:'아르바이트하다'},{w:'tablet',k:'태블릿'},{w:'drawing',k:'그림 그리기'}],
-  'b3':[{w:'flew',k:'날아갔다(fly의 과거)'},{w:'Jeju Island',k:'제주도'},{w:'beach',k:'해변'}],
+  'b3':[{w:'pass',k:'합격하다'},{w:'exam',k:'시험'}],
   'b4':[{w:'text',k:'문자를 보내다'},{w:'teacher',k:'선생님'},{w:'absence',k:'결석'}],
   'b5':[{w:'practice',k:'연습하다'},{w:'contest',k:'대회'}],
-  'b6':[{w:'stand up',k:'일어서다'},{w:'opinion',k:'의견'}],
+  'b6':[{w:'market',k:'시장'},{w:'vegetables',k:'채소'}],
   'b7':[{w:'leave',k:'떠나다'},{w:'traffic',k:'교통 (혼잡)'}],
   'b8':[{w:'cook',k:'요리하다'},{w:'feed',k:'먹이다'}],
-  'b9':[{w:'take a bus',k:'버스를 타다'},{w:'museum',k:'박물관'}],
+  'b9':[{w:'turn off',k:'끄다'},{w:'save power',k:'전기를 절약하다'}],
   'b10':[{w:'app',k:'앱'},{w:'new words',k:'새 단어'}],
   'b11':[{w:'turn on',k:'켜다'},{w:'email',k:'이메일'}],
   'b12':[{w:'cafe',k:'카페'},{w:'friend',k:'친구'}],

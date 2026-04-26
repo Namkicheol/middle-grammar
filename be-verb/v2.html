@@ -54,6 +54,7 @@ body{font-family:'Noto Sans KR','Baloo 2',sans-serif;background:var(--bg);paddin
 .ok-chip{background:var(--green);color:#fff;cursor:default;}.ng-chip{background:var(--red);color:#fff;cursor:default;}
 .answer-hint{display:none;margin-top:10px;padding:10px 16px;background:#fef9c3;border-radius:10px;font-size:.9rem;font-weight:600;color:#854d0e;}
 .answer-hint.show{display:block;}
+.q-kor{font-size:.82rem;color:#1e6fa0;font-weight:600;margin-bottom:10px;padding:4px 10px;background:#e0f2fe;border-radius:6px;}
 .check-btn{display:block;width:100%;margin-top:14px;padding:14px;border-radius:14px;border:none;background:var(--blue);color:#fff;font-family:inherit;font-weight:800;font-size:1.05rem;cursor:pointer;transition:all .15s;}
 .check-btn:hover{filter:brightness(1.08);transform:translateY(-1px);}.check-btn:disabled{background:#e2e8f0;color:var(--gray);cursor:default;transform:none;}
 .hint-btn{background:none;border:none;color:var(--gray);font-family:inherit;font-size:.82rem;font-weight:600;cursor:pointer;padding:4px 0;margin-top:4px;display:block;}
@@ -103,6 +104,7 @@ body{font-family:'Noto Sans KR','Baloo 2',sans-serif;background:var(--bg);paddin
 
   <div class='question-card' id='qc-a1'><span class='q-num'>1</span>
     <div class='q-text'>He <em>___</em> my teacher.</div>
+    <div class='q-kor'>그는 나의 선생님이다.</div>
     <div class='choices' data-qid='a1' data-ans='is'><button class="choice" onclick="pickChoice(this)">am</button><button class="choice" onclick="pickChoice(this)">is</button><button class="choice" onclick="pickChoice(this)">are</button><button class="choice" onclick="pickChoice(this)">was</button></div>
     <div class='answer-hint' id='ah-a1'>💡 정답: <strong>is</strong> — He(3인칭 단수) → is<br>📝 해석: 그는 나의 선생님이다.</div>
     <button class='hint-btn' onclick="showHint('a1')">💡 힌트 보기</button>
@@ -110,6 +112,7 @@ body{font-family:'Noto Sans KR','Baloo 2',sans-serif;background:var(--bg);paddin
 
   <div class='question-card' id='qc-a2'><span class='q-num'>2</span>
     <div class='q-text'>They <em>___</em> my neighbors.</div>
+    <div class='q-kor'>그들은 나의 이웃이다.</div>
     <div class='choices' data-qid='a2' data-ans='are'><button class="choice" onclick="pickChoice(this)">is</button><button class="choice" onclick="pickChoice(this)">are</button><button class="choice" onclick="pickChoice(this)">am</button><button class="choice" onclick="pickChoice(this)">be</button></div>
     <div class='answer-hint' id='ah-a2'>💡 정답: <strong>are</strong> — They(복수) → are<br>📝 해석: 그들은 나의 이웃이다.</div>
     <button class='hint-btn' onclick="showHint('a2')">💡 힌트 보기</button>
@@ -117,6 +120,7 @@ body{font-family:'Noto Sans KR','Baloo 2',sans-serif;background:var(--bg);paddin
 
   <div class='question-card' id='qc-a3'><span class='q-num'>3</span>
     <div class='q-text'>We <em>___</em> in the library.</div>
+    <div class='q-kor'>우리는 도서관에 있다.</div>
     <div class='choices' data-qid='a3' data-ans='are'><button class="choice" onclick="pickChoice(this)">am</button><button class="choice" onclick="pickChoice(this)">is</button><button class="choice" onclick="pickChoice(this)">are</button><button class="choice" onclick="pickChoice(this)">be</button></div>
     <div class='answer-hint' id='ah-a3'>💡 정답: <strong>are</strong> — We(복수) → are<br>📝 해석: 우리는 도서관에 있다.</div>
     <button class='hint-btn' onclick="showHint('a3')">💡 힌트 보기</button>
@@ -124,6 +128,7 @@ body{font-family:'Noto Sans KR','Baloo 2',sans-serif;background:var(--bg);paddin
 
   <div class='question-card' id='qc-a4'><span class='q-num'>4</span>
     <div class='q-text'>I <em>___</em> 140 cm tall.</div>
+    <div class='q-kor'>나는 키가 140cm이다.</div>
     <div class='choices' data-qid='a4' data-ans='am'><button class="choice" onclick="pickChoice(this)">is</button><button class="choice" onclick="pickChoice(this)">am</button><button class="choice" onclick="pickChoice(this)">are</button><button class="choice" onclick="pickChoice(this)">be</button></div>
     <div class='answer-hint' id='ah-a4'>💡 정답: <strong>am</strong> — I → am<br>📝 해석: 나는 키가 140cm이다.</div>
     <button class='hint-btn' onclick="showHint('a4')">💡 힌트 보기</button>
@@ -131,6 +136,7 @@ body{font-family:'Noto Sans KR','Baloo 2',sans-serif;background:var(--bg);paddin
 
   <div class='question-card' id='qc-a5'><span class='q-num'>5</span>
     <div class='q-text'>The movie <em>___</em> funny.</div>
+    <div class='q-kor'>그 영화는 재미있다.</div>
     <div class='choices' data-qid='a5' data-ans='is'><button class="choice" onclick="pickChoice(this)">am</button><button class="choice" onclick="pickChoice(this)">are</button><button class="choice" onclick="pickChoice(this)">is</button><button class="choice" onclick="pickChoice(this)">be</button></div>
     <div class='answer-hint' id='ah-a5'>💡 정답: <strong>is</strong> — The movie(단수) → is<br>📝 해석: 그 영화는 재미있다.</div>
     <button class='hint-btn' onclick="showHint('a5')">💡 힌트 보기</button>
@@ -138,6 +144,7 @@ body{font-family:'Noto Sans KR','Baloo 2',sans-serif;background:var(--bg);paddin
 
   <div class='question-card' id='qc-a6'><span class='q-num'>6</span>
     <div class='q-text'>You <em>___</em> late for school.</div>
+    <div class='q-kor'>너는 학교에 지각이다.</div>
     <div class='choices' data-qid='a6' data-ans='are'><button class="choice" onclick="pickChoice(this)">am</button><button class="choice" onclick="pickChoice(this)">is</button><button class="choice" onclick="pickChoice(this)">are</button><button class="choice" onclick="pickChoice(this)">be</button></div>
     <div class='answer-hint' id='ah-a6'>💡 정답: <strong>are</strong> — You → are<br>📝 해석: 너는 학교에 지각이다.</div>
     <button class='hint-btn' onclick="showHint('a6')">💡 힌트 보기</button>
@@ -145,6 +152,7 @@ body{font-family:'Noto Sans KR','Baloo 2',sans-serif;background:var(--bg);paddin
 
   <div class='question-card' id='qc-a7'><span class='q-num'>7</span>
     <div class='q-text'>Irene and Jim <em>___</em> in the same class.</div>
+    <div class='q-kor'>Irene과 Jim은 같은 반이다.</div>
     <div class='choices' data-qid='a7' data-ans='are'><button class="choice" onclick="pickChoice(this)">is</button><button class="choice" onclick="pickChoice(this)">am</button><button class="choice" onclick="pickChoice(this)">are</button><button class="choice" onclick="pickChoice(this)">be</button></div>
     <div class='answer-hint' id='ah-a7'>💡 정답: <strong>are</strong> — 복수 주어 → are<br>📝 해석: Irene과 Jim은 같은 반이다.</div>
     <button class='hint-btn' onclick="showHint('a7')">💡 힌트 보기</button>
@@ -152,6 +160,7 @@ body{font-family:'Noto Sans KR','Baloo 2',sans-serif;background:var(--bg);paddin
 
   <div class='question-card' id='qc-a8'><span class='q-num'>8</span>
     <div class='q-text'>This jacket <em>___</em> expensive. I can buy it easily.</div>
+    <div class='q-kor'>이 재킷은 비싸지 않다. 나는 그것을 쉽게 살 수 있다.</div>
     <div class='choices' data-qid='a8' data-ans='is not'><button class="choice" onclick="pickChoice(this)">is not</button><button class="choice" onclick="pickChoice(this)">are not</button><button class="choice" onclick="pickChoice(this)">not is</button><button class="choice" onclick="pickChoice(this)">am not</button></div>
     <div class='answer-hint' id='ah-a8'>💡 정답: <strong>is not</strong> — 단수 → is not / isn't도 정답<br>📝 해석: 이 재킷은 비싸지 않다. 나는 그것을 쉽게 살 수 있다.</div>
     <button class='hint-btn' onclick="showHint('a8')">💡 힌트 보기</button>
@@ -159,6 +168,7 @@ body{font-family:'Noto Sans KR','Baloo 2',sans-serif;background:var(--bg);paddin
 
   <div class='question-card' id='qc-a9'><span class='q-num'>9</span>
     <div class='q-text'>It <em>___</em> sunny now. It is cloudy and rainy.</div>
+    <div class='q-kor'>지금 화창하지 않다. 흐리고 비가 온다.</div>
     <div class='choices' data-qid='a9' data-ans='is not'><button class="choice" onclick="pickChoice(this)">is not</button><button class="choice" onclick="pickChoice(this)">are not</button><button class="choice" onclick="pickChoice(this)">not is</button><button class="choice" onclick="pickChoice(this)">be not</button></div>
     <div class='answer-hint' id='ah-a9'>💡 정답: <strong>is not</strong> — It(단수) → is not / isn't도 정답<br>📝 해석: 지금 화창하지 않다. 흐리고 비가 온다.</div>
     <button class='hint-btn' onclick="showHint('a9')">💡 힌트 보기</button>
@@ -166,6 +176,7 @@ body{font-family:'Noto Sans KR','Baloo 2',sans-serif;background:var(--bg);paddin
 
   <div class='question-card' id='qc-a10'><span class='q-num'>10</span>
     <div class='q-text'>My parents <em>___</em> doctors. They are teachers. <span class="ex">(be, 부정형)</span></div>
+    <div class='q-kor'>나의 부모님은 의사가 아니다. 그들은 선생님이다.</div>
     <div class='choices' data-qid='a10' data-ans='are not'><button class="choice" onclick="pickChoice(this)">is not</button><button class="choice" onclick="pickChoice(this)">are not</button><button class="choice" onclick="pickChoice(this)">not are</button><button class="choice" onclick="pickChoice(this)">be not</button></div>
     <div class='answer-hint' id='ah-a10'>💡 정답: <strong>are not</strong> — 복수 → are not / aren't도 정답<br>📝 해석: 나의 부모님은 의사가 아니다. 그들은 선생님이다.</div>
     <button class='hint-btn' onclick="showHint('a10')">💡 힌트 보기</button>
@@ -173,6 +184,7 @@ body{font-family:'Noto Sans KR','Baloo 2',sans-serif;background:var(--bg);paddin
 
   <div class='question-card' id='qc-a11'><span class='q-num'>11</span>
     <div class='q-text'>Sally and her sister <input class="blank" id="bi-a11" placeholder="___" data-ans="are" autocomplete="off" style="min-width:90px"> middle school students. <span class="ex">(be)</span></div>
+    <div class='q-kor'>Sally와 그녀의 언니는 중학생이다.</div>
     <button class='check-btn' onclick="checkBlank('a11')">✔ 확인</button>
     <div class='answer-hint' id='ah-a11'>💡 정답: <strong>are</strong> — 복수 → are<br>📝 해석: Sally와 그녀의 언니는 중학생이다.</div>
     <button class='hint-btn' onclick="showHint('a11')">💡 힌트 보기</button>
@@ -180,6 +192,7 @@ body{font-family:'Noto Sans KR','Baloo 2',sans-serif;background:var(--bg);paddin
 
   <div class='question-card' id='qc-a12'><span class='q-num'>12</span>
     <div class='q-text'>The answer <input class="blank" id="bi-a12" placeholder="___" data-ans="is not" autocomplete="off" style="min-width:98px"> right. It is wrong. <span class="ex">(be, 부정형)</span></div>
+    <div class='q-kor'>그 답은 맞지 않다. 그것은 틀렸다.</div>
     <button class='check-btn' onclick="checkBlank('a12')">✔ 확인</button>
     <div class='answer-hint' id='ah-a12'>💡 정답: <strong>is not</strong> — 단수 → is not / isn't도 정답<br>📝 해석: 그 답은 맞지 않다. 그것은 틀렸다.</div>
     <button class='hint-btn' onclick="showHint('a12')">💡 힌트 보기</button>
@@ -187,6 +200,7 @@ body{font-family:'Noto Sans KR','Baloo 2',sans-serif;background:var(--bg);paddin
 
   <div class='question-card' id='qc-a13'><span class='q-num'>13</span>
     <div class='q-text'>I <input class="blank" id="bi-a13" placeholder="___" data-ans="am" autocomplete="off" style="min-width:90px"> in the soccer club. <span class="ex">(be)</span></div>
+    <div class='q-kor'>나는 축구부에 있다.</div>
     <button class='check-btn' onclick="checkBlank('a13')">✔ 확인</button>
     <div class='answer-hint' id='ah-a13'>💡 정답: <strong>am</strong> — I → am<br>📝 해석: 나는 축구부에 있다.</div>
     <button class='hint-btn' onclick="showHint('a13')">💡 힌트 보기</button>
@@ -194,6 +208,7 @@ body{font-family:'Noto Sans KR','Baloo 2',sans-serif;background:var(--bg);paddin
 
   <div class='question-card' id='qc-a14'><span class='q-num'>14</span>
     <div class='q-text'>These shoes <input class="blank" id="bi-a14" placeholder="___" data-ans="are" autocomplete="off" style="min-width:90px"> pretty. <span class="ex">(be)</span></div>
+    <div class='q-kor'>이 신발들은 예쁘다.</div>
     <button class='check-btn' onclick="checkBlank('a14')">✔ 확인</button>
     <div class='answer-hint' id='ah-a14'>💡 정답: <strong>are</strong> — These shoes(복수) → are<br>📝 해석: 이 신발들은 예쁘다.</div>
     <button class='hint-btn' onclick="showHint('a14')">💡 힌트 보기</button>
@@ -201,6 +216,7 @@ body{font-family:'Noto Sans KR','Baloo 2',sans-serif;background:var(--bg);paddin
 
   <div class='question-card' id='qc-a15'><span class='q-num'>15</span>
     <div class='q-text'>Tom and I <input class="blank" id="bi-a15" placeholder="___" data-ans="are" autocomplete="off" style="min-width:90px"> best friends. <span class="ex">(be)</span></div>
+    <div class='q-kor'>Tom과 나는 절친한 친구이다.</div>
     <button class='check-btn' onclick="checkBlank('a15')">✔ 확인</button>
     <div class='answer-hint' id='ah-a15'>💡 정답: <strong>are</strong> — Tom and I(복수) → are<br>📝 해석: Tom과 나는 절친한 친구이다.</div>
     <button class='hint-btn' onclick="showHint('a15')">💡 힌트 보기</button>
@@ -208,6 +224,7 @@ body{font-family:'Noto Sans KR','Baloo 2',sans-serif;background:var(--bg);paddin
 
   <div class='question-card' id='qc-a16'><span class='q-num'>16</span>
     <div class='q-text'>The weather <input class="blank" id="bi-a16" placeholder="___" data-ans="is" autocomplete="off" style="min-width:90px"> not nice today. <span class="ex">(be)</span></div>
+    <div class='q-kor'>오늘 날씨가 좋지 않다.</div>
     <button class='check-btn' onclick="checkBlank('a16')">✔ 확인</button>
     <div class='answer-hint' id='ah-a16'>💡 정답: <strong>is</strong> — The weather(단수) → is<br>📝 해석: 오늘 날씨가 좋지 않다.</div>
     <button class='hint-btn' onclick="showHint('a16')">💡 힌트 보기</button>
@@ -215,6 +232,7 @@ body{font-family:'Noto Sans KR','Baloo 2',sans-serif;background:var(--bg);paddin
 
   <div class='question-card' id='qc-a17'><span class='q-num'>17</span>
     <div class='q-text'>Jaeho <input class="blank" id="bi-a17" placeholder="___" data-ans="is" autocomplete="off" style="min-width:90px"> from Korea. <span class="ex">(be)</span></div>
+    <div class='q-kor'>Jaeho는 한국 출신이다.</div>
     <button class='check-btn' onclick="checkBlank('a17')">✔ 확인</button>
     <div class='answer-hint' id='ah-a17'>💡 정답: <strong>is</strong> — Jaeho(3인칭 단수) → is<br>📝 해석: Jaeho는 한국 출신이다.</div>
     <button class='hint-btn' onclick="showHint('a17')">💡 힌트 보기</button>
@@ -222,6 +240,7 @@ body{font-family:'Noto Sans KR','Baloo 2',sans-serif;background:var(--bg);paddin
 
   <div class='question-card' id='qc-a18'><span class='q-num'>18</span>
     <div class='q-text'>Both clubs <input class="blank" id="bi-a18" placeholder="___" data-ans="are" autocomplete="off" style="min-width:90px"> fun! <span class="ex">(be)</span></div>
+    <div class='q-kor'>두 동아리 모두 재미있다!</div>
     <button class='check-btn' onclick="checkBlank('a18')">✔ 확인</button>
     <div class='answer-hint' id='ah-a18'>💡 정답: <strong>are</strong> — Both clubs(복수) → are<br>📝 해석: 두 동아리 모두 재미있다!</div>
     <button class='hint-btn' onclick="showHint('a18')">💡 힌트 보기</button>
@@ -229,6 +248,7 @@ body{font-family:'Noto Sans KR','Baloo 2',sans-serif;background:var(--bg);paddin
 
   <div class='question-card' id='qc-a19'><span class='q-num'>19</span>
     <div class='q-text'>I <input class="blank" id="bi-a19" placeholder="___" data-ans="am" autocomplete="off" style="min-width:90px"> not a soccer fan. I like basketball. <span class="ex">(be)</span></div>
+    <div class='q-kor'>나는 축구 팬이 아니다. 나는 농구를 좋아한다.</div>
     <button class='check-btn' onclick="checkBlank('a19')">✔ 확인</button>
     <div class='answer-hint' id='ah-a19'>💡 정답: <strong>am</strong> — I → am<br>📝 해석: 나는 축구 팬이 아니다. 나는 농구를 좋아한다.</div>
     <button class='hint-btn' onclick="showHint('a19')">💡 힌트 보기</button>
@@ -236,6 +256,7 @@ body{font-family:'Noto Sans KR','Baloo 2',sans-serif;background:var(--bg);paddin
 
   <div class='question-card' id='qc-a20'><span class='q-num'>20</span>
     <div class='q-text'>Michael <input class="blank" id="bi-a20" placeholder="___" data-ans="is not" autocomplete="off" style="min-width:98px"> a teacher. He is a student. <span class="ex">(be, 부정형)</span></div>
+    <div class='q-kor'>Michael은 선생님이 아니다. 그는 학생이다.</div>
     <button class='check-btn' onclick="checkBlank('a20')">✔ 확인</button>
     <div class='answer-hint' id='ah-a20'>💡 정답: <strong>is not</strong> — 단수 → is not / isn't도 정답<br>📝 해석: Michael은 선생님이 아니다. 그는 학생이다.</div>
     <button class='hint-btn' onclick="showHint('a20')">💡 힌트 보기</button>
@@ -248,6 +269,7 @@ body{font-family:'Noto Sans KR','Baloo 2',sans-serif;background:var(--bg);paddin
 
   <div class='question-card' id='qc-b1'><span class='q-num'>1</span>
     <div class='q-text'>I <em>___</em> two sisters. We resemble each other.</div>
+    <div class='q-kor'>나는 여자 형제가 둘 있다. 우리는 서로 닮았다.</div>
     <div class='choices' data-qid='b1' data-ans='have'><button class="choice" onclick="pickChoice(this)">have</button><button class="choice" onclick="pickChoice(this)">has</button><button class="choice" onclick="pickChoice(this)">having</button><button class="choice" onclick="pickChoice(this)">to have</button></div>
     <div class='answer-hint' id='ah-b1'>💡 정답: <strong>have</strong> — I → 그대로 have<br>📝 해석: 나는 여자 형제가 둘 있다. 우리는 서로 닮았다.</div>
     <button class='hint-btn' onclick="showHint('b1')">💡 힌트 보기</button>
@@ -255,6 +277,7 @@ body{font-family:'Noto Sans KR','Baloo 2',sans-serif;background:var(--bg);paddin
 
   <div class='question-card' id='qc-b2'><span class='q-num'>2</span>
     <div class='q-text'>He <input class="blank" id="bi-b2" placeholder="___" data-ans="speaks" autocomplete="off" style="min-width:98px"> three languages. <span class="ex">(speak)</span></div>
+    <div class='q-kor'>그는 세 가지 언어를 말한다.</div>
     <button class='check-btn' onclick="checkBlank('b2')">✔ 확인</button>
     <div class='answer-hint' id='ah-b2'>💡 정답: <strong>speaks</strong> — He(3인칭) → speak+s<br>📝 해석: 그는 세 가지 언어를 말한다.</div>
     <button class='hint-btn' onclick="showHint('b2')">💡 힌트 보기</button>
@@ -262,6 +285,7 @@ body{font-family:'Noto Sans KR','Baloo 2',sans-serif;background:var(--bg);paddin
 
   <div class='question-card' id='qc-b3'><span class='q-num'>3</span>
     <div class='q-text'>Kevin <em>___</em> violin lessons on Mondays.</div>
+    <div class='q-kor'>Kevin은 월요일마다 바이올린 수업을 받는다.</div>
     <div class='choices' data-qid='b3' data-ans='takes'><button class="choice" onclick="pickChoice(this)">take</button><button class="choice" onclick="pickChoice(this)">takes</button><button class="choice" onclick="pickChoice(this)">taked</button><button class="choice" onclick="pickChoice(this)">taking</button></div>
     <div class='answer-hint' id='ah-b3'>💡 정답: <strong>takes</strong> — Kevin(3인칭) → take+s<br>📝 해석: Kevin은 월요일마다 바이올린 수업을 받는다.</div>
     <button class='hint-btn' onclick="showHint('b3')">💡 힌트 보기</button>
@@ -269,6 +293,7 @@ body{font-family:'Noto Sans KR','Baloo 2',sans-serif;background:var(--bg);paddin
 
   <div class='question-card' id='qc-b4'><span class='q-num'>4</span>
     <div class='q-text'>I <input class="blank" id="bi-b4" placeholder="___" data-ans="don't live" autocomplete="off" style="min-width:150px"> in Incheon now. I live in Suwon. <span class="ex">(live, 부정형)</span></div>
+    <div class='q-kor'>나는 지금 인천에 살지 않는다. 나는 수원에 산다.</div>
     <button class='check-btn' onclick="checkBlank('b4')">✔ 확인</button>
     <div class='answer-hint' id='ah-b4'>💡 정답: <strong>don't live</strong> — I → don't+원형 / do not live도 정답<br>📝 해석: 나는 지금 인천에 살지 않는다. 나는 수원에 산다.</div>
     <button class='hint-btn' onclick="showHint('b4')">💡 힌트 보기</button>
@@ -276,6 +301,7 @@ body{font-family:'Noto Sans KR','Baloo 2',sans-serif;background:var(--bg);paddin
 
   <div class='question-card' id='qc-b5'><span class='q-num'>5</span>
     <div class='q-text'>Judy is a teacher. She <em>___</em> science.</div>
+    <div class='q-kor'>Judy는 선생님이다. 그녀는 과학을 가르친다.</div>
     <div class='choices' data-qid='b5' data-ans='teaches'><button class="choice" onclick="pickChoice(this)">teach</button><button class="choice" onclick="pickChoice(this)">teachs</button><button class="choice" onclick="pickChoice(this)">teaches</button><button class="choice" onclick="pickChoice(this)">teaching</button></div>
     <div class='answer-hint' id='ah-b5'>💡 정답: <strong>teaches</strong> — She(3인칭) → teach+es<br>📝 해석: Judy는 선생님이다. 그녀는 과학을 가르친다.</div>
     <button class='hint-btn' onclick="showHint('b5')">💡 힌트 보기</button>
@@ -283,6 +309,7 @@ body{font-family:'Noto Sans KR','Baloo 2',sans-serif;background:var(--bg);paddin
 
   <div class='question-card' id='qc-b6'><span class='q-num'>6</span>
     <div class='q-text'>Christina <input class="blank" id="bi-b6" placeholder="___" data-ans="doesn't eat" autocomplete="off" style="min-width:163px"> meat. She is a vegetarian. <span class="ex">(eat, 부정형)</span></div>
+    <div class='q-kor'>Christina는 고기를 먹지 않는다. 그녀는 채식주의자이다.</div>
     <button class='check-btn' onclick="checkBlank('b6')">✔ 확인</button>
     <div class='answer-hint' id='ah-b6'>💡 정답: <strong>doesn't eat</strong> — She(3인칭) → doesn't+원형 / does not eat도 정답<br>📝 해석: Christina는 고기를 먹지 않는다. 그녀는 채식주의자이다.</div>
     <button class='hint-btn' onclick="showHint('b6')">💡 힌트 보기</button>
@@ -290,6 +317,7 @@ body{font-family:'Noto Sans KR','Baloo 2',sans-serif;background:var(--bg);paddin
 
   <div class='question-card' id='qc-b7'><span class='q-num'>7</span>
     <div class='q-text'>My parents <em>___</em> for a hospital. They are teachers.</div>
+    <div class='q-kor'>나의 부모님은 병원에서 일하지 않는다. 그들은 선생님이다.</div>
     <div class='choices' data-qid='b7' data-ans="don't work"><button class="choice" onclick="pickChoice(this)">don't work</button><button class="choice" onclick="pickChoice(this)">doesn't work</button><button class="choice" onclick="pickChoice(this)">not work</button><button class="choice" onclick="pickChoice(this)">works not</button></div>
     <div class='answer-hint' id='ah-b7'>💡 정답: <strong>don't work</strong> — They(복수) → don't+원형<br>📝 해석: 나의 부모님은 병원에서 일하지 않는다. 그들은 선생님이다.</div>
     <button class='hint-btn' onclick="showHint('b7')">💡 힌트 보기</button>
@@ -297,6 +325,7 @@ body{font-family:'Noto Sans KR','Baloo 2',sans-serif;background:var(--bg);paddin
 
   <div class='question-card' id='qc-b8'><span class='q-num'>8</span>
     <div class='q-text'>The movie <input class="blank" id="bi-b8" placeholder="___" data-ans="starts" autocomplete="off" style="min-width:98px"> in five minutes. <span class="ex">(start)</span></div>
+    <div class='q-kor'>그 영화는 5분 후에 시작한다.</div>
     <button class='check-btn' onclick="checkBlank('b8')">✔ 확인</button>
     <div class='answer-hint' id='ah-b8'>💡 정답: <strong>starts</strong> — 단수 → start+s<br>📝 해석: 그 영화는 5분 후에 시작한다.</div>
     <button class='hint-btn' onclick="showHint('b8')">💡 힌트 보기</button>
@@ -304,6 +333,7 @@ body{font-family:'Noto Sans KR','Baloo 2',sans-serif;background:var(--bg);paddin
 
   <div class='question-card' id='qc-b9'><span class='q-num'>9</span>
     <div class='q-text'>Mia <em>___</em> to school on foot.</div>
+    <div class='q-kor'>Mia는 걸어서 학교에 간다.</div>
     <div class='choices' data-qid='b9' data-ans='goes'><button class="choice" onclick="pickChoice(this)">go</button><button class="choice" onclick="pickChoice(this)">goes</button><button class="choice" onclick="pickChoice(this)">gos</button><button class="choice" onclick="pickChoice(this)">going</button></div>
     <div class='answer-hint' id='ah-b9'>💡 정답: <strong>goes</strong> — Mia(3인칭) → go+es<br>📝 해석: Mia는 걸어서 학교에 간다.</div>
     <button class='hint-btn' onclick="showHint('b9')">💡 힌트 보기</button>
@@ -311,6 +341,7 @@ body{font-family:'Noto Sans KR','Baloo 2',sans-serif;background:var(--bg);paddin
 
   <div class='question-card' id='qc-b10'><span class='q-num'>10</span>
     <div class='q-text'>Ellie <input class="blank" id="bi-b10" placeholder="___" data-ans="cleans" autocomplete="off" style="min-width:98px"> her house every day. <span class="ex">(clean)</span></div>
+    <div class='q-kor'>Ellie는 매일 집을 청소한다.</div>
     <button class='check-btn' onclick="checkBlank('b10')">✔ 확인</button>
     <div class='answer-hint' id='ah-b10'>💡 정답: <strong>cleans</strong> — Ellie(3인칭) → clean+s<br>📝 해석: Ellie는 매일 집을 청소한다.</div>
     <button class='hint-btn' onclick="showHint('b10')">💡 힌트 보기</button>
@@ -318,6 +349,7 @@ body{font-family:'Noto Sans KR','Baloo 2',sans-serif;background:var(--bg);paddin
 
   <div class='question-card' id='qc-b11'><span class='q-num'>11</span>
     <div class='q-text'>Sophie <em>___</em> camping with her family.</div>
+    <div class='q-kor'>Sophie는 가족과 함께 캠핑을 간다.</div>
     <div class='choices' data-qid='b11' data-ans='goes'><button class="choice" onclick="pickChoice(this)">go</button><button class="choice" onclick="pickChoice(this)">gos</button><button class="choice" onclick="pickChoice(this)">goes</button><button class="choice" onclick="pickChoice(this)">going</button></div>
     <div class='answer-hint' id='ah-b11'>💡 정답: <strong>goes</strong> — Sophie(3인칭) → go+es<br>📝 해석: Sophie는 가족과 함께 캠핑을 간다.</div>
     <button class='hint-btn' onclick="showHint('b11')">💡 힌트 보기</button>
@@ -325,6 +357,7 @@ body{font-family:'Noto Sans KR','Baloo 2',sans-serif;background:var(--bg);paddin
 
   <div class='question-card' id='qc-b12'><span class='q-num'>12</span>
     <div class='q-text'>I <input class="blank" id="bi-b12" placeholder="___" data-ans="play" autocomplete="off" style="min-width:90px"> soccer with my friends in my free time. <span class="ex">(play)</span></div>
+    <div class='q-kor'>나는 여가 시간에 친구들과 축구를 한다.</div>
     <button class='check-btn' onclick="checkBlank('b12')">✔ 확인</button>
     <div class='answer-hint' id='ah-b12'>💡 정답: <strong>play</strong> — I → 그대로 play<br>📝 해석: 나는 여가 시간에 친구들과 축구를 한다.</div>
     <button class='hint-btn' onclick="showHint('b12')">💡 힌트 보기</button>
@@ -332,6 +365,7 @@ body{font-family:'Noto Sans KR','Baloo 2',sans-serif;background:var(--bg);paddin
 
   <div class='question-card' id='qc-b13'><span class='q-num'>13</span>
     <div class='q-text'>We <em>___</em> English every day.</div>
+    <div class='q-kor'>우리는 매일 영어를 공부한다.</div>
     <div class='choices' data-qid='b13' data-ans='study'><button class="choice" onclick="pickChoice(this)">study</button><button class="choice" onclick="pickChoice(this)">studies</button><button class="choice" onclick="pickChoice(this)">studys</button><button class="choice" onclick="pickChoice(this)">studying</button></div>
     <div class='answer-hint' id='ah-b13'>💡 정답: <strong>study</strong> — We(복수) → 그대로 study<br>📝 해석: 우리는 매일 영어를 공부한다.</div>
     <button class='hint-btn' onclick="showHint('b13')">💡 힌트 보기</button>
@@ -339,6 +373,7 @@ body{font-family:'Noto Sans KR','Baloo 2',sans-serif;background:var(--bg);paddin
 
   <div class='question-card' id='qc-b14'><span class='q-num'>14</span>
     <div class='q-text'>She <input class="blank" id="bi-b14" placeholder="___" data-ans="feels" autocomplete="off" style="min-width:90px"> healthy because she exercises every day. <span class="ex">(feel)</span></div>
+    <div class='q-kor'>그녀는 매일 운동하기 때문에 건강하다고 느낀다.</div>
     <button class='check-btn' onclick="checkBlank('b14')">✔ 확인</button>
     <div class='answer-hint' id='ah-b14'>💡 정답: <strong>feels</strong> — She(3인칭) → feel+s<br>📝 해석: 그녀는 매일 운동하기 때문에 건강하다고 느낀다.</div>
     <button class='hint-btn' onclick="showHint('b14')">💡 힌트 보기</button>
@@ -346,6 +381,7 @@ body{font-family:'Noto Sans KR','Baloo 2',sans-serif;background:var(--bg);paddin
 
   <div class='question-card' id='qc-b15'><span class='q-num'>15</span>
     <div class='q-text'>Diego <em>___</em> pictures of Bella online.</div>
+    <div class='q-kor'>Diego는 Bella의 사진을 온라인에 올린다.</div>
     <div class='choices' data-qid='b15' data-ans='posts'><button class="choice" onclick="pickChoice(this)">post</button><button class="choice" onclick="pickChoice(this)">posts</button><button class="choice" onclick="pickChoice(this)">postes</button><button class="choice" onclick="pickChoice(this)">posting</button></div>
     <div class='answer-hint' id='ah-b15'>💡 정답: <strong>posts</strong> — Diego(3인칭) → post+s<br>📝 해석: Diego는 Bella의 사진을 온라인에 올린다.</div>
     <button class='hint-btn' onclick="showHint('b15')">💡 힌트 보기</button>
@@ -353,6 +389,7 @@ body{font-family:'Noto Sans KR','Baloo 2',sans-serif;background:var(--bg);paddin
 
   <div class='question-card' id='qc-b16'><span class='q-num'>16</span>
     <div class='q-text'>My family <input class="blank" id="bi-b16" placeholder="___" data-ans="goes" autocomplete="off" style="min-width:90px"> camping very often. <span class="ex">(go)</span></div>
+    <div class='q-kor'>우리 가족은 매우 자주 캠핑을 간다.</div>
     <button class='check-btn' onclick="checkBlank('b16')">✔ 확인</button>
     <div class='answer-hint' id='ah-b16'>💡 정답: <strong>goes</strong> — My family(단수) → go+es<br>📝 해석: 우리 가족은 매우 자주 캠핑을 간다.</div>
     <button class='hint-btn' onclick="showHint('b16')">💡 힌트 보기</button>
@@ -360,6 +397,7 @@ body{font-family:'Noto Sans KR','Baloo 2',sans-serif;background:var(--bg);paddin
 
   <div class='question-card' id='qc-b17'><span class='q-num'>17</span>
     <div class='q-text'>Amara <em>___</em> dance moves every day.</div>
+    <div class='q-kor'>Amara는 매일 댄스 동작을 연습한다.</div>
     <div class='choices' data-qid='b17' data-ans='practices'><button class="choice" onclick="pickChoice(this)">practice</button><button class="choice" onclick="pickChoice(this)">practices</button><button class="choice" onclick="pickChoice(this)">practicees</button><button class="choice" onclick="pickChoice(this)">practicing</button></div>
     <div class='answer-hint' id='ah-b17'>💡 정답: <strong>practices</strong> — Amara(3인칭) → practice+s<br>📝 해석: Amara는 매일 댄스 동작을 연습한다.</div>
     <button class='hint-btn' onclick="showHint('b17')">💡 힌트 보기</button>
@@ -367,6 +405,7 @@ body{font-family:'Noto Sans KR','Baloo 2',sans-serif;background:var(--bg);paddin
 
   <div class='question-card' id='qc-b18'><span class='q-num'>18</span>
     <div class='q-text'>He <input class="blank" id="bi-b18" placeholder="___" data-ans="doesn't play" autocomplete="off" style="min-width:176px"> soccer. He likes baseball. <span class="ex">(play, 부정형)</span></div>
+    <div class='q-kor'>그는 축구를 하지 않는다. 그는 야구를 좋아한다.</div>
     <button class='check-btn' onclick="checkBlank('b18')">✔ 확인</button>
     <div class='answer-hint' id='ah-b18'>💡 정답: <strong>doesn't play</strong> — He(3인칭) → doesn't+원형 / does not play도 정답<br>📝 해석: 그는 축구를 하지 않는다. 그는 야구를 좋아한다.</div>
     <button class='hint-btn' onclick="showHint('b18')">💡 힌트 보기</button>
@@ -374,6 +413,7 @@ body{font-family:'Noto Sans KR','Baloo 2',sans-serif;background:var(--bg);paddin
 
   <div class='question-card' id='qc-b19'><span class='q-num'>19</span>
     <div class='q-text'>The baby often <em>___</em> at night.</div>
+    <div class='q-kor'>그 아기는 밤에 자주 운다.</div>
     <div class='choices' data-qid='b19' data-ans='cries'><button class="choice" onclick="pickChoice(this)">cry</button><button class="choice" onclick="pickChoice(this)">crys</button><button class="choice" onclick="pickChoice(this)">cries</button><button class="choice" onclick="pickChoice(this)">crying</button></div>
     <div class='answer-hint' id='ah-b19'>💡 정답: <strong>cries</strong> — 3인칭 단수 → cry→cries<br>📝 해석: 그 아기는 밤에 자주 운다.</div>
     <button class='hint-btn' onclick="showHint('b19')">💡 힌트 보기</button>
@@ -381,6 +421,7 @@ body{font-family:'Noto Sans KR','Baloo 2',sans-serif;background:var(--bg);paddin
 
   <div class='question-card' id='qc-b20'><span class='q-num'>20</span>
     <div class='q-text'>Sophie <input class="blank" id="bi-b20" placeholder="___" data-ans="has" autocomplete="off" style="min-width:90px"> a baguette in the picture. She is from France! <span class="ex">(have)</span></div>
+    <div class='q-kor'>Sophie는 사진에서 바게트를 들고 있다. 그녀는 프랑스 출신이다!</div>
     <button class='check-btn' onclick="checkBlank('b20')">✔ 확인</button>
     <div class='answer-hint' id='ah-b20'>💡 정답: <strong>has</strong> — Sophie(3인칭) → have→has<br>📝 해석: Sophie는 사진에서 바게트를 들고 있다. 그녀는 프랑스 출신이다!</div>
     <button class='hint-btn' onclick="showHint('b20')">💡 힌트 보기</button>
@@ -492,7 +533,7 @@ function checkArrange(btn){
   btn.disabled=true;
   document.querySelectorAll('#pool-'+k+' .pool-chip').forEach(function(c){c.style.visibility='hidden';c.disabled=true;});
   var chips=document.querySelectorAll('#area-'+k+' .ans-chip');
-  var got=typed===ans;
+  var got=norm(typed)===norm(ans);
   chips.forEach(function(c){c.classList.remove('ans-chip');c.classList.add(got?'ok-chip':'ng-chip');c.onclick=null;});
   mark(k,got,typed,ans);
 }

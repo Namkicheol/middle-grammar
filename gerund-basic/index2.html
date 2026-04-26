@@ -295,7 +295,7 @@ function render() {
             // ★ 정답 및 해설이 뚜렷하게 보이도록 수정 ★
             let vHtml='';
             if(vocabMap[globalNum]&&vocabMap[globalNum].length)vHtml='<br><br>📖 <strong>단어:</strong> '+vocabMap[globalNum].map(v=>`<span class='vw'>${v.w} ${v.k}</span>`).join(' ');
-            html += `<div class='answer-hint' id='ah-${id}'>💡 <strong>정답: ${q.ans}</strong><br><br>👉 해설: ${q.hint}${vHtml}</div>`;
+            html += `<div class='answer-hint' id='ah-${id}'>💡 <strong>정답: ${q.ans}</strong><br>📝 해석: ${q.kor}<br><br>👉 해설: ${q.hint}${vHtml}</div>`;
             html += `<button class='hint-btn' onclick="showHint('${id}')">💡 정답/해설 보기</button>`;
             html += `</div>`;
             globalNum++;

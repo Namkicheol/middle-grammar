@@ -368,7 +368,7 @@ function render() {
             if (q.hint) {
                 let vHtml='';
                 if(vocabMap[gn]&&vocabMap[gn].length)vHtml='<br><br>📖 <b>단어:</b> '+vocabMap[gn].map(v=>`<span class='vw'>${v.w} ${v.k}</span>`).join(' ');
-                ht += `<div class="hint-box">💡 <b>해설:</b> ${q.hint}${vHtml}</div>`;
+                ht += `<div class="hint-box">📝 <b>해석:</b> ${q.kor}<br>💡 <b>해설:</b> ${q.hint}${vHtml}</div>`;
             }
             ht += `</div>`;
             gn++;

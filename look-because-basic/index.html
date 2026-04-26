@@ -72,7 +72,8 @@ body{font-family:'Baloo 2','Noto Sans KR',sans-serif;background:var(--bg);paddin
 #toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%) translateY(80px);background:var(--dark);color:#fff;padding:10px 22px;border-radius:20px;font-weight:700;font-size:.88rem;transition:transform .3s;z-index:999;pointer-events:none;white-space:nowrap;}
 #toast.show{transform:translateX(-50%) translateY(0);}#toast.ok{background:var(--green);}#toast.ng{background:var(--red);}
 @keyframes fadein{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}
-@keyframes pop{0%{transform:scale(.8)}70%{transform:scale(1.1)}100%{transform:scale(1)}}</style>
+@keyframes pop{0%{transform:scale(.8)}70%{transform:scale(1.1)}100%{transform:scale(1)}}
+.q-kor{font-size:.82rem;color:#1e6fa0;font-weight:600;margin-bottom:10px;padding:4px 10px;background:#e0f2fe;border-radius:6px;}</style>
 </head>
 <body>
 <div id="toast"></div>
@@ -102,6 +103,7 @@ body{font-family:'Baloo 2','Noto Sans KR',sans-serif;background:var(--bg);paddin
 
   <div class='question-card' id='qc-a1'><span class='q-num'>1</span>
     <div class='q-text'>The new playground looks very <em>___</em>.</div>
+    <div class='q-kor'>새 놀이터는 매우 안전해 보인다.</div>
     <div class='choices' data-qid='a1' data-ans='safe'><button class="choice" onclick="pickChoice(this)">safely</button><button class="choice" onclick="pickChoice(this)">safe</button><button class="choice" onclick="pickChoice(this)">safety</button><button class="choice" onclick="pickChoice(this)">safeness</button></div>
     <div class='answer-hint' id='ah-a1'>💡 정답: <strong>safe</strong> — look 뒤에는 형용사! safely(부사)는 불가<br>📝 해석: 새 운동장은 매우 안전해 보인다.</div>
     <button class='hint-btn' onclick="showHint('a1')">💡 힌트 보기</button>
@@ -109,6 +111,7 @@ body{font-family:'Baloo 2','Noto Sans KR',sans-serif;background:var(--bg);paddin
 
   <div class='question-card' id='qc-a2'><span class='q-num'>2</span>
     <div class='q-text'>Jake's drawing looks <em>___</em>.</div>
+    <div class='q-kor'>Jake의 그림은 창의적으로 보인다.</div>
     <div class='choices' data-qid='a2' data-ans='creative'><button class="choice" onclick="pickChoice(this)">creative</button><button class="choice" onclick="pickChoice(this)">creatively</button><button class="choice" onclick="pickChoice(this)">creation</button><button class="choice" onclick="pickChoice(this)">creating</button></div>
     <div class='answer-hint' id='ah-a2'>💡 정답: <strong>creative</strong> — look + 형용사; creatively는 부사<br>📝 해석: Jake의 그림은 창의적으로 보인다.</div>
     <button class='hint-btn' onclick="showHint('a2')">💡 힌트 보기</button>
@@ -116,6 +119,7 @@ body{font-family:'Baloo 2','Noto Sans KR',sans-serif;background:var(--bg);paddin
 
   <div class='question-card' id='qc-a3'><span class='q-num'>3</span>
     <div class='q-text'>The small garden behind the school looks <em>___</em>.</div>
+    <div class='q-kor'>학교 뒤편의 작은 정원은 사랑스러워 보인다.</div>
     <div class='choices' data-qid='a3' data-ans='lovely'><button class="choice" onclick="pickChoice(this)">love</button><button class="choice" onclick="pickChoice(this)">lovingly</button><button class="choice" onclick="pickChoice(this)">lovely</button><button class="choice" onclick="pickChoice(this)">loveliness</button></div>
     <div class='answer-hint' id='ah-a3'>💡 정답: <strong>lovely</strong> — lovely는 -ly로 끝나지만 형용사! lovingly(부사, "사랑스럽게")와 혼동 주의<br>📝 해석: 학교 뒤편의 작은 정원은 사랑스러워 보인다.</div>
     <button class='hint-btn' onclick="showHint('a3')">💡 힌트 보기</button>
@@ -123,6 +127,7 @@ body{font-family:'Baloo 2','Noto Sans KR',sans-serif;background:var(--bg);paddin
 
   <div class='question-card' id='qc-a4'><span class='q-num'>4</span>
     <div class='q-text'>My brother looks very <em>___</em> before the game.</div>
+    <div class='q-kor'>내 남동생은 경기 전에 매우 긴장해 보인다.</div>
     <div class='choices' data-qid='a4' data-ans='nervous'><button class="choice" onclick="pickChoice(this)">nervous</button><button class="choice" onclick="pickChoice(this)">nervously</button><button class="choice" onclick="pickChoice(this)">nervousness</button><button class="choice" onclick="pickChoice(this)">nerve</button></div>
     <div class='answer-hint' id='ah-a4'>💡 정답: <strong>nervous</strong> — look + 형용사; nervously는 부사<br>📝 해석: 내 형은 경기 전에 매우 긴장해 보인다.</div>
     <button class='hint-btn' onclick="showHint('a4')">💡 힌트 보기</button>
@@ -130,6 +135,7 @@ body{font-family:'Baloo 2','Noto Sans KR',sans-serif;background:var(--bg);paddin
 
   <div class='question-card' id='qc-a5'><span class='q-num'>5</span>
     <div class='q-text'>The street market looks very <em>___</em> on weekends.</div>
+    <div class='q-kor'>거리 시장은 주말에 매우 활기차 보인다.</div>
     <div class='choices' data-qid='a5' data-ans='lively'><button class="choice" onclick="pickChoice(this)">lively</button><button class="choice" onclick="pickChoice(this)">livelily</button><button class="choice" onclick="pickChoice(this)">live</button><button class="choice" onclick="pickChoice(this)">livelihood</button></div>
     <div class='answer-hint' id='ah-a5'>💡 정답: <strong>lively</strong> — lively는 -ly로 끝나지만 형용사! -ly가 항상 부사를 뜻하지는 않는다<br>📝 해석: 주말마다 그 거리 시장은 매우 활기차 보인다.</div>
     <button class='hint-btn' onclick="showHint('a5')">💡 힌트 보기</button>
@@ -137,6 +143,7 @@ body{font-family:'Baloo 2','Noto Sans KR',sans-serif;background:var(--bg);paddin
 
   <div class='question-card' id='qc-a6'><span class='q-num'>6</span>
     <div class='q-text'>The live music at the festival sounds <em>___</em>.</div>
+    <div class='q-kor'>축제의 라이브 음악은 정말 멋지게 들린다.</div>
     <div class='choices' data-qid='a6' data-ans='amazing'><button class="choice" onclick="pickChoice(this)">amazing</button><button class="choice" onclick="pickChoice(this)">amazingly</button><button class="choice" onclick="pickChoice(this)">amaze</button><button class="choice" onclick="pickChoice(this)">amazed</button></div>
     <div class='answer-hint' id='ah-a6'>💡 정답: <strong>amazing</strong> — sound + 형용사; amazingly는 부사<br>📝 해석: 축제의 라이브 음악은 놀랍게 들린다.</div>
     <button class='hint-btn' onclick="showHint('a6')">💡 힌트 보기</button>
@@ -144,6 +151,7 @@ body{font-family:'Baloo 2','Noto Sans KR',sans-serif;background:var(--bg);paddin
 
   <div class='question-card' id='qc-a7'><span class='q-num'>7</span>
     <div class='q-text'>The kittens in the basket look <em>___</em>.</div>
+    <div class='q-kor'>바구니 안의 아기 고양이들은 사랑스러워 보인다.</div>
     <div class='choices' data-qid='a7' data-ans='adorable'><button class="choice" onclick="pickChoice(this)">adorable</button><button class="choice" onclick="pickChoice(this)">adorably</button><button class="choice" onclick="pickChoice(this)">adore</button><button class="choice" onclick="pickChoice(this)">adoration</button></div>
     <div class='answer-hint' id='ah-a7'>💡 정답: <strong>adorable</strong> — look + 형용사; adorably는 부사<br>📝 해석: 바구니 안의 새끼 고양이들은 사랑스러워 보인다.</div>
     <button class='hint-btn' onclick="showHint('a7')">💡 힌트 보기</button>
@@ -151,6 +159,7 @@ body{font-family:'Baloo 2','Noto Sans KR',sans-serif;background:var(--bg);paddin
 
   <div class='question-card' id='qc-a8'><span class='q-num'>8</span>
     <div class='q-text'>The new coach looks very <em>___</em> to everyone.</div>
+    <div class='q-kor'>새 코치는 모두에게 매우 친절해 보인다.</div>
     <div class='choices' data-qid='a8' data-ans='friendly'><button class="choice" onclick="pickChoice(this)">friendlily</button><button class="choice" onclick="pickChoice(this)">friendship</button><button class="choice" onclick="pickChoice(this)">friend</button><button class="choice" onclick="pickChoice(this)">friendly</button></div>
     <div class='answer-hint' id='ah-a8'>💡 정답: <strong>friendly</strong> — friendly는 -ly로 끝나지만 형용사! -ly = 부사라는 공식은 항상 맞지 않는다<br>📝 해석: 새 코치는 모두에게 매우 친절해 보인다.</div>
     <button class='hint-btn' onclick="showHint('a8')">💡 힌트 보기</button>
@@ -158,6 +167,7 @@ body{font-family:'Baloo 2','Noto Sans KR',sans-serif;background:var(--bg);paddin
 
   <div class='question-card' id='qc-a9'><span class='q-num'>9</span>
     <div class='q-text'>The roses in the yard smell <em>___</em>.</div>
+    <div class='q-kor'>마당의 장미는 훌륭한 향기가 난다.</div>
     <div class='choices' data-qid='a9' data-ans='wonderful'><button class="choice" onclick="pickChoice(this)">wonderful</button><button class="choice" onclick="pickChoice(this)">wonderfully</button><button class="choice" onclick="pickChoice(this)">wonder</button><button class="choice" onclick="pickChoice(this)">wondering</button></div>
     <div class='answer-hint' id='ah-a9'>💡 정답: <strong>wonderful</strong> — smell + 형용사; wonderfully는 부사<br>📝 해석: 마당의 장미들은 훌륭한 향기가 난다.</div>
     <button class='hint-btn' onclick="showHint('a9')">💡 힌트 보기</button>
@@ -165,6 +175,7 @@ body{font-family:'Baloo 2','Noto Sans KR',sans-serif;background:var(--bg);paddin
 
   <div class='question-card' id='qc-a10'><span class='q-num'>10</span>
     <div class='q-text'>This lemon candy tastes very <em>___</em>.</div>
+    <div class='q-kor'>이 레몬 사탕은 매우 새콤한 맛이 난다.</div>
     <div class='choices' data-qid='a10' data-ans='sour'><button class="choice" onclick="pickChoice(this)">sour</button><button class="choice" onclick="pickChoice(this)">sourly</button><button class="choice" onclick="pickChoice(this)">sourness</button><button class="choice" onclick="pickChoice(this)">souring</button></div>
     <div class='answer-hint' id='ah-a10'>💡 정답: <strong>sour</strong> — taste + 형용사; sourly는 부사<br>📝 해석: 이 레몬 사탕은 매우 시큼한 맛이 난다.</div>
     <button class='hint-btn' onclick="showHint('a10')">💡 힌트 보기</button>
@@ -172,6 +183,7 @@ body{font-family:'Baloo 2','Noto Sans KR',sans-serif;background:var(--bg);paddin
 
   <div class='question-card' id='qc-a11'><span class='q-num'>11</span>
     <div class='q-text'>The sky looks <input class="blank" id="bi-a11" placeholder="___" data-ans="dark" autocomplete="off" style="min-width:80px"> before a big storm. <span class='ex'>(dark / darkly)</span></div>
+    <div class='q-kor'>큰 폭풍 전에 하늘이 어두워 보인다.</div>
     <button class='check-btn' onclick="checkBlank('a11')">✔ 확인</button>
     <div class='answer-hint' id='ah-a11'>💡 정답: <strong>dark</strong> — look 뒤에는 형용사! darkly(부사)는 불가<br>📝 해석: 큰 폭풍이 오기 전에 하늘이 어두워 보인다.</div>
     <button class='hint-btn' onclick="showHint('a11')">💡 힌트 보기</button>
@@ -179,6 +191,7 @@ body{font-family:'Baloo 2','Noto Sans KR',sans-serif;background:var(--bg);paddin
 
   <div class='question-card' id='qc-a12'><span class='q-num'>12</span>
     <div class='q-text'>The cookies smell <input class="blank" id="bi-a12" placeholder="___" data-ans="wonderful" autocomplete="off" style="min-width:100px"> from the oven. <span class='ex'>(wonderful / wonderfully)</span></div>
+    <div class='q-kor'>오븐에서 쿠키가 훌륭한 향기가 난다.</div>
     <button class='check-btn' onclick="checkBlank('a12')">✔ 확인</button>
     <div class='answer-hint' id='ah-a12'>💡 정답: <strong>wonderful</strong> — smell 뒤에도 형용사! wonderfully(부사)는 불가<br>📝 해석: 오븐에서 나온 쿠키들은 훌륭한 향기가 난다.</div>
     <button class='hint-btn' onclick="showHint('a12')">💡 힌트 보기</button>
@@ -186,6 +199,7 @@ body{font-family:'Baloo 2','Noto Sans KR',sans-serif;background:var(--bg);paddin
 
   <div class='question-card' id='qc-a13'><span class='q-num'>13</span>
     <div class='q-text'>The music in the hall sounds really <input class="blank" id="bi-a13" placeholder="___" data-ans="loud" autocomplete="off" style="min-width:80px">. <span class='ex'>(loud / loudly)</span></div>
+    <div class='q-kor'>홀의 음악은 정말 크게 들린다.</div>
     <button class='check-btn' onclick="checkBlank('a13')">✔ 확인</button>
     <div class='answer-hint' id='ah-a13'>💡 정답: <strong>loud</strong> — sound 뒤에도 형용사! loudly(부사)는 불가<br>📝 해석: 홀 안의 음악은 정말 크게 들린다.</div>
     <button class='hint-btn' onclick="showHint('a13')">💡 힌트 보기</button>
@@ -193,6 +207,7 @@ body{font-family:'Baloo 2','Noto Sans KR',sans-serif;background:var(--bg);paddin
 
   <div class='question-card' id='qc-a14'><span class='q-num'>14</span>
     <div class='q-text'>This peppermint candy tastes really <input class="blank" id="bi-a14" placeholder="___" data-ans="sweet" autocomplete="off" style="min-width:80px">. <span class='ex'>(sweet / sweetly)</span></div>
+    <div class='q-kor'>이 페퍼민트 사탕은 정말 달콤한 맛이 난다.</div>
     <button class='check-btn' onclick="checkBlank('a14')">✔ 확인</button>
     <div class='answer-hint' id='ah-a14'>💡 정답: <strong>sweet</strong> — taste 뒤에도 형용사! sweetly(부사)는 불가<br>📝 해석: 이 페퍼민트 사탕은 정말 달콤한 맛이 난다.</div>
     <button class='hint-btn' onclick="showHint('a14')">💡 힌트 보기</button>
@@ -200,6 +215,7 @@ body{font-family:'Baloo 2','Noto Sans KR',sans-serif;background:var(--bg);paddin
 
   <div class='question-card' id='qc-a15'><span class='q-num'>15</span>
     <div class='q-text'>The new blanket feels <input class="blank" id="bi-a15" placeholder="___" data-ans="soft" autocomplete="off" style="min-width:80px"> and comfortable. <span class='ex'>(soft / softly)</span></div>
+    <div class='q-kor'>새 담요는 부드럽고 편안하게 느껴진다.</div>
     <button class='check-btn' onclick="checkBlank('a15')">✔ 확인</button>
     <div class='answer-hint' id='ah-a15'>💡 정답: <strong>soft</strong> — feel 뒤에도 형용사! softly(부사)는 불가<br>📝 해석: 새 담요는 부드럽고 편안하게 느껴진다.</div>
     <button class='hint-btn' onclick="showHint('a15')">💡 힌트 보기</button>
@@ -207,6 +223,7 @@ body{font-family:'Baloo 2','Noto Sans KR',sans-serif;background:var(--bg);paddin
 
   <div class='question-card' id='qc-a16'><span class='q-num'>16</span>
     <div class='q-text'>Jake <input class="blank" id="bi-a16" placeholder="___" data-ans="feels" autocomplete="off" style="min-width:80px"> very tired after the long hike. <span class='ex'>(feel)</span></div>
+    <div class='q-kor'>Jake는 긴 하이킹 후 매우 피곤하게 느낀다.</div>
     <button class='check-btn' onclick="checkBlank('a16')">✔ 확인</button>
     <div class='answer-hint' id='ah-a16'>💡 정답: <strong>feels</strong> — Jake(3인칭 단수) → feels<br>📝 해석: Jake는 긴 등산 후에 매우 피곤하게 느껴진다.</div>
     <button class='hint-btn' onclick="showHint('a16')">💡 힌트 보기</button>
@@ -214,6 +231,7 @@ body{font-family:'Baloo 2','Noto Sans KR',sans-serif;background:var(--bg);paddin
 
   <div class='question-card' id='qc-a17'><span class='q-num'>17</span>
     <div class='q-text'>The roses in the garden <input class="blank" id="bi-a17" placeholder="___" data-ans="smell" autocomplete="off" style="min-width:80px"> really nice after the rain. <span class='ex'>(smell)</span></div>
+    <div class='q-kor'>정원의 장미는 비 온 후 정말 좋은 향기가 난다.</div>
     <button class='check-btn' onclick="checkBlank('a17')">✔ 확인</button>
     <div class='answer-hint' id='ah-a17'>💡 정답: <strong>smell</strong> — The roses(복수) → smell<br>📝 해석: 정원의 장미들은 비가 온 뒤에 정말 향기롭게 냄새가 난다.</div>
     <button class='hint-btn' onclick="showHint('a17')">💡 힌트 보기</button>
@@ -221,6 +239,7 @@ body{font-family:'Baloo 2','Noto Sans KR',sans-serif;background:var(--bg);paddin
 
   <div class='question-card' id='qc-a18'><span class='q-num'>18</span>
     <div class='q-text'>The new speakers on the desk <input class="blank" id="bi-a18" placeholder="___" data-ans="sound" autocomplete="off" style="min-width:80px"> really loud. <span class='ex'>(sound)</span></div>
+    <div class='q-kor'>책상 위의 새 스피커는 정말 크게 들린다.</div>
     <button class='check-btn' onclick="checkBlank('a18')">✔ 확인</button>
     <div class='answer-hint' id='ah-a18'>💡 정답: <strong>sound</strong> — The speakers(복수) → sound<br>📝 해석: 책상 위의 새 스피커들은 정말 크게 들린다.</div>
     <button class='hint-btn' onclick="showHint('a18')">💡 힌트 보기</button>
@@ -228,6 +247,7 @@ body{font-family:'Baloo 2','Noto Sans KR',sans-serif;background:var(--bg);paddin
 
   <div class='question-card' id='qc-a19'><span class='q-num'>19</span>
     <div class='q-text'>This strawberry sorbet <input class="blank" id="bi-a19" placeholder="___" data-ans="tastes" autocomplete="off" style="min-width:80px"> sweet and cold. <span class='ex'>(taste)</span></div>
+    <div class='q-kor'>이 딸기 셔벗은 달콤하고 시원한 맛이 난다.</div>
     <button class='check-btn' onclick="checkBlank('a19')">✔ 확인</button>
     <div class='answer-hint' id='ah-a19'>💡 정답: <strong>tastes</strong> — This sorbet(3인칭 단수) → tastes<br>📝 해석: 이 딸기 소르베는 달콤하고 시원한 맛이 난다.</div>
     <button class='hint-btn' onclick="showHint('a19')">💡 힌트 보기</button>
@@ -235,6 +255,7 @@ body{font-family:'Baloo 2','Noto Sans KR',sans-serif;background:var(--bg);paddin
 
   <div class='question-card' id='qc-a20'><span class='q-num'>20</span>
     <div class='q-text'>The pillows on the bed <input class="blank" id="bi-a20" placeholder="___" data-ans="feel" autocomplete="off" style="min-width:80px"> soft and fluffy. <span class='ex'>(feel)</span></div>
+    <div class='q-kor'>침대 위의 베개는 부드럽고 푹신하게 느껴진다.</div>
     <button class='check-btn' onclick="checkBlank('a20')">✔ 확인</button>
     <div class='answer-hint' id='ah-a20'>💡 정답: <strong>feel</strong> — The pillows(복수) → feel<br>📝 해석: 침대 위의 베개들은 부드럽고 폭신하게 느껴진다.</div>
     <button class='hint-btn' onclick="showHint('a20')">💡 힌트 보기</button>
@@ -247,6 +268,7 @@ body{font-family:'Baloo 2','Noto Sans KR',sans-serif;background:var(--bg);paddin
 
   <div class='question-card' id='qc-b1'><span class='q-num'>1</span>
     <div class='q-text'>We stayed inside <em>___</em>.</div>
+    <div class='q-kor'>우리는 집 안에 머물렀다.</div>
     <div class='choices' data-qid='b1' data-ans='because it was raining heavily'><button class="choice" onclick="pickChoice(this)">because the weather was nice</button><button class="choice" onclick="pickChoice(this)">because it was raining heavily</button><button class="choice" onclick="pickChoice(this)">because we wanted to go out</button><button class="choice" onclick="pickChoice(this)">because the sun was bright</button></div>
     <div class='answer-hint' id='ah-b1'>💡 정답: <strong>because it was raining heavily</strong> — 집 안에 있었던 이유 = 비가 심하게 내렸기 때문<br>📝 해석: 비가 심하게 내렸기 때문에 우리는 안에 있었다.</div>
     <button class='hint-btn' onclick="showHint('b1')">💡 힌트 보기</button>
@@ -254,6 +276,7 @@ body{font-family:'Baloo 2','Noto Sans KR',sans-serif;background:var(--bg);paddin
 
   <div class='question-card' id='qc-b2'><span class='q-num'>2</span>
     <div class='q-text'>Jaden ate only a little <em>___</em>.</div>
+    <div class='q-kor'>Jaden은 조금만 먹었다.</div>
     <div class='choices' data-qid='b2' data-ans="because he wasn't feeling well"><button class="choice" onclick="pickChoice(this)">because he was very hungry</button><button class="choice" onclick="pickChoice(this)">because he loved the food</button><button class="choice" onclick="pickChoice(this)">because he wasn't feeling well</button><button class="choice" onclick="pickChoice(this)">because the meal looked delicious</button></div>
     <div class='answer-hint' id='ah-b2'>💡 정답: <strong>because he wasn't feeling well</strong> — 조금만 먹은 이유 = 몸 상태가 좋지 않았기 때문<br>📝 해석: Jaden은 몸 상태가 좋지 않았기 때문에 조금만 먹었다.</div>
     <button class='hint-btn' onclick="showHint('b2')">💡 힌트 보기</button>
@@ -261,6 +284,7 @@ body{font-family:'Baloo 2','Noto Sans KR',sans-serif;background:var(--bg);paddin
 
   <div class='question-card' id='qc-b3'><span class='q-num'>3</span>
     <div class='q-text'><em>___</em>, she missed the school bus.</div>
+    <div class='q-kor'>그녀는 스쿨버스를 놓쳤다.</div>
     <div class='choices' data-qid='b3' data-ans='Because she got up late'><button class="choice" onclick="pickChoice(this)">Because she left home early</button><button class="choice" onclick="pickChoice(this)">Because she got up late</button><button class="choice" onclick="pickChoice(this)">Because she was on time</button><button class="choice" onclick="pickChoice(this)">Because she ran fast</button></div>
     <div class='answer-hint' id='ah-b3'>💡 정답: <strong>Because she got up late</strong> — 버스를 놓친 이유 = 늦게 일어났기 때문<br>📝 해석: 늦게 일어났기 때문에 그녀는 통학 버스를 놓쳤다.</div>
     <button class='hint-btn' onclick="showHint('b3')">💡 힌트 보기</button>
@@ -268,6 +292,7 @@ body{font-family:'Baloo 2','Noto Sans KR',sans-serif;background:var(--bg);paddin
 
   <div class='question-card' id='qc-b4'><span class='q-num'>4</span>
     <div class='q-text'>Tom turned off the TV <em>___</em>.</div>
+    <div class='q-kor'>Tom은 TV를 껐다.</div>
     <div class='choices' data-qid='b4' data-ans='because he needed to study'><button class="choice" onclick="pickChoice(this)">because he wanted to watch more</button><button class="choice" onclick="pickChoice(this)">because it was his favorite show</button><button class="choice" onclick="pickChoice(this)">because he needed to study</button><button class="choice" onclick="pickChoice(this)">because the show was interesting</button></div>
     <div class='answer-hint' id='ah-b4'>💡 정답: <strong>because he needed to study</strong> — TV를 끈 이유 = 공부해야 했기 때문<br>📝 해석: Tom은 공부해야 했기 때문에 TV를 껐다.</div>
     <button class='hint-btn' onclick="showHint('b4')">💡 힌트 보기</button>
@@ -275,6 +300,7 @@ body{font-family:'Baloo 2','Noto Sans KR',sans-serif;background:var(--bg);paddin
 
   <div class='question-card' id='qc-b5'><span class='q-num'>5</span>
     <div class='q-text'><em>___</em>, we couldn't go on the picnic.</div>
+    <div class='q-kor'>우리는 소풍을 갈 수 없었다.</div>
     <div class='choices' data-qid='b5' data-ans='Because there was a big storm'><button class="choice" onclick="pickChoice(this)">Because the weather was sunny</button><button class="choice" onclick="pickChoice(this)">Because everyone wanted to go</button><button class="choice" onclick="pickChoice(this)">Because we had enough food</button><button class="choice" onclick="pickChoice(this)">Because there was a big storm</button></div>
     <div class='answer-hint' id='ah-b5'>💡 정답: <strong>Because there was a big storm</strong> — 소풍을 못 간 이유 = 큰 폭풍이 있었기 때문<br>📝 해석: 큰 폭풍이 있었기 때문에 우리는 소풍을 가지 못했다.</div>
     <button class='hint-btn' onclick="showHint('b5')">💡 힌트 보기</button>
@@ -282,6 +308,7 @@ body{font-family:'Baloo 2','Noto Sans KR',sans-serif;background:var(--bg);paddin
 
   <div class='question-card' id='qc-b6'><span class='q-num'>6</span>
     <div class='q-text'>Leo borrowed my umbrella <em>___</em>.</div>
+    <div class='q-kor'>Leo는 내 우산을 빌렸다.</div>
     <div class='choices' data-qid='b6' data-ans='because he forgot his own'><button class="choice" onclick="pickChoice(this)">because it was a hot day</button><button class="choice" onclick="pickChoice(this)">because he forgot his own</button><button class="choice" onclick="pickChoice(this)">because he had one already</button><button class="choice" onclick="pickChoice(this)">because it wasn't raining</button></div>
     <div class='answer-hint' id='ah-b6'>💡 정답: <strong>because he forgot his own</strong> — 우산을 빌린 이유 = 자기 것을 잊었기 때문<br>📝 해석: Leo는 자기 우산을 잊었기 때문에 내 우산을 빌렸다.</div>
     <button class='hint-btn' onclick="showHint('b6')">💡 힌트 보기</button>
@@ -289,6 +316,7 @@ body{font-family:'Baloo 2','Noto Sans KR',sans-serif;background:var(--bg);paddin
 
   <div class='question-card' id='qc-b7'><span class='q-num'>7</span>
     <div class='q-text'>Amy got a perfect score on the test <em>___</em>.</div>
+    <div class='q-kor'>Amy는 시험에서 만점을 받았다.</div>
     <div class='choices' data-qid='b7' data-ans='because she reviewed her notes every day'><button class="choice" onclick="pickChoice(this)">because she didn't study at all</button><button class="choice" onclick="pickChoice(this)">because she played all day</button><button class="choice" onclick="pickChoice(this)">because she reviewed her notes every day</button><button class="choice" onclick="pickChoice(this)">because she forgot the material</button></div>
     <div class='answer-hint' id='ah-b7'>💡 정답: <strong>because she reviewed her notes every day</strong> — 만점의 이유 = 매일 필기를 복습했기 때문<br>📝 해석: Amy는 매일 필기를 복습했기 때문에 시험에서 만점을 받았다.</div>
     <button class='hint-btn' onclick="showHint('b7')">💡 힌트 보기</button>
@@ -296,6 +324,7 @@ body{font-family:'Baloo 2','Noto Sans KR',sans-serif;background:var(--bg);paddin
 
   <div class='question-card' id='qc-b8'><span class='q-num'>8</span>
     <div class='q-text'><em>___</em>, we ordered extra chairs.</div>
+    <div class='q-kor'>우리는 의자를 추가로 주문했다.</div>
     <div class='choices' data-qid='b8' data-ans='Because we were expecting many visitors'><button class="choice" onclick="pickChoice(this)">Because there were enough seats</button><button class="choice" onclick="pickChoice(this)">Because only a few guests came</button><button class="choice" onclick="pickChoice(this)">Because we were expecting many visitors</button><button class="choice" onclick="pickChoice(this)">Because the room was empty</button></div>
     <div class='answer-hint' id='ah-b8'>💡 정답: <strong>Because we were expecting many visitors</strong> — 의자를 추가한 이유 = 방문객이 많을 것으로 예상했기 때문<br>📝 해석: 많은 방문객을 예상했기 때문에 우리는 추가 의자를 주문했다.</div>
     <button class='hint-btn' onclick="showHint('b8')">💡 힌트 보기</button>
@@ -303,6 +332,7 @@ body{font-family:'Baloo 2','Noto Sans KR',sans-serif;background:var(--bg);paddin
 
   <div class='question-card' id='qc-b9'><span class='q-num'>9</span>
     <div class='q-text'>Sam put on sunscreen <em>___</em>.</div>
+    <div class='q-kor'>Sam은 선크림을 발랐다.</div>
     <div class='choices' data-qid='b9' data-ans='because the sun was very strong'><button class="choice" onclick="pickChoice(this)">because it was a cloudy day</button><button class="choice" onclick="pickChoice(this)">because the sun was very strong</button><button class="choice" onclick="pickChoice(this)">because he didn't like the beach</button><button class="choice" onclick="pickChoice(this)">because he wanted to stay inside</button></div>
     <div class='answer-hint' id='ah-b9'>💡 정답: <strong>because the sun was very strong</strong> — 자외선 차단제를 바른 이유 = 햇빛이 매우 강했기 때문<br>📝 해석: Sam은 햇빛이 매우 강했기 때문에 자외선 차단제를 발랐다.</div>
     <button class='hint-btn' onclick="showHint('b9')">💡 힌트 보기</button>
@@ -310,6 +340,7 @@ body{font-family:'Baloo 2','Noto Sans KR',sans-serif;background:var(--bg);paddin
 
   <div class='question-card' id='qc-b10'><span class='q-num'>10</span>
     <div class='q-text'>Nora went to bed early <em>___</em>.</div>
+    <div class='q-kor'>Nora는 일찍 잠자리에 들었다.</div>
     <div class='choices' data-qid='b10' data-ans='because she had an early practice the next day'><button class="choice" onclick="pickChoice(this)">because she wasn't tired</button><button class="choice" onclick="pickChoice(this)">because she wanted to stay up late</button><button class="choice" onclick="pickChoice(this)">because she had an early practice the next day</button><button class="choice" onclick="pickChoice(this)">because she finished homework late</button></div>
     <div class='answer-hint' id='ah-b10'>💡 정답: <strong>because she had an early practice the next day</strong> — 일찍 잔 이유 = 다음날 이른 연습이 있었기 때문<br>📝 해석: Nora는 다음날 이른 연습이 있었기 때문에 일찍 잠자리에 들었다.</div>
     <button class='hint-btn' onclick="showHint('b10')">💡 힌트 보기</button>
@@ -318,6 +349,7 @@ body{font-family:'Baloo 2','Noto Sans KR',sans-serif;background:var(--bg);paddin
   <div class='question-card' id='qc-b11'><span class='q-num'>11</span>
     <div class='q-sub'>Chris was very thirsty. → He drank three glasses of water.</div>
     <div class='q-text'>Chris drank three glasses of water <input class="blank" id="bi-b11" placeholder="because ..." data-ans="because he was very thirsty" autocomplete="off" style="min-width:210px">.</div>
+    <div class='q-kor'>Chris는 매우 목이 말라서 물 세 잔을 마셨다.</div>
     <button class='check-btn' onclick="checkBlank('b11')">✔ 확인</button>
     <div class='answer-hint' id='ah-b11'>💡 정답: <strong>because he was very thirsty</strong> — 이유 접속사 because + 절<br>📝 해석: Chris는 매우 목이 말랐기 때문에 물 세 잔을 마셨다.</div>
     <button class='hint-btn' onclick="showHint('b11')">💡 힌트 보기</button>
@@ -326,6 +358,7 @@ body{font-family:'Baloo 2','Noto Sans KR',sans-serif;background:var(--bg);paddin
   <div class='question-card' id='qc-b12'><span class='q-num'>12</span>
     <div class='q-sub'>Ben forgot his lunch box. → He was hungry all day.</div>
     <div class='q-text'>Ben was hungry all day <input class="blank" id="bi-b12" placeholder="because ..." data-ans="because he forgot his lunch box" autocomplete="off" style="min-width:230px">.</div>
+    <div class='q-kor'>Ben은 도시락을 잊어버려서 하루 종일 배가 고팠다.</div>
     <button class='check-btn' onclick="checkBlank('b12')">✔ 확인</button>
     <div class='answer-hint' id='ah-b12'>💡 정답: <strong>because he forgot his lunch box</strong><br>📝 해석: Ben은 도시락을 잊었기 때문에 하루 종일 배가 고팠다.</div>
     <button class='hint-btn' onclick="showHint('b12')">💡 힌트 보기</button>
@@ -722,6 +755,6 @@ document.addEventListener('DOMContentLoaded',function(){
 });
 </script>
 <script src="../score-popup.js"></script>
-<script src="../sounds.js"></script>
+<script src="../sounds.js?v=2"></script>
 </body>
 </html>

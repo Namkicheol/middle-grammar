@@ -184,15 +184,15 @@ body{font-family:'Baloo 2','Noto Sans KR',sans-serif;background:var(--bg);paddin
 
   <!-- ─── 문맥 파악 mcq (a1-a4) ─── -->
   <div class="question-card" id="qc-a1"><span class="q-num">1</span><span class="q-type ctx">문맥 파악</span>
-    <div class="q-text">Sophia texted her cousin <em>___</em> him to the K-pop concert.</div>
-    <div class="vocab"><span class="vw">text 문자를 보내다</span><span class="vw">cousin 사촌</span><span class="vw">concert 콘서트</span></div>
-    <div class="choices" data-qid="a1" data-ans="to invite">
-      <button class="choice" onclick="pickChoice(this)">invite</button>
-      <button class="choice" onclick="pickChoice(this)">to invite</button>
-      <button class="choice" onclick="pickChoice(this)">inviting</button>
-      <button class="choice" onclick="pickChoice(this)">invited</button>
+    <div class="q-text">Maya finally finished <em>___</em> her travel diary after the trip.</div>
+    <div class="vocab"><span class="vw">finish 끝내다</span><span class="vw">travel diary 여행 일기</span><span class="vw">trip 여행</span></div>
+    <div class="choices" data-qid="a1" data-ans="writing">
+      <button class="choice" onclick="pickChoice(this)">write</button>
+      <button class="choice" onclick="pickChoice(this)">to write</button>
+      <button class="choice" onclick="pickChoice(this)">writing</button>
+      <button class="choice" onclick="pickChoice(this)">written</button>
     </div>
-    <div class="answer-hint" id="ah-a1">💡 정답: <strong>to invite</strong> — 목적 "사촌을 초대하기 위해"<br>📝 해석: Sophia는 사촌을 K-pop 콘서트에 초대하려고 문자를 보냈다.</div>
+    <div class="answer-hint" id="ah-a1">💡 정답: <strong>writing</strong> — finish는 동명사(-ing)를 목적어로 취함 (finish + -ing)<br>📝 해석: Maya는 여행 후 마침내 여행 일기 쓰기를 끝냈다.</div>
     <button class="hint-btn" onclick="showHint('a1')">💡 힌트 보기</button>
   </div>
 
@@ -223,15 +223,15 @@ body{font-family:'Baloo 2','Noto Sans KR',sans-serif;background:var(--bg);paddin
   </div>
 
   <div class="question-card" id="qc-a4"><span class="q-num">4</span><span class="q-type ctx">문맥 파악</span>
-    <div class="q-text">Jim saved his allowance <em>___</em> a new guitar.</div>
-    <div class="vocab"><span class="vw">save 모으다, 저축하다</span><span class="vw">allowance 용돈</span><span class="vw">guitar 기타</span></div>
-    <div class="choices" data-qid="a4" data-ans="to buy">
-      <button class="choice" onclick="pickChoice(this)">buy</button>
-      <button class="choice" onclick="pickChoice(this)">bought</button>
-      <button class="choice" onclick="pickChoice(this)">to buy</button>
-      <button class="choice" onclick="pickChoice(this)">buying</button>
+    <div class="q-text">목적('~하기 위해')의 to부정사가 쓰인 문장을 고르시오.</div>
+    <div class="vocab"><span class="vw">raise 모으다, 올리다</span><span class="vw">charity 자선 단체</span><span class="vw">decide 결심하다</span><span class="vw">plan 계획하다</span></div>
+    <div class="choices" data-qid="a4" data-ans="They held a bake sale to raise money for charity.">
+      <button class="choice" onclick="pickChoice(this)">She wants to become a nurse.</button>
+      <button class="choice" onclick="pickChoice(this)">They held a bake sale to raise money for charity.</button>
+      <button class="choice" onclick="pickChoice(this)">He decided to stay home all day.</button>
+      <button class="choice" onclick="pickChoice(this)">We plan to visit the science museum.</button>
     </div>
-    <div class="answer-hint" id="ah-a4">💡 정답: <strong>to buy</strong> — 목적 "기타를 사기 위해"<br>📝 해석: Jim은 새 기타를 사기 위해 용돈을 모았다.</div>
+    <div class="answer-hint" id="ah-a4">💡 정답: <strong>They held a bake sale to raise money for charity.</strong><br>— "to raise" = 목적 "돈을 모으기 위해" (동사 held를 수식)<br>나머지는 모두 동사의 목적어 (want/decide/plan + to부정사)<br>📝 해석: 그들은 자선 단체를 위해 돈을 모으기 위해 베이크 세일을 열었다.</div>
     <button class="hint-btn" onclick="showHint('a4')">💡 힌트 보기</button>
   </div>
 
@@ -285,16 +285,16 @@ body{font-family:'Baloo 2','Noto Sans KR',sans-serif;background:var(--bg);paddin
   </div>
 
   <!-- ─── 문장 합치기 (a9-a11) ─── -->
-  <div class="question-card" id="qc-a9"><span class="q-num">9</span><span class="q-type trans">문장 합치기</span>
-    <div class="q-text">
-      <span class="orig">원문 1: I went to the store.<br>원문 2: I wanted to buy some milk.</span><br>
-      → (to부정사로 합치기) I went to the store
-      <input class="blank" id="bi-a9" placeholder="___" data-ans="to buy" autocomplete="off" style="min-width:120px">
-      some milk.
+  <div class="question-card" id="qc-a9"><span class="q-num">9</span><span class="q-type ctx">해석 선택</span>
+    <div class="q-text">다음 문장의 올바른 해석을 고르시오.<br><em>She read the map to find the way out of the forest.</em></div>
+    <div class="vocab"><span class="vw">map 지도</span><span class="vw">find 찾다</span><span class="vw">way out 나가는 길</span><span class="vw">forest 숲</span></div>
+    <div class="choices" data-qid="a9" data-ans="그녀는 숲에서 나가는 길을 찾기 위해 지도를 읽었다.">
+      <button class="choice" onclick="pickChoice(this)">그녀는 지도 읽기를 원해서 숲 밖으로 나갔다.</button>
+      <button class="choice" onclick="pickChoice(this)">그녀는 숲에서 나가는 길을 찾기 위해 지도를 읽었다.</button>
+      <button class="choice" onclick="pickChoice(this)">그녀는 지도를 읽으면서 숲속에서 길을 잃었다.</button>
+      <button class="choice" onclick="pickChoice(this)">그녀는 숲 지도를 읽어서 길을 결정했다.</button>
     </div>
-    <div class="vocab"><span class="vw">store 가게</span><span class="vw">milk 우유</span></div>
-    <button class="check-btn" onclick="checkBlank('a9')">✔ 확인</button>
-    <div class="answer-hint" id="ah-a9">💡 정답: <strong>to buy</strong> — 목적 "우유를 사기 위해" = to + 동사원형<br>📝 해석: 나는 우유를 사려고 가게에 갔다.</div>
+    <div class="answer-hint" id="ah-a9">💡 정답: <strong>그녀는 숲에서 나가는 길을 찾기 위해 지도를 읽었다.</strong><br>— "to find" = 목적 (~하기 위해), 동사 read를 수식<br>📝 She read the map / to find the way out of the forest.</div>
     <button class="hint-btn" onclick="showHint('a9')">💡 힌트 보기</button>
   </div>
 
@@ -338,16 +338,16 @@ body{font-family:'Baloo 2','Noto Sans KR',sans-serif;background:var(--bg);paddin
     <button class="hint-btn" onclick="showHint('a12')">💡 힌트 보기</button>
   </div>
 
-  <div class="question-card" id="qc-a13"><span class="q-num">13</span><span class="q-type kor">우리말 영작</span>
-    <div class="q-text">
-      <span class="kor-hint">🇰🇷 우리는 버스를 잡으려고 뛰었다.</span>
-      We ran
-      <input class="blank" id="bi-a13" placeholder="___" data-ans="to catch" autocomplete="off" style="min-width:140px">
-      the bus. <span class="ex">(catch)</span>
+  <div class="question-card" id="qc-a13"><span class="q-num">13</span><span class="q-type ctx">문맥 파악</span>
+    <div class="q-text">밑줄 친 to부정사가 <em>목적('~하기 위해')</em>으로 쓰인 것을 고르시오.</div>
+    <div class="vocab"><span class="vw">avoid 피하다</span><span class="vw">traffic 교통(량)</span><span class="vw">hope 희망하다</span><span class="vw">early 일찍</span></div>
+    <div class="choices" data-qid="a13" data-ans="She left early to avoid the heavy traffic.">
+      <button class="choice" onclick="pickChoice(this)">He hopes to travel around the world.</button>
+      <button class="choice" onclick="pickChoice(this)">She left early to avoid the heavy traffic.</button>
+      <button class="choice" onclick="pickChoice(this)">They want to join the school drama club.</button>
+      <button class="choice" onclick="pickChoice(this)">I need to finish this report by noon.</button>
     </div>
-    <div class="vocab"><span class="vw">ran 달렸다(run의 과거)</span><span class="vw">catch 잡다</span></div>
-    <button class="check-btn" onclick="checkBlank('a13')">✔ 확인</button>
-    <div class="answer-hint" id="ah-a13">💡 정답: <strong>to catch</strong> — 목적 "버스를 잡기 위해"<br>📝 해석: 우리는 버스를 타려고 뛰었다.</div>
+    <div class="answer-hint" id="ah-a13">💡 정답: <strong>She left early to avoid the heavy traffic.</strong><br>— "to avoid" = 목적 "교통체증을 피하기 위해" (동사 left를 수식)<br>나머지: hope/want/need는 to부정사를 동사의 목적어로 취함<br>📝 해석: 그녀는 심한 교통체증을 피하기 위해 일찍 출발했다.</div>
     <button class="hint-btn" onclick="showHint('a13')">💡 힌트 보기</button>
   </div>
 

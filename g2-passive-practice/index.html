@@ -68,6 +68,15 @@ body{font-family:'Baloo 2','Noto Sans KR',sans-serif;background:var(--bg);paddin
 #toast.show{transform:translateX(-50%) translateY(0);}#toast.ok{background:var(--green);}#toast.ng{background:var(--red);}
 @keyframes fadein{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}
 @keyframes pop{0%{transform:scale(.8)}70%{transform:scale(1.1)}100%{transform:scale(1)}}
+.word-pool{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:10px;}
+.chip{padding:6px 12px;border-radius:20px;font-family:inherit;font-weight:700;font-size:.85rem;cursor:pointer;border:none;transition:all .15s;user-select:none;}
+.pool-chip{background:var(--white);color:var(--dark);box-shadow:0 2px 6px rgba(0,0,0,.08);}
+.pool-chip:hover{background:var(--teal);color:#fff;transform:scale(1.05);}
+.ans-chip{background:var(--dark);color:#fff;}.ans-chip:hover{opacity:.8;}
+.ok-chip{background:var(--green);color:#fff;cursor:default;}.ng-chip{background:var(--red);color:#fff;cursor:default;}
+.answer-area{min-height:44px;background:#f1f5f9;border-radius:12px;padding:8px 12px;margin-bottom:10px;display:flex;flex-wrap:wrap;gap:6px;align-items:center;}
+.area-ph{color:var(--gray);font-size:.82rem;font-weight:600;}
+.svg-hint{margin:8px 0 2px;border-radius:10px;overflow:hidden;}
 </style>
 </head>
 <body>
@@ -80,7 +89,7 @@ body{font-family:'Baloo 2','Noto Sans KR',sans-serif;background:var(--bg);paddin
   </div>
   <div class="hbadge">중2 L4 변환 연습</div>
   <h1>수동태 변환 연습</h1>
-  <p>능동 → 수동 · 수동 → 능동 · 총 20문제</p>
+  <p>능동 → 수동 · 수동 → 능동 · 단어 배열 · 총 30문제</p>
 </div>
 <div class="scoreboard">
   <div class="sc t"><div class="n" id="sc-t">0</div><div class="l">완료</div></div>
@@ -88,12 +97,13 @@ body{font-family:'Baloo 2','Noto Sans KR',sans-serif;background:var(--bg);paddin
   <div class="sc w"><div class="n" id="sc-w">0</div><div class="l">❌ 오답</div></div>
 </div>
 <div class="pw">
-  <div class="plabel"><span>진행률</span><span id="pt">0 / 20</span></div>
+  <div class="plabel"><span>진행률</span><span id="pt">0 / 30</span></div>
   <div class="pbg"><div class="pfill" id="pf" style="width:0%"></div></div>
 </div>
 <div class="tabs">
   <button class="tab active" onclick="sw(0,this)">🔄 능동 → 수동 (10문제)</button>
   <button class="tab" onclick="sw(1,this)">🔃 수동 → 능동 (10문제)</button>
+  <button class="tab" onclick="sw(2,this)">📝 단어 배열 (10문제)</button>
 </div>
 
 <!-- ── Section A: 능동 → 수동 ── -->
@@ -314,6 +324,182 @@ body{font-family:'Baloo 2','Noto Sans KR',sans-serif;background:var(--bg);paddin
   </div>
 </div>
 
+<!-- ── Section C: 단어 배열 ── -->
+<div class="sec" id="s2">
+  <div class="sec-hdr">
+    <div class="lbl">Section C · 10문제</div>
+    <h2>수동태 문장 배열하기</h2>
+    <div class="desc">한국어 해석을 보고 수동태 문장이 되도록 단어를 배열하세요.</div>
+  </div>
+
+  <div class='question-card' id='qc-c1'><span class='q-num'>1</span><span class='q-type pas'>배열</span>
+    <div class='q-text'>📌 그 사진은 Lily에 의해 찍혔다.</div>
+    <div class='word-pool' id='pool-c1'>
+      <button class="chip pool-chip" id="wc-c1-0" onclick="moveWord('c1',0,this)">taken</button>
+      <button class="chip pool-chip" id="wc-c1-1" onclick="moveWord('c1',1,this)">photo</button>
+      <button class="chip pool-chip" id="wc-c1-2" onclick="moveWord('c1',2,this)">Lily</button>
+      <button class="chip pool-chip" id="wc-c1-3" onclick="moveWord('c1',3,this)">was</button>
+      <button class="chip pool-chip" id="wc-c1-4" onclick="moveWord('c1',4,this)">by</button>
+      <button class="chip pool-chip" id="wc-c1-5" onclick="moveWord('c1',5,this)">The</button>
+    </div>
+    <div class='answer-area' id='area-c1'><span class='area-ph'>여기에 단어를 놓으세요 →</span></div>
+    <button class='check-btn' data-qid='c1' data-ans='The photo was taken by Lily' onclick="checkArrange(this)">✔ 확인</button>
+    <div class='answer-hint' id='ah-c1'>💡 정답: <strong>The photo was taken by Lily</strong><br>🔄 능동: Lily took the photo.<div class='svg-hint'><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 360 102" width="100%"><defs><marker id="mA-c1" markerWidth="7" markerHeight="6" refX="6" refY="3" orient="auto"><path d="M0,0 L7,3 L0,6 Z" fill="#f59e0b"/></marker><marker id="mB-c1" markerWidth="7" markerHeight="6" refX="6" refY="3" orient="auto"><path d="M0,0 L7,3 L0,6 Z" fill="#0ea5e9"/></marker></defs><text x="2" y="21" font-size="9" font-weight="700" fill="#94a3b8" font-family="sans-serif">능동</text><rect x="32" y="4" width="78" height="28" rx="6" fill="#fef3c7"/><text x="71" y="22" text-anchor="middle" font-size="11" font-weight="700" fill="#92400e" font-family="sans-serif">Lily</text><rect x="116" y="4" width="72" height="28" rx="6" fill="#ccfbf1"/><text x="152" y="22" text-anchor="middle" font-size="11" font-weight="700" fill="#0f766e" font-family="sans-serif">took</text><rect x="194" y="4" width="116" height="28" rx="6" fill="#e0f2fe"/><text x="252" y="22" text-anchor="middle" font-size="11" font-weight="700" fill="#0c4a6e" font-family="sans-serif">the photo</text><path d="M71,32 Q182,52 306,74" stroke="#f59e0b" stroke-width="2" fill="none" stroke-dasharray="5,3" marker-end="url(#mA-c1)"/><path d="M252,32 Q182,52 90,74" stroke="#0ea5e9" stroke-width="2" fill="none" stroke-dasharray="5,3" marker-end="url(#mB-c1)"/><text x="2" y="91" font-size="9" font-weight="700" fill="#94a3b8" font-family="sans-serif">수동</text><rect x="32" y="74" width="116" height="28" rx="6" fill="#e0f2fe"/><text x="90" y="92" text-anchor="middle" font-size="11" font-weight="700" fill="#0c4a6e" font-family="sans-serif">The photo</text><rect x="154" y="74" width="92" height="28" rx="6" fill="#ccfbf1"/><text x="200" y="92" text-anchor="middle" font-size="11" font-weight="700" fill="#0f766e" font-family="sans-serif">was taken</text><rect x="252" y="74" width="108" height="28" rx="6" fill="#fef3c7"/><text x="306" y="92" text-anchor="middle" font-size="11" font-weight="700" fill="#92400e" font-family="sans-serif">by Lily</text></svg></div></div>
+    <button class='hint-btn' onclick="showHint('c1')">💡 힌트 보기</button>
+  </div>
+
+  <div class='question-card' id='qc-c2'><span class='q-num'>2</span><span class='q-type pas'>배열</span>
+    <div class='q-text'>📌 그 다리는 폭풍에 의해 파괴되었다.</div>
+    <div class='word-pool' id='pool-c2'>
+      <button class="chip pool-chip" id="wc-c2-0" onclick="moveWord('c2',0,this)">storm</button>
+      <button class="chip pool-chip" id="wc-c2-1" onclick="moveWord('c2',1,this)">destroyed</button>
+      <button class="chip pool-chip" id="wc-c2-2" onclick="moveWord('c2',2,this)">The</button>
+      <button class="chip pool-chip" id="wc-c2-3" onclick="moveWord('c2',3,this)">by</button>
+      <button class="chip pool-chip" id="wc-c2-4" onclick="moveWord('c2',4,this)">bridge</button>
+      <button class="chip pool-chip" id="wc-c2-5" onclick="moveWord('c2',5,this)">was</button>
+      <button class="chip pool-chip" id="wc-c2-6" onclick="moveWord('c2',6,this)">the</button>
+    </div>
+    <div class='answer-area' id='area-c2'><span class='area-ph'>여기에 단어를 놓으세요 →</span></div>
+    <button class='check-btn' data-qid='c2' data-ans='The bridge was destroyed by the storm' onclick="checkArrange(this)">✔ 확인</button>
+    <div class='answer-hint' id='ah-c2'>💡 정답: <strong>The bridge was destroyed by the storm</strong><br>🔄 능동: The storm destroyed the bridge.<div class='svg-hint'><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 360 102" width="100%"><defs><marker id="mA-c2" markerWidth="7" markerHeight="6" refX="6" refY="3" orient="auto"><path d="M0,0 L7,3 L0,6 Z" fill="#f59e0b"/></marker><marker id="mB-c2" markerWidth="7" markerHeight="6" refX="6" refY="3" orient="auto"><path d="M0,0 L7,3 L0,6 Z" fill="#0ea5e9"/></marker></defs><text x="2" y="21" font-size="9" font-weight="700" fill="#94a3b8" font-family="sans-serif">능동</text><rect x="32" y="4" width="78" height="28" rx="6" fill="#fef3c7"/><text x="71" y="22" text-anchor="middle" font-size="11" font-weight="700" fill="#92400e" font-family="sans-serif">The storm</text><rect x="116" y="4" width="72" height="28" rx="6" fill="#ccfbf1"/><text x="152" y="22" text-anchor="middle" font-size="11" font-weight="700" fill="#0f766e" font-family="sans-serif">destroyed</text><rect x="194" y="4" width="116" height="28" rx="6" fill="#e0f2fe"/><text x="252" y="22" text-anchor="middle" font-size="11" font-weight="700" fill="#0c4a6e" font-family="sans-serif">the bridge</text><path d="M71,32 Q182,52 306,74" stroke="#f59e0b" stroke-width="2" fill="none" stroke-dasharray="5,3" marker-end="url(#mA-c2)"/><path d="M252,32 Q182,52 90,74" stroke="#0ea5e9" stroke-width="2" fill="none" stroke-dasharray="5,3" marker-end="url(#mB-c2)"/><text x="2" y="91" font-size="9" font-weight="700" fill="#94a3b8" font-family="sans-serif">수동</text><rect x="32" y="74" width="116" height="28" rx="6" fill="#e0f2fe"/><text x="90" y="92" text-anchor="middle" font-size="11" font-weight="700" fill="#0c4a6e" font-family="sans-serif">The bridge</text><rect x="154" y="74" width="92" height="28" rx="6" fill="#ccfbf1"/><text x="200" y="92" text-anchor="middle" font-size="10" font-weight="700" fill="#0f766e" font-family="sans-serif">was destroyed</text><rect x="252" y="74" width="108" height="28" rx="6" fill="#fef3c7"/><text x="306" y="92" text-anchor="middle" font-size="10" font-weight="700" fill="#92400e" font-family="sans-serif">by the storm</text></svg></div></div>
+    <button class='hint-btn' onclick="showHint('c2')">💡 힌트 보기</button>
+  </div>
+
+  <div class='question-card' id='qc-c3'><span class='q-num'>3</span><span class='q-type pas'>배열</span>
+    <div class='q-text'>📌 그 상은 Noah에 의해 받아졌다.</div>
+    <div class='word-pool' id='pool-c3'>
+      <button class="chip pool-chip" id="wc-c3-0" onclick="moveWord('c3',0,this)">won</button>
+      <button class="chip pool-chip" id="wc-c3-1" onclick="moveWord('c3',1,this)">Noah</button>
+      <button class="chip pool-chip" id="wc-c3-2" onclick="moveWord('c3',2,this)">prize</button>
+      <button class="chip pool-chip" id="wc-c3-3" onclick="moveWord('c3',3,this)">by</button>
+      <button class="chip pool-chip" id="wc-c3-4" onclick="moveWord('c3',4,this)">was</button>
+      <button class="chip pool-chip" id="wc-c3-5" onclick="moveWord('c3',5,this)">The</button>
+    </div>
+    <div class='answer-area' id='area-c3'><span class='area-ph'>여기에 단어를 놓으세요 →</span></div>
+    <button class='check-btn' data-qid='c3' data-ans='The prize was won by Noah' onclick="checkArrange(this)">✔ 확인</button>
+    <div class='answer-hint' id='ah-c3'>💡 정답: <strong>The prize was won by Noah</strong><br>🔄 능동: Noah won the prize.<div class='svg-hint'><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 360 102" width="100%"><defs><marker id="mA-c3" markerWidth="7" markerHeight="6" refX="6" refY="3" orient="auto"><path d="M0,0 L7,3 L0,6 Z" fill="#f59e0b"/></marker><marker id="mB-c3" markerWidth="7" markerHeight="6" refX="6" refY="3" orient="auto"><path d="M0,0 L7,3 L0,6 Z" fill="#0ea5e9"/></marker></defs><text x="2" y="21" font-size="9" font-weight="700" fill="#94a3b8" font-family="sans-serif">능동</text><rect x="32" y="4" width="78" height="28" rx="6" fill="#fef3c7"/><text x="71" y="22" text-anchor="middle" font-size="11" font-weight="700" fill="#92400e" font-family="sans-serif">Noah</text><rect x="116" y="4" width="72" height="28" rx="6" fill="#ccfbf1"/><text x="152" y="22" text-anchor="middle" font-size="11" font-weight="700" fill="#0f766e" font-family="sans-serif">won</text><rect x="194" y="4" width="116" height="28" rx="6" fill="#e0f2fe"/><text x="252" y="22" text-anchor="middle" font-size="11" font-weight="700" fill="#0c4a6e" font-family="sans-serif">the prize</text><path d="M71,32 Q182,52 306,74" stroke="#f59e0b" stroke-width="2" fill="none" stroke-dasharray="5,3" marker-end="url(#mA-c3)"/><path d="M252,32 Q182,52 90,74" stroke="#0ea5e9" stroke-width="2" fill="none" stroke-dasharray="5,3" marker-end="url(#mB-c3)"/><text x="2" y="91" font-size="9" font-weight="700" fill="#94a3b8" font-family="sans-serif">수동</text><rect x="32" y="74" width="116" height="28" rx="6" fill="#e0f2fe"/><text x="90" y="92" text-anchor="middle" font-size="11" font-weight="700" fill="#0c4a6e" font-family="sans-serif">The prize</text><rect x="154" y="74" width="92" height="28" rx="6" fill="#ccfbf1"/><text x="200" y="92" text-anchor="middle" font-size="11" font-weight="700" fill="#0f766e" font-family="sans-serif">was won</text><rect x="252" y="74" width="108" height="28" rx="6" fill="#fef3c7"/><text x="306" y="92" text-anchor="middle" font-size="11" font-weight="700" fill="#92400e" font-family="sans-serif">by Noah</text></svg></div></div>
+    <button class='hint-btn' onclick="showHint('c3')">💡 힌트 보기</button>
+  </div>
+
+  <div class='question-card' id='qc-c4'><span class='q-num'>4</span><span class='q-type pas'>배열</span>
+    <div class='q-text'>📌 그 노래는 Max에 의해 쓰여졌다.</div>
+    <div class='word-pool' id='pool-c4'>
+      <button class="chip pool-chip" id="wc-c4-0" onclick="moveWord('c4',0,this)">Max</button>
+      <button class="chip pool-chip" id="wc-c4-1" onclick="moveWord('c4',1,this)">was</button>
+      <button class="chip pool-chip" id="wc-c4-2" onclick="moveWord('c4',2,this)">by</button>
+      <button class="chip pool-chip" id="wc-c4-3" onclick="moveWord('c4',3,this)">written</button>
+      <button class="chip pool-chip" id="wc-c4-4" onclick="moveWord('c4',4,this)">The</button>
+      <button class="chip pool-chip" id="wc-c4-5" onclick="moveWord('c4',5,this)">song</button>
+    </div>
+    <div class='answer-area' id='area-c4'><span class='area-ph'>여기에 단어를 놓으세요 →</span></div>
+    <button class='check-btn' data-qid='c4' data-ans='The song was written by Max' onclick="checkArrange(this)">✔ 확인</button>
+    <div class='answer-hint' id='ah-c4'>💡 정답: <strong>The song was written by Max</strong><br>🔄 능동: Max wrote the song.<div class='svg-hint'><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 360 102" width="100%"><defs><marker id="mA-c4" markerWidth="7" markerHeight="6" refX="6" refY="3" orient="auto"><path d="M0,0 L7,3 L0,6 Z" fill="#f59e0b"/></marker><marker id="mB-c4" markerWidth="7" markerHeight="6" refX="6" refY="3" orient="auto"><path d="M0,0 L7,3 L0,6 Z" fill="#0ea5e9"/></marker></defs><text x="2" y="21" font-size="9" font-weight="700" fill="#94a3b8" font-family="sans-serif">능동</text><rect x="32" y="4" width="78" height="28" rx="6" fill="#fef3c7"/><text x="71" y="22" text-anchor="middle" font-size="11" font-weight="700" fill="#92400e" font-family="sans-serif">Max</text><rect x="116" y="4" width="72" height="28" rx="6" fill="#ccfbf1"/><text x="152" y="22" text-anchor="middle" font-size="11" font-weight="700" fill="#0f766e" font-family="sans-serif">wrote</text><rect x="194" y="4" width="116" height="28" rx="6" fill="#e0f2fe"/><text x="252" y="22" text-anchor="middle" font-size="11" font-weight="700" fill="#0c4a6e" font-family="sans-serif">the song</text><path d="M71,32 Q182,52 306,74" stroke="#f59e0b" stroke-width="2" fill="none" stroke-dasharray="5,3" marker-end="url(#mA-c4)"/><path d="M252,32 Q182,52 90,74" stroke="#0ea5e9" stroke-width="2" fill="none" stroke-dasharray="5,3" marker-end="url(#mB-c4)"/><text x="2" y="91" font-size="9" font-weight="700" fill="#94a3b8" font-family="sans-serif">수동</text><rect x="32" y="74" width="116" height="28" rx="6" fill="#e0f2fe"/><text x="90" y="92" text-anchor="middle" font-size="11" font-weight="700" fill="#0c4a6e" font-family="sans-serif">The song</text><rect x="154" y="74" width="92" height="28" rx="6" fill="#ccfbf1"/><text x="200" y="92" text-anchor="middle" font-size="10" font-weight="700" fill="#0f766e" font-family="sans-serif">was written</text><rect x="252" y="74" width="108" height="28" rx="6" fill="#fef3c7"/><text x="306" y="92" text-anchor="middle" font-size="11" font-weight="700" fill="#92400e" font-family="sans-serif">by Max</text></svg></div></div>
+    <button class='hint-btn' onclick="showHint('c4')">💡 힌트 보기</button>
+  </div>
+
+  <div class='question-card' id='qc-c5'><span class='q-num'>5</span><span class='q-type pas'>배열</span>
+    <div class='q-text'>📌 그 자전거는 아빠에 의해 고쳐졌다.</div>
+    <div class='word-pool' id='pool-c5'>
+      <button class="chip pool-chip" id="wc-c5-0" onclick="moveWord('c5',0,this)">dad</button>
+      <button class="chip pool-chip" id="wc-c5-1" onclick="moveWord('c5',1,this)">fixed</button>
+      <button class="chip pool-chip" id="wc-c5-2" onclick="moveWord('c5',2,this)">my</button>
+      <button class="chip pool-chip" id="wc-c5-3" onclick="moveWord('c5',3,this)">bike</button>
+      <button class="chip pool-chip" id="wc-c5-4" onclick="moveWord('c5',4,this)">was</button>
+      <button class="chip pool-chip" id="wc-c5-5" onclick="moveWord('c5',5,this)">The</button>
+      <button class="chip pool-chip" id="wc-c5-6" onclick="moveWord('c5',6,this)">by</button>
+    </div>
+    <div class='answer-area' id='area-c5'><span class='area-ph'>여기에 단어를 놓으세요 →</span></div>
+    <button class='check-btn' data-qid='c5' data-ans='The bike was fixed by my dad' onclick="checkArrange(this)">✔ 확인</button>
+    <div class='answer-hint' id='ah-c5'>💡 정답: <strong>The bike was fixed by my dad</strong><br>🔄 능동: My dad fixed the bike.<div class='svg-hint'><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 360 102" width="100%"><defs><marker id="mA-c5" markerWidth="7" markerHeight="6" refX="6" refY="3" orient="auto"><path d="M0,0 L7,3 L0,6 Z" fill="#f59e0b"/></marker><marker id="mB-c5" markerWidth="7" markerHeight="6" refX="6" refY="3" orient="auto"><path d="M0,0 L7,3 L0,6 Z" fill="#0ea5e9"/></marker></defs><text x="2" y="21" font-size="9" font-weight="700" fill="#94a3b8" font-family="sans-serif">능동</text><rect x="32" y="4" width="78" height="28" rx="6" fill="#fef3c7"/><text x="71" y="22" text-anchor="middle" font-size="11" font-weight="700" fill="#92400e" font-family="sans-serif">My dad</text><rect x="116" y="4" width="72" height="28" rx="6" fill="#ccfbf1"/><text x="152" y="22" text-anchor="middle" font-size="11" font-weight="700" fill="#0f766e" font-family="sans-serif">fixed</text><rect x="194" y="4" width="116" height="28" rx="6" fill="#e0f2fe"/><text x="252" y="22" text-anchor="middle" font-size="11" font-weight="700" fill="#0c4a6e" font-family="sans-serif">the bike</text><path d="M71,32 Q182,52 306,74" stroke="#f59e0b" stroke-width="2" fill="none" stroke-dasharray="5,3" marker-end="url(#mA-c5)"/><path d="M252,32 Q182,52 90,74" stroke="#0ea5e9" stroke-width="2" fill="none" stroke-dasharray="5,3" marker-end="url(#mB-c5)"/><text x="2" y="91" font-size="9" font-weight="700" fill="#94a3b8" font-family="sans-serif">수동</text><rect x="32" y="74" width="116" height="28" rx="6" fill="#e0f2fe"/><text x="90" y="92" text-anchor="middle" font-size="11" font-weight="700" fill="#0c4a6e" font-family="sans-serif">The bike</text><rect x="154" y="74" width="92" height="28" rx="6" fill="#ccfbf1"/><text x="200" y="92" text-anchor="middle" font-size="11" font-weight="700" fill="#0f766e" font-family="sans-serif">was fixed</text><rect x="252" y="74" width="108" height="28" rx="6" fill="#fef3c7"/><text x="306" y="92" text-anchor="middle" font-size="11" font-weight="700" fill="#92400e" font-family="sans-serif">by my dad</text></svg></div></div>
+    <button class='hint-btn' onclick="showHint('c5')">💡 힌트 보기</button>
+  </div>
+
+  <div class='question-card' id='qc-c6'><span class='q-num'>6</span><span class='q-type pas'>배열</span>
+    <div class='q-text'>📌 그 고양이는 아이들에 의해 발견되었다.</div>
+    <div class='word-pool' id='pool-c6'>
+      <button class="chip pool-chip" id="wc-c6-0" onclick="moveWord('c6',0,this)">kids</button>
+      <button class="chip pool-chip" id="wc-c6-1" onclick="moveWord('c6',1,this)">found</button>
+      <button class="chip pool-chip" id="wc-c6-2" onclick="moveWord('c6',2,this)">cat</button>
+      <button class="chip pool-chip" id="wc-c6-3" onclick="moveWord('c6',3,this)">the</button>
+      <button class="chip pool-chip" id="wc-c6-4" onclick="moveWord('c6',4,this)">The</button>
+      <button class="chip pool-chip" id="wc-c6-5" onclick="moveWord('c6',5,this)">was</button>
+      <button class="chip pool-chip" id="wc-c6-6" onclick="moveWord('c6',6,this)">by</button>
+    </div>
+    <div class='answer-area' id='area-c6'><span class='area-ph'>여기에 단어를 놓으세요 →</span></div>
+    <button class='check-btn' data-qid='c6' data-ans='The cat was found by the kids' onclick="checkArrange(this)">✔ 확인</button>
+    <div class='answer-hint' id='ah-c6'>💡 정답: <strong>The cat was found by the kids</strong><br>🔄 능동: The kids found the cat.<div class='svg-hint'><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 360 102" width="100%"><defs><marker id="mA-c6" markerWidth="7" markerHeight="6" refX="6" refY="3" orient="auto"><path d="M0,0 L7,3 L0,6 Z" fill="#f59e0b"/></marker><marker id="mB-c6" markerWidth="7" markerHeight="6" refX="6" refY="3" orient="auto"><path d="M0,0 L7,3 L0,6 Z" fill="#0ea5e9"/></marker></defs><text x="2" y="21" font-size="9" font-weight="700" fill="#94a3b8" font-family="sans-serif">능동</text><rect x="32" y="4" width="78" height="28" rx="6" fill="#fef3c7"/><text x="71" y="22" text-anchor="middle" font-size="11" font-weight="700" fill="#92400e" font-family="sans-serif">The kids</text><rect x="116" y="4" width="72" height="28" rx="6" fill="#ccfbf1"/><text x="152" y="22" text-anchor="middle" font-size="11" font-weight="700" fill="#0f766e" font-family="sans-serif">found</text><rect x="194" y="4" width="116" height="28" rx="6" fill="#e0f2fe"/><text x="252" y="22" text-anchor="middle" font-size="11" font-weight="700" fill="#0c4a6e" font-family="sans-serif">the cat</text><path d="M71,32 Q182,52 306,74" stroke="#f59e0b" stroke-width="2" fill="none" stroke-dasharray="5,3" marker-end="url(#mA-c6)"/><path d="M252,32 Q182,52 90,74" stroke="#0ea5e9" stroke-width="2" fill="none" stroke-dasharray="5,3" marker-end="url(#mB-c6)"/><text x="2" y="91" font-size="9" font-weight="700" fill="#94a3b8" font-family="sans-serif">수동</text><rect x="32" y="74" width="116" height="28" rx="6" fill="#e0f2fe"/><text x="90" y="92" text-anchor="middle" font-size="11" font-weight="700" fill="#0c4a6e" font-family="sans-serif">The cat</text><rect x="154" y="74" width="92" height="28" rx="6" fill="#ccfbf1"/><text x="200" y="92" text-anchor="middle" font-size="11" font-weight="700" fill="#0f766e" font-family="sans-serif">was found</text><rect x="252" y="74" width="108" height="28" rx="6" fill="#fef3c7"/><text x="306" y="92" text-anchor="middle" font-size="10" font-weight="700" fill="#92400e" font-family="sans-serif">by the kids</text></svg></div></div>
+    <button class='hint-btn' onclick="showHint('c6')">💡 힌트 보기</button>
+  </div>
+
+  <div class='question-card' id='qc-c7'><span class='q-num'>7</span><span class='q-type pas'>배열</span>
+    <div class='q-text'>📌 그 담은 일꾼들에 의해 지어졌다.</div>
+    <div class='word-pool' id='pool-c7'>
+      <button class="chip pool-chip" id="wc-c7-0" onclick="moveWord('c7',0,this)">workers</button>
+      <button class="chip pool-chip" id="wc-c7-1" onclick="moveWord('c7',1,this)">built</button>
+      <button class="chip pool-chip" id="wc-c7-2" onclick="moveWord('c7',2,this)">The</button>
+      <button class="chip pool-chip" id="wc-c7-3" onclick="moveWord('c7',3,this)">wall</button>
+      <button class="chip pool-chip" id="wc-c7-4" onclick="moveWord('c7',4,this)">was</button>
+      <button class="chip pool-chip" id="wc-c7-5" onclick="moveWord('c7',5,this)">the</button>
+      <button class="chip pool-chip" id="wc-c7-6" onclick="moveWord('c7',6,this)">by</button>
+    </div>
+    <div class='answer-area' id='area-c7'><span class='area-ph'>여기에 단어를 놓으세요 →</span></div>
+    <button class='check-btn' data-qid='c7' data-ans='The wall was built by the workers' onclick="checkArrange(this)">✔ 확인</button>
+    <div class='answer-hint' id='ah-c7'>💡 정답: <strong>The wall was built by the workers</strong><br>🔄 능동: The workers built the wall.<div class='svg-hint'><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 360 102" width="100%"><defs><marker id="mA-c7" markerWidth="7" markerHeight="6" refX="6" refY="3" orient="auto"><path d="M0,0 L7,3 L0,6 Z" fill="#f59e0b"/></marker><marker id="mB-c7" markerWidth="7" markerHeight="6" refX="6" refY="3" orient="auto"><path d="M0,0 L7,3 L0,6 Z" fill="#0ea5e9"/></marker></defs><text x="2" y="21" font-size="9" font-weight="700" fill="#94a3b8" font-family="sans-serif">능동</text><rect x="32" y="4" width="78" height="28" rx="6" fill="#fef3c7"/><text x="71" y="22" text-anchor="middle" font-size="10" font-weight="700" fill="#92400e" font-family="sans-serif">The workers</text><rect x="116" y="4" width="72" height="28" rx="6" fill="#ccfbf1"/><text x="152" y="22" text-anchor="middle" font-size="11" font-weight="700" fill="#0f766e" font-family="sans-serif">built</text><rect x="194" y="4" width="116" height="28" rx="6" fill="#e0f2fe"/><text x="252" y="22" text-anchor="middle" font-size="11" font-weight="700" fill="#0c4a6e" font-family="sans-serif">the wall</text><path d="M71,32 Q182,52 306,74" stroke="#f59e0b" stroke-width="2" fill="none" stroke-dasharray="5,3" marker-end="url(#mA-c7)"/><path d="M252,32 Q182,52 90,74" stroke="#0ea5e9" stroke-width="2" fill="none" stroke-dasharray="5,3" marker-end="url(#mB-c7)"/><text x="2" y="91" font-size="9" font-weight="700" fill="#94a3b8" font-family="sans-serif">수동</text><rect x="32" y="74" width="116" height="28" rx="6" fill="#e0f2fe"/><text x="90" y="92" text-anchor="middle" font-size="11" font-weight="700" fill="#0c4a6e" font-family="sans-serif">The wall</text><rect x="154" y="74" width="92" height="28" rx="6" fill="#ccfbf1"/><text x="200" y="92" text-anchor="middle" font-size="11" font-weight="700" fill="#0f766e" font-family="sans-serif">was built</text><rect x="252" y="74" width="108" height="28" rx="6" fill="#fef3c7"/><text x="306" y="92" text-anchor="middle" font-size="10" font-weight="700" fill="#92400e" font-family="sans-serif">by the workers</text></svg></div></div>
+    <button class='hint-btn' onclick="showHint('c7')">💡 힌트 보기</button>
+  </div>
+
+  <div class='question-card' id='qc-c8'><span class='q-num'>8</span><span class='q-type pas'>배열</span>
+    <div class='q-text'>📌 그 음식은 유명한 요리사에 의해 준비되었다.</div>
+    <div class='word-pool' id='pool-c8'>
+      <button class="chip pool-chip" id="wc-c8-0" onclick="moveWord('c8',0,this)">chef</button>
+      <button class="chip pool-chip" id="wc-c8-1" onclick="moveWord('c8',1,this)">food</button>
+      <button class="chip pool-chip" id="wc-c8-2" onclick="moveWord('c8',2,this)">famous</button>
+      <button class="chip pool-chip" id="wc-c8-3" onclick="moveWord('c8',3,this)">was</button>
+      <button class="chip pool-chip" id="wc-c8-4" onclick="moveWord('c8',4,this)">prepared</button>
+      <button class="chip pool-chip" id="wc-c8-5" onclick="moveWord('c8',5,this)">The</button>
+      <button class="chip pool-chip" id="wc-c8-6" onclick="moveWord('c8',6,this)">by</button>
+      <button class="chip pool-chip" id="wc-c8-7" onclick="moveWord('c8',7,this)">a</button>
+    </div>
+    <div class='answer-area' id='area-c8'><span class='area-ph'>여기에 단어를 놓으세요 →</span></div>
+    <button class='check-btn' data-qid='c8' data-ans='The food was prepared by a famous chef' onclick="checkArrange(this)">✔ 확인</button>
+    <div class='answer-hint' id='ah-c8'>💡 정답: <strong>The food was prepared by a famous chef</strong><br>🔄 능동: A famous chef prepared the food.<div class='svg-hint'><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 360 102" width="100%"><defs><marker id="mA-c8" markerWidth="7" markerHeight="6" refX="6" refY="3" orient="auto"><path d="M0,0 L7,3 L0,6 Z" fill="#f59e0b"/></marker><marker id="mB-c8" markerWidth="7" markerHeight="6" refX="6" refY="3" orient="auto"><path d="M0,0 L7,3 L0,6 Z" fill="#0ea5e9"/></marker></defs><text x="2" y="21" font-size="9" font-weight="700" fill="#94a3b8" font-family="sans-serif">능동</text><rect x="32" y="4" width="78" height="28" rx="6" fill="#fef3c7"/><text x="71" y="22" text-anchor="middle" font-size="10" font-weight="700" fill="#92400e" font-family="sans-serif">A famous chef</text><rect x="116" y="4" width="72" height="28" rx="6" fill="#ccfbf1"/><text x="152" y="22" text-anchor="middle" font-size="11" font-weight="700" fill="#0f766e" font-family="sans-serif">prepared</text><rect x="194" y="4" width="116" height="28" rx="6" fill="#e0f2fe"/><text x="252" y="22" text-anchor="middle" font-size="11" font-weight="700" fill="#0c4a6e" font-family="sans-serif">the food</text><path d="M71,32 Q182,52 306,74" stroke="#f59e0b" stroke-width="2" fill="none" stroke-dasharray="5,3" marker-end="url(#mA-c8)"/><path d="M252,32 Q182,52 90,74" stroke="#0ea5e9" stroke-width="2" fill="none" stroke-dasharray="5,3" marker-end="url(#mB-c8)"/><text x="2" y="91" font-size="9" font-weight="700" fill="#94a3b8" font-family="sans-serif">수동</text><rect x="32" y="74" width="116" height="28" rx="6" fill="#e0f2fe"/><text x="90" y="92" text-anchor="middle" font-size="11" font-weight="700" fill="#0c4a6e" font-family="sans-serif">The food</text><rect x="154" y="74" width="92" height="28" rx="6" fill="#ccfbf1"/><text x="200" y="92" text-anchor="middle" font-size="10" font-weight="700" fill="#0f766e" font-family="sans-serif">was prepared</text><rect x="252" y="74" width="108" height="28" rx="6" fill="#fef3c7"/><text x="306" y="92" text-anchor="middle" font-size="10" font-weight="700" fill="#92400e" font-family="sans-serif">by a famous chef</text></svg></div></div>
+    <button class='hint-btn' onclick="showHint('c8')">💡 힌트 보기</button>
+  </div>
+
+  <div class='question-card' id='qc-c9'><span class='q-num'>9</span><span class='q-type pas'>배열</span>
+    <div class='q-text'>📌 채소들은 농부에 의해 재배된다. (현재)</div>
+    <div class='word-pool' id='pool-c9'>
+      <button class="chip pool-chip" id="wc-c9-0" onclick="moveWord('c9',0,this)">farmer</button>
+      <button class="chip pool-chip" id="wc-c9-1" onclick="moveWord('c9',1,this)">the</button>
+      <button class="chip pool-chip" id="wc-c9-2" onclick="moveWord('c9',2,this)">Vegetables</button>
+      <button class="chip pool-chip" id="wc-c9-3" onclick="moveWord('c9',3,this)">grown</button>
+      <button class="chip pool-chip" id="wc-c9-4" onclick="moveWord('c9',4,this)">by</button>
+      <button class="chip pool-chip" id="wc-c9-5" onclick="moveWord('c9',5,this)">are</button>
+    </div>
+    <div class='answer-area' id='area-c9'><span class='area-ph'>여기에 단어를 놓으세요 →</span></div>
+    <button class='check-btn' data-qid='c9' data-ans='Vegetables are grown by the farmer' onclick="checkArrange(this)">✔ 확인</button>
+    <div class='answer-hint' id='ah-c9'>💡 정답: <strong>Vegetables are grown by the farmer</strong><br>🔄 능동: The farmer grows vegetables.<div class='svg-hint'><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 360 102" width="100%"><defs><marker id="mA-c9" markerWidth="7" markerHeight="6" refX="6" refY="3" orient="auto"><path d="M0,0 L7,3 L0,6 Z" fill="#f59e0b"/></marker><marker id="mB-c9" markerWidth="7" markerHeight="6" refX="6" refY="3" orient="auto"><path d="M0,0 L7,3 L0,6 Z" fill="#0ea5e9"/></marker></defs><text x="2" y="21" font-size="9" font-weight="700" fill="#94a3b8" font-family="sans-serif">능동</text><rect x="32" y="4" width="78" height="28" rx="6" fill="#fef3c7"/><text x="71" y="22" text-anchor="middle" font-size="10" font-weight="700" fill="#92400e" font-family="sans-serif">The farmer</text><rect x="116" y="4" width="72" height="28" rx="6" fill="#ccfbf1"/><text x="152" y="22" text-anchor="middle" font-size="11" font-weight="700" fill="#0f766e" font-family="sans-serif">grows</text><rect x="194" y="4" width="116" height="28" rx="6" fill="#e0f2fe"/><text x="252" y="22" text-anchor="middle" font-size="11" font-weight="700" fill="#0c4a6e" font-family="sans-serif">vegetables</text><path d="M71,32 Q182,52 306,74" stroke="#f59e0b" stroke-width="2" fill="none" stroke-dasharray="5,3" marker-end="url(#mA-c9)"/><path d="M252,32 Q182,52 90,74" stroke="#0ea5e9" stroke-width="2" fill="none" stroke-dasharray="5,3" marker-end="url(#mB-c9)"/><text x="2" y="91" font-size="9" font-weight="700" fill="#94a3b8" font-family="sans-serif">수동</text><rect x="32" y="74" width="116" height="28" rx="6" fill="#e0f2fe"/><text x="90" y="92" text-anchor="middle" font-size="11" font-weight="700" fill="#0c4a6e" font-family="sans-serif">Vegetables</text><rect x="154" y="74" width="92" height="28" rx="6" fill="#ccfbf1"/><text x="200" y="92" text-anchor="middle" font-size="11" font-weight="700" fill="#0f766e" font-family="sans-serif">are grown</text><rect x="252" y="74" width="108" height="28" rx="6" fill="#fef3c7"/><text x="306" y="92" text-anchor="middle" font-size="10" font-weight="700" fill="#92400e" font-family="sans-serif">by the farmer</text></svg></div></div>
+    <button class='hint-btn' onclick="showHint('c9')">💡 힌트 보기</button>
+  </div>
+
+  <div class='question-card' id='qc-c10'><span class='q-num'>10</span><span class='q-type pas'>배열</span>
+    <div class='q-text'>📌 이 앱은 많은 사람들에 의해 사용된다. (현재)</div>
+    <div class='word-pool' id='pool-c10'>
+      <button class="chip pool-chip" id="wc-c10-0" onclick="moveWord('c10',0,this)">many</button>
+      <button class="chip pool-chip" id="wc-c10-1" onclick="moveWord('c10',1,this)">used</button>
+      <button class="chip pool-chip" id="wc-c10-2" onclick="moveWord('c10',2,this)">by</button>
+      <button class="chip pool-chip" id="wc-c10-3" onclick="moveWord('c10',3,this)">is</button>
+      <button class="chip pool-chip" id="wc-c10-4" onclick="moveWord('c10',4,this)">app</button>
+      <button class="chip pool-chip" id="wc-c10-5" onclick="moveWord('c10',5,this)">people</button>
+      <button class="chip pool-chip" id="wc-c10-6" onclick="moveWord('c10',6,this)">This</button>
+    </div>
+    <div class='answer-area' id='area-c10'><span class='area-ph'>여기에 단어를 놓으세요 →</span></div>
+    <button class='check-btn' data-qid='c10' data-ans='This app is used by many people' onclick="checkArrange(this)">✔ 확인</button>
+    <div class='answer-hint' id='ah-c10'>💡 정답: <strong>This app is used by many people</strong><br>🔄 능동: Many people use this app.<div class='svg-hint'><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 360 102" width="100%"><defs><marker id="mA-c10" markerWidth="7" markerHeight="6" refX="6" refY="3" orient="auto"><path d="M0,0 L7,3 L0,6 Z" fill="#f59e0b"/></marker><marker id="mB-c10" markerWidth="7" markerHeight="6" refX="6" refY="3" orient="auto"><path d="M0,0 L7,3 L0,6 Z" fill="#0ea5e9"/></marker></defs><text x="2" y="21" font-size="9" font-weight="700" fill="#94a3b8" font-family="sans-serif">능동</text><rect x="32" y="4" width="78" height="28" rx="6" fill="#fef3c7"/><text x="71" y="22" text-anchor="middle" font-size="10" font-weight="700" fill="#92400e" font-family="sans-serif">Many people</text><rect x="116" y="4" width="72" height="28" rx="6" fill="#ccfbf1"/><text x="152" y="22" text-anchor="middle" font-size="11" font-weight="700" fill="#0f766e" font-family="sans-serif">use</text><rect x="194" y="4" width="116" height="28" rx="6" fill="#e0f2fe"/><text x="252" y="22" text-anchor="middle" font-size="11" font-weight="700" fill="#0c4a6e" font-family="sans-serif">this app</text><path d="M71,32 Q182,52 306,74" stroke="#f59e0b" stroke-width="2" fill="none" stroke-dasharray="5,3" marker-end="url(#mA-c10)"/><path d="M252,32 Q182,52 90,74" stroke="#0ea5e9" stroke-width="2" fill="none" stroke-dasharray="5,3" marker-end="url(#mB-c10)"/><text x="2" y="91" font-size="9" font-weight="700" fill="#94a3b8" font-family="sans-serif">수동</text><rect x="32" y="74" width="116" height="28" rx="6" fill="#e0f2fe"/><text x="90" y="92" text-anchor="middle" font-size="11" font-weight="700" fill="#0c4a6e" font-family="sans-serif">This app</text><rect x="154" y="74" width="92" height="28" rx="6" fill="#ccfbf1"/><text x="200" y="92" text-anchor="middle" font-size="11" font-weight="700" fill="#0f766e" font-family="sans-serif">is used</text><rect x="252" y="74" width="108" height="28" rx="6" fill="#fef3c7"/><text x="306" y="92" text-anchor="middle" font-size="10" font-weight="700" fill="#92400e" font-family="sans-serif">by many people</text></svg></div></div>
+    <button class='hint-btn' onclick="showHint('c10')">💡 힌트 보기</button>
+  </div>
+</div>
+
 <!-- Result -->
 <div id="result">
   <div class="rc">
@@ -336,8 +522,9 @@ body{font-family:'Baloo 2','Noto Sans KR',sans-serif;background:var(--bg);paddin
 <script src="../score-popup.js"></script>
 <script src="../sounds.js"></script>
 <script>
-var TOTAL=20,SECTOTALS={a:10,b:10},secC={a:0,b:0},secW={a:0,b:0};
+var TOTAL=30,SECTOTALS={a:10,b:10,c:10},secC={a:0,b:0,c:0},secW={a:0,b:0,c:0};
 var wrongs=[];
+var placed={"c1":[],"c2":[],"c3":[],"c4":[],"c5":[],"c6":[],"c7":[],"c8":[],"c9":[],"c10":[]};
 
 function norm(s){
   return s.trim().toLowerCase()
@@ -385,7 +572,7 @@ function checkBlank(id){
 }
 
 function updateScore(){
-  var c=secC.a+secC.b,w=secW.a+secW.b,t=c+w;
+  var c=secC.a+secC.b+secC.c,w=secW.a+secW.b+secW.c,t=c+w;
   document.getElementById('sc-t').textContent=t;
   document.getElementById('sc-c').textContent=c;
   document.getElementById('sc-w').textContent=w;
@@ -402,10 +589,58 @@ function showHint(id){
   if(kor){kor.classList.add('show');}
 }
 
+function moveWord(k,i,btn){
+  if(btn.style.visibility==='hidden'||btn.disabled)return;
+  btn.style.visibility='hidden';
+  placed[k].push({i:i,w:btn.textContent});
+  refreshArea(k);
+}
+function removeWord(k,pos){
+  var it=placed[k].splice(pos,1)[0];
+  var btn=document.getElementById('wc-'+k+'-'+it.i);
+  if(btn)btn.style.visibility='visible';
+  refreshArea(k);
+}
+function refreshArea(k){
+  var area=document.getElementById('area-'+k);
+  if(!placed[k].length){area.innerHTML='<span class="area-ph">여기에 단어를 놓으세요 →</span>';return;}
+  area.innerHTML='';
+  placed[k].forEach(function(it,pos){
+    var c=document.createElement('button');
+    c.className='chip ans-chip';c.textContent=it.w;
+    c.onclick=(function(p){return function(){removeWord(k,p);};})(pos);
+    area.appendChild(c);
+  });
+}
+function checkArrange(btn){
+  var k=btn.dataset.qid;
+  var ans=btn.dataset.ans;
+  var card=document.getElementById('qc-'+k);
+  if(card.classList.contains('ok')||card.classList.contains('ng'))return;
+  if(!placed[k].length){showToast('단어를 배열하세요!','ng');return;}
+  var typed=placed[k].map(function(it){return it.w;}).join(' ');
+  btn.disabled=true;
+  document.querySelectorAll('#pool-'+k+' .pool-chip').forEach(function(c){c.style.visibility='hidden';c.disabled=true;});
+  var chips=document.querySelectorAll('#area-'+k+' .ans-chip');
+  var got=norm(typed)===norm(ans);
+  chips.forEach(function(c){c.classList.remove('ans-chip');c.classList.add(got?'ok-chip':'ng-chip');c.onclick=null;});
+  if(got){
+    secC.c++;card.classList.add('ok');
+    var b=document.createElement('span');b.className='done-badge';b.textContent='✅';card.appendChild(b);
+    showToast('정답!','ok');if(typeof playSound==='function')playSound('correct');
+  }else{
+    secW.c++;card.classList.add('ng');
+    var b=document.createElement('span');b.className='done-badge';b.textContent='❌';card.appendChild(b);
+    wrongs.push({q:card.querySelector('.q-text').textContent,ma:typed,ca:ans});
+    showHint(k);showToast('오답! 힌트를 확인하세요.','ng');if(typeof playSound==='function')playSound('wrong');
+  }
+  updateScore();
+}
+
 function showResult(){
   document.querySelectorAll('.sec').forEach(s=>s.style.display='none');
   document.querySelectorAll('.tabs').forEach(t=>t.style.display='none');
-  var c=secC.a+secC.b,w=secW.a+secW.b;
+  var c=secC.a+secC.b+secC.c,w=secW.a+secW.b+secW.c;
   var score=Math.round(c/TOTAL*100);
   document.getElementById('r-score').textContent=score;
   document.getElementById('r-c').textContent=c;

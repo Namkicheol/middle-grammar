@@ -42,7 +42,8 @@ body{font-family:'Baloo 2','Noto Sans KR',sans-serif;background:var(--bg);paddin
 .q-text{font-size:1rem;font-weight:600;color:var(--dark);margin-bottom:8px;line-height:1.9;}
 .q-sub{font-size:.88rem;color:#374151;font-weight:600;margin-bottom:10px;padding:8px 12px;background:#f1f5f9;border-radius:10px;border-left:3px solid var(--teal);}
 .q-sub .arrow{color:var(--teal);font-weight:800;margin:0 4px;}
-.q-kor{font-size:.8rem;color:#0f766e;font-weight:600;margin-bottom:10px;padding:4px 10px;background:#ccfbf1;border-radius:6px;}
+.q-kor{font-size:.8rem;color:#0f766e;font-weight:600;margin-bottom:10px;padding:4px 10px;background:#ccfbf1;border-radius:6px;display:none;}
+.q-kor.show{display:block;}
 .blank{border:none;border-bottom:2.5px solid var(--teal);background:transparent;font-family:inherit;font-size:.95rem;font-weight:700;color:var(--dark);padding:2px 8px;min-width:110px;text-align:center;outline:none;transition:.2s;display:inline-block;}
 .blank:focus{border-color:var(--amber);}.blank.ok{border-color:var(--green);color:var(--green);background:#f0fdf4;border-radius:6px;}.blank.ng{border-color:var(--red);color:var(--red);background:#fef2f2;border-radius:6px;}
 .answer-hint{display:none;margin-top:8px;padding:8px 14px;background:#fef9c3;border-radius:10px;font-size:.82rem;font-weight:600;color:#854d0e;}
@@ -396,6 +397,9 @@ function updateScore(){
 function showHint(id){
   var h=document.getElementById('ah-'+id);
   if(h){h.classList.add('show');}
+  var card=document.getElementById('qc-'+id);
+  var kor=card&&card.querySelector('.q-kor');
+  if(kor){kor.classList.add('show');}
 }
 
 function showResult(){

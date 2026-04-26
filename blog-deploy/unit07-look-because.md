@@ -27,7 +27,11 @@ https://namkicheol.github.io/middle-grammar/look-because-basic/
 화면 하단 가운데에 "감각동사 look & because" 굵은 흰색 폰트로 크게 표시.
 전체적으로 밝고 에너지 넘치는 느낌.
 
-### ⑤ agent 점검 결과 (2026-04-24)
+### ⑤ Pencil 썸네일 (2026-04-26)
+
+- `blog-images/2026-04-26/thumbnail-look-because-basic.png`
+
+### ⑥ agent 점검 결과 (2026-04-24)
 
 점검 완료 — 수정 사항 3건 반영됨:
 - 헤더 "총 45문제" → 42문제
@@ -59,7 +63,11 @@ https://namkicheol.github.io/middle-grammar/look-because-hard/
 화면 하단에 "감각동사 look & because 심화" 굵은 골드(#f59e0b) 폰트로 크게 표시.
 전체적으로 세련되고 도전적인 느낌.
 
-### ⑤ agent 점검 결과 (2026-04-24)
+### ⑤ Pencil 썸네일 (2026-04-26)
+
+- `blog-images/2026-04-26/thumbnail-look-because-hard.png`
+
+### ⑥ agent 점검 결과 (2026-04-24)
 
 점검 완료 — 수정 사항 2건 반영됨:
 - ah-a14, ah-a15 answer-hint에 `📝 해석:` 한국어 번역 추가

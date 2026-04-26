@@ -6,6 +6,13 @@
 
 **iframe**: https://namkicheol.github.io/middle-grammar/g2-passive-practice/
 
+**썸네일**: `blog-images/2026-04-26/thumbnail-passive-practice.png`
+
+**본문 이미지** (Pencil, 2026-04-26):
+- `blog-images/2026-04-26/img1-passive-practice.png`
+- `blog-images/2026-04-26/img2-passive-practice.png`
+- `blog-images/2026-04-26/img3-passive-practice.png`
+
 ---
 
 ## 블로그 본문
@@ -15,6 +22,8 @@
 "Jake broke the window."를 수동태로 바꾸라고 하면 "The window was broken..."까지는 쓰는데, 뒤에 **by Jake**를 붙여야 한다는 걸 깜빡하거나, 아니면 반대로 수동태를 능동태로 바꾸려면 뭘 어디에 써야 할지 멈칫하는 경우 많잖아.
 
 오늘 소개하는 워크시트는 **능동 → 수동**, **수동 → 능동** 양방향 변환만 집중 훈련하는 20문제짜리 변환 특훈이야.
+
+<p align="center"><img src="https://raw.githubusercontent.com/namkicheol/middle-grammar/main/blog-images/2026-04-26/img1-passive-practice.png" width="600" alt="수동태 변환 연습 워크시트 공부하는 학생"></p>
 
 ---
 
@@ -72,6 +81,8 @@
 
 > 💡 <span style="color:#dd6b20;">**현직쌤 팁**</span>: 능동태 **목적어**(초록)가 수동태에서 **주어**가 되고, 능동태 **주어**(주황)는 **by 뒤**로 가. 이 두 가지만 기억하면 변환 끝!
 
+<p align="center"><img src="https://raw.githubusercontent.com/namkicheol/middle-grammar/main/blog-images/2026-04-26/img2-passive-practice.png" width="600" alt="수동태 변환 구조 문법 다이어그램"></p>
+
 ---
 
 ## 변환할 때 이것만 챙겨!
@@ -111,6 +122,8 @@
 | 🔃 수동 → 능동 | 수동태 문장을 능동태(동사형)로 변환 | 10문제 |
 
 빈칸에 be동사+p.p. 또는 능동 동사형을 직접 써야 해서, 단순히 고르는 것보다 **훨씬 실력이 잘 늘어**! 틀리면 바로 힌트와 해석이 뜨니까 이 워크시트 한 번으로 수동태 변환 완전 정복!
+
+<p align="center"><img src="https://raw.githubusercontent.com/namkicheol/middle-grammar/main/blog-images/2026-04-26/img3-passive-practice.png" width="600" alt="수동태 워크시트 완성 후 기뻐하는 학생"></p>
 
 ▶ **바로 풀러 가기**
 

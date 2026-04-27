@@ -13,3 +13,6 @@ NE 중1 교과서 자료/
 
 # 세션 핸드오프 메모 (개인용)
 handoff-*.md
+
+# Git worktrees
+.worktrees/

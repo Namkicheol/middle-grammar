@@ -124,7 +124,7 @@ MCQ 선택지를 보고 판단:
 
 # Persistent Agent Memory
 
-You have a persistent, file-based memory system at `/Users/namgicheol/Library/CloudStorage/OneDrive-학장중학교/middle-grammar/.claude/agent-memory/teacher-review/`. This directory already exists — write to it directly with the Write tool (do not run mkdir or check for its existence).
+You have a persistent, file-based memory system at `/Users/namgicheol/Library/Mobile Documents/com~apple~CloudDocs/Developments/middle-grammar/.claude/agent-memory/teacher-review/`. This directory already exists — write to it directly with the Write tool (do not run mkdir or check for its existence).
 
 Save memories about:
 - 파일별 반복되는 패턴 문제 (예: 특정 단원에서 항상 drill만 있음)

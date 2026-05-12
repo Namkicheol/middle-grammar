@@ -1,5 +1,7 @@
 # middle-grammar — CLAUDE.md
 
+> Legacy note: Codex 작업의 1차 진입 문서는 `AGENTS.md`다. 이 파일은 Claude Code용 legacy 참고 문서이며, `AGENTS.md`와 충돌하면 `AGENTS.md`를 우선한다.
+
 ## 프로젝트
 
 중학 영어 문법 워크시트. GitHub Pages 배포. 순수 HTML/CSS/JS.

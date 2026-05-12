@@ -15,7 +15,7 @@
 | 디자인 시스템 (색상·헤더 장식·폰트·문제 타입) | `middle-grammar-design` |
 | 효과음 (sounds.js) 연결·수정 | `middle-grammar-sounds` |
 | 블로그 글 작성, blog-deploy 파일 형식 | `middle-grammar-blog` |
-| 이미지 생성 (Pencil MCP) | `blog-image-pencil` |
+| 이미지 생성 (Gemini) | Gemini 채팅창에서 이미지 프롬프트 직접 입력 |
 | 워크시트 교사 관점 품질 점검 (패턴독점·드릴비율·스캐폴딩) | `teacher-review` agent |
 
 ---

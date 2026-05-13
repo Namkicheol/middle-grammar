@@ -1,0 +1,1276 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+<title>보글보글 문법 게임</title>
+<link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@400;600;700;800&family=Noto+Sans+KR:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+:root{--blue:#0ea5e9;--dark:#0c4a6e;--green:#22c55e;--red:#ef4444;--purple:#8b5cf6;--bg:#f0f9ff;--white:#fff;--gray:#94a3b8;}
+*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
+body{font-family:'Baloo 2','Noto Sans KR',sans-serif;background:var(--bg);min-height:100vh;overflow-x:hidden;}
+
+/* ── START SCREEN ── */
+#start-screen{display:block;}
+.start-header{background:linear-gradient(135deg,#0ea5e9,#6366f1);padding:28px 20px 36px;text-align:center;position:relative;overflow:hidden;}
+.start-header::before{content:'';position:absolute;top:-50px;right:-50px;width:200px;height:200px;background:rgba(255,255,255,.08);border-radius:50%;}
+.start-header .badge{display:inline-block;background:rgba(255,255,255,.25);color:#fff;font-size:11px;font-weight:700;letter-spacing:2px;padding:4px 14px;border-radius:20px;margin-bottom:10px;}
+.start-header h1{color:#fff;font-size:2rem;font-weight:800;margin-bottom:6px;}
+.start-header p{color:rgba(255,255,255,.85);font-size:.88rem;}
+.bubble-deco{display:flex;justify-content:center;gap:8px;margin-top:14px;}
+.bubble-deco span{display:inline-block;width:22px;height:22px;border-radius:50%;opacity:.8;animation:bob var(--d,1.2s) ease-in-out infinite alternate;}
+@keyframes bob{0%{transform:translateY(0)}100%{transform:translateY(-8px)}}
+
+.settings-box{margin:16px 20px 0;padding:14px 16px;background:var(--white);border-radius:14px;box-shadow:0 2px 10px rgba(0,0,0,.05);}
+.set-row{display:flex;align-items:center;gap:10px;flex-wrap:wrap;}
+.set-label{font-size:.78rem;font-weight:800;color:var(--dark);min-width:54px;}
+.time-opts{display:flex;gap:6px;flex-wrap:wrap;flex:1;}
+.topt{padding:6px 14px;border-radius:18px;border:2px solid #e2e8f0;background:#f8fafc;color:var(--gray);font-family:inherit;font-weight:700;font-size:.78rem;cursor:pointer;transition:all .15s;}
+.topt.on{background:var(--blue);border-color:var(--blue);color:#fff;}
+
+.unit-tabs{display:flex;gap:8px;padding:16px 20px 0;overflow-x:auto;scrollbar-width:none;}
+.unit-tabs::-webkit-scrollbar{display:none;}
+.utab{flex-shrink:0;padding:7px 18px;border-radius:20px;border:2px solid #e2e8f0;background:var(--white);color:var(--gray);font-family:inherit;font-weight:700;font-size:.82rem;cursor:pointer;transition:all .2s;}
+.utab.on{background:var(--blue);border-color:var(--blue);color:#fff;}
+
+.unit-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;padding:16px 20px 32px;}
+.unit-card{background:var(--white);border-radius:18px;padding:16px;box-shadow:0 2px 12px rgba(0,0,0,.07);cursor:pointer;border:2.5px solid transparent;transition:all .18s;position:relative;overflow:hidden;}
+.unit-card::before{content:'';position:absolute;top:0;left:0;right:0;height:4px;background:var(--c,var(--blue));}
+.unit-card:hover,.unit-card:active{transform:translateY(-2px);box-shadow:0 6px 20px rgba(0,0,0,.13);border-color:var(--c,var(--blue));}
+.unit-card .lbl{font-size:.68rem;font-weight:700;color:var(--c,var(--blue));letter-spacing:.5px;margin-bottom:4px;}
+.unit-card h3{font-size:.88rem;font-weight:800;color:var(--dark);line-height:1.35;}
+.unit-card .cnt{font-size:.72rem;color:var(--gray);margin-top:5px;}
+.unit-card .best{font-size:.7rem;font-weight:800;color:#f97316;margin-top:8px;min-height:16px;}
+.all-btn{grid-column:1/-1;background:linear-gradient(135deg,#334155,#475569);color:#fff;border-radius:18px;padding:16px;text-align:center;cursor:pointer;font-weight:800;font-size:1rem;box-shadow:0 4px 14px rgba(0,0,0,.2);transition:all .18s;}
+.all-btn:hover{transform:translateY(-2px);box-shadow:0 8px 20px rgba(0,0,0,.25);}
+.all-btn .best{display:block;font-size:.72rem;font-weight:700;color:#fde68a;margin-top:4px;}
+
+/* ── GAME SCREEN ── */
+#game-screen{display:none;flex-direction:column;align-items:center;}
+#hud{display:flex;justify-content:space-between;align-items:center;width:100%;max-width:480px;padding:10px 12px;background:var(--dark);color:#fff;gap:8px;}
+#hud .hud-score{font-size:1rem;font-weight:800;color:#fde68a;}
+#hud .hud-time{font-size:1.05rem;font-weight:800;color:#a7f3d0;font-variant-numeric:tabular-nums;}
+#hud .hud-time.warn{color:#fde68a;}
+#hud .hud-time.crit{color:#fca5a5;animation:pulse .8s infinite;}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.5}}
+#hud .hud-quiz{font-size:.78rem;font-weight:600;color:rgba(255,255,255,.8);}
+#hud .hud-stage{font-size:.78rem;font-weight:900;color:#bae6fd;min-width:42px;text-align:center;}
+#hud .hud-combo{font-size:.78rem;font-weight:800;color:#fbbf24;min-width:52px;text-align:center;}
+#hud .hud-back,#hud .hud-pause{background:rgba(255,255,255,.15);border:none;color:#fff;font-family:inherit;font-size:.72rem;font-weight:700;padding:5px 10px;border-radius:20px;cursor:pointer;}
+#hud .hud-pause.on{background:#fde68a;color:#854d0e;}
+#drop-meter{position:relative;width:100%;max-width:480px;height:18px;background:#082f49;overflow:hidden;color:#bae6fd;font-size:.65rem;font-weight:800;text-align:center;line-height:18px;}
+#drop-meter span{position:absolute;inset:0 auto 0 0;width:0;background:linear-gradient(90deg,#22c55e,#f59e0b,#ef4444);opacity:.85;transition:width .2s linear;}
+#drop-meter em{position:relative;z-index:1;font-style:normal;text-shadow:0 1px 2px rgba(0,0,0,.35);}
+#game-wrap{position:relative;width:100%;max-width:480px;}
+#gameCanvas{display:block;width:100%;cursor:crosshair;touch-action:none;}
+#next-bubble-preview{position:absolute;bottom:68px;right:16px;display:flex;flex-direction:column;align-items:center;gap:4px;}
+#next-bubble-preview .nb-label{font-size:.65rem;font-weight:700;color:var(--gray);}
+#next-bubble-preview canvas{display:block;}
+#pause-overlay{display:none;position:fixed;inset:0;background:rgba(15,23,42,.62);z-index:180;align-items:center;justify-content:center;color:#fff;text-align:center;}
+#pause-overlay.show{display:flex;}
+.pause-card{background:rgba(12,74,110,.96);border:1px solid rgba(255,255,255,.2);border-radius:20px;padding:28px 34px;box-shadow:0 18px 42px rgba(0,0,0,.28);}
+.pause-card h2{font-size:1.5rem;margin-bottom:8px;}
+.pause-card p{font-size:.9rem;color:#bae6fd;margin-bottom:18px;}
+.pause-card button{border:none;border-radius:14px;background:#fff;color:var(--dark);font-family:inherit;font-size:1rem;font-weight:800;padding:10px 28px;cursor:pointer;}
+
+/* ── QUIZ MODAL ── */
+#quiz-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.6);z-index:200;align-items:center;justify-content:center;padding:20px;}
+#quiz-overlay.show{display:flex;}
+#quiz-box{background:var(--white);border-radius:24px;padding:24px 20px 20px;width:100%;max-width:400px;box-shadow:0 12px 40px rgba(0,0,0,.25);animation:popIn .25s cubic-bezier(.34,1.56,.64,1);}
+@keyframes popIn{from{transform:scale(.8);opacity:0}to{transform:scale(1);opacity:1}}
+.quiz-chain{font-size:.75rem;font-weight:700;color:#f97316;margin-bottom:6px;letter-spacing:.5px;}
+.quiz-q{font-size:1.05rem;font-weight:700;color:var(--dark);margin-bottom:6px;line-height:1.6;}
+.quiz-kor{font-size:.82rem;color:#1e6fa0;background:#e0f2fe;padding:5px 10px;border-radius:8px;margin-bottom:14px;}
+.quiz-opts{display:grid;grid-template-columns:1fr 1fr;gap:8px;}
+.quiz-opt{padding:11px 10px;border-radius:12px;border:2px solid #e2e8f0;background:#f8fafc;color:var(--dark);font-family:inherit;font-weight:700;font-size:.9rem;cursor:pointer;transition:all .12s;text-align:center;}
+.quiz-opt:hover:not(:disabled){border-color:var(--blue);background:#e0f2fe;}
+.quiz-opt.ok{background:#f0fdf4;border-color:var(--green);color:var(--green);}
+.quiz-opt.ng{background:#fef2f2;border-color:var(--red);color:var(--red);}
+.quiz-opt.reveal{background:#f0fdf4;border-color:var(--green);color:var(--green);}
+.quiz-bonus{text-align:center;margin-top:12px;font-size:.88rem;font-weight:700;color:var(--green);min-height:20px;}
+
+/* ── GAME OVER OVERLAY ── */
+#gameover-overlay{display:none;position:fixed;inset:0;background:rgba(12,74,110,.85);z-index:150;align-items:center;justify-content:center;}
+#gameover-overlay.show{display:flex;}
+.go-box{background:var(--white);border-radius:24px;padding:30px 24px;text-align:center;width:90%;max-width:340px;}
+.go-box .emoji{font-size:3.5rem;margin-bottom:10px;}
+.go-box h2{font-size:1.4rem;font-weight:800;color:var(--dark);margin-bottom:4px;}
+.go-box .go-score{font-size:2.5rem;font-weight:800;color:var(--blue);margin-bottom:4px;}
+.go-box p{font-size:.85rem;color:var(--gray);margin-bottom:18px;}
+.go-btn{display:block;width:100%;padding:13px;border-radius:14px;border:none;background:var(--blue);color:#fff;font-family:inherit;font-weight:800;font-size:1rem;cursor:pointer;margin-bottom:8px;}
+.go-btn.next{background:linear-gradient(135deg,#22c55e,#0ea5e9);}
+.go-btn.sec{background:#e2e8f0;color:#475569;}
+
+/* ── TOAST ── */
+#toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%) translateY(80px);background:var(--dark);color:#fff;padding:10px 22px;border-radius:20px;font-weight:700;font-size:.88rem;transition:transform .3s;z-index:999;pointer-events:none;white-space:nowrap;}
+#toast.show{transform:translateX(-50%) translateY(0);}
+#toast.ok{background:var(--green);}#toast.ng{background:var(--red);}
+#score-fx-layer{position:fixed;inset:0;pointer-events:none;z-index:190;}
+.score-fx{position:absolute;left:50%;top:34%;transform:translate(-50%,-50%);padding:8px 18px;border-radius:999px;background:rgba(15,23,42,.9);color:#fff;font-size:1rem;font-weight:900;box-shadow:0 10px 28px rgba(0,0,0,.24);animation:scoreRise .9s ease-out forwards;white-space:nowrap;}
+.score-fx.combo{background:linear-gradient(135deg,#f59e0b,#ef4444);font-size:1.15rem;}
+.score-fx.pop{background:linear-gradient(135deg,#0ea5e9,#22c55e);}
+@keyframes scoreRise{0%{opacity:0;transform:translate(-50%,8px) scale(.8)}18%{opacity:1;transform:translate(-50%,-8px) scale(1.08)}100%{opacity:0;transform:translate(-50%,-58px) scale(1)}}
+#sp-home{background:#fff;color:#475569;border:2px solid #cbd5e1;border-radius:14px;padding:13px 40px;font-size:1.05rem;font-weight:700;cursor:pointer;transition:all .15s;}
+#sp-home:hover{background:#f8fafc;border-color:#94a3b8;}
+
+/* ── LANDSCAPE WARN ── */
+#landscape-warn{display:none;position:fixed;inset:0;background:var(--dark);z-index:9999;color:#fff;align-items:center;justify-content:center;font-size:1.1rem;font-weight:700;text-align:center;padding:20px;}
+@media (orientation:landscape) and (max-height:500px){#landscape-warn{display:flex;}}
+</style>
+</head>
+<body>
+<div id="toast"></div>
+<div id="score-fx-layer"></div>
+<div id="landscape-warn">📱 세로 방향으로 돌려주세요!</div>
+
+<!-- ───────── START SCREEN ───────── -->
+<div id="start-screen">
+  <div class="start-header">
+    <div class="badge">🎮 GRAMMAR GAME</div>
+    <h1>보글보글 문법</h1>
+    <p>같은 색 버블 3개를 연결하고 문법 문제를 풀어보세요!</p>
+    <div class="bubble-deco" id="deco"></div>
+  </div>
+  <div class="settings-box">
+    <div class="set-row">
+      <span class="set-label">⏱ 시간</span>
+      <div class="time-opts" id="time-opts">
+        <button class="topt" data-min="1">1분</button>
+        <button class="topt" data-min="3">3분</button>
+        <button class="topt on" data-min="5">5분</button>
+        <button class="topt" data-min="10">10분</button>
+        <button class="topt" data-min="0">∞</button>
+      </div>
+    </div>
+  </div>
+  <div class="unit-tabs">
+    <button class="utab on" onclick="filterUnits('all', this)">전체</button>
+    <button class="utab" onclick="filterUnits('g1', this)">중1</button>
+    <button class="utab" onclick="filterUnits('g2', this)">중2</button>
+  </div>
+  <div class="unit-grid" id="unit-grid"></div>
+</div>
+
+<!-- ───────── GAME SCREEN ───────── -->
+<div id="game-screen">
+  <div id="hud">
+    <button class="hud-back" onclick="goStart()">← 메뉴</button>
+    <span class="hud-time" id="hud-time">5:00</span>
+    <span class="hud-stage" id="hud-stage">1단계</span>
+    <span class="hud-score" id="hud-score">0점</span>
+    <span class="hud-combo" id="hud-combo">콤보 0</span>
+    <span class="hud-quiz" id="hud-quiz">📚 0/0</span>
+    <button class="hud-pause" id="pause-btn" onclick="togglePause()">Ⅱ</button>
+  </div>
+  <div id="drop-meter"><span id="drop-fill"></span><em id="drop-label">다음 하강 45초</em></div>
+  <div id="game-wrap">
+    <canvas id="gameCanvas"></canvas>
+    <div id="next-bubble-preview">
+      <div class="nb-label">NEXT</div>
+      <canvas id="nextCanvas" width="40" height="40"></canvas>
+    </div>
+  </div>
+</div>
+
+<div id="pause-overlay">
+  <div class="pause-card">
+    <h2>일시정지</h2>
+    <p>타이머도 잠시 멈췄어요.</p>
+    <button onclick="togglePause()">계속하기</button>
+  </div>
+</div>
+
+<!-- ───────── QUIZ MODAL ───────── -->
+<div id="quiz-overlay">
+  <div id="quiz-box">
+    <div class="quiz-chain" id="quiz-chain"></div>
+    <div class="quiz-q" id="quiz-q"></div>
+    <div class="quiz-kor" id="quiz-kor"></div>
+    <div class="quiz-opts" id="quiz-opts"></div>
+    <div class="quiz-bonus" id="quiz-bonus"></div>
+  </div>
+</div>
+
+<!-- ───────── GAME OVER ───────── -->
+<div id="gameover-overlay">
+  <div class="go-box">
+    <div class="emoji" id="go-emoji">😊</div>
+    <h2 id="go-title">게임 오버</h2>
+    <div class="go-score" id="go-score">0점</div>
+    <p id="go-sub">문법 문제 0개 맞힘</p>
+    <button class="go-btn next" id="go-next-stage" onclick="startNextStage()">다음 단계</button>
+    <button class="go-btn" onclick="restartGame()">🔄 다시 하기</button>
+    <button class="go-btn sec" onclick="goStart()">단원 선택으로</button>
+  </div>
+</div>
+
+<script src="./questions.js"></script>
+<script src="../score-popup.js"></script>
+<script src="../sounds.js"></script>
+<script>
+// ═══════════════════════════════════════
+//  START SCREEN
+// ═══════════════════════════════════════
+const COLORS = ['#ef4444','#f97316','#eab308','#22c55e','#0ea5e9','#8b5cf6','#ec4899'];
+const BEST_PREFIX = 'mg_bubble_best_v2_';
+const MAX_STAGE = 3;
+const STAGE_CONFIG = [
+  { label: '1단계', initRows: 4, colors: 4, descent: 55, scoreBonus: 1 },
+  { label: '2단계', initRows: 5, colors: 5, descent: 45, scoreBonus: 1.12 },
+  { label: '3단계', initRows: 6, colors: 6, descent: 35, scoreBonus: 1.25 }
+];
+
+function gameBestKey(unitKey, stage) {
+  return BEST_PREFIX + unitKey + '_' + timeLimitSec + '_s' + (stage || currentStage || 1);
+}
+
+function getGameBest(unitKey, stage) {
+  try {
+    const raw = localStorage.getItem(gameBestKey(unitKey, stage));
+    return raw ? JSON.parse(raw) : null;
+  } catch(e) {
+    return null;
+  }
+}
+
+function getBestOverall(unitKey) {
+  let best = null;
+  for (let stage = 1; stage <= MAX_STAGE; stage++) {
+    const rec = getGameBest(unitKey, stage);
+    if (rec && rec.score <= 0) continue;
+    if (rec && (!best || rec.score > best.score)) best = rec;
+  }
+  return best;
+}
+
+function saveGameBest(unitKey, score, correct, total, streak, clear, stage) {
+  const prev = getGameBest(unitKey, stage);
+  if (score <= 0 && correct <= 0) return { isNew: false, prev };
+  if (prev && prev.score >= score) return { isNew: false, prev };
+  const rec = {
+    score,
+    correct,
+    total,
+    streak,
+    clear: !!clear,
+    stage: stage || currentStage,
+    date: new Date().toLocaleDateString('ko-KR')
+  };
+  try { localStorage.setItem(gameBestKey(unitKey, stage), JSON.stringify(rec)); }
+  catch(e) {}
+  return { isNew: true, prev };
+}
+
+function renderUnitBestBadges() {
+  document.querySelectorAll('[data-best-for]').forEach(el => {
+    const best = getBestOverall(el.dataset.bestFor);
+    el.textContent = best ? `최고 ${best.score.toLocaleString()}점 · ${best.stage || 1}단계` : '';
+  });
+}
+
+function cleanupZeroScoreRecords() {
+  try {
+    const keys = [];
+    for (let i = 0; i < localStorage.length; i++) keys.push(localStorage.key(i));
+    keys.forEach(key => {
+      if (!key) return;
+      const raw = localStorage.getItem(key);
+      if (!raw) return;
+      const rec = JSON.parse(raw);
+      if (key.indexOf(BEST_PREFIX) === 0 && rec.score <= 0) localStorage.removeItem(key);
+      if (key === 'mg_score_' + location.pathname && rec.sc <= 0) localStorage.removeItem(key);
+    });
+  } catch(e) {}
+}
+
+cleanupZeroScoreRecords();
+
+(function buildStartScreen(){
+  // deco bubbles
+  const deco = document.getElementById('deco');
+  COLORS.forEach((c,i) => {
+    const s = document.createElement('span');
+    s.style.background = c;
+    s.style.setProperty('--d', (1+i*0.15)+'s');
+    deco.appendChild(s);
+  });
+
+  // unit cards
+  const grid = document.getElementById('unit-grid');
+  Object.entries(GAME_QUESTIONS).forEach(([key, unit]) => {
+    if (key === 'all') return;
+    const card = document.createElement('div');
+    card.className = 'unit-card';
+    card.dataset.group = key.startsWith('g1') ? 'g1' : 'g2';
+    card.style.setProperty('--c', unit.color);
+    card.innerHTML = `<div class="lbl">${key.toUpperCase().replace('-L','-L')}</div><h3>${unit.label.split(' · ')[1]}</h3><div class="cnt">${unit.questions.length}문제</div><div class="best" data-best-for="${key}"></div>`;
+    card.onclick = () => startGame(key);
+    grid.appendChild(card);
+  });
+
+  // all button
+  const allBtn = document.createElement('div');
+  allBtn.className = 'all-btn';
+  allBtn.innerHTML = '🎲 전체 랜덤 (모든 단원)<span class="best" data-best-for="all"></span>';
+  allBtn.onclick = () => startGame('all');
+  grid.appendChild(allBtn);
+
+  // time option buttons
+  document.querySelectorAll('.topt').forEach(btn => {
+    btn.addEventListener('click', () => {
+      document.querySelectorAll('.topt').forEach(b => b.classList.remove('on'));
+      btn.classList.add('on');
+      timeLimitSec = parseInt(btn.dataset.min) * 60;
+      renderUnitBestBadges();
+    });
+  });
+  setTimeout(renderUnitBestBadges, 0);
+})();
+
+function filterUnits(group, btn) {
+  document.querySelectorAll('.utab').forEach(t => t.classList.remove('on'));
+  (btn || event.target).classList.add('on');
+  document.querySelectorAll('.unit-card').forEach(c => {
+    c.style.display = (group === 'all' || c.dataset.group === group) ? '' : 'none';
+  });
+}
+
+function goStart() {
+  cancelAnimationFrame(rafId);
+  closeScorePopupOverlay();
+  currentStage = 1;
+  document.getElementById('start-screen').style.display = '';
+  document.getElementById('game-screen').style.display = 'none';
+  document.getElementById('gameover-overlay').classList.remove('show');
+  document.getElementById('quiz-overlay').classList.remove('show');
+  document.getElementById('pause-overlay').classList.remove('show');
+  manualPause = false;
+  updatePauseButton();
+  renderUnitBestBadges();
+}
+
+function closeScorePopupOverlay() {
+  ['sp-overlay', 'sp-canvas'].forEach(id => {
+    const el = document.getElementById(id);
+    if (el) el.remove();
+  });
+}
+
+// ═══════════════════════════════════════
+//  GAME ENGINE
+// ═══════════════════════════════════════
+const canvas = document.getElementById('gameCanvas');
+const ctx = canvas.getContext('2d');
+const nextCanvas = document.getElementById('nextCanvas');
+const nctx = nextCanvas.getContext('2d');
+
+// Constants (set dynamically on resize)
+let CW, CH, R, COLS, ROWS, CELL_W, CELL_H, SHOOTER_Y;
+const MAX_COLS = 8;
+const GRID_ROWS = 12;
+const SPEED = 10;
+const MAX_BOUNCE = 6;
+const SHOTS_BEFORE_DROP = 8;
+const CORRECT_CLOSE_MS = 180;
+const WRONG_REVIEW_MS = 3600;
+
+// State
+let grid = [];
+let shooterBubble = null;
+let nextColor = null;
+let shootAngle = -Math.PI/2;
+let gameScore = 0;
+let quizCorrect = 0;
+let quizTotal = 0;
+let gamePaused = false;
+let gameOver = false;
+let canShoot = false;          // earned a shot from correct answer
+let currentUnit = 'all';
+let currentStage = 1;
+let questionPool = [];
+let usedQIds = new Set();
+let rafId = null;
+let fallingBubbles = [];
+let popAnimations = [];
+let jiggleAnimations = new Map();
+let answerStreak = 0;
+let bestAnswerStreak = 0;
+let manualPause = false;
+let pauseStartedTs = 0;
+let pausedTotalMs = 0;
+
+// Timer state
+let timeLimitSec = 300;        // 5 min default; 0 = unlimited
+let gameStartTs = 0;
+let timeLeftSec = 0;
+let lastDescentSec = 0;
+const DESCENT_INTERVAL_SEC = 45;  // bubbles drop 2 rows every 45s (parity-safe)
+let lastWarnedSec = -1;
+
+// ── Hex grid helpers ──
+function cellX(row, col) {
+  const odd = row % 2 === 1;
+  return col * CELL_W + (odd ? R : 0) + R;
+}
+function cellY(row) {
+  return row * CELL_H + R;
+}
+function neighbors(r, c) {
+  const odd = r % 2 === 1;
+  const offsets = odd
+    ? [[-1,0],[-1,1],[0,-1],[0,1],[1,0],[1,1]]
+    : [[-1,-1],[-1,0],[0,-1],[0,1],[1,-1],[1,0]];
+  return offsets
+    .map(([dr,dc]) => [r+dr, c+dc])
+    .filter(([nr,nc]) => nr>=0 && nr<GRID_ROWS && nc>=0 && nc<MAX_COLS);
+}
+
+function gridKey(r, c) {
+  return r + ':' + c;
+}
+
+function addJiggle(r, c, power) {
+  jiggleAnimations.set(gridKey(r, c), {
+    start: performance.now(),
+    power: power || 1,
+    phase: Math.random() * Math.PI * 2
+  });
+}
+
+function jiggleAround(r, c) {
+  addJiggle(r, c, 1.25);
+  neighbors(r, c).forEach(([nr, nc]) => {
+    if (grid[nr][nc]) addJiggle(nr, nc, 0.65);
+  });
+}
+
+function jiggleOffset(r, c) {
+  const item = jiggleAnimations.get(gridKey(r, c));
+  if (!item) return { x: 0, y: 0 };
+  const p = (performance.now() - item.start) / 520;
+  if (p >= 1) {
+    jiggleAnimations.delete(gridKey(r, c));
+    return { x: 0, y: 0 };
+  }
+  const ease = Math.pow(1 - p, 2);
+  const amp = R * 0.28 * item.power * ease;
+  return {
+    x: Math.sin(p * Math.PI * 5 + item.phase) * amp,
+    y: Math.cos(p * Math.PI * 4 + item.phase) * amp * 0.35
+  };
+}
+
+function initGrid() {
+  grid = Array.from({length: GRID_ROWS}, () => Array(MAX_COLS).fill(null));
+  const cfg = stageConfig();
+  const availColors = COLORS.slice(0, cfg.colors);
+  for (let r = 0; r < cfg.initRows; r++) {
+    const cols = r % 2 === 0 ? MAX_COLS : MAX_COLS - 1;
+    for (let c = 0; c < cols; c++) {
+      grid[r][c] = availColors[Math.floor(Math.random() * availColors.length)];
+    }
+  }
+}
+
+function stageConfig() {
+  return STAGE_CONFIG[currentStage - 1] || STAGE_CONFIG[0];
+}
+
+function collectQuestions(unitKey) {
+  if (unitKey === 'all') {
+    const all = [];
+    Object.entries(GAME_QUESTIONS).forEach(([k, v]) => {
+      if (k !== 'all') all.push(...v.questions);
+    });
+    return all;
+  }
+  return [...GAME_QUESTIONS[unitKey].questions];
+}
+
+function stageQuestions(unitKey, stage) {
+  const all = collectQuestions(unitKey);
+  if (all.length <= MAX_STAGE) return all;
+  const size = Math.ceil(all.length / MAX_STAGE);
+  const start = (stage - 1) * size;
+  const picked = all.slice(start, start + size);
+  return picked.length > 0 ? picked : all.slice(-size);
+}
+
+// ── Setup on start ──
+function startGame(unitKey, stage) {
+  closeScorePopupOverlay();
+  currentUnit = unitKey;
+  currentStage = Math.max(1, Math.min(MAX_STAGE, stage || 1));
+  questionPool = stageQuestions(unitKey, currentStage);
+  shuffle(questionPool);
+  usedQIds.clear();
+  gameScore = 0; quizCorrect = 0; quizTotal = 0;
+  gamePaused = false; gameOver = false;
+  canShoot = false;
+  manualPause = false;
+  pauseStartedTs = 0;
+  pausedTotalMs = 0;
+  answerStreak = 0;
+  bestAnswerStreak = 0;
+  fallingBubbles = []; popAnimations = [];
+  jiggleAnimations.clear();
+  shooterBubble = null;
+
+  document.getElementById('start-screen').style.display = 'none';
+  document.getElementById('game-screen').style.display = 'flex';
+  document.getElementById('gameover-overlay').classList.remove('show');
+  document.getElementById('pause-overlay').classList.remove('show');
+  updatePauseButton();
+
+  resizeCanvas();
+  initGrid();
+  nextColor = randomActiveColor();
+
+  // Timer init
+  gameStartTs = Date.now();
+  lastDescentSec = 0;
+  lastWarnedSec = -1;
+  timeLeftSec = timeLimitSec;
+
+  // Show first quiz immediately (gates first shot)
+  shooterBubble = newShooterBubble();
+  updateHUD();
+  updateTimerHUD();
+  cancelAnimationFrame(rafId);
+  rafId = requestAnimationFrame(loop);
+  setTimeout(() => triggerQuizModal(), 300);
+}
+
+function elapsedSec() {
+  if (gameStartTs === 0) return 0;
+  const currentPause = manualPause && pauseStartedTs ? Date.now() - pauseStartedTs : 0;
+  return Math.max(0, Math.floor((Date.now() - gameStartTs - pausedTotalMs - currentPause) / 1000));
+}
+
+function resizeCanvas() {
+  const maxW = Math.min(window.innerWidth, 480);
+  CW = maxW;
+  CH = Math.round(maxW * (640/480));
+  const dpr = window.devicePixelRatio || 1;
+  canvas.width = CW * dpr;
+  canvas.height = CH * dpr;
+  canvas.style.width = CW + 'px';
+  canvas.style.height = CH + 'px';
+  ctx.scale(dpr, dpr);
+
+  R = Math.floor(CW / (MAX_COLS * 2 + 1));
+  CELL_W = R * 2;
+  CELL_H = Math.round(R * Math.sqrt(3));
+  COLS = MAX_COLS;
+  ROWS = GRID_ROWS;
+  SHOOTER_Y = CH - 70;
+}
+
+function randomActiveColor() {
+  const active = new Set();
+  for (let r = 0; r < ROWS; r++)
+    for (let c = 0; c < COLS; c++)
+      if (grid[r][c]) active.add(grid[r][c]);
+  const arr = active.size > 0 ? [...active] : COLORS.slice(0,5);
+  return arr[Math.floor(Math.random() * arr.length)];
+}
+
+function newShooterBubble() {
+  const c = nextColor || randomActiveColor();
+  nextColor = randomActiveColor();
+  drawNextBubble();
+  const angle = shootAngle;
+  return { x: CW/2, y: SHOOTER_Y, color: c,
+    dx: Math.cos(angle), dy: Math.sin(angle), moving: false };
+}
+
+function drawNextBubble() {
+  nctx.clearRect(0, 0, 40, 40);
+  drawBubbleAt(nctx, 20, 20, 16, nextColor);
+}
+
+// ── Drawing ──
+function drawBubbleAt(c, x, y, r, color) {
+  c.beginPath();
+  c.arc(x, y, r, 0, Math.PI*2);
+  c.fillStyle = color;
+  c.fill();
+  // Shimmer
+  const grad = c.createRadialGradient(x-r*0.3, y-r*0.3, 0, x, y, r);
+  grad.addColorStop(0, 'rgba(255,255,255,0.45)');
+  grad.addColorStop(1, 'rgba(0,0,0,0.1)');
+  c.beginPath();
+  c.arc(x, y, r, 0, Math.PI*2);
+  c.fillStyle = grad;
+  c.fill();
+  // Border
+  c.beginPath();
+  c.arc(x, y, r, 0, Math.PI*2);
+  c.strokeStyle = 'rgba(255,255,255,0.3)';
+  c.lineWidth = 1.5;
+  c.stroke();
+}
+
+function drawGrid() {
+  for (let r = 0; r < ROWS; r++) {
+    const cols = r % 2 === 0 ? COLS : COLS - 1;
+    for (let c = 0; c < cols; c++) {
+      if (!grid[r][c]) continue;
+      const wobble = jiggleOffset(r, c);
+      drawBubbleAt(ctx, cellX(r,c) + wobble.x, cellY(r) + wobble.y, R-1, grid[r][c]);
+    }
+  }
+}
+
+function drawShooter() {
+  if (!shooterBubble) return;
+  if (!shooterBubble.moving) {
+    if (canShoot) {
+      // Aim line
+      ctx.setLineDash([4, 6]);
+      ctx.strokeStyle = 'rgba(255,255,255,0.5)';
+      ctx.lineWidth = 2;
+      ctx.beginPath();
+      let lx = CW/2, ly = SHOOTER_Y;
+      let ldx = Math.cos(shootAngle), ldy = Math.sin(shootAngle);
+      ctx.moveTo(lx, ly);
+      for (let b = 0; b < MAX_BOUNCE; b++) {
+        let tx = lx + ldx * CW * 3;
+        let ty = ly + ldy * CW * 3;
+        if (tx < R) { const t2 = (R - lx) / ldx; tx = R; ty = ly + ldy*t2; }
+        else if (tx > CW-R) { const t2 = (CW-R - lx) / ldx; tx = CW-R; ty = ly + ldy*t2; }
+        ctx.lineTo(tx, ty);
+        if (ty < R) break;
+        lx = tx; ly = ty; ldx = -ldx;
+      }
+      ctx.stroke();
+      ctx.setLineDash([]);
+    } else {
+      // No shoot privilege — show locked indicator
+      ctx.fillStyle = 'rgba(255,255,255,0.4)';
+      ctx.font = 'bold 11px sans-serif';
+      ctx.textAlign = 'center';
+      ctx.fillText('🔒 문제를 맞히세요', CW/2, SHOOTER_Y - R - 14);
+    }
+    drawBubbleAt(ctx, CW/2, SHOOTER_Y, R-1, shooterBubble.color);
+  } else {
+    drawBubbleAt(ctx, shooterBubble.x, shooterBubble.y, R-1, shooterBubble.color);
+  }
+}
+
+function drawFalling() {
+  for (const b of fallingBubbles) {
+    const alpha = Math.max(0, 1 - b.progress);
+    ctx.globalAlpha = alpha;
+    drawBubbleAt(ctx, b.x, b.y + b.vy * b.progress * 60, R-1, b.color);
+    ctx.globalAlpha = 1;
+  }
+}
+
+function drawPopAnimations() {
+  for (const p of popAnimations) {
+    const scale = 1 - p.progress;
+    const alpha = 1 - p.progress;
+    ctx.globalAlpha = alpha;
+    drawBubbleAt(ctx, p.x, p.y, (R-1)*scale, p.color);
+    ctx.globalAlpha = 1;
+  }
+}
+
+function drawBackground() {
+  ctx.fillStyle = '#0f172a';
+  ctx.fillRect(0, 0, CW, CH);
+  // Danger line
+  const dangerY = cellY(ROWS-2) + CELL_H;
+  ctx.strokeStyle = 'rgba(239,68,68,0.4)';
+  ctx.lineWidth = 1;
+  ctx.setLineDash([6,4]);
+  ctx.beginPath();
+  ctx.moveTo(0, dangerY);
+  ctx.lineTo(CW, dangerY);
+  ctx.stroke();
+  ctx.setLineDash([]);
+  // Shooter platform
+  ctx.fillStyle = 'rgba(255,255,255,0.06)';
+  ctx.fillRect(0, SHOOTER_Y - R - 10, CW, R*2+20);
+}
+
+// ── Game loop ──
+function loop(ts) {
+  if (gameOver) return;
+  rafId = requestAnimationFrame(loop);
+
+  // Timer update — wall-clock based (real-time pressure)
+  const el = elapsedSec();
+  if (timeLimitSec > 0) {
+    timeLeftSec = Math.max(0, timeLimitSec - el);
+    if (timeLeftSec === 30 && lastWarnedSec !== 30) { playWarn(); lastWarnedSec = 30; }
+    if (timeLeftSec === 10 && lastWarnedSec !== 10) { playWarn(); lastWarnedSec = 10; }
+    if (timeLeftSec <= 0) { triggerGameOver(false, 'time'); return; }
+  } else {
+    timeLeftSec = el;
+  }
+  if (el - lastDescentSec >= stageConfig().descent) {
+    autoDescend();
+    lastDescentSec = el;
+  }
+  updateTimerHUD();
+
+  ctx.clearRect(0, 0, CW, CH);
+  drawBackground();
+
+  popAnimations = popAnimations.filter(p => {
+    p.progress += 0.08;
+    return p.progress < 1;
+  });
+  fallingBubbles = fallingBubbles.filter(b => {
+    b.progress += 0.04;
+    return b.progress < 1;
+  });
+
+  drawGrid();
+  drawPopAnimations();
+  drawFalling();
+
+  if (!gamePaused) {
+    if (shooterBubble && shooterBubble.moving) {
+      moveBubble();
+    }
+  }
+  drawShooter();
+}
+
+function autoDescend() {
+  // Drop by 2 rows to preserve hex parity (no data loss/teleport)
+  const newGrid = Array.from({length: ROWS}, () => Array(COLS).fill(null));
+  const availColors = COLORS.slice(0, stageConfig().colors);
+
+  // Two new top rows with random colors
+  // Row 0 (even, 8 cells)
+  for (let c = 0; c < COLS; c++) {
+    newGrid[0][c] = availColors[Math.floor(Math.random() * availColors.length)];
+  }
+  // Row 1 (odd, 7 cells)
+  for (let c = 0; c < COLS - 1; c++) {
+    newGrid[1][c] = availColors[Math.floor(Math.random() * availColors.length)];
+  }
+
+  // Shift existing rows down by 2 (parity preserved)
+  for (let r = 0; r < ROWS - 2; r++) {
+    for (let c = 0; c < COLS; c++) {
+      newGrid[r+2][c] = grid[r][c];
+    }
+  }
+
+  grid = newGrid;
+  playDescent();
+  showToast('⏬ 새 버블이 내려와요!', 'ng');
+  if (!gameOver) checkGameOver();
+}
+
+function updateTimerHUD() {
+  const el = document.getElementById('hud-time');
+  if (timeLimitSec === 0) {
+    const m = Math.floor(timeLeftSec/60);
+    const s = timeLeftSec % 60;
+    el.textContent = `${m}:${String(s).padStart(2,'0')}`;
+    el.className = 'hud-time';
+  } else {
+    const m = Math.floor(timeLeftSec/60);
+    const s = timeLeftSec % 60;
+    el.textContent = `${m}:${String(s).padStart(2,'0')}`;
+    el.className = 'hud-time' + (timeLeftSec<=10 ? ' crit' : timeLeftSec<=30 ? ' warn' : '');
+  }
+  const sinceDrop = Math.max(0, elapsedSec() - lastDescentSec);
+  const descentInterval = stageConfig().descent;
+  const left = Math.max(0, descentInterval - sinceDrop);
+  const pct = Math.min(100, (sinceDrop / descentInterval) * 100);
+  document.getElementById('drop-fill').style.width = pct + '%';
+  document.getElementById('drop-label').textContent = `다음 하강 ${left}초`;
+}
+
+function moveBubble() {
+  const b = shooterBubble;
+  b.x += b.dx * SPEED;
+  b.y += b.dy * SPEED;
+
+  // Wall bounce
+  if (b.x < R) { b.x = R; b.dx = Math.abs(b.dx); }
+  if (b.x > CW - R) { b.x = CW-R; b.dx = -Math.abs(b.dx); }
+
+  // Ceiling snap
+  if (b.y <= R + CELL_H * 0) {
+    snapBubble(b);
+    return;
+  }
+
+  // Collision with grid bubbles
+  for (let r = 0; r < ROWS; r++) {
+    for (let c = 0; c < COLS; c++) {
+      if (!grid[r][c]) continue;
+      const gx = cellX(r,c), gy = cellY(r);
+      const dx = b.x - gx, dy = b.y - gy;
+      if (dx*dx + dy*dy < (R*2-2)*(R*2-2)) {
+        snapBubble(b);
+        return;
+      }
+    }
+  }
+}
+
+function snapBubble(b) {
+  const [sr, sc] = findSnapCell(b.x, b.y);
+  if (sr < 0) {
+    // Couldn't find snap cell — refund shot
+    canShoot = true;
+    shooterBubble = newShooterBubble();
+    return;
+  }
+
+  grid[sr][sc] = b.color;
+  jiggleAround(sr, sc);
+  shooterBubble = null;
+  playSnap();
+
+  const cluster = findCluster(sr, sc, b.color);
+  if (cluster.length >= 3) {
+    popCluster(cluster, sr, sc);
+  } else {
+    checkGameOver();
+    if (!gameOver) {
+      // No pop → show next quiz immediately
+      setTimeout(() => triggerQuizModal(), 250);
+    }
+  }
+}
+
+function findSnapCell(px, py) {
+  let bestR = -1, bestC = -1, bestDist = Infinity;
+  for (let r = 0; r < ROWS; r++) {
+    const cols = r % 2 === 0 ? COLS : COLS - 1;
+    for (let c = 0; c < cols; c++) {
+      if (grid[r][c]) continue;
+      // Check if has neighbor
+      const hasNeighbor = r === 0 || neighbors(r, c).some(([nr,nc]) => grid[nr][nc]);
+      if (!hasNeighbor) continue;
+      const gx = cellX(r,c), gy = cellY(r);
+      const d = (px-gx)**2 + (py-gy)**2;
+      if (d < bestDist) { bestDist = d; bestR = r; bestC = c; }
+    }
+  }
+  // Clamp
+  if (bestR >= 0) {
+    bestC = Math.max(0, Math.min(COLS-1, bestC));
+  }
+  return [bestR, bestC];
+}
+
+// ── BFS ──
+function findCluster(r, c, color) {
+  const visited = new Set();
+  const key = (r,c) => r*100+c;
+  const q = [[r,c]];
+  visited.add(key(r,c));
+  while (q.length) {
+    const [cr,cc] = q.shift();
+    for (const [nr,nc] of neighbors(cr,cc)) {
+      if (!visited.has(key(nr,nc)) && grid[nr][nc] === color) {
+        visited.add(key(nr,nc));
+        q.push([nr,nc]);
+      }
+    }
+  }
+  return [...visited].map(k => [Math.floor(k/100), k%100]);
+}
+
+function findConnectedToTop() {
+  const visited = new Set();
+  const key = (r,c) => r*100+c;
+  const q = [];
+  for (let c = 0; c < COLS; c++) {
+    if (grid[0][c]) { visited.add(key(0,c)); q.push([0,c]); }
+  }
+  while (q.length) {
+    const [cr,cc] = q.shift();
+    for (const [nr,nc] of neighbors(cr,cc)) {
+      if (!visited.has(key(nr,nc)) && grid[nr][nc]) {
+        visited.add(key(nr,nc));
+        q.push([nr,nc]);
+      }
+    }
+  }
+  return visited;
+}
+
+function popCluster(cluster, snapR, snapC) {
+  // Animate pop
+  for (const [r,c] of cluster) {
+    popAnimations.push({ x: cellX(r,c), y: cellY(r), color: grid[r][c], progress: 0 });
+    grid[r][c] = null;
+  }
+
+  // Find orphans
+  const connected = findConnectedToTop();
+  const orphans = [];
+  for (let r = 0; r < ROWS; r++) {
+    for (let c = 0; c < COLS; c++) {
+      if (grid[r][c] && !connected.has(r*100+c)) {
+        orphans.push({ x: cellX(r,c), y: cellY(r), color: grid[r][c], vy: 4+Math.random()*3, progress: 0 });
+        grid[r][c] = null;
+      }
+    }
+  }
+  fallingBubbles.push(...orphans);
+
+  // Score
+  const basePopScore = Math.round((cluster.length * 20 + orphans.length * 10) * stageConfig().scoreBonus);
+  const multiplier = 1 + Math.min(answerStreak, 5) * 0.1;
+  const popScore = Math.round(basePopScore * multiplier);
+  gameScore += popScore;
+  updateHUD();
+  playPop();
+
+  showScoreFx(answerStreak > 1 ? `콤보 x${multiplier.toFixed(1)}  +${popScore}` : `+${popScore}`, answerStreak > 1 ? 'combo' : 'pop');
+  showToast(answerStreak > 1 ? `콤보 팡! x${multiplier.toFixed(1)} +${popScore}점` : `팡! +${popScore}점`, 'ok');
+
+  // Check clear
+  let anyBubble = false;
+  for (let r=0;r<ROWS;r++) for (let c=0;c<COLS;c++) if(grid[r][c]) anyBubble=true;
+  if (!anyBubble) {
+    gameScore += 500 + (timeLimitSec>0 ? timeLeftSec*2 : 0);
+    setTimeout(() => triggerGameOver(true, 'clear'), 700);
+    return;
+  }
+
+  // Show next quiz after pop animation
+  setTimeout(() => triggerQuizModal(), 600);
+}
+
+// ── Game over / clear ──
+function checkGameOver() {
+  // Check if any bubble in bottom rows
+  for (let r = ROWS - 2; r < ROWS; r++) {
+    for (let c = 0; c < COLS; c++) {
+      if (grid[r][c]) { triggerGameOver(false, 'reach'); return; }
+    }
+  }
+}
+
+function triggerGameOver(clear, reason) {
+  if (gameOver) return;
+  gameOver = true;
+  gamePaused = true;
+  manualPause = false;
+  cancelAnimationFrame(rafId);
+  document.getElementById('quiz-overlay').classList.remove('show');
+  document.getElementById('pause-overlay').classList.remove('show');
+
+  if (clear) playClear(); else playGameOver();
+
+  setTimeout(() => {
+    const hasNextStage = currentStage < MAX_STAGE;
+    const best = saveGameBest(currentUnit, gameScore, quizCorrect, quizTotal, bestAnswerStreak, clear, currentStage);
+    const ov = document.getElementById('gameover-overlay');
+    document.getElementById('go-emoji').textContent = clear ? '🏆' : (reason==='time' ? '⏰' : '😊');
+    document.getElementById('go-title').textContent = clear ? `${currentStage}단계 클리어!` : `${currentStage}단계 종료`;
+    document.getElementById('go-score').textContent = gameScore.toLocaleString() + '점';
+    document.getElementById('go-sub').textContent = `문법 ${quizCorrect}/${quizTotal} 정답 · 최고콤보 ${bestAnswerStreak}` + (best.isNew ? ' · 신기록' : '');
+    const nextBtn = document.getElementById('go-next-stage');
+    nextBtn.style.display = hasNextStage ? 'block' : 'none';
+    nextBtn.textContent = hasNextStage ? `${currentStage + 1}단계로` : '다음 단계';
+    ov.classList.add('show');
+    renderUnitBestBadges();
+
+    if (quizTotal > 0) {
+      showScorePopup(quizCorrect, quizTotal, {
+        nextText: hasNextStage ? `${currentStage + 1}단계로` : '메뉴로',
+        onNextClick: hasNextStage ? startNextStage : goStart
+      });
+      const retryBtn = document.getElementById('sp-retry');
+      if (retryBtn) retryBtn.onclick = restartGame;
+      const btns = document.getElementById('sp-btns');
+      if (btns && !document.getElementById('sp-home')) {
+        const homeBtn = document.createElement('button');
+        homeBtn.id = 'sp-home';
+        homeBtn.textContent = '메인화면';
+        homeBtn.onclick = goStart;
+        btns.insertBefore(homeBtn, retryBtn || null);
+      }
+    }
+  }, 600);
+}
+
+function restartGame() {
+  startGame(currentUnit, currentStage);
+}
+
+function startNextStage() {
+  if (currentStage >= MAX_STAGE) {
+    goStart();
+    return;
+  }
+  startGame(currentUnit, currentStage + 1);
+}
+
+function isQuizOpen() {
+  return document.getElementById('quiz-overlay').classList.contains('show');
+}
+
+function updatePauseButton() {
+  const btn = document.getElementById('pause-btn');
+  if (!btn) return;
+  btn.textContent = manualPause ? '▶' : 'Ⅱ';
+  btn.classList.toggle('on', manualPause);
+}
+
+function togglePause() {
+  if (gameOver || document.getElementById('game-screen').style.display === 'none') return;
+  if (isQuizOpen()) return;
+  manualPause = !manualPause;
+  if (manualPause) {
+    pauseStartedTs = Date.now();
+    gamePaused = true;
+    document.getElementById('pause-overlay').classList.add('show');
+  } else {
+    if (pauseStartedTs) pausedTotalMs += Date.now() - pauseStartedTs;
+    pauseStartedTs = 0;
+    gamePaused = false;
+    document.getElementById('pause-overlay').classList.remove('show');
+  }
+  updatePauseButton();
+}
+
+// ── Input ──
+function getAngle(cx, cy, tx, ty) {
+  const angle = Math.atan2(ty - cy, tx - cx);
+  const minAngle = -Math.PI + 0.18;
+  const maxAngle = -0.18;
+  return Math.max(minAngle, Math.min(maxAngle, angle));
+}
+
+function handleAim(clientX, clientY) {
+  if (gameOver || !canShoot) return;
+  const rect = canvas.getBoundingClientRect();
+  const x = (clientX - rect.left) * (CW / rect.width);
+  const y = (clientY - rect.top) * (CH / rect.height);
+  if (y > SHOOTER_Y - 10) return;
+  shootAngle = getAngle(CW/2, SHOOTER_Y, x, y);
+}
+
+function handleShoot(clientX, clientY) {
+  if (gameOver || !canShoot) return;
+  if (!shooterBubble || shooterBubble.moving) return;
+  const rect = canvas.getBoundingClientRect();
+  const x = (clientX - rect.left) * (CW / rect.width);
+  const y = (clientY - rect.top) * (CH / rect.height);
+  if (y > SHOOTER_Y - 10) return;
+  shootAngle = getAngle(CW/2, SHOOTER_Y, x, y);
+  shooterBubble.moving = true;
+  shooterBubble.dx = Math.cos(shootAngle);
+  shooterBubble.dy = Math.sin(shootAngle);
+  canShoot = false;
+  playShoot();
+}
+
+canvas.addEventListener('mousemove', e => handleAim(e.clientX, e.clientY));
+canvas.addEventListener('click', e => handleShoot(e.clientX, e.clientY));
+
+canvas.addEventListener('touchmove', e => {
+  e.preventDefault();
+  handleAim(e.touches[0].clientX, e.touches[0].clientY);
+}, { passive: false });
+canvas.addEventListener('touchend', e => {
+  e.preventDefault();
+  if (e.changedTouches[0]) handleShoot(e.changedTouches[0].clientX, e.changedTouches[0].clientY);
+}, { passive: false });
+
+// ── Quiz ──
+function triggerQuizModal() {
+  if (gameOver) return;
+  if (manualPause) {
+    setTimeout(() => triggerQuizModal(), 250);
+    return;
+  }
+  const available = questionPool.filter(q => !usedQIds.has(q.id));
+  if (available.length === 0) usedQIds.clear();
+  const pool = available.length > 0 ? available : questionPool;
+  if (pool.length === 0) { canShoot = true; return; }
+  const q = pool[Math.floor(Math.random() * pool.length)];
+  usedQIds.add(q.id);
+  quizTotal++;
+  updateHUD();
+
+  gamePaused = true;
+  canShoot = false;
+
+  document.getElementById('quiz-chain').textContent = answerStreak > 0 ? `💭 ${answerStreak}콤보 진행 중!` : '💭 정답을 맞히면 발사 가능!';
+  document.getElementById('quiz-q').textContent = q.eng;
+  document.getElementById('quiz-kor').textContent = q.kor || '';
+  document.getElementById('quiz-bonus').textContent = '';
+
+  const optsEl = document.getElementById('quiz-opts');
+  optsEl.innerHTML = '';
+  const shuffled = [...q.opts].sort(() => Math.random() - 0.5);
+  shuffled.forEach(opt => {
+    const btn = document.createElement('button');
+    btn.className = 'quiz-opt';
+    btn.textContent = opt;
+    btn.onclick = () => answerQuiz(opt, q, optsEl);
+    optsEl.appendChild(btn);
+  });
+
+  document.getElementById('quiz-overlay').classList.add('show');
+}
+
+function makeReviewText(q) {
+  const solved = q.eng.indexOf('___') >= 0
+    ? q.eng.replace('___', '[' + q.ans + ']')
+    : q.eng + ' → ' + q.ans;
+  return '정답: ' + q.ans + ' · ' + solved;
+}
+
+function answerQuiz(chosen, q, optsEl) {
+  const correct = q.ans;
+  optsEl.querySelectorAll('.quiz-opt').forEach(b => {
+    b.disabled = true;
+    if (b.textContent === correct) b.classList.add(chosen === correct ? 'ok' : 'reveal');
+    else if (b.textContent === chosen && chosen !== correct) b.classList.add('ng');
+  });
+
+  const bonusEl = document.getElementById('quiz-bonus');
+  const isCorrect = chosen === correct;
+  if (isCorrect) {
+    quizCorrect++;
+    answerStreak++;
+    bestAnswerStreak = Math.max(bestAnswerStreak, answerStreak);
+    const streakBonus = Math.min(answerStreak - 1, 5) * 10;
+    const earnScore = 30 + streakBonus;
+    gameScore += earnScore;
+    bonusEl.textContent = '';
+    bonusEl.style.color = '#22c55e';
+    showScoreFx(answerStreak > 1 ? `${answerStreak}콤보  +${earnScore}` : `+${earnScore}`, answerStreak > 1 ? 'combo' : 'pop');
+    showToast(answerStreak > 1 ? `${answerStreak}콤보! 발사하세요` : '정답! 발사하세요', 'ok');
+    playEarn();
+  } else {
+    answerStreak = 0;
+    bonusEl.textContent = `❌ ${makeReviewText(q)}`;
+    bonusEl.style.color = '#ef4444';
+    showToast('틀렸어요! 정답을 확인하세요', 'ng');
+  }
+  updateHUD();
+
+  setTimeout(() => {
+    document.getElementById('quiz-overlay').classList.remove('show');
+    if (gameOver) return;
+    if (isCorrect) {
+      // Earned a shot
+      gamePaused = manualPause;
+      canShoot = true;
+      if (!shooterBubble) shooterBubble = newShooterBubble();
+    } else {
+      // Wrong answer — show next quiz, no shot earned
+      setTimeout(() => triggerQuizModal(), 200);
+    }
+  }, isCorrect ? CORRECT_CLOSE_MS : WRONG_REVIEW_MS);
+}
+
+// ── HUD ──
+function updateHUD() {
+  document.getElementById('hud-stage').textContent = `${currentStage}단계`;
+  document.getElementById('hud-score').textContent = gameScore.toLocaleString() + '점';
+  document.getElementById('hud-quiz').textContent = `문법 ${quizCorrect}/${quizTotal}`;
+  document.getElementById('hud-combo').textContent = `콤보 ${answerStreak}`;
+}
+
+// ── Toast ──
+function showToast(msg, type) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.className = 'show' + (type ? ' '+type : '');
+  clearTimeout(t._tid);
+  t._tid = setTimeout(() => t.classList.remove('show'), 1800);
+}
+
+function showScoreFx(text, type) {
+  const layer = document.getElementById('score-fx-layer');
+  if (!layer) return;
+  const el = document.createElement('div');
+  el.className = 'score-fx' + (type ? ' ' + type : '');
+  el.textContent = text;
+  layer.appendChild(el);
+  if (type === 'combo') playComboFx();
+  setTimeout(() => el.remove(), 950);
+}
+
+// ── Audio ──
+let audioCtx;
+function getAudioCtx() {
+  if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+  if (audioCtx.state === 'suspended') audioCtx.resume();
+  return audioCtx;
+}
+function playTone(freq, dur, vol=0.3, type='sine') {
+  try {
+    const ac = getAudioCtx();
+    const osc = ac.createOscillator();
+    const gain = ac.createGain();
+    osc.connect(gain); gain.connect(ac.destination);
+    osc.type = type; osc.frequency.value = freq;
+    gain.gain.setValueAtTime(vol, ac.currentTime);
+    gain.gain.exponentialRampToValueAtTime(0.001, ac.currentTime + dur);
+    osc.start(); osc.stop(ac.currentTime + dur);
+  } catch(e) {}
+}
+function playShoot() { playTone(520, 0.06, 0.18, 'square'); }
+function playSnap() { playTone(330, 0.05, 0.12, 'sine'); }
+function playPop() {
+  playTone(880, 0.1, 0.22, 'sine');
+  setTimeout(() => playTone(1175, 0.09, 0.2, 'sine'), 50);
+  setTimeout(() => playTone(1480, 0.1, 0.18, 'sine'), 100);
+}
+function playEarn() {
+  playTone(660, 0.08, 0.2);
+  setTimeout(() => playTone(880, 0.1, 0.22), 70);
+  setTimeout(() => playTone(1100, 0.14, 0.2), 150);
+}
+function playComboFx() {
+  playTone(784, 0.07, 0.16, 'triangle');
+  setTimeout(() => playTone(988, 0.08, 0.18, 'triangle'), 55);
+  setTimeout(() => playTone(1319, 0.12, 0.18, 'sine'), 120);
+}
+function playWarn() {
+  playTone(880, 0.12, 0.3, 'square');
+  setTimeout(() => playTone(880, 0.12, 0.3, 'square'), 200);
+}
+function playDescent() {
+  playTone(220, 0.18, 0.28, 'sawtooth');
+  setTimeout(() => playTone(165, 0.18, 0.25, 'sawtooth'), 90);
+}
+function playGameOver() {
+  playTone(440, 0.18, 0.25, 'triangle');
+  setTimeout(() => playTone(330, 0.18, 0.22, 'triangle'), 180);
+  setTimeout(() => playTone(220, 0.4, 0.22, 'triangle'), 360);
+}
+function playClear() {
+  playTone(660, 0.12, 0.22);
+  setTimeout(() => playTone(880, 0.12, 0.22), 120);
+  setTimeout(() => playTone(1100, 0.12, 0.22), 240);
+  setTimeout(() => playTone(1320, 0.3, 0.25), 360);
+}
+
+// ── Utils ──
+function shuffle(arr) {
+  for (let i = arr.length-1; i>0; i--) {
+    const j = Math.floor(Math.random()*(i+1));
+    [arr[i],arr[j]] = [arr[j],arr[i]];
+  }
+}
+
+window.addEventListener('resize', () => {
+  if (document.getElementById('game-screen').style.display !== 'none') {
+    resizeCanvas();
+  }
+});
+</script>
+</body>
+</html>

@@ -443,6 +443,7 @@ body{
 .boss-card{background:#fff;color:var(--dark);border-radius:22px;padding:18px;box-shadow:0 16px 34px rgba(0,0,0,.22);}
 .boss-meta{display:flex;justify-content:space-between;gap:8px;font-size:.78rem;font-weight:900;color:#7c3aed;margin-bottom:10px;}
 .boss-q{font-size:1.12rem;font-weight:900;line-height:1.55;margin-bottom:8px;color:#172554;}
+.qblank{display:inline-block;min-width:54px;padding:0 6px;border-bottom:3px dashed currentColor;color:transparent;vertical-align:baseline;}
 .qwrong{display:inline-block;padding:1px 8px;color:#dc2626;background:#fee2e2;border:1.5px solid #fca5a5;border-radius:8px;text-decoration:line-through;font-weight:900;}
 .qhint{display:block;font-size:.66rem;font-weight:800;color:#dc2626;letter-spacing:.5px;margin-bottom:6px;}
 .boss-kor{font-size:.87rem;font-weight:700;line-height:1.5;color:#5b21b6;background:#ede9fe;border-radius:12px;padding:8px 10px;margin-bottom:14px;}
@@ -1229,9 +1230,14 @@ let bossAnimStart = 0;
 const BOSS_ACTION_DUR = { hit: 460, 'hit-2': 560, 'hit-3': 700, hurt: 420, 'hurt-2': 540, 'hurt-3': 660, 'phase-up': 880 };
 function bossActionDur(state) { return BOSS_ACTION_DUR[state] || 520; }
 function renderQError(elemId, q) {
-  const wrong = (q.opts.find(o => o !== q.ans) || '____').replace(/[&<>]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;'}[c]));
-  const body = q.eng.replace(/_{3,}/g, `<span class="qwrong">${wrong}</span>`);
-  document.getElementById(elemId).innerHTML = '<div class="qhint">⚠ 틀린 부분을 고치세요</div>' + body;
+  const el = document.getElementById(elemId);
+  if (q.type === 'fix') {
+    const wrong = (q.opts.find(o => o !== q.ans) || '____').replace(/[&<>]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;'}[c]));
+    const body = q.eng.replace(/_{3,}/g, `<span class="qwrong">${wrong}</span>`);
+    el.innerHTML = '<div class="qhint">⚠ 틀린 부분을 고치세요</div>' + body;
+  } else {
+    el.innerHTML = q.eng.replace(/_{3,}/g, '<span class="qblank">____</span>');
+  }
 }
 function kf(p, pts) {
   if (p <= pts[0][0]) return pts[0][1];

@@ -52,9 +52,26 @@
       'box-shadow:0 6px 20px rgba(99,102,241,.4);transition:transform .15s,box-shadow .15s;}',
       '#sp-retry:hover{transform:translateY(-3px);box-shadow:0 10px 28px rgba(99,102,241,.5);}',
       '#sp-retry:active{transform:translateY(0);}',
+      '#sp-review{background:#fff7ed;color:#c2410c;border:2px solid #fed7aa;border-radius:14px;',
+      'padding:13px 40px;font-size:1.05rem;font-weight:800;cursor:pointer;transition:all .15s;}',
+      '#sp-review:hover{background:#ffedd5;border-color:#fb923c;}',
       '#sp-next{background:#fff;color:#0ea5e9;border:2px solid #0ea5e9;border-radius:14px;',
       'padding:13px 40px;font-size:1.05rem;font-weight:700;cursor:pointer;transition:all .15s;}',
       '#sp-next:hover{background:#e0f2fe;}',
+      '#sp-card.reviewing{max-width:760px;max-height:88vh;overflow:auto;text-align:left;padding:30px 34px;}',
+      '#sp-card.reviewing #sp-emoji,#sp-card.reviewing #sp-clap{display:none;}',
+      '#sp-card.reviewing #sp-title,#sp-card.reviewing #sp-score,#sp-card.reviewing #sp-sub{text-align:center;}',
+      '#sp-review-panel{display:none;margin-top:18px;padding-top:18px;border-top:1px solid #e2e8f0;}',
+      '#sp-review-head{font-size:1.05rem;font-weight:900;color:#1e293b;margin-bottom:12px;}',
+      '.sp-wrong-item{background:#fff7ed;border:1.5px solid #fed7aa;border-radius:12px;padding:14px 16px;margin-bottom:12px;',
+      'font-size:.9rem;line-height:1.65;color:#334155;}',
+      '.sp-wrong-q{font-weight:800;color:#1e293b;margin-bottom:7px;}',
+      '.sp-wrong-meta{font-size:.86rem;margin-bottom:7px;}',
+      '.sp-my{color:#dc2626;font-weight:800;text-decoration:line-through;}',
+      '.sp-right{color:#059669;font-weight:900;}',
+      '.sp-wrong-hint{background:#fef9c3;border-radius:10px;padding:10px 12px;color:#854d0e;font-weight:650;}',
+      '@media(max-width:560px){#sp-card{padding:34px 24px;}#sp-card.reviewing{padding:24px 18px;width:94%;}',
+      '#sp-review,#sp-next,#sp-retry{padding-left:18px;padding-right:18px;font-size:1rem;}}',
       '#sp-canvas{position:fixed;top:0;left:0;width:100%;height:100%;pointer-events:none;z-index:1000000;}',
       '#sp-badge{position:fixed;top:14px;right:14px;z-index:500;background:rgba(255,255,255,.92);',
       'backdrop-filter:blur(8px);border:1.5px solid #e2e8f0;border-radius:12px;padding:7px 14px;',
@@ -62,6 +79,127 @@
       'pointer-events:none;}'
     ].join('');
     document.head.appendChild(style);
+  }
+
+  function escapeHtml(v) {
+    return String(v == null ? '' : v).replace(/[&<>"']/g, function (ch) {
+      return ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[ch];
+    });
+  }
+
+  function getText(node) {
+    return node ? node.textContent.replace(/\s+/g, ' ').trim() : '';
+  }
+
+  function getCardId(card) {
+    if (!card || !card.id) return '';
+    return card.id.replace(/^qc-/, '');
+  }
+
+  function getAnsweredValue(id, key) {
+    var a = window.answered;
+    if (!a || !id || !a[id] || typeof a[id] !== 'object') return '';
+    return a[id][key] || '';
+  }
+
+  function getRightAnswer(card, id) {
+    var fromAnswered = getAnsweredValue(id, 'right');
+    if (fromAnswered) return fromAnswered;
+    var ansNode = card.querySelector('[data-ans]');
+    if (ansNode && ansNode.dataset && ansNode.dataset.ans) return ansNode.dataset.ans;
+    var revealed = card.querySelector('.choice.reveal,.choice-btn.reveal');
+    if (revealed) return getText(revealed);
+    var hintStrong = card.querySelector('.answer-hint strong,.hint-box strong');
+    return getText(hintStrong);
+  }
+
+  function getMyAnswer(card, id) {
+    var fromAnswered = getAnsweredValue(id, 'my');
+    if (fromAnswered) return fromAnswered;
+    var wrongChoice = card.querySelector('.choice.ng,.choice-btn.ans-x');
+    if (wrongChoice) return getText(wrongChoice);
+    var wrongInput = card.querySelector('input.ng,.q-input.ans-x');
+    if (wrongInput) return wrongInput.value;
+    var chips = card.querySelectorAll('.ng-chip');
+    if (chips.length) {
+      return Array.prototype.map.call(chips, function (chip) { return getText(chip); }).join(' ');
+    }
+    return '';
+  }
+
+  function getQuestionText(card) {
+    var num = getText(card.querySelector('.q-num'));
+    var type = getText(card.querySelector('.q-type'));
+    var parts = [];
+    ['.q-sub', '.q-eng', '.q-text', '.q-kor'].forEach(function (sel) {
+      var txt = getText(card.querySelector(sel));
+      if (txt) parts.push(txt);
+    });
+    var prefix = num ? '문항 ' + num + (type ? ' · ' + type : '') + ': ' : '';
+    return prefix + (parts.join(' / ') || getText(card));
+  }
+
+  function getHintHtml(card, id) {
+    var hint = card.querySelector('.answer-hint,.hint-box') || document.getElementById('ah-' + id);
+    if (!hint) return '';
+    return hint.innerHTML;
+  }
+
+  function getWrongCards(opts) {
+    var selector = '.question-card.ng,.q-card.solved-x';
+    if (opts && opts.nextText) {
+      var currentSection = document.querySelector('.sec.show,.sec.active');
+      if (currentSection) return currentSection.querySelectorAll(selector);
+    }
+    return document.querySelectorAll(selector);
+  }
+
+  function collectWrongItems(opts) {
+    if (opts && Array.isArray(opts.wrongItems)) return opts.wrongItems;
+    var items = [];
+    var seen = {};
+    var cards = getWrongCards(opts);
+
+    Array.prototype.forEach.call(cards, function (card) {
+      var id = getCardId(card);
+      var key = id || getQuestionText(card);
+      if (seen[key]) return;
+      seen[key] = true;
+      items.push({
+        question: getQuestionText(card),
+        my: getMyAnswer(card, id),
+        right: getRightAnswer(card, id),
+        hintHtml: getHintHtml(card, id)
+      });
+    });
+
+    if (!items.length && Array.isArray(window.wrongs)) {
+      window.wrongs.forEach(function (w) {
+        items.push({
+          question: w.q || '',
+          my: w.ma || '',
+          right: w.ca || '',
+          hintHtml: ''
+        });
+      });
+    }
+
+    return items;
+  }
+
+  function renderWrongItems(items) {
+    if (!items.length) return '';
+    return '<div id="sp-review-panel">' +
+      '<div id="sp-review-head">틀린 문항 ' + items.length + '개</div>' +
+      items.map(function (item) {
+        return '<div class="sp-wrong-item">' +
+          '<div class="sp-wrong-q">' + escapeHtml(item.question || '문항') + '</div>' +
+          '<div class="sp-wrong-meta">내 답: <span class="sp-my">' + escapeHtml(item.my || '(없음)') +
+          '</span> → 정답: <span class="sp-right">' + escapeHtml(item.right || '') + '</span></div>' +
+          (item.hintHtml ? '<div class="sp-wrong-hint">' + item.hintHtml + '</div>' : '') +
+        '</div>';
+      }).join('') +
+    '</div>';
   }
 
   function launchConfetti(duration) {
@@ -128,6 +266,7 @@
     var prev = getBest();
     var sc = Math.round(correct / total * 100);
     var isNew = saveBest(sc, correct, total);
+    var wrongItems = collectWrongItems(opts);
 
     var emoji, title;
     if (sc >= 90) { emoji = '🏆'; title = '완벽해요!'; }
@@ -174,12 +313,23 @@
         recordHtml +
         '<div id="sp-btns">' +
           (opts.nextText ? '<button id="sp-next">' + opts.nextText + '</button>' : '') +
+          (wrongItems.length ? '<button id="sp-review">틀린 문항 확인</button>' : '') +
           '<button id="sp-retry">🔄 다시풀기</button>' +
         '</div>' +
+        renderWrongItems(wrongItems) +
       '</div>';
     document.body.appendChild(overlay);
     if (opts.nextText) {
       document.getElementById('sp-next').onclick = opts.onNextClick || function () {};
+    }
+    if (wrongItems.length) {
+      document.getElementById('sp-review').onclick = function () {
+        var card = document.getElementById('sp-card');
+        var panel = document.getElementById('sp-review-panel');
+        card.classList.add('reviewing');
+        panel.style.display = 'block';
+        this.style.display = 'none';
+      };
     }
     document.getElementById('sp-retry').onclick = function () { location.reload(); };
 

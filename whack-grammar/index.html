@@ -60,7 +60,8 @@ header{display:flex;align-items:center;gap:8px;padding:12px 14px 6px;position:re
 .qcard{margin:2px 14px 8px;background:rgba(255,255,255,.92);border:1px solid rgba(255,255,255,.95);border-radius:18px;padding:11px 14px;text-align:center;box-shadow:0 8px 20px rgba(15,23,42,.08);position:relative;z-index:3;}
 .qkor{font-size:.84rem;font-weight:700;color:#475569;margin-bottom:4px;font-family:'Noto Sans KR',sans-serif;}
 .qeng{font-size:1.05rem;font-weight:900;color:var(--ink);letter-spacing:.2px;}
-.qeng .blank{display:inline-block;min-width:48px;padding:0 6px;border-bottom:3px dashed #94a3b8;color:transparent;}
+.qeng .qwrong{display:inline-block;padding:1px 8px;color:#dc2626;background:#fee2e2;border:1.5px solid #fca5a5;border-radius:8px;text-decoration:line-through;font-weight:900;}
+.qhint{font-size:.7rem;font-weight:800;color:#dc2626;letter-spacing:.5px;margin-top:5px;}
 .qmeta{display:flex;justify-content:center;gap:14px;margin-top:4px;font-size:.66rem;font-weight:800;color:#64748b;letter-spacing:.5px;}
 .qmeta .qbar{display:inline-block;width:60px;height:5px;background:#e2e8f0;border-radius:99px;overflow:hidden;vertical-align:middle;margin-left:4px;}
 .qmeta .qbar span{display:block;height:100%;background:linear-gradient(90deg,#22c55e,#f59e0b,#ef4444);transform-origin:left;transform:scaleX(1);transition:transform .12s linear;}
@@ -177,6 +178,9 @@ header{display:flex;align-items:center;gap:8px;padding:12px 14px 6px;position:re
 .panel .units button.on{background:linear-gradient(135deg,#0ea5e9,#0369a1);border-color:#0369a1;color:#fff;box-shadow:0 6px 14px rgba(14,165,233,.32);}
 .panel .go{background:linear-gradient(135deg,#16a34a 0%,#0d9488 100%);border:none;color:#fff;font-family:inherit;font-weight:900;font-size:1.05rem;padding:13px 20px;border-radius:16px;width:100%;cursor:pointer;box-shadow:0 10px 22px rgba(22,163,74,.32);transition:all .18s;}
 .panel .go:hover{transform:translateY(-2px);box-shadow:0 14px 26px rgba(22,163,74,.4);}
+.end-actions{display:flex;flex-direction:column;gap:8px;}
+.back-btn{display:block;text-align:center;padding:11px 18px;border-radius:14px;background:#f1f5f9;border:1.5px solid #cbd5e1;color:#0c4a6e;font-family:inherit;font-weight:800;font-size:.95rem;text-decoration:none;transition:all .18s;}
+.back-btn:hover{background:#e0f2fe;border-color:#0ea5e9;color:#0369a1;}
 .panel .stats{display:flex;justify-content:space-around;margin:12px 0;}
 .panel .stats div{font-size:.78rem;font-weight:800;color:#64748b;}
 .panel .stats strong{display:block;font-size:1.5rem;color:var(--ink);font-family:'Baloo 2',sans-serif;}
@@ -205,7 +209,8 @@ header{display:flex;align-items:center;gap:8px;padding:12px 14px 6px;position:re
   </div>
   <div class="qcard">
     <div class="qkor" id="q-kor">한국어 해석</div>
-    <div class="qeng" id="q-eng">English with <span class="blank">blank</span> blank</div>
+    <div class="qeng" id="q-eng">English sentence</div>
+    <div class="qhint">⚠ 틀린 부분을 고쳐 두드리세요</div>
     <div class="qmeta"><span id="q-progress">1 / 10</span><span>제한시간 <span class="qbar"><span id="q-bar"></span></span></span></div>
   </div>
   <div class="field" id="field">
@@ -229,7 +234,10 @@ header{display:flex;align-items:center;gap:8px;padding:12px 14px 6px;position:re
         <div><strong id="end-correct">0</strong>정답</div>
         <div><strong id="end-combo">0</strong>최고콤보</div>
       </div>
-      <button class="go" id="btn-retry">다시 도전</button>
+      <div class="end-actions">
+        <button class="go" id="btn-retry">다시 도전</button>
+        <a class="back-btn" href="../game/">목록으로</a>
+      </div>
     </div>
   </div>
 </div>
@@ -357,8 +365,11 @@ function updateHud() {
 function renderQuestion() {
   const q = questionPool[qIdx];
   qKor.textContent = q.kor;
-  // q.eng has '___' — replace with stylized blank
-  qEng.innerHTML = q.eng.replace(/_+/g, '<span class="blank">____</span>');
+  // q.eng has '___' — substitute a wrong option in red strike-through so the
+  // sentence reads as an error to fix, then student picks the right answer mole
+  const wrongOpt = q.opts.find(o => o !== q.ans) || '____';
+  const safe = wrongOpt.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+  qEng.innerHTML = q.eng.replace(/_{3,}/g, `<span class="qwrong">${safe}</span>`);
   qProg.textContent = `${qIdx + 1} / ${questionPool.length}`;
 }
 

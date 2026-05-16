@@ -1,88 +1,93 @@
-# middle-grammar — CLAUDE.md
+# middle-grammar — CLAUDE.md (Claude Code)
 
-> Legacy note: Codex 작업의 1차 진입 문서는 `AGENTS.md`다. 이 파일은 Claude Code용 legacy 참고 문서이며, `AGENTS.md`와 충돌하면 `AGENTS.md`를 우선한다.
+Claude Code의 1차 진입 문서다. Codex는 `AGENTS.md`를 사용한다. 두 파일은 도구 framing만 다르고 섹션·순서·규칙은 동일하다. 새 규칙은 양쪽 모두 갱신한다.
 
 ## 프로젝트
 
-중학 영어 문법 워크시트. GitHub Pages 배포. 순수 HTML/CSS/JS.
+- 중학 영어 문법 워크시트
+- GitHub Pages 배포
+- 순수 HTML/CSS/JS
+- NE능률 교과서·부속 교재 자료를 참고하되 원문 복사는 금지
 
----
+## Claude Code 작업 흐름
 
-## 스킬 가이드
+1. 요청 범위를 먼저 좁힌다.
+   - 사용자가 요청한 파일과 직접 관련된 공통 파일만 수정한다.
+   - 관련 없는 리팩토링, 디자인 전면 개편, 새 의존성 추가는 하지 않는다.
+2. 필요한 로컬 문서를 읽는다.
+   - 새 워크시트: `worksheet-sentence-guide.md`, `.claude/skills/middle-grammar-worksheet/SKILL.md`
+   - 정답·해설: `answer-checker-guide.md`, `.claude/skills/middle-grammar-answer/SKILL.md`
+   - 디자인: `.claude/skills/middle-grammar-design/SKILL.md`
+   - 효과음: `.claude/skills/middle-grammar-sounds/SKILL.md`
+   - 블로그: `.claude/skills/middle-grammar-blog/SKILL.md`
+   - 블로그 이미지: `.claude/skills/blog-image-pencil/SKILL.md`
+   - 교사 관점 점검: `.claude/agents/teacher-review.md` 체크리스트
+3. 구현 후 변경 범위에 맞게 검증한다.
+   - HTML 워크시트는 브라우저 콘솔 오류, 정답 처리, 빈 입력 방지, `sounds.js`/`score-popup.js` 로드 순서를 확인한다.
+   - 문서만 바꾼 경우에는 링크·경로·우선순위 문구가 모순되지 않는지 확인한다.
+4. Git 작업은 사용자의 현재 지시에 따른다.
+   - 사용자가 pull/push/commit까지 맡기면 알아서 처리한다.
+   - 그 외에는 변경 사항과 검증 결과를 보고한다.
+   - 기존 변경은 사용자 작업으로 보고 되돌리지 않는다.
 
-| 상황 | 호출할 스킬 |
-|------|------------|
-| 새 워크시트 제작, 문제 유형·난이도 결정, 체크리스트 | `middle-grammar-worksheet` |
-| 정답 처리 (norm 함수), 해석 표시, 해설 작성, 배열 순서 | `middle-grammar-answer` |
-| 디자인 시스템 (색상·헤더 장식·폰트·문제 타입) | `middle-grammar-design` |
-| 효과음 (sounds.js) 연결·수정 | `middle-grammar-sounds` |
-| 블로그 글 작성, blog-deploy 파일 형식 | `middle-grammar-blog` |
-| 이미지 생성 (Gemini) | Gemini 채팅창에서 이미지 프롬프트 직접 입력 |
-| 워크시트 교사 관점 품질 점검 (패턴독점·드릴비율·스캐폴딩) | `teacher-review` agent |
+## 스킬·에이전트 자료 취급
 
----
+`.claude/skills/*/SKILL.md`와 `.claude/agents/*.md`는 Claude Code의 skill/agent 정의다. Claude Code 세션에서는 자동 로드되며, Codex에서는 로컬 참고 문서로 읽어 절차·체크리스트를 그대로 따른다.
+
+`AGENTS.md`는 Codex용 parallel 문서. 같은 규칙·순서를 유지하되 도구 framing만 다르다.
 
 ## 파일 구조
 
 | 경로 | 내용 |
 |------|------|
-| `index.html` | 메인 허브 (단원 목록) |
-| `be-verb/v2.html` | be동사 + 일반동사 현재형 (45문제) |
-| `past-be/index.html` | be동사 과거형 기본 (40문제) |
-| `past-be-hard/index.html` | be동사 과거형 심화 (25문제) |
-| `general-verb-hard/index.html` | 일반동사 심화 (25문제) |
-| `gerund-basic/index.html` | 현재진행형 vs 동명사 기초 — Pretendard 스타일 (50문제) |
-| `gerund-basic/index2.html` | 현재진행형 vs 동명사 기초 — Baloo 2 스타일 (50문제) |
-| `gerund-hard/index.html` | 현재진행형 vs 동명사 심화 (50문제) |
-| `to-will-basic/index.html` | to부정사 & 조동사 will/should 기초 (45문제) |
-| `to-will-hard/index.html` | to부정사 & 조동사 will/should 심화 (25문제) |
-| `g2-give-relclause-basic/index.html` | 중2 L1 수여동사 & 주격 관계대명사 기초 |
-| `g2-give-relclause-hard/index.html` | 중2 L1 수여동사 & 주격 관계대명사 심화 |
-| `g2-perfect-compare-basic/index.html` | 중2 L2 현재완료 & 비교급·최상급 기초 |
-| `g2-perfect-compare-hard/index.html` | 중2 L2 현재완료 & 비교급·최상급 심화 |
-| `g2-to-if-basic/index.html` | 중2 L3 형용사적 to부정사 & 접속사 if 기초 (40문제) |
-| `g2-to-if-hard/index.html` | 중2 L3 형용사적 to부정사 & 접속사 if 심화 (25문제) |
+| `index.html` | 메인 허브 |
 | `sounds.js` | 효과음 (Web Audio API) |
+| `score-popup.js` | 점수 결과 팝업 |
+| `worksheet-sentence-guide.md` | 예문 출처·문장 변형 규칙 |
+| `answer-checker-guide.md` | 정답 처리·검증 규칙 |
 | `Ne교과서 md파일/` | NE능률 중1·중2 교과서·기본AB·심화·어법드릴 md |
-| `worksheet-sentence-guide.md` | 문제 예문 출처·유형 규칙 가이드 |
+| `blog-deploy/` | 티스토리 발행용 markdown |
+| `blog-images/YYYY-MM-DD/` | 블로그 본문·썸네일 이미지 |
+| `<topic>-basic/index.html` | 중1 기초 워크시트 |
+| `<topic>-hard/index.html` | 중1 심화 워크시트 |
+| `g2-<topic>-basic/index.html` | 중2 기초 워크시트 |
+| `g2-<topic>-hard/index.html` | 중2 심화 워크시트 |
 
----
+## 현재 워크시트 맵
+
+| 구분 | 파일 |
+|------|------|
+| 중1 L1 | `be-verb/v2.html`, `general-verb-hard/index.html` |
+| 중1 L2 | `gerund-basic/index.html`, `gerund-basic/index2.html`, `gerund-hard/index.html` |
+| 중1 L3 | `past-be/index.html`, `past-be-hard/index.html` |
+| 중1 L4 | `to-will-basic/index.html`, `to-will-hard/index.html` |
+| 중1 L5 | `reflexive-to-basic/index.html`, `reflexive-to-hard/index.html` |
+| 중1 L6 | `look-because-basic/index.html`, `look-because-hard/index.html` |
+| 중2 L1 | `g2-give-relclause-basic/index.html`, `g2-give-relclause-hard/index.html` |
+| 중2 L2 | `g2-perfect-compare-basic/index.html`, `g2-perfect-compare-hard/index.html` |
+| 중2 L3 | `g2-to-if-basic/index.html`, `g2-to-if-hard/index.html` |
+| 중2 L4 | `g2-sothat-passive-basic/index.html`, `g2-sothat-passive-hard/index.html`, `g2-passive-practice/index.html` |
 
 ## NE교과서 자료
 
-**파일 위치**: `Ne교과서 md파일/` (md 파일로 Read 가능)
+중1 자료:
 
-### 중1
-
-```
-2022me_중1_L{1~8}_교과서.md
-2022me_중1_L{1~8}_문법연습문제_기본AB.md
-2022me_중1_L{1~8}_문법연습문제_심화.md
-2022me_중1_L{1~8}_어법드릴문제.md
+```text
+Ne교과서 md파일/2022me_중1_L{1~8}_교과서.md
+Ne교과서 md파일/2022me_중1_L{1~8}_문법연습문제_기본AB.md
+Ne교과서 md파일/2022me_중1_L{1~8}_문법연습문제_심화.md
+Ne교과서 md파일/2022me_중1_L{1~8}_어법드릴문제.md
 ```
 
-단원별 문법 포인트 (중1):
+중2 자료:
 
-| 단원 | 핵심 문법 |
-|------|-----------|
-| L1 | be동사 현재형·부정문, 일반동사 현재형·부정문 |
-| L2 | 현재진행형·의문문, 동명사 (avoid/enjoy/keep 등) |
-| L3 | be동사·일반동사 과거형, 시간 접속사 when |
-| L4 | 동사의 목적어로 쓰인 to부정사, 조동사 will·should |
-| L5 | 재귀대명사, 목적을 나타내는 to부정사 |
-| L6 | 감각동사 look+형용사, 이유 접속사 because |
-| L7 | make+목적어+형용사, 명사절 접속사 that |
-| L8 | 감탄문 (How/What), something+형용사 |
-
-### 중2
-
-```
-(22개정) 중학교 영어 2 교과서 전단원 PDF.md  ← 9000줄, offset/limit으로 해당 Lesson만 읽기
-2022me_중2_L{1~8}_문법연습문제_기본AB.md
-2022me_중2_L{1~8}_문법연습문제_심화.md
+```text
+Ne교과서 md파일/(22개정) 중학교 영어 2 교과서 전단원 PDF.md
+Ne교과서 md파일/2022me_중2_L{1~8}_문법연습문제_기본AB.md
+Ne교과서 md파일/2022me_중2_L{1~8}_문법연습문제_심화.md
 ```
 
-중2 통합 파일 Lesson별 줄 범위:
+중2 통합 파일 줄 범위:
 
 | Lesson | 시작 줄 | 끝 줄 |
 |--------|--------|-------|
@@ -94,24 +99,39 @@
 | L6 | 6433 | 8064 |
 | L7~L8 | 8065 | 9092 |
 
-단원별 문법 포인트 (중2):
+## 문장·저작권 규칙
 
-| 단원 | 핵심 문법 |
-|------|-----------|
-| L1 | 수여동사 (give/show/tell/make/buy), 주격 관계대명사 (who/which/that) |
-| L2 | 현재완료 (have+p.p.), 비교급·최상급 |
-| L3 | 형용사적 용법 to부정사 (명사 수식), 접속사 if |
-| L4 | so ~ that, 수동태 |
-| L5 | 동사+목적어+to부정사, 목적격 관계대명사 |
-| L6 | 지각동사+목적어+-ing/동사원형, 간접의문문 |
-| L7 | make/let/have+목적어+동사원형, as+원급+as |
-| L8 | 가주어 it, 의문사+to부정사 |
+- NE능률 교과서·교재 문장을 그대로 사용하지 않는다.
+- 이름·대명사만 바꾸는 것은 불충분하다.
+- 주어, 목적어, 장소, 시간, 소재 등 최소 2개 이상을 바꾼다.
+- 교과서 참고 예문과 창작 예문을 대략 50:50으로 섞는다.
+- 원문 대조가 필요한 경우 `Grep` 또는 ripgrep으로 핵심 구절을 검색한다.
 
-**파일 네이밍 규칙 (중2)**: `g2-<topic>-basic/hard/`
+## 한국어 용어 규칙
 
----
+도출과정·정답 해설·개념 설명 등 한국어 텍스트는 이 레포의 문서, 제공된 교재, 기출 원문에 있는 표현만 사용한다.
 
-## 저작권 주의
+- refs에 없는 한국어 번역어를 새로 만들지 않는다.
+- refs에서 한국어 표현을 찾지 못하면 영어 원어를 그대로 쓴다.
+- 같은 파일 안에서 같은 개념의 한국어/영어 표현을 혼용하지 않는다.
 
-> NE능률 2022 개정 교과서의 저작권은 NE능률에 귀속된다.
-> 문장을 그대로 사용하는 것은 금지. 반드시 변형 사용. → 상세 변형 기준은 `middle-grammar-worksheet` 스킬 참고.
+## 새 워크시트 체크리스트
+
+- [ ] 관련 NE 자료와 `worksheet-sentence-guide.md`를 읽었다.
+- [ ] 예문은 교과서 참고 변형 50% + 창작 50%로 구성했다.
+- [ ] 문제 유형은 `mcq`, `input`, `scramble`, `dist` 등을 자연스럽게 분산했다.
+- [ ] 기초는 35~50문제, 심화는 종합훈련 15 + 짧은 지문 10 구조를 우선했다.
+- [ ] `norm()` 적용, 빈 입력 방지, `q-kor`, `answer-hint` 규칙을 확인했다.
+- [ ] scramble 단어 칩 순서는 정답 순서와 다르게 배치했다.
+- [ ] `sounds.js`, `score-popup.js` 로드 순서를 확인했다.
+- [ ] `index.html` 허브 카드 추가 여부를 확인했다.
+- [ ] 한국어 텍스트에 임의 조어가 없는지 확인했다.
+- [ ] 패턴 독점, drill 비율, 스캐폴딩, 오답 선택지, 난이도 progression을 점검했다.
+
+## 하지 말 것
+
+- 요청 외 디자인 전면 개편.
+- `index.html` 메인 허브 레이아웃 변경 (카드 추가·순서 조정 외).
+- 새 디자인 시스템·컴포넌트 라이브러리·외부 JS 의존성 추가.
+- NE교과서 원문 복사·인용.
+- refs에 없는 한국어 개념 번역어 도입.

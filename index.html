@@ -4,6 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>중학 영어 문법 워크시트</title>
+<link rel="icon" href="data:,">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@600;700;800;900&display=swap" rel="stylesheet">
@@ -186,38 +187,7 @@ body{font-family:'Pretendard','Plus Jakarta Sans',sans-serif;background:var(--bg
   font-size: .95rem;
   line-height: 1.75;
   max-width: 370px;
-  margin: 0 auto 24px;
-}
-
-.header-actions {
-  display: flex;
-  justify-content: center;
-  flex-wrap: wrap;
-  gap: 12px;
-  margin-bottom: 34px;
-}
-
-.header-action {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  gap: 10px;
-  min-height: 74px;
-  min-width: 280px;
-  padding: 0 42px;
-  border-radius: 20px;
-  background: linear-gradient(135deg, #fde68a 0%, #fbbf24 100%);
-  color: #0f172a;
-  font-weight: 900;
-  font-size: 1.34rem;
-  text-decoration: none;
-  box-shadow: 0 18px 44px rgba(251,191,36,.38);
-  transition: transform .18s ease, box-shadow .18s ease;
-}
-
-.header-action:hover {
-  transform: translateY(-3px);
-  box-shadow: 0 24px 56px rgba(251,191,36,.48);
+  margin: 0 auto 38px;
 }
 
 /* ── 스탯 카드 ── */
@@ -277,10 +247,31 @@ body{font-family:'Pretendard','Plus Jakarta Sans',sans-serif;background:var(--bg
   letter-spacing: 1.5px;
 }
 
+.hero-actions{
+  display:flex;justify-content:center;gap:12px;flex-wrap:wrap;margin-top:-14px;margin-bottom:30px;
+}
+.hero-btn{
+  display:inline-flex;align-items:center;justify-content:center;gap:9px;
+  min-height:48px;padding:0 22px;border-radius:999px;
+  font-weight:900;font-size:.95rem;text-decoration:none;
+  transition:transform .18s ease,box-shadow .18s ease,background .18s ease;
+}
+.hero-btn.primary{
+  color:#0f172a;background:linear-gradient(135deg,#fde68a,#fbbf24);
+  box-shadow:0 14px 34px rgba(251,191,36,.32);
+}
+.hero-btn.secondary{
+  color:#fff;background:rgba(255,255,255,.12);
+  border:1px solid rgba(255,255,255,.22);
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.16);
+}
+.hero-btn:hover{transform:translateY(-3px);}
+.hero-btn.primary:hover{box-shadow:0 18px 42px rgba(251,191,36,.42);}
+
 /* ══════════════════════════════
    이하 기존 스타일 유지
 ══════════════════════════════ */
-.wrap{max-width:800px;margin:0 auto;padding:32px 16px 24px;}
+.wrap{max-width:860px;margin:0 auto;padding:32px 16px 24px;}
 .unit-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px;}
 @media(max-width:560px){.unit-grid{grid-template-columns:1fr;}}
 
@@ -288,6 +279,40 @@ body{font-family:'Pretendard','Plus Jakarta Sans',sans-serif;background:var(--bg
   font-size:.8rem;font-weight:700;letter-spacing:2px;text-transform:uppercase;
   color:var(--gray);margin-bottom:16px;padding-left:2px;
 }
+
+.top-panel{
+  max-width:860px;margin:-42px auto 0;padding:0 16px;position:relative;z-index:3;
+}
+.game-spotlight{
+  display:grid;grid-template-columns:1.06fr .94fr;gap:0;overflow:hidden;
+  background:#0f172a;border-radius:28px;border:1px solid rgba(255,255,255,.12);
+  box-shadow:0 24px 60px rgba(15,23,42,.22);
+}
+.game-copy{padding:26px 26px 24px;color:#fff;display:flex;flex-direction:column;justify-content:center;}
+.game-kicker{font-size:.74rem;font-weight:900;letter-spacing:2px;color:#93c5fd;text-transform:uppercase;margin-bottom:10px;}
+.game-title{font-size:1.85rem;font-weight:900;line-height:1.16;margin-bottom:10px;color:#fff;}
+.game-title em{font-style:normal;color:#fde68a;}
+.game-desc{font-size:.94rem;line-height:1.65;color:rgba(255,255,255,.76);max-width:360px;margin-bottom:16px;}
+.game-modes{display:flex;flex-wrap:wrap;gap:7px;margin-bottom:18px;}
+.game-mode{font-size:.78rem;font-weight:900;border-radius:999px;padding:6px 10px;background:rgba(255,255,255,.1);color:#dbeafe;border:1px solid rgba(255,255,255,.12);}
+.game-play{
+  display:inline-flex;align-items:center;justify-content:center;align-self:flex-start;
+  min-height:44px;padding:0 18px;border-radius:14px;background:linear-gradient(135deg,#22c55e,#0ea5e9);
+  color:#fff;text-decoration:none;font-weight:900;box-shadow:0 14px 30px rgba(14,165,233,.28);
+}
+.game-art{position:relative;min-height:260px;background:#111827;}
+.game-art img{width:100%;height:100%;display:block;object-fit:cover;}
+.game-art::after{content:'';position:absolute;inset:0;background:linear-gradient(90deg,#0f172a 0%,rgba(15,23,42,.1) 34%,rgba(15,23,42,0) 100%);pointer-events:none;}
+
+.quick-strip{
+  display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-top:14px;
+}
+.quick-card{
+  background:rgba(255,255,255,.92);border:1px solid var(--bdr);border-radius:18px;
+  padding:16px 17px;box-shadow:0 10px 28px rgba(15,23,42,.08);
+}
+.quick-card b{display:block;font-size:.98rem;color:#12324a;margin-bottom:5px;}
+.quick-card span{display:block;font-size:.82rem;line-height:1.45;color:#64748b;font-weight:700;}
 
 @keyframes slideUp{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:translateY(0)}}
 .unit-card{
@@ -351,17 +376,20 @@ body{font-family:'Pretendard','Plus Jakarta Sans',sans-serif;background:var(--bg
 .footer{text-align:center;padding:28px 20px;font-size:.85rem;color:var(--gray);border-top:1px solid var(--bdr);background:var(--white);}
 
 /* 반응형 */
+@media(max-width:720px){
+  .game-spotlight{grid-template-columns:1fr;}
+  .game-art{min-height:190px;order:-1;}
+  .game-art::after{background:linear-gradient(180deg,rgba(15,23,42,0) 48%,#0f172a 100%);}
+  .quick-strip{grid-template-columns:1fr;}
+}
 @media(max-width:480px){
   .header h1 { font-size: 2.6rem; }
-  .header-action {
-    width: 100%;
-    max-width: 320px;
-    min-width: 0;
-    min-height: 64px;
-    font-size: 1.16rem;
-  }
+  .header{padding:50px 20px 82px;}
   .stat { padding: 14px 22px; }
   .stat-n { font-size: 1.9rem; }
+  .top-panel{margin-top:-34px;}
+  .game-copy{padding:22px 20px 22px;}
+  .game-title{font-size:1.55rem;}
 }
 </style>
 </head>
@@ -390,8 +418,9 @@ body{font-family:'Pretendard','Plus Jakarta Sans',sans-serif;background:var(--bg
     <h1>중학 영어 <em>문법</em><small>Grammar Worksheet</small></h1>
     <p>단원별 개념 정리 + 자동채점 인터랙티브 문제</p>
 
-    <div class="header-actions">
-      <a class="header-action" href="game/">버블 문법 게임</a>
+    <div class="hero-actions">
+      <a class="hero-btn primary" href="game/">게임 시작하기</a>
+      <a class="hero-btn secondary" href="#worksheets">워크시트 보기</a>
     </div>
 
     <div class="stats">
@@ -411,8 +440,42 @@ body{font-family:'Pretendard','Plus Jakarta Sans',sans-serif;background:var(--bg
   </div>
 </div>
 
+<div class="top-panel">
+  <section class="game-spotlight" onclick="location.href='game/'" style="cursor:pointer">
+    <div class="game-copy">
+      <div class="game-kicker">Grammar Battle</div>
+      <div class="game-title">문법을 풀고 <em>보스를 쓰러뜨리기</em></div>
+      <p class="game-desc">문법 보스전을 대표 게임으로 넣었습니다. 정답 콤보로 공격하고, 게이지를 모아 필살기를 씁니다.</p>
+      <div class="game-modes">
+        <span class="game-mode">문법 보스전</span>
+        <span class="game-mode">스피드 퀴즈</span>
+        <span class="game-mode">보글보글</span>
+      </div>
+      <a class="game-play" href="game/" onclick="event.stopPropagation()">게임으로 이동</a>
+    </div>
+    <div class="game-art">
+      <img src="game/assets/boss-battle.png" alt="문법 보스전 게임 화면">
+    </div>
+  </section>
+
+  <div class="quick-strip">
+    <div class="quick-card">
+      <b>자동채점 워크시트</b>
+      <span>단원별 문제를 풀고 바로 확인</span>
+    </div>
+    <div class="quick-card">
+      <b>기초부터 심화까지</b>
+      <span>중1·중2 핵심 문법 단계 학습</span>
+    </div>
+    <div class="quick-card">
+      <b>게임형 복습</b>
+      <span>콤보와 점수로 반복 연습</span>
+    </div>
+  </div>
+</div>
+
 <!-- 기존 콘텐츠 유지 -->
-<div class="wrap">
+<div class="wrap" id="worksheets">
   <div class="section-label">📚 단원 목록</div>
   <div class="unit-grid">
 

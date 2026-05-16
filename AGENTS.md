@@ -1,6 +1,6 @@
-# middle-grammar — AGENTS.md
+# middle-grammar — AGENTS.md (Codex)
 
-Codex의 1차 진입 문서다. 이 레포에서 작업할 때는 이 파일을 먼저 읽고, `CLAUDE.md`는 Claude Code용 legacy 참고 문서로만 본다. 지침이 충돌하면 항상 `AGENTS.md`를 우선한다.
+Codex의 1차 진입 문서다. Claude Code는 `CLAUDE.md`를 사용한다. 두 파일은 도구 framing만 다르고 섹션·순서·규칙은 동일하다. 새 규칙은 양쪽 모두 갱신한다.
 
 ## 프로젝트
 
@@ -30,11 +30,11 @@ Codex의 1차 진입 문서다. 이 레포에서 작업할 때는 이 파일을 
    - 그 외에는 변경 사항과 검증 결과를 보고한다.
    - 기존 변경은 사용자 작업으로 보고 되돌리지 않는다.
 
-## Claude 자료 취급
+## 스킬·에이전트 자료 취급
 
-`.claude/skills/*/SKILL.md`와 `.claude/agents/*.md`는 Claude custom skill/agent 형식이지만, Codex에서는 자동 호출 대상이 아니다. 필요한 항목만 로컬 참고 문서로 읽고 적용한다.
+`.claude/skills/*/SKILL.md`와 `.claude/agents/*.md`는 Claude Code의 skill/agent 정의다. Codex에서는 자동 로드되지 않으므로 로컬 참고 문서로 읽어 절차·체크리스트를 그대로 따른다.
 
-`CLAUDE.md`는 이전 운영 문서다. Codex 전환 이후의 1차 기준은 이 `AGENTS.md`이며, `CLAUDE.md`의 스킬 호출 문구는 Codex 명령이 아니다.
+`CLAUDE.md`는 Claude Code용 parallel 문서. 같은 규칙·순서를 유지하되 도구 framing만 다르다.
 
 ## 파일 구조
 

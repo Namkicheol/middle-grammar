@@ -533,9 +533,9 @@ body{
           <strong>문법 보스전</strong>
           <span>콤보와 필살기로 HP 깎기</span>
         </button>
-        <button class="mode-btn" data-mode="speed">
-          <strong>스피드 퀴즈</strong>
-          <span>제한 시간 안에 빠르게 선택</span>
+        <button class="mode-btn" data-mode="whack">
+          <strong>두더지 잡기</strong>
+          <span>홀에서 튀어나오는 정답을 두드려요</span>
         </button>
         <button class="mode-btn" data-mode="bubble">
           <strong>보글보글</strong>
@@ -974,6 +974,7 @@ cleanupZeroScoreRecords();
 function startSelectedGame(unitKey) {
   if (selectedMode === 'boss') startBossBattle(unitKey);
   else if (selectedMode === 'speed') startSpeedQuiz(unitKey);
+  else if (selectedMode === 'whack') location.href = '../whack-grammar/?unit=' + encodeURIComponent(unitKey);
   else startGame(unitKey);
 }
 
@@ -1223,6 +1224,21 @@ let bossArenaRaf = null;
 let bossAnimState = '';
 let bossAnimLabel = '';
 let bossAnimStart = 0;
+const BOSS_ACTION_DUR = { hit: 460, 'hit-2': 560, 'hit-3': 700, hurt: 420, 'hurt-2': 540, 'hurt-3': 660, 'phase-up': 880 };
+function bossActionDur(state) { return BOSS_ACTION_DUR[state] || 520; }
+function kf(p, pts) {
+  if (p <= pts[0][0]) return pts[0][1];
+  for (let i = 1; i < pts.length; i++) {
+    if (p <= pts[i][0]) {
+      const a = pts[i-1], b = pts[i];
+      const span = b[0] - a[0];
+      const s = span > 0 ? (p - a[0]) / span : 0;
+      const e = s < .5 ? 2 * s * s : 1 - Math.pow(-2 * s + 2, 2) / 2;
+      return a[1] + (b[1] - a[1]) * e;
+    }
+  }
+  return pts[pts.length - 1][1];
+}
 let bossPhaserGame = null;
 let bossPhaserScene = null;
 
@@ -1290,6 +1306,7 @@ class BossFightScene extends Phaser.Scene {
 
   create() {
     bossPhaserScene = this;
+    if (location.search.includes('debug')) window.__bossScene = this;
     this.stageFx = this.add.graphics();
     this.hero = this.add.sprite(88, 138, 'boss-hero', 0).setOrigin(.5, 1).setScale(.92);
     this.boss = this.add.sprite(238, 136, 'boss-enemy', 0).setOrigin(.5, 1).setScale(.98);
@@ -1306,14 +1323,15 @@ class BossFightScene extends Phaser.Scene {
   update(time) {
     const w = this.scale.width;
     const h = this.scale.height;
-    const p = Math.min(1, (time - this.actionStart) / 680);
-    const ease = p < .5 ? 2 * p * p : 1 - Math.pow(-2 * p + 2, 2) / 2;
+    const p = Math.min(1, (time - this.actionStart) / bossActionDur(this.action));
     this.hero.setPosition(w * .27, h - 30 + Math.sin(time / 210) * 2);
     this.boss.setPosition(w * .74, h - 30 + Math.sin(time / 230) * 2);
     this.paintStage(w, h, time);
     this.fx.clear();
-    this.poseHero(this.action, ease, time);
-    this.poseBoss(this.action, ease, time);
+    this.poseHero(this.action, p, time);
+    this.poseBoss(this.action, p, time);
+    // smoothed scalar for FX (sharp at strike phase)
+    const ease = kf(p, [[0,0],[.3,.05],[.46,.9],[.62,1],[1,1]]);
     this.paintActionFx(w, h, this.action, ease, time);
   }
 
@@ -1358,35 +1376,75 @@ class BossFightScene extends Phaser.Scene {
     }
   }
 
-  poseHero(state, ease, time) {
+  poseHero(state, p, time) {
     const attack = state === 'hit' || state === 'hit-2' || state === 'hit-3';
     const guard = state === 'hurt' || state === 'hurt-2' || state === 'hurt-3';
-    this.hero.x += attack ? ease * 30 : guard ? -ease * 16 : 0;
-    this.hero.setAngle(attack ? -ease * 5 : guard ? -ease * 8 : Math.sin(time / 320) * 1.5);
+    const power = state === 'hit-3' ? 1.3 : state === 'hit-2' ? 1.12 : 1;
+    const gPower = state === 'hurt-3' ? 1.25 : state === 'hurt-2' ? 1.1 : 1;
+    // multi-phase lunge: anticipation back → forward strike with overshoot → settle
+    const lunge = attack ? kf(p, [[0,0],[.22,-4],[.34,-5],[.5,34],[.6,40],[.78,18],[1,0]]) * power
+                : guard ? kf(p, [[0,0],[.18,-10],[.32,-16],[.6,-4],[1,0]]) * gPower : 0;
+    const vert = attack ? kf(p, [[0,0],[.22,-3],[.5,3],[.62,4],[1,0]]) * power
+                : guard ? kf(p, [[0,0],[.2,3],[.5,1],[1,0]]) * gPower : 0;
+    const angle = attack ? kf(p, [[0,0],[.22,5],[.5,-7],[.62,-9],[.85,-2],[1,0]]) * power
+                 : guard ? kf(p, [[0,0],[.2,-6],[.5,-10],[1,0]]) * gPower
+                 : Math.sin(time / 320) * 1.5;
+    this.hero.x += lunge;
+    this.hero.y += vert;
+    this.hero.setAngle(angle);
+    // frame sync to motion phase: idle / wind-up / strike / impact / settle
     let frame = Math.floor(time / 260) % 2;
-    if (state === 'hit') frame = ease < .48 ? 2 : 5;
-    else if (state === 'hit-2' || state === 'hit-3') frame = 3;
-    else if (guard) frame = 4;
-    if (state === 'hit-3') frame = 5;
+    if (attack) {
+      if (p < .22) frame = 2;        // wind-up
+      else if (p < .46) frame = 3;   // mid swing / cast
+      else if (p < .65) frame = 5;   // impact
+      else frame = 2;                // settle through ready pose
+    } else if (guard) {
+      frame = p < .35 ? 4 : (p < .7 ? 1 : 0);
+    }
     this.hero.setFrame(frame);
-    if (state === 'hit-2' || state === 'hit-3') {
-      this.fx.fillStyle(0x67e8f9, state === 'hit-3' ? .35 : .22);
-      this.fx.fillCircle(this.hero.x + 42, this.hero.y - 94, state === 'hit-3' ? 30 : 18);
+    if ((state === 'hit-2' || state === 'hit-3') && p > .35 && p < .8) {
+      const eFx = kf(p, [[.35,0],[.5,1],[.7,1],[.8,0]]);
+      this.fx.fillStyle(0x67e8f9, (state === 'hit-3' ? .38 : .24) * eFx);
+      this.fx.fillCircle(this.hero.x + 42, this.hero.y - 94, (state === 'hit-3' ? 32 : 20) * (.6 + eFx * .6));
     }
   }
 
-  poseBoss(state, ease, time) {
+  poseBoss(state, p, time) {
     const casting = state === 'hurt' || state === 'hurt-2' || state === 'hurt-3';
     const hit = state === 'hit' || state === 'hit-2' || state === 'hit-3';
     const phase = state === 'phase-up';
+    const cPower = state === 'hurt-3' ? 1.3 : state === 'hurt-2' ? 1.12 : 1;
+    const hPower = state === 'hit-3' ? 1.3 : state === 'hit-2' ? 1.12 : 1;
     const levelScale = .98 + Math.min((bossLevel || 1) - 1, 3) * .08;
-    this.boss.setScale(levelScale, levelScale + (phase ? Math.sin(ease * Math.PI) * .2 : 0));
-    this.boss.x += hit ? ease * 22 : casting ? -ease * 24 : 0;
-    this.boss.setAngle(hit ? ease * 7 : phase ? Math.sin(ease * Math.PI) * 8 : Math.sin(time / 360) * 1.2);
+    // squash on hit, stretch on cast wind-up
+    const sx = hit ? kf(p, [[0,1],[.22,1.16],[.42,.96],[.6,.99],[1,1]])
+            : casting ? kf(p, [[0,1],[.22,.94],[.42,1.1],[.6,1.06],[1,1]]) : 1;
+    const sy = hit ? kf(p, [[0,1],[.22,.84],[.42,1.04],[.6,1.02],[1,1]])
+            : casting ? kf(p, [[0,1],[.22,1.06],[.42,.92],[.6,.97],[1,1]])
+            : 1 + (phase ? Math.sin(p * Math.PI) * .2 : 0);
+    this.boss.setScale(levelScale * sx, levelScale * sy);
+    const recoil = hit ? kf(p, [[0,0],[.18,28],[.32,32],[.6,18],[.85,6],[1,0]]) * hPower
+                : casting ? kf(p, [[0,0],[.22,8],[.34,10],[.5,-30],[.6,-34],[.78,-16],[1,0]]) * cPower : 0;
+    const vert = hit ? kf(p, [[0,0],[.2,-2],[.5,4],[.6,5],[1,0]]) * hPower
+                : casting ? kf(p, [[0,0],[.3,-3],[.5,1],[.62,2],[1,0]]) * cPower : 0;
+    const angle = hit ? kf(p, [[0,0],[.22,10],[.42,4],[.7,1],[1,0]]) * hPower
+                 : casting ? kf(p, [[0,0],[.22,5],[.5,-7],[.62,-9],[.85,-2],[1,0]]) * cPower
+                 : phase ? Math.sin(p * Math.PI) * 8
+                 : Math.sin(time / 360) * 1.2;
+    this.boss.x += recoil;
+    this.boss.y += vert;
+    this.boss.setAngle(angle);
+    // frame sync
     let frame = Math.floor(time / 300) % 2 === 0 ? 0 : 4;
-    if (casting) frame = state === 'hurt-3' ? 5 : 1;
-    else if (hit) frame = 2;
-    else if (phase) frame = 5;
+    if (casting) {
+      if (p < .22) frame = 1;                                 // wind-up cast
+      else if (p < .46) frame = state === 'hurt-3' ? 5 : 1;   // mid cast
+      else if (p < .7) frame = state === 'hurt-3' ? 5 : 3;    // release
+      else frame = 1;                                          // settle
+    } else if (hit) {
+      frame = p < .42 ? 2 : (p < .8 ? 4 : 0);
+    } else if (phase) frame = 5;
     this.boss.setFrame(frame);
   }
 
@@ -1467,12 +1525,11 @@ function drawBossArena() {
   const { w, h } = resizeBossArenaCanvas(canvas, ctx);
   const now = performance.now();
   const t = now / 1000;
-  const p = Math.min(1, (now - bossAnimStart) / 680);
-  const ease = p < .5 ? 2 * p * p : 1 - Math.pow(-2 * p + 2, 2) / 2;
+  const p = Math.min(1, (now - bossAnimStart) / bossActionDur(bossAnimState));
   ctx.clearRect(0, 0, w, h);
   drawArenaStage(ctx, w, h, t);
-  drawHeroFighter(ctx, w * .27, h - 32, bossAnimState, ease, t);
-  drawBossFighter(ctx, w * .74, h - 30, bossAnimState, ease, t, bossLevel);
+  drawHeroFighter(ctx, w * .27, h - 32, bossAnimState, p, t);
+  drawBossFighter(ctx, w * .74, h - 30, bossAnimState, p, t, bossLevel);
   bossArenaRaf = requestAnimationFrame(drawBossArena);
 }
 
@@ -1506,14 +1563,26 @@ function drawArenaStage(ctx, w, h, t) {
   ctx.restore();
 }
 
-function drawHeroFighter(ctx, x, y, state, ease, t) {
+function drawHeroFighter(ctx, x, y, state, p, t) {
   const attacking = state === 'hit' || state === 'hit-2' || state === 'hit-3';
   const guarding = state === 'hurt' || state === 'hurt-2' || state === 'hurt-3';
-  const jump = Math.sin(t * 5) * 2;
-  const lunge = attacking ? ease * 30 : guarding ? -ease * 18 : 0;
+  const power = state === 'hit-3' ? 1.3 : state === 'hit-2' ? 1.12 : 1;
+  const gPower = state === 'hurt-3' ? 1.25 : state === 'hurt-2' ? 1.1 : 1;
+  const idleBob = Math.sin(t * 5) * 2;
+  // multi-phase pose drivers
+  const lungeAmt = attacking ? kf(p, [[0,0],[.22,-3],[.34,-4],[.5,32],[.6,38],[.78,18],[1,0]]) * power
+                 : guarding ? kf(p, [[0,0],[.18,-12],[.32,-18],[.6,-6],[1,0]]) * gPower
+                 : 0;
+  const bobAmt = attacking ? kf(p, [[0,0],[.22,-2],[.5,4],[.62,5],[1,0]]) * power
+                : guarding ? kf(p, [[0,0],[.2,4],[.5,2],[1,0]]) * gPower
+                : idleBob;
+  const lean = attacking ? kf(p, [[0,0],[.22,-.12],[.5,.22],[.62,.26],[.85,.06],[1,0]]) * power
+              : guarding ? kf(p, [[0,0],[.2,-.18],[.5,-.1],[1,0]]) * gPower
+              : 0;
   const scale = 1.02;
   ctx.save();
-  ctx.translate(x + lunge, y + jump);
+  ctx.translate(x + lungeAmt, y + bobAmt);
+  ctx.rotate(lean);
   ctx.scale(scale, scale);
   ctx.lineCap = 'round';
   ctx.lineJoin = 'round';
@@ -1524,40 +1593,74 @@ function drawHeroFighter(ctx, x, y, state, ease, t) {
   ctx.quadraticCurveTo(-58, -32, -34, 0);
   ctx.quadraticCurveTo(-14, -20, 2, -64);
   ctx.fill();
-  drawLeg(ctx, -14, -11, -23, 26, '#1d4ed8');
-  drawLeg(ctx, 12, -10, 23, 25, '#2563eb');
-  const armSwing = attacking ? -1.7 + ease * 2.9 : guarding ? -1.35 : .2 + Math.sin(t * 4) * .08;
-  const backArm = attacking ? .85 - ease * 1.2 : guarding ? -1.15 : 2.45;
+  // legs splay during lunge — back leg pushes off, front leg plants forward
+  const legBack = attacking ? kf(p, [[0,-23],[.22,-20],[.5,-30],[.62,-32],[1,-23]]) : -23;
+  const legFront = attacking ? kf(p, [[0,23],[.22,20],[.5,30],[.62,32],[1,23]]) : 23;
+  drawLeg(ctx, -14, -11, legBack, 26, '#1d4ed8');
+  drawLeg(ctx, 12, -10, legFront, 25, '#2563eb');
+  // arm: idle → wind back (-1.85) → snap to extended (+1.3, slight overshoot) → settle
+  const armSwing = attacking ? kf(p, [[0,.2],[.18,-1.7],[.3,-1.9],[.46,1.15],[.56,1.38],[.74,.55],[1,.2]])
+                  : guarding ? kf(p, [[0,.2],[.2,-1.3],[.5,-1.45],[1,.2]])
+                  : .2 + Math.sin(t * 4) * .08;
+  const backArm = attacking ? kf(p, [[0,2.45],[.18,2.7],[.3,2.85],[.46,.7],[.56,.55],[.74,1.9],[1,2.45]])
+                 : guarding ? kf(p, [[0,2.45],[.2,-1.05],[.5,-1.2],[1,2.45]])
+                 : 2.45;
   drawArm(ctx, -17, -52, 27, backArm, '#f59e0b', false);
   drawBody(ctx, '#2563eb', '#38bdf8');
   drawHead(ctx, '#f59e0b', '#78350f');
   drawArm(ctx, 18, -52, 34, armSwing, '#fbbf24', true);
-  if (attacking) drawPencilBlade(ctx, 18 + Math.cos(armSwing) * 34, -52 + Math.sin(armSwing) * 34, armSwing);
-  if (state === 'hit-2' || state === 'hit-3') drawHandOrb(ctx, 18 + Math.cos(armSwing) * 34, -52 + Math.sin(armSwing) * 34, state === 'hit-3');
+  // weapon/orb only visible during strike phase (p ≈ 0.35–0.75)
+  const inStrike = attacking && p > .32 && p < .8;
+  if (inStrike) drawPencilBlade(ctx, 18 + Math.cos(armSwing) * 34, -52 + Math.sin(armSwing) * 34, armSwing);
+  if (inStrike && (state === 'hit-2' || state === 'hit-3')) drawHandOrb(ctx, 18 + Math.cos(armSwing) * 34, -52 + Math.sin(armSwing) * 34, state === 'hit-3');
   ctx.restore();
 }
 
-function drawBossFighter(ctx, x, y, state, ease, t, level) {
+function drawBossFighter(ctx, x, y, state, p, t, level) {
   const casting = state === 'hurt' || state === 'hurt-2' || state === 'hurt-3';
   const hit = state === 'hit' || state === 'hit-2' || state === 'hit-3';
   const transform = state === 'phase-up';
-  const recoil = hit ? ease * 22 : casting ? -ease * 24 : 0;
-  const scale = 1.12 + Math.min(level - 1, 3) * .06 + (transform ? Math.sin(ease * Math.PI) * .18 : 0);
+  const power = state === 'hurt-3' ? 1.3 : state === 'hurt-2' ? 1.12 : 1;
+  const hitPower = state === 'hit-3' ? 1.3 : state === 'hit-2' ? 1.12 : 1;
+  // hit: knocked back with squash-stretch; casting: wind-up then forward thrust
+  const recoil = hit ? kf(p, [[0,0],[.18,28],[.32,32],[.6,18],[.85,6],[1,0]]) * hitPower
+                : casting ? kf(p, [[0,0],[.22,7],[.34,9],[.5,-30],[.6,-34],[.78,-16],[1,0]]) * power
+                : 0;
+  const breath = Math.sin(t * 4.4) * 2;
+  const vert = hit ? kf(p, [[0,0],[.2,-3],[.5,5],[.6,6],[1,0]]) * hitPower
+              : casting ? kf(p, [[0,0],[.3,-4],[.5,2],[.62,3],[1,0]]) * power
+              : breath;
+  const lean = hit ? kf(p, [[0,0],[.22,.35],[.42,.18],[.7,.05],[1,0]]) * hitPower
+              : casting ? kf(p, [[0,0],[.22,.12],[.5,-.22],[.62,-.26],[.85,-.05],[1,0]]) * power
+              : 0;
+  const squash = hit ? kf(p, [[0,1],[.22,.86],[.42,1.04],[.6,1.02],[1,1]]) : 1; // y-squash on hit
+  const stretch = hit ? kf(p, [[0,1],[.22,1.14],[.42,.98],[.6,.99],[1,1]]) : 1; // x-stretch on hit
+  const scaleBase = 1.12 + Math.min(level - 1, 3) * .06 + (transform ? Math.sin(p * Math.PI) * .18 : 0);
   ctx.save();
-  ctx.translate(x + recoil, y + Math.sin(t * 4.4) * 2);
-  ctx.scale(-scale, scale);
+  ctx.translate(x + recoil, y + vert);
+  ctx.rotate(lean);
+  ctx.scale(-scaleBase * stretch, scaleBase * squash);
   ctx.lineCap = 'round';
   ctx.lineJoin = 'round';
   drawShadow(ctx, 0, 5, 54);
-  const arm = casting ? -2.55 + ease * .72 : hit ? .65 : .1 + Math.sin(t * 3.4) * .06;
-  const backArm = casting ? 1.8 - ease * 1.5 : 2.55;
-  drawLeg(ctx, -16, -10, -26, 28, '#581c87');
-  drawLeg(ctx, 16, -10, 28, 27, '#7f1d1d');
+  // boss attacks while player is in hurt state
+  const arm = casting ? kf(p, [[0,.1],[.2,-2.55],[.32,-2.75],[.5,1.2],[.6,1.4],[.78,.55],[1,.1]])
+              : hit ? kf(p, [[0,.1],[.22,.85],[.5,.55],[.85,.2],[1,.1]])
+              : .1 + Math.sin(t * 3.4) * .06;
+  const backArm = casting ? kf(p, [[0,2.55],[.2,2.85],[.32,3.05],[.5,.4],[.6,.25],[.78,1.85],[1,2.55]])
+                  : hit ? kf(p, [[0,2.55],[.22,2.9],[.5,2.7],[1,2.55]])
+                  : 2.55;
+  // legs splay during boss attack lunge
+  const legBack = casting ? kf(p, [[0,-26],[.22,-22],[.5,-32],[.62,-34],[1,-26]]) : -26;
+  const legFront = casting ? kf(p, [[0,28],[.22,24],[.5,34],[.62,36],[1,28]]) : 28;
+  drawLeg(ctx, -16, -10, legBack, 28, '#581c87');
+  drawLeg(ctx, 16, -10, legFront, 27, '#7f1d1d');
   drawArm(ctx, -22, -54, 33, backArm, '#991b1b', false);
   drawBossBody(ctx, level);
-  drawBossHead(ctx, level, hit ? ease : 0);
+  drawBossHead(ctx, level, hit ? kf(p, [[0,0],[.22,.8],[.5,.4],[1,0]]) : 0);
   drawArm(ctx, 24, -54, 38, arm, '#dc2626', true);
-  if (casting) drawClaw(ctx, 24 + Math.cos(arm) * 38, -54 + Math.sin(arm) * 38, arm);
+  // claw only visible during boss strike phase
+  if (casting && p > .32 && p < .8) drawClaw(ctx, 24 + Math.cos(arm) * 38, -54 + Math.sin(arm) * 38, arm);
   ctx.restore();
 }
 
@@ -2040,7 +2143,7 @@ function setBossDuelState(state, label, labelClass) {
     setTimeout(() => fx.remove(), 680);
   }
   clearTimeout(duel._stateTimer);
-  duel._stateTimer = setTimeout(() => duel.classList.remove(state), 520);
+  duel._stateTimer = setTimeout(() => duel.classList.remove(state), bossActionDur(state));
 }
 
 function spawnActionFx(duel, state) {

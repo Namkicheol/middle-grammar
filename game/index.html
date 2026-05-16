@@ -443,6 +443,7 @@ body{
 .boss-card{background:#fff;color:var(--dark);border-radius:22px;padding:18px;box-shadow:0 16px 34px rgba(0,0,0,.22);}
 .boss-meta{display:flex;justify-content:space-between;gap:8px;font-size:.78rem;font-weight:900;color:#7c3aed;margin-bottom:10px;}
 .boss-q{font-size:1.12rem;font-weight:900;line-height:1.55;margin-bottom:8px;color:#172554;}
+.qblank{display:inline-block;min-width:54px;padding:0 6px;border-bottom:3px dashed currentColor;color:transparent;vertical-align:baseline;}
 .boss-kor{font-size:.87rem;font-weight:700;line-height:1.5;color:#5b21b6;background:#ede9fe;border-radius:12px;padding:8px 10px;margin-bottom:14px;}
 .boss-options{display:grid;grid-template-columns:1fr 1fr;gap:9px;}
 .boss-opt{min-height:52px;border:2px solid #e2e8f0;background:#f8fafc;color:#172554;border-radius:14px;font-family:inherit;font-size:.98rem;font-weight:900;cursor:pointer;transition:all .12s;}
@@ -1103,7 +1104,7 @@ function nextSpeedQuestion() {
   speedLocked = false;
   document.getElementById('speed-progress').textContent =
     timeLimitSec === 0 ? `${speedIndex}/${speedPool.length}` : `문제 ${speedTotal + 1}`;
-  document.getElementById('speed-q').textContent = q.eng;
+  document.getElementById('speed-q').innerHTML = q.eng.replace(/_{3,}/g, '<span class="qblank">____</span>');
   document.getElementById('speed-kor').textContent = q.kor || '';
   document.getElementById('speed-review').textContent = '';
 
@@ -1955,7 +1956,7 @@ function nextBossQuestion() {
   bossLocked = false;
   document.getElementById('boss-progress').textContent = `Lv.${bossLevel} · 문제 ${bossTotal + 1}`;
   document.getElementById('boss-damage').textContent = bossAttackPreview();
-  document.getElementById('boss-q').textContent = q.eng;
+  document.getElementById('boss-q').innerHTML = q.eng.replace(/_{3,}/g, '<span class="qblank">____</span>');
   document.getElementById('boss-kor').textContent = q.kor || '';
   document.getElementById('boss-review').textContent = '';
 
@@ -2946,7 +2947,7 @@ function triggerQuizModal() {
   canShoot = false;
 
   document.getElementById('quiz-chain').textContent = answerStreak > 0 ? `💭 ${answerStreak}콤보 진행 중!` : '💭 정답을 맞히면 발사 가능!';
-  document.getElementById('quiz-q').textContent = q.eng;
+  document.getElementById('quiz-q').innerHTML = q.eng.replace(/_{3,}/g, '<span class="qblank">____</span>');
   document.getElementById('quiz-kor').textContent = q.kor || '';
   document.getElementById('quiz-bonus').textContent = '';
 

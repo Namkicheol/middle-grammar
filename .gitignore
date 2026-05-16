@@ -1,5 +1,7 @@
 # macOS
 .DS_Store
+# iCloud sync duplicates (e.g. "index 2.html", "questions 3.js")
+* [0-9].*
 
 # Claude 로컬 설정
 .claude/*

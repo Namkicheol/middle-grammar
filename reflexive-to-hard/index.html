@@ -184,15 +184,15 @@ body{font-family:'Baloo 2','Noto Sans KR',sans-serif;background:var(--bg);paddin
 
   <!-- ─── 문맥 파악 mcq (a1-a4) ─── -->
   <div class="question-card" id="qc-a1"><span class="q-num">1</span><span class="q-type ctx">문맥 파악</span>
-    <div class="q-text">Maya finally finished <em>___</em> her travel diary after the trip.</div>
-    <div class="vocab"><span class="vw">finish 끝내다</span><span class="vw">travel diary 여행 일기</span><span class="vw">trip 여행</span></div>
-    <div class="choices" data-qid="a1" data-ans="writing">
-      <button class="choice" onclick="pickChoice(this)">write</button>
-      <button class="choice" onclick="pickChoice(this)">to write</button>
-      <button class="choice" onclick="pickChoice(this)">writing</button>
-      <button class="choice" onclick="pickChoice(this)">written</button>
+    <div class="q-text">Jaeho went to the library <em>___</em> a book for his science project.</div>
+    <div class="vocab"><span class="vw">library 도서관</span><span class="vw">science project 과학 과제</span><span class="vw">borrow 빌리다</span></div>
+    <div class="choices" data-qid="a1" data-ans="to borrow">
+      <button class="choice" onclick="pickChoice(this)">borrows</button>
+      <button class="choice" onclick="pickChoice(this)">to borrow</button>
+      <button class="choice" onclick="pickChoice(this)">borrowing</button>
+      <button class="choice" onclick="pickChoice(this)">borrowed</button>
     </div>
-    <div class="answer-hint" id="ah-a1">💡 정답: <strong>writing</strong> — finish는 동명사(-ing)를 목적어로 취함 (finish + -ing)<br>📝 해석: Maya는 여행 후 마침내 여행 일기 쓰기를 끝냈다.</div>
+    <div class="answer-hint" id="ah-a1">💡 정답: <strong>to borrow</strong> — "빌리기 위해"라는 목적을 나타내는 to부정사 (to + 동사원형)<br>📝 해석: Jaeho는 과학 과제를 위한 책을 빌리러 도서관에 갔다.</div>
     <button class="hint-btn" onclick="showHint('a1')">💡 힌트 보기</button>
   </div>
 
@@ -294,7 +294,7 @@ body{font-family:'Baloo 2','Noto Sans KR',sans-serif;background:var(--bg);paddin
       <button class="choice" onclick="pickChoice(this)">그녀는 지도를 읽으면서 숲속에서 길을 잃었다.</button>
       <button class="choice" onclick="pickChoice(this)">그녀는 숲 지도를 읽어서 길을 결정했다.</button>
     </div>
-    <div class="answer-hint" id="ah-a9">💡 정답: <strong>그녀는 숲에서 나가는 길을 찾기 위해 지도를 읽었다.</strong><br>— "to find" = 목적 (~하기 위해), 동사 read를 수식<br>📝 She read the map / to find the way out of the forest.</div>
+    <div class="answer-hint" id="ah-a9">💡 정답: <strong>그녀는 숲에서 나가는 길을 찾기 위해 지도를 읽었다.</strong><br>— "to find" = 목적 (~하기 위해), 동사 read를 수식<br>📝 해석: 그녀는 숲에서 나가는 길을 찾기 위해 지도를 읽었다.</div>
     <button class="hint-btn" onclick="showHint('a9')">💡 힌트 보기</button>
   </div>
 
@@ -330,7 +330,7 @@ body{font-family:'Baloo 2','Noto Sans KR',sans-serif;background:var(--bg);paddin
       <span class="kor-hint">🇰🇷 그녀는 자기 자신을 위해 케이크를 만들었다.</span>
       She made a cake for
       <input class="blank" id="bi-a12" placeholder="___" data-ans="herself" autocomplete="off" style="min-width:130px">
-      . <span class="ex">(she)</span>
+      .
     </div>
     <div class="vocab"><span class="vw">made 만들었다(make의 과거)</span><span class="vw">cake 케이크</span></div>
     <button class="check-btn" onclick="checkBlank('a12')">✔ 확인</button>
@@ -338,16 +338,16 @@ body{font-family:'Baloo 2','Noto Sans KR',sans-serif;background:var(--bg);paddin
     <button class="hint-btn" onclick="showHint('a12')">💡 힌트 보기</button>
   </div>
 
-  <div class="question-card" id="qc-a13"><span class="q-num">13</span><span class="q-type ctx">문맥 파악</span>
-    <div class="q-text">밑줄 친 to부정사가 <em>목적('~하기 위해')</em>으로 쓰인 것을 고르시오.</div>
-    <div class="vocab"><span class="vw">avoid 피하다</span><span class="vw">traffic 교통(량)</span><span class="vw">hope 희망하다</span><span class="vw">early 일찍</span></div>
-    <div class="choices" data-qid="a13" data-ans="She left early to avoid the heavy traffic.">
-      <button class="choice" onclick="pickChoice(this)">He hopes to travel around the world.</button>
-      <button class="choice" onclick="pickChoice(this)">She left early to avoid the heavy traffic.</button>
-      <button class="choice" onclick="pickChoice(this)">They want to join the school drama club.</button>
-      <button class="choice" onclick="pickChoice(this)">I need to finish this report by noon.</button>
+  <div class="question-card" id="qc-a13"><span class="q-num">13</span><span class="q-type trans">문장 합치기</span>
+    <div class="q-text">
+      <span class="orig">원문 1: Sofia joined the school band.<br>원문 2: She wanted to make new friends.</span><br>
+      → (to부정사로 합치기) Sofia joined the school band
+      <input class="blank" id="bi-a13" placeholder="___" data-ans="to make" autocomplete="off" style="min-width:130px">
+      new friends.
     </div>
-    <div class="answer-hint" id="ah-a13">💡 정답: <strong>She left early to avoid the heavy traffic.</strong><br>— "to avoid" = 목적 "교통체증을 피하기 위해" (동사 left를 수식)<br>나머지: hope/want/need는 to부정사를 동사의 목적어로 취함<br>📝 해석: 그녀는 심한 교통체증을 피하기 위해 일찍 출발했다.</div>
+    <div class="vocab"><span class="vw">join 가입하다</span><span class="vw">school band 학교 밴드</span><span class="vw">make friends 친구를 사귀다</span></div>
+    <button class="check-btn" onclick="checkBlank('a13')">✔ 확인</button>
+    <div class="answer-hint" id="ah-a13">💡 정답: <strong>to make</strong> — 목적 "친구를 사귀기 위해"<br>📝 해석: Sofia는 새 친구를 사귀려고 학교 밴드에 가입했다.</div>
     <button class="hint-btn" onclick="showHint('a13')">💡 힌트 보기</button>
   </div>
 
@@ -356,7 +356,7 @@ body{font-family:'Baloo 2','Noto Sans KR',sans-serif;background:var(--bg);paddin
       <span class="kor-hint">🇰🇷 내 남동생은 숙제를 직접(스스로) 끝냈다.</span>
       My little brother finished his homework
       <input class="blank" id="bi-a14" placeholder="___" data-ans="himself" autocomplete="off" style="min-width:130px">
-      . <span class="ex">(he · 강조)</span>
+      .
     </div>
     <div class="vocab"><span class="vw">finish 끝내다</span><span class="vw">homework 숙제</span></div>
     <button class="check-btn" onclick="checkBlank('a14')">✔ 확인</button>
@@ -369,7 +369,7 @@ body{font-family:'Baloo 2','Noto Sans KR',sans-serif;background:var(--bg);paddin
       <span class="kor-hint">🇰🇷 그는 할머니를 방문하려고 병원에 갔다.</span>
       He went to the hospital
       <input class="blank" id="bi-a15" placeholder="___" data-ans="to visit" autocomplete="off" style="min-width:140px">
-      his grandmother. <span class="ex">(visit)</span>
+      his grandmother.
     </div>
     <div class="vocab"><span class="vw">hospital 병원</span><span class="vw">grandmother 할머니</span></div>
     <button class="check-btn" onclick="checkBlank('a15')">✔ 확인</button>
@@ -417,7 +417,7 @@ body{font-family:'Baloo 2','Noto Sans KR',sans-serif;background:var(--bg);paddin
   <div class="question-card" id="qc-b3"><span class="q-num">18</span><span class="q-type ctx">지문 · 3번</span>
     <div class="q-text">I cut
       <input class="blank" id="bi-b3" placeholder="___" data-ans="myself" autocomplete="off" style="min-width:130px">
-      with a knife. <span class="ex">(I)</span>
+      with a knife.
     </div>
     <div class="vocab"><span class="vw">cut 베다</span><span class="vw">knife 칼</span><span class="vw">band-aid 반창고</span></div>
     <button class="check-btn" onclick="checkBlank('b3')">✔ 확인</button>
@@ -428,7 +428,7 @@ body{font-family:'Baloo 2','Noto Sans KR',sans-serif;background:var(--bg);paddin
   <div class="question-card" id="qc-b4"><span class="q-num">19</span><span class="q-type ctx">지문 · 4번</span>
     <div class="q-text">My dad made a big pizza
       <input class="blank" id="bi-b4" placeholder="___" data-ans="himself" autocomplete="off" style="min-width:130px">
-      for all of us. <span class="ex">(he · 강조)</span>
+      for all of us.
     </div>
     <div class="vocab"><span class="vw">made 만들었다(make의 과거)</span><span class="vw">pizza 피자</span></div>
     <button class="check-btn" onclick="checkBlank('b4')">✔ 확인</button>
@@ -439,7 +439,7 @@ body{font-family:'Baloo 2','Noto Sans KR',sans-serif;background:var(--bg);paddin
   <div class="question-card" id="qc-b5"><span class="q-num">20</span><span class="q-type ctx">지문 · 5번</span>
     <div class="q-text">We laughed and said, "Let's enjoy
       <input class="blank" id="bi-b5" placeholder="___" data-ans="ourselves" autocomplete="off" style="min-width:140px">
-      !" <span class="ex">(we)</span>
+      !"
     </div>
     <div class="vocab"><span class="vw">laugh 웃다</span><span class="vw">enjoy oneself 즐기다</span></div>
     <button class="check-btn" onclick="checkBlank('b5')">✔ 확인</button>
@@ -478,7 +478,7 @@ body{font-family:'Baloo 2','Noto Sans KR',sans-serif;background:var(--bg);paddin
   <div class="question-card" id="qc-b8"><span class="q-num">23</span><span class="q-type ctx">지문 · 8번</span>
     <div class="q-text">Jake designs posters
       <input class="blank" id="bi-b8" placeholder="___" data-ans="to bring" autocomplete="off" style="min-width:130px">
-      many students to our booth. <span class="ex">(bring)</span>
+      many students to our booth.
     </div>
     <div class="vocab"><span class="vw">design 디자인하다</span><span class="vw">poster 포스터</span><span class="vw">booth 부스</span></div>
     <button class="check-btn" onclick="checkBlank('b8')">✔ 확인</button>
@@ -489,7 +489,7 @@ body{font-family:'Baloo 2','Noto Sans KR',sans-serif;background:var(--bg);paddin
   <div class="question-card" id="qc-b9"><span class="q-num">24</span><span class="q-type ctx">지문 · 9번</span>
     <div class="q-text">We also sell snacks
       <input class="blank" id="bi-b9" placeholder="___" data-ans="to raise" autocomplete="off" style="min-width:130px">
-      money for our club. <span class="ex">(raise)</span>
+      money for our club.
     </div>
     <div class="vocab"><span class="vw">sell 팔다</span><span class="vw">snack 간식</span><span class="vw">raise money 모금하다</span></div>
     <button class="check-btn" onclick="checkBlank('b9')">✔ 확인</button>
@@ -500,7 +500,7 @@ body{font-family:'Baloo 2','Noto Sans KR',sans-serif;background:var(--bg);paddin
   <div class="question-card" id="qc-b10"><span class="q-num">25</span><span class="q-type ctx">지문 · 10번</span>
     <div class="q-text">I will work hard
       <input class="blank" id="bi-b10" placeholder="___" data-ans="to do" autocomplete="off" style="min-width:110px">
-      my best on stage. <span class="ex">(do)</span>
+      my best on stage.
     </div>
     <div class="vocab"><span class="vw">work hard 열심히 노력하다</span><span class="vw">do one's best 최선을 다하다</span><span class="vw">stage 무대</span></div>
     <button class="check-btn" onclick="checkBlank('b10')">✔ 확인</button>

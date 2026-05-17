@@ -261,13 +261,13 @@ body{font-family:'Baloo 2','Noto Sans KR',sans-serif;background:var(--bg);paddin
 
   <div class="question-card" id="qc-a8"><span class="q-num">8</span><span class="q-type fix">오류 수정</span>
     <div class="q-text">
-      <span class="orig">❌ The baby elephants looked <span class="wrong">adorably</span> at the zoo.</span><br>
+      <span class="orig">❌ The stage decorations looked <span class="wrong">perfection</span>.</span><br>
       → 밑줄 친 부분을 바르게 고치세요:
-      <input class="blank" id="bi-a8" placeholder="___" data-ans="adorable" autocomplete="off" style="min-width:130px">
+      <input class="blank" id="bi-a8" placeholder="___" data-ans="perfect" autocomplete="off" style="min-width:130px">
     </div>
-    <div class="vw-box"><span class="vw">baby elephants 아기 코끼리들</span><span class="vw">adorable 사랑스러운</span><span class="vw">zoo 동물원</span></div>
+    <div class="vw-box"><span class="vw">stage 무대</span><span class="vw">decoration 장식</span><span class="vw">perfect 완벽한</span></div>
     <button class="check-btn" onclick="checkBlank('a8')">✔ 확인</button>
-    <div class="answer-hint" id="ah-a8">💡 정답: <strong>adorable</strong> — adorably(부사) → adorable(형용사)<br>📝 해석: 동물원의 아기 코끼리들은 사랑스러워 보였다.</div>
+    <div class="answer-hint" id="ah-a8">💡 정답: <strong>perfect</strong> — perfection(명사) → perfect(형용사); look 뒤에는 형용사만 가능<br>📝 해석: 무대 장식들은 완벽해 보였다.</div>
     <button class="hint-btn" onclick="showHint('a8')">💡 힌트 보기</button>
   </div>
 
@@ -283,7 +283,7 @@ body{font-family:'Baloo 2','Noto Sans KR',sans-serif;background:var(--bg);paddin
       <button class="choice" onclick="pickChoice(this)">The classroom was noisy because the teacher closed the door.</button>
       <button class="choice" onclick="pickChoice(this)">The door closed because it was noisy.</button>
     </div>
-    <div class="answer-hint" id="ah-a9">💡 정답: <strong>①</strong> — 교실이 시끄러웠던 것이 원인, 선생님이 문을 닫은 것이 결과<br>📝 해석: 교실이 매우 시끄러웠기 때문에 선생님은 문을 닫으셨다.</div>
+    <div class="answer-hint" id="ah-a9">💡 정답: <strong>The teacher closed the door because the classroom was very noisy.</strong> — 교실이 시끄러웠던 것이 원인, 선생님이 문을 닫은 것이 결과<br>📝 해석: 교실이 매우 시끄러웠기 때문에 선생님은 문을 닫으셨다.</div>
     <button class="hint-btn" onclick="showHint('a9')">💡 힌트 보기</button>
   </div>
 
@@ -294,11 +294,11 @@ body{font-family:'Baloo 2','Noto Sans KR',sans-serif;background:var(--bg);paddin
     </div>
     <div class="choices full" data-qid="a10" data-ans="Her teacher asked her to stay after class because Mia forgot her homework.">
       <button class="choice" onclick="pickChoice(this)">Mia forgot her homework so the teacher stayed.</button>
-      <button class="choice" onclick="pickChoice(this)">Her teacher asked her to stay after class because Mia forgot her homework.</button>
       <button class="choice" onclick="pickChoice(this)">Because Mia forgot her homework so she had to stay.</button>
+      <button class="choice" onclick="pickChoice(this)">Her teacher asked her to stay after class because Mia forgot her homework.</button>
       <button class="choice" onclick="pickChoice(this)">Mia stayed after class because her teacher forgot homework.</button>
     </div>
-    <div class="answer-hint" id="ah-a10">💡 정답: <strong>②</strong> — 숙제를 잊은 것(원인) → 방과 후 남게 된 것(결과)<br>📝 해석: Mia가 숙제를 잊었기 때문에 선생님이 방과 후에 남으라고 했다.</div>
+    <div class="answer-hint" id="ah-a10">💡 정답: <strong>Her teacher asked her to stay after class because Mia forgot her homework.</strong> — 숙제를 잊은 것(원인) → 방과 후 남게 된 것(결과)<br>📝 해석: Mia가 숙제를 잊었기 때문에 선생님이 방과 후에 남으라고 했다.</div>
     <button class="hint-btn" onclick="showHint('a10')">💡 힌트 보기</button>
   </div>
 
@@ -308,12 +308,12 @@ body{font-family:'Baloo 2','Noto Sans KR',sans-serif;background:var(--bg);paddin
       → because를 사용하여 두 문장을 알맞게 연결한 것을 고르세요.
     </div>
     <div class="choices full" data-qid="a11" data-ans="Everyone enjoyed the morning walk because the air was fresh and clean.">
-      <button class="choice" onclick="pickChoice(this)">Everyone enjoyed the morning walk because the air was fresh and clean.</button>
       <button class="choice" onclick="pickChoice(this)">The air was fresh because everyone enjoyed the walk.</button>
       <button class="choice" onclick="pickChoice(this)">Because the walk was enjoyable, the air was fresh.</button>
       <button class="choice" onclick="pickChoice(this)">The morning was clean because everyone walked.</button>
+      <button class="choice" onclick="pickChoice(this)">Everyone enjoyed the morning walk because the air was fresh and clean.</button>
     </div>
-    <div class="answer-hint" id="ah-a11">💡 정답: <strong>①</strong> — 공기가 신선했던 것(원인) → 산책을 즐긴 것(결과)<br>📝 해석: 공기가 신선하고 깨끗했기 때문에 모든 사람이 아침 산책을 즐겼다.</div>
+    <div class="answer-hint" id="ah-a11">💡 정답: <strong>Everyone enjoyed the morning walk because the air was fresh and clean.</strong> — 공기가 신선했던 것(원인) → 산책을 즐긴 것(결과)<br>📝 해석: 공기가 신선하고 깨끗했기 때문에 모든 사람이 아침 산책을 즐겼다.</div>
     <button class="hint-btn" onclick="showHint('a11')">💡 힌트 보기</button>
   </div>
 
@@ -373,23 +373,23 @@ body{font-family:'Baloo 2','Noto Sans KR',sans-serif;background:var(--bg);paddin
        Passage B (b6-b10): because
 ══════════════════════════════════════ -->
 <div class="sec" id="s1">
-  <div class="sec-hdr"><div class="lbl">Part 2 · 10문제</div><h2>짧은 지문 읽고 답하기</h2><div class="desc">Passage A: 동사 형태(1·4) + 형용사 채우기(2·3·5, -ly여도 형용사인 단어 포함) · Passage B: because 접속사</div></div>
+  <div class="sec-hdr"><div class="lbl">Part 2 · 10문제</div><h2>짧은 지문 읽고 답하기</h2><div class="desc">Passage A: look 뒤 형용사 보어 채우기(부사·명사·동사원형 구분) · Passage B: because 접속사</div></div>
 
   <!-- Passage A -->
   <div class="passage">
     <div class="ptitle">Passage A — look + 형용사</div>
-    Last Friday, our school held a science fair. The projects <span class="num">1</span> amazing. Maya's model looked especially <span class="num">2</span> to everyone. The colorful displays looked <span class="num">3</span> and full of energy. Jake's robot <span class="num">4</span> realistic and very modern. We all agreed the fair looked <span class="num">5</span> in the end.
+    Last Friday, our school held a science fair. The projects looked <span class="num">1</span>. Maya's model looked especially <span class="num">2</span> to everyone. The colorful displays looked <span class="num">3</span> and full of energy. Jake's robot looked <span class="num">4</span> and very modern. We all agreed the fair looked <span class="num">5</span> in the end.
   </div>
 
   <div class="question-card" id="qc-b1"><span class="q-num">1</span>
-    <div class="q-text">The projects <em>___</em> amazing.</div>
-    <div class="choices" data-qid="b1" data-ans="looked">
-      <button class="choice" onclick="pickChoice(this)">looked</button>
-      <button class="choice" onclick="pickChoice(this)">was looked</button>
-      <button class="choice" onclick="pickChoice(this)">looking</button>
-      <button class="choice" onclick="pickChoice(this)">look</button>
+    <div class="q-text">The projects looked <em>___</em>.</div>
+    <div class="choices" data-qid="b1" data-ans="amazing">
+      <button class="choice" onclick="pickChoice(this)">amazingly</button>
+      <button class="choice" onclick="pickChoice(this)">amazing</button>
+      <button class="choice" onclick="pickChoice(this)">amazement</button>
+      <button class="choice" onclick="pickChoice(this)">amaze</button>
     </div>
-    <div class="answer-hint" id="ah-b1">💡 정답: <strong>looked</strong> — 과거 시제(Last Friday), 복수 주어 projects → looked<br>📝 해석: 그 프로젝트들은 놀라워 보였다.</div>
+    <div class="answer-hint" id="ah-b1">💡 정답: <strong>amazing</strong> — look 뒤에는 형용사! amazingly(부사), amazement(명사), amaze(동사원형)는 불가<br>📝 해석: 그 프로젝트들은 놀라워 보였다.</div>
     <button class="hint-btn" onclick="showHint('b1')">💡 힌트 보기</button>
   </div>
 
@@ -409,35 +409,35 @@ body{font-family:'Baloo 2','Noto Sans KR',sans-serif;background:var(--bg);paddin
     <div class="q-text">The colorful displays looked <em>___</em> and full of energy.</div>
     <div class="choices" data-qid="b3" data-ans="lively">
       <button class="choice" onclick="pickChoice(this)">lively</button>
-      <button class="choice" onclick="pickChoice(this)">livelily</button>
+      <button class="choice" onclick="pickChoice(this)">brightly</button>
       <button class="choice" onclick="pickChoice(this)">live</button>
-      <button class="choice" onclick="pickChoice(this)">livelihood</button>
+      <button class="choice" onclick="pickChoice(this)">liveliness</button>
     </div>
-    <div class="answer-hint" id="ah-b3">💡 정답: <strong>lively</strong> — lively는 -ly로 끝나지만 형용사! livelily(부사)는 거의 쓰이지 않는 표현<br>📝 해석: 화려한 전시물들은 활기차고 생동감 넘쳐 보였다.</div>
+    <div class="answer-hint" id="ah-b3">💡 정답: <strong>lively</strong> — lively는 -ly로 끝나지만 형용사! brightly(부사)·liveliness(명사)는 look 뒤에 불가<br>📝 해석: 화려한 전시물들은 활기차고 생동감 넘쳐 보였다.</div>
     <button class="hint-btn" onclick="showHint('b3')">💡 힌트 보기</button>
   </div>
 
   <div class="question-card" id="qc-b4"><span class="q-num">4</span>
-    <div class="q-text">Jake's robot <em>___</em> realistic and very modern.</div>
-    <div class="choices" data-qid="b4" data-ans="looked">
-      <button class="choice" onclick="pickChoice(this)">looked</button>
-      <button class="choice" onclick="pickChoice(this)">look</button>
-      <button class="choice" onclick="pickChoice(this)">was looked</button>
-      <button class="choice" onclick="pickChoice(this)">looking</button>
+    <div class="q-text">Jake's robot looked <em>___</em> and very modern.</div>
+    <div class="choices" data-qid="b4" data-ans="realistic">
+      <button class="choice" onclick="pickChoice(this)">realistically</button>
+      <button class="choice" onclick="pickChoice(this)">realistic</button>
+      <button class="choice" onclick="pickChoice(this)">realism</button>
+      <button class="choice" onclick="pickChoice(this)">realize</button>
     </div>
-    <div class="answer-hint" id="ah-b4">💡 정답: <strong>looked</strong> — 과거 시제, 단수 주어 robot → looked<br>📝 해석: Jake의 로봇은 사실적이고 매우 현대적으로 보였다.</div>
+    <div class="answer-hint" id="ah-b4">💡 정답: <strong>realistic</strong> — look 뒤에는 형용사! realistically(부사)는 불가<br>📝 해석: Jake의 로봇은 사실적이고 매우 현대적으로 보였다.</div>
     <button class="hint-btn" onclick="showHint('b4')">💡 힌트 보기</button>
   </div>
 
   <div class="question-card" id="qc-b5"><span class="q-num">5</span>
     <div class="q-text">We all agreed the fair looked <em>___</em> in the end.</div>
-    <div class="choices" data-qid="b5" data-ans="wonderful">
-      <button class="choice" onclick="pickChoice(this)">wonderfully</button>
-      <button class="choice" onclick="pickChoice(this)">wonderful</button>
-      <button class="choice" onclick="pickChoice(this)">wonder</button>
-      <button class="choice" onclick="pickChoice(this)">wondering</button>
+    <div class="choices" data-qid="b5" data-ans="great">
+      <button class="choice" onclick="pickChoice(this)">greatly</button>
+      <button class="choice" onclick="pickChoice(this)">great</button>
+      <button class="choice" onclick="pickChoice(this)">greatness</button>
+      <button class="choice" onclick="pickChoice(this)">greatly good</button>
     </div>
-    <div class="answer-hint" id="ah-b5">💡 정답: <strong>wonderful</strong> — look 뒤에는 형용사! wonderfully(부사)는 불가<br>📝 해석: 우리 모두 그 행사가 결국 훌륭해 보였다는 데 동의했다.</div>
+    <div class="answer-hint" id="ah-b5">💡 정답: <strong>great</strong> — look 뒤에는 형용사! greatly(부사), greatness(명사)는 불가<br>📝 해석: 우리 모두 그 행사가 결국 훌륭해 보였다는 데 동의했다.</div>
     <button class="hint-btn" onclick="showHint('b5')">💡 힌트 보기</button>
   </div>
 

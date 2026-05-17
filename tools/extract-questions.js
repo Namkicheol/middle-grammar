@@ -4,7 +4,8 @@ const path = require('path');
 const ROOT = path.join(__dirname, '..');
 
 function stripHtml(s) {
-  return s.replace(/<em>___<\/em>/g, '___')
+  return s.replace(/<span\s+class=["']ex["'][^>]*>[\s\S]*?<\/span>/g, '') // 워크시트 힌트 괄호 제거
+          .replace(/<em>___<\/em>/g, '___')
           .replace(/<input\b[^>]*>/g, '___')
           .replace(/<[^>]+>/g, '')
           .replace(/&amp;/g, '&')

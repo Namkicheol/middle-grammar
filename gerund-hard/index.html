@@ -222,7 +222,7 @@ const qData = {
   sec0: [
     { type:"mcq", kor:"Mia는 지금 식물에 물을 주고 있다.", eng:"Mia ___ the plants now.", ans:"is watering", opts:["waters","is watering","watered","watering"], hint:"Mia(3인칭 단수) + now → is + -ing" },
     { type:"mcq", kor:"그들은 지금 커피를 마시고 있다.", eng:"They ___ coffee right now.", ans:"are drinking", opts:["drink","drinks","are drinking","drinking"], hint:"They(복수) + right now → are + -ing" },
-    { type:"mcq", kor:"해바라기가 정말 빠르게 자라고 있다.", eng:"The sunflower ___ so fast.", ans:"is growing", opts:["grows","grew","is growing","growing"], hint:"The sunflower(단수) + so fast(변화) → is + -ing" },
+    { type:"mcq", kor:"Tom은 지금 숙제를 하고 있지 않다. 그는 게임을 하고 있다.", eng:"Tom ___ his homework now. He is playing a game.", ans:"is not doing", opts:["doesn't do","is not doing","isn't done","not is doing"], hint:"부정 진행형: is not + -ing. don't/doesn't는 단순현재 부정 → 진행 중 상황엔 is not doing!" },
     { type:"mcq", kor:"우리는 지금 수영 강습에 가는 중이다.", eng:"We ___ to our swimming lesson now.", ans:"are going", opts:["go","goes","are going","is going"], hint:"We(복수) + now → are + -ing" },
     { type:"mcq", kor:"Jake는 지금 우체국으로 뛰어가고 있다.", eng:"Jake ___ to the post office now.", ans:"is running", opts:["runs","run","is running","running"], hint:"run은 n을 하나 더 붙여 running" },
     { type:"mcq", kor:"333번 버스가 지금 오고 있다.", eng:"The 333 bus ___ now.", ans:"is coming", opts:["comes","come","is coming","coming"], hint:"come은 e를 빼고 +ing → coming" },
@@ -250,7 +250,7 @@ const qData = {
     { type:"mcq", kor:"Nora는 오디션을 위해 노래 부르는 것을 연습한다.", eng:"Nora practices ___ for the audition.", ans:"singing", opts:["sing","sings","to sing","singing"], hint:"practice 뒤에는 -ing! (practice = 연습하다)" },
     { type:"mcq", kor:"냉장고가 갑자기 작동을 멈췄다.", eng:"The refrigerator suddenly stopped ___.", ans:"working", opts:["work","worked","to work","working"], hint:"stop + -ing (하던 행동을 멈추다)" },
     { type:"mcq", kor:"Ella는 강아지와 산책하는 것을 즐긴다.", eng:"Ella enjoys ___ a walk with her dog.", ans:"taking", opts:["take","took","to take","taking"], hint:"enjoy 뒤에는 -ing! take → e 빼고 +ing → taking" },
-    { type:"mcq", kor:"그녀는 중국어 배우기를 포기했다 — 너무 어려웠다.", eng:"She gave up ___ Chinese. It was too difficult for her.", ans:"learning", opts:["learn","learns","learned","learning"], hint:"give up 뒤에는 -ing!" },
+    { type:"mcq", kor:"나는 언젠가 일본을 방문하고 싶다.", eng:"I want ___ Japan someday.", ans:"to visit", opts:["visiting","visited","to visit","visit"], hint:"want 뒤에는 to부정사! ← enjoy/keep/stop 등은 -ing지만, want/hope/plan/decide는 to+동사원형" },
     { type:"mcq", kor:"불 좀 꺼주실래요?", eng:"Would you mind ___ off the light?", ans:"turning", opts:["turn","turned","to turn","turning"], hint:"mind(꺼리다) 뒤에는 -ing!" },
     { type:"fix", kor:"나는 바다에서 수영하는 것을 즐긴다.", eng:"❌ I enjoy <span class='wrong'>to swim</span> in the ocean.", ans:"swimming", hint:"enjoy 뒤에는 반드시 -ing! to부정사 사용 불가" },
     { type:"input", kor:"내 목표는 영어를 마스터하는 것이다.", eng:"My goal is (mastering) English.", ans:"mastering", hint:"보어 자리(=이다) → 동명사" },
@@ -273,7 +273,7 @@ const qData = {
     { type:"dist", kor:"나의 습관은 독서이다.", eng:"My habit is <u>reading</u>.", ans:"동명사", opts:["현재진행형","동명사"], hint:"be동사 뒤 보어(=이다) → 동명사" },
     { type:"dist", kor:"나는 지금 책을 읽고 있다.", eng:"I am <u>reading</u> a book now.", ans:"현재진행형", opts:["현재진행형","동명사"], hint:"am + -ing + now → 진행형" },
     { type:"dist", kor:"나는 침낭이 필요하다.", eng:"I need a <u>sleeping</u> bag.", ans:"동명사", opts:["현재진행형","동명사"], hint:"'잠자기 위한 가방' → 명사의 용도를 설명하는 동명사" },
-    { type:"dist", kor:"그 자고 있는 개를 봐.", eng:"Look at the <u>sleeping</u> dog.", ans:"현재진행형", opts:["현재진행형","동명사"], hint:"자고 있는 상태의 개 → 진행 중인 동작을 꾸미는 분사" }
+    { type:"dist", kor:"그녀의 꿈은 전 세계를 여행하는 것이다.", eng:"Her dream is <u>traveling</u> around the world.", ans:"동명사", opts:["현재진행형","동명사"], hint:"be동사 뒤 보어 자리 + 주어가 Her dream(추상명사) → 동명사. 진행형이면 'She is traveling now'처럼 사람 주어여야 함" }
   ]
 };
 
@@ -286,7 +286,7 @@ let correct = 0, wrong = 0;
 const vocabMap = {
   1:[{w:'water',k:'물을 주다(동사)'},{w:'plant',k:'식물'}],
   2:[{w:'drink',k:'마시다'}],
-  3:[{w:'sunflower',k:'해바라기'},{w:'fast',k:'빠르게'}],
+  3:[{w:'do homework',k:'숙제하다'}],
   4:[{w:'swimming lesson',k:'수영 강습'}],
   5:[{w:'post office',k:'우체국'}],
   7:[{w:'French',k:'프랑스어'}],
@@ -305,7 +305,7 @@ const vocabMap = {
   26:[{w:'practice + -ing',k:'~을 연습하다'},{w:'audition',k:'오디션'}],
   27:[{w:'stop + -ing',k:'~하는 것을 멈추다'},{w:'refrigerator',k:'냉장고'}],
   28:[{w:'take a walk',k:'산책하다'}],
-  29:[{w:'Chinese',k:'중국어'},{w:'difficult',k:'어려운'}],
+  29:[{w:'want + to부정사',k:'~하기를 원하다 ← enjoy/keep과 달리 to!'}],
   30:[{w:'mind + -ing',k:'~하는 것을 꺼리다'},{w:'turn off',k:'(불을) 끄다'}],
   32:[{w:'goal',k:'목표'},{w:'master',k:'완전히 익히다'}],
 

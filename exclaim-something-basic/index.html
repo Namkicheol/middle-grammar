@@ -1,0 +1,746 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Unit 08 · 감탄문 What/How &amp; -thing + 형용사</title>
+<link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@400;600;700;800&family=Noto+Sans+KR:wght@400;500;700&display=swap" rel="stylesheet">
+<style>:root{--sky:#ecfdf5;--blue:#10b981;--dark:#064e3b;--green:#22c55e;--red:#ef4444;--purple:#7c3aed;--bg:#f0fdf4;--white:#fff;--gray:#94a3b8;}
+*{margin:0;padding:0;box-sizing:border-box;}
+body{font-family:'Baloo 2','Noto Sans KR',sans-serif;background:var(--bg);padding-bottom:60px;}
+.header{background:linear-gradient(135deg,#10b981,#0ea5e9);padding:24px 20px 32px;text-align:center;position:relative;overflow:hidden;}
+.header::before{content:'';position:absolute;top:-40px;right:-40px;width:160px;height:160px;background:rgba(255,255,255,.1);border-radius:50%;}
+.hbadge{display:inline-block;background:rgba(255,255,255,.25);color:#fff;font-size:12px;font-weight:700;letter-spacing:2px;padding:4px 16px;border-radius:20px;margin-bottom:10px;}
+.header h1{color:#fff;font-size:1.8rem;font-weight:800;margin-bottom:4px;}
+.header p{color:rgba(255,255,255,.85);font-size:.85rem;}
+.scoreboard{display:flex;justify-content:center;gap:12px;margin:-18px 20px 20px;position:relative;z-index:10;}
+.sc{background:var(--white);border-radius:16px;padding:12px 20px;text-align:center;box-shadow:0 4px 20px rgba(0,0,0,.1);flex:1;max-width:110px;}
+.sc .n{font-size:1.8rem;font-weight:800;line-height:1;}.sc .l{font-size:.68rem;color:var(--gray);font-weight:600;margin-top:2px;}
+.sc.t .n{color:var(--blue);}.sc.c .n{color:var(--green);}.sc.w .n{color:var(--red);}
+.pw{padding:0 20px;margin-bottom:18px;}
+.plabel{display:flex;justify-content:space-between;font-size:.78rem;font-weight:700;color:var(--gray);margin-bottom:6px;}
+.pbg{background:#e2e8f0;border-radius:99px;height:8px;overflow:hidden;}
+.pfill{height:100%;border-radius:99px;background:linear-gradient(90deg,var(--blue),var(--purple));transition:width .4s;}
+.tabs{display:flex;gap:8px;padding:0 20px;margin-bottom:18px;overflow-x:auto;scrollbar-width:none;}
+.tabs::-webkit-scrollbar{display:none;}
+.tab{flex-shrink:0;padding:8px 18px;border-radius:20px;border:2px solid #e2e8f0;background:var(--white);color:var(--gray);font-family:inherit;font-weight:700;font-size:.82rem;cursor:pointer;transition:all .2s;}
+.tab.active{background:var(--blue);border-color:var(--blue);color:#fff;box-shadow:0 4px 12px rgba(16,185,129,.35);}
+.sec{display:none;padding:0 20px;}.sec.show{display:block;}
+.sec-hdr{background:var(--white);border-radius:18px;padding:16px 20px;margin-bottom:14px;border-left:5px solid var(--blue);box-shadow:0 2px 12px rgba(0,0,0,.06);}
+.sec-hdr .lbl{font-size:.72rem;font-weight:700;color:var(--blue);letter-spacing:1px;text-transform:uppercase;margin-bottom:4px;}
+.sec-hdr h2{font-size:1.05rem;font-weight:800;color:var(--dark);margin-bottom:3px;}
+.sec-hdr .desc{font-size:.78rem;color:var(--gray);}
+.question-card{background:var(--white);border-radius:18px;padding:18px 20px;margin-bottom:12px;box-shadow:0 2px 12px rgba(0,0,0,.06);position:relative;overflow:hidden;}
+.question-card::before{content:'';position:absolute;top:0;left:0;width:4px;height:100%;background:#e2e8f0;transition:background .3s;}
+.question-card.ok::before{background:var(--green);}.question-card.ng::before{background:var(--red);}
+.q-num{display:inline-flex;align-items:center;justify-content:center;width:28px;height:28px;background:var(--sky);color:var(--blue);border-radius:8px;font-size:.82rem;font-weight:800;margin-bottom:10px;}
+.q-text{font-size:1rem;font-weight:600;color:var(--dark);margin-bottom:12px;line-height:1.7;}
+.q-text em{font-style:normal;color:var(--blue);font-weight:800;border-bottom:2px dotted var(--blue);}
+.q-sub{font-size:.85rem;color:#64748b;font-weight:500;margin-bottom:10px;padding:6px 10px;background:#f8fafc;border-radius:8px;border-left:3px solid #cbd5e1;}
+.blank{border:none;border-bottom:2.5px solid var(--blue);background:transparent;font-family:inherit;font-size:.95rem;font-weight:700;color:var(--dark);padding:2px 8px;min-width:80px;text-align:center;outline:none;transition:.2s;display:inline-block;}
+.blank:focus{border-color:var(--purple);}.blank.ok{border-color:var(--green);color:var(--green);background:#f0fdf4;border-radius:6px;}.blank.ng{border-color:var(--red);color:var(--red);background:#fef2f2;border-radius:6px;}
+.ex{font-size:.75rem;color:var(--gray);}
+.choices{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:4px;}
+.choice{padding:10px 12px;border-radius:12px;border:2px solid #e2e8f0;background:var(--bg);color:var(--dark);font-family:inherit;font-weight:600;font-size:.9rem;cursor:pointer;transition:all .15s;text-align:left;}
+.choice:hover:not(:disabled){border-color:var(--blue);background:var(--sky);transform:translateY(-1px);}
+.choice.ok{background:#f0fdf4;border-color:var(--green);color:var(--green);}.choice.ng{background:#fef2f2;border-color:var(--red);color:var(--red);}.choice.reveal{background:#f0fdf4;border-color:var(--green);color:var(--green);}
+.word-pool{display:flex;flex-wrap:wrap;gap:7px;margin-bottom:10px;min-height:44px;padding:8px;background:var(--sky);border-radius:12px;}
+.answer-area{display:flex;flex-wrap:wrap;gap:7px;min-height:44px;padding:8px;background:#f8fafc;border-radius:12px;border:2px dashed #cbd5e1;margin-bottom:10px;align-items:center;}
+.area-ph{color:var(--gray);font-size:.8rem;font-weight:600;}
+.chip{padding:6px 13px;border-radius:20px;font-family:inherit;font-weight:700;font-size:.85rem;cursor:pointer;border:none;transition:all .15s;user-select:none;}
+.pool-chip{background:var(--white);color:var(--dark);box-shadow:0 2px 6px rgba(0,0,0,.08);}.pool-chip:hover{background:var(--blue);color:#fff;transform:scale(1.05);}
+.ans-chip{background:var(--purple);color:#fff;}.ans-chip:hover{opacity:.8;}
+.ok-chip{background:var(--green);color:#fff;cursor:default;}.ng-chip{background:var(--red);color:#fff;cursor:default;}
+.answer-hint{display:none;margin-top:8px;padding:8px 14px;background:#fef9c3;border-radius:10px;font-size:.82rem;font-weight:600;color:#854d0e;}
+.answer-hint.show{display:block;}
+.check-btn{display:block;width:100%;margin-top:12px;padding:11px;border-radius:12px;border:none;background:var(--blue);color:#fff;font-family:inherit;font-weight:800;font-size:.92rem;cursor:pointer;transition:all .15s;}
+.check-btn:hover{filter:brightness(1.08);transform:translateY(-1px);}.check-btn:disabled{background:#e2e8f0;color:var(--gray);cursor:default;transform:none;}
+.hint-btn{background:none;border:none;color:var(--gray);font-family:inherit;font-size:.75rem;font-weight:600;cursor:pointer;padding:4px 0;margin-top:4px;display:block;}
+.hint-btn:hover{color:var(--purple);}
+.done-badge{position:absolute;top:12px;right:14px;font-size:1.2rem;animation:pop .3s ease;}
+#result{display:none;padding:0 20px;animation:fadein .4s;}
+.rc{background:linear-gradient(135deg,#10b981,#0ea5e9);border-radius:24px;padding:28px 20px;text-align:center;color:#fff;margin-bottom:16px;}
+.rc .emoji{font-size:4rem;margin-bottom:8px;}.rc .title{font-size:1.5rem;font-weight:800;margin-bottom:4px;}
+.rc .score{font-size:3rem;font-weight:800;margin-bottom:4px;}.rc .sub{font-size:.85rem;opacity:.85;margin-bottom:16px;}
+.rg{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:16px;}
+.rs{background:rgba(255,255,255,.2);border-radius:14px;padding:12px;}.rs .n{font-size:1.8rem;font-weight:800;}.rs .l{font-size:.68rem;opacity:.85;}
+.rev{background:var(--white);border-radius:18px;padding:16px 18px;box-shadow:0 2px 12px rgba(0,0,0,.06);margin-bottom:14px;}
+.rev h3{font-size:.95rem;font-weight:800;color:var(--red);margin-bottom:12px;}
+.ri{padding:9px 12px;border-radius:10px;background:#fef2f2;margin-bottom:7px;font-size:.83rem;line-height:1.6;}
+.ri .ma{color:var(--red);font-weight:700;text-decoration:line-through;}.ri .ca{color:var(--green);font-weight:700;}
+.rb{display:block;width:100%;padding:14px;border-radius:16px;border:none;background:var(--blue);color:#fff;font-family:inherit;font-weight:800;font-size:1rem;cursor:pointer;box-shadow:0 4px 14px rgba(16,185,129,.4);}
+#toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%) translateY(80px);background:var(--dark);color:#fff;padding:10px 22px;border-radius:20px;font-weight:700;font-size:.88rem;transition:transform .3s;z-index:999;pointer-events:none;white-space:nowrap;}
+#toast.show{transform:translateX(-50%) translateY(0);}#toast.ok{background:var(--green);}#toast.ng{background:var(--red);}
+@keyframes fadein{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}
+@keyframes pop{0%{transform:scale(.8)}70%{transform:scale(1.1)}100%{transform:scale(1)}}
+.q-kor{font-size:.82rem;color:#065f46;font-weight:600;margin-bottom:10px;padding:4px 10px;background:#ecfdf5;border-radius:6px;}</style>
+</head>
+<body>
+<div id="toast"></div>
+<div class="header">
+  <div class="hbadge">📝 Unit 08 Grammar</div>
+  <h1>감탄문 &amp; -thing + 형용사</h1>
+  <p>What/How 감탄문 · something·anything + 형용사 · 총 42문제</p>
+</div>
+<div class="scoreboard">
+  <div class="sc t"><div class="n" id="sc-t">0</div><div class="l">완료</div></div>
+  <div class="sc c"><div class="n" id="sc-c">0</div><div class="l">✅ 정답</div></div>
+  <div class="sc w"><div class="n" id="sc-w">0</div><div class="l">❌ 오답</div></div>
+</div>
+<div class="pw">
+  <div class="plabel"><span>진행률</span><span id="pt">0 / 42</span></div>
+  <div class="pbg"><div class="pfill" id="pf" style="width:0%"></div></div>
+</div>
+<div class="tabs">
+  <button class="tab active" onclick="sw(0,this)">📌 감탄문 What/How (20문제)</button>
+  <button class="tab" onclick="sw(1,this)">📌 -thing + 형용사 (12문제)</button>
+  <button class="tab" onclick="sw(2,this)">🔀 단어 배열 (10문제)</button>
+</div>
+
+<!-- ── Section A: 감탄문 What/How ── -->
+<div class="sec show" id="s0">
+  <div class="sec-hdr"><div class="lbl">Point A · 20문제</div><h2>감탄문 What &amp; How</h2><div class="desc">선택형(1–10: What vs How 구분) + 빈칸(11–15: What/How 채우기 · 16–20: 평서문 → 감탄문 어순 부분 채우기) · 「What + a/an + 형용사 + 명사 (+주어+동사)!」 / 「How + 형용사 (+주어+동사)!」</div></div>
+
+  <div class='question-card' id='qc-a1'><span class='q-num'>1</span>
+    <div class='q-text'><em>___</em> a beautiful day it is!</div>
+    <div class='q-kor'>정말 아름다운 날이구나!</div>
+    <div class='choices' data-qid='a1' data-ans='What'><button class="choice" onclick="pickChoice(this)">How</button><button class="choice" onclick="pickChoice(this)">What</button><button class="choice" onclick="pickChoice(this)">Very</button><button class="choice" onclick="pickChoice(this)">So</button></div>
+    <div class='answer-hint' id='ah-a1'>💡 정답: <strong>What</strong> — 명사(day)가 있으므로 What. 「What + a + 형용사 + 명사!」 구조<br>📝 해석: 정말 아름다운 날이구나!</div>
+    <button class='hint-btn' onclick="showHint('a1')">💡 힌트 보기</button>
+  </div>
+
+  <div class='question-card' id='qc-a2'><span class='q-num'>2</span>
+    <div class='q-text'><em>___</em> tall the new building is!</div>
+    <div class='q-kor'>그 새 건물은 정말 높구나!</div>
+    <div class='choices' data-qid='a2' data-ans='How'><button class="choice" onclick="pickChoice(this)">What</button><button class="choice" onclick="pickChoice(this)">Very</button><button class="choice" onclick="pickChoice(this)">How</button><button class="choice" onclick="pickChoice(this)">So</button></div>
+    <div class='answer-hint' id='ah-a2'>💡 정답: <strong>How</strong> — 형용사(tall)만 있고 명사가 없으므로 How. 「How + 형용사 + 주어 + 동사!」<br>📝 해석: 그 새 건물은 정말 높구나!</div>
+    <button class='hint-btn' onclick="showHint('a2')">💡 힌트 보기</button>
+  </div>
+
+  <div class='question-card' id='qc-a3'><span class='q-num'>3</span>
+    <div class='q-text'><em>___</em> exciting the soccer game was!</div>
+    <div class='q-kor'>그 축구 경기는 정말 신났구나!</div>
+    <div class='choices' data-qid='a3' data-ans='How'><button class="choice" onclick="pickChoice(this)">What</button><button class="choice" onclick="pickChoice(this)">How</button><button class="choice" onclick="pickChoice(this)">A</button><button class="choice" onclick="pickChoice(this)">Very</button></div>
+    <div class='answer-hint' id='ah-a3'>💡 정답: <strong>How</strong> — 「How + 형용사(exciting) + 주어(the game) + 동사(was)」 어순<br>📝 해석: 그 축구 경기는 정말 신났구나!</div>
+    <button class='hint-btn' onclick="showHint('a3')">💡 힌트 보기</button>
+  </div>
+
+  <div class='question-card' id='qc-a4'><span class='q-num'>4</span>
+    <div class='q-text'><em>___</em> a clever idea you have!</div>
+    <div class='q-kor'>너 정말 영리한 생각을 가졌구나!</div>
+    <div class='choices' data-qid='a4' data-ans='What'><button class="choice" onclick="pickChoice(this)">How</button><button class="choice" onclick="pickChoice(this)">Very</button><button class="choice" onclick="pickChoice(this)">What</button><button class="choice" onclick="pickChoice(this)">So</button></div>
+    <div class='answer-hint' id='ah-a4'>💡 정답: <strong>What</strong> — 명사(idea) 있음 → What. 「What + a + 형용사(clever) + 명사(idea)」<br>📝 해석: 너 정말 영리한 생각을 가졌구나!</div>
+    <button class='hint-btn' onclick="showHint('a4')">💡 힌트 보기</button>
+  </div>
+
+  <div class='question-card' id='qc-a5'><span class='q-num'>5</span>
+    <div class='q-text'><em>___</em> kind your father is!</div>
+    <div class='q-kor'>너의 아버지는 정말 친절하시구나!</div>
+    <div class='choices' data-qid='a5' data-ans='How'><button class="choice" onclick="pickChoice(this)">A</button><button class="choice" onclick="pickChoice(this)">What</button><button class="choice" onclick="pickChoice(this)">How</button><button class="choice" onclick="pickChoice(this)">Very</button></div>
+    <div class='answer-hint' id='ah-a5'>💡 정답: <strong>How</strong> — 형용사(kind)만 있고 명사 없음 → How<br>📝 해석: 너의 아버지는 정말 친절하시구나!</div>
+    <button class='hint-btn' onclick="showHint('a5')">💡 힌트 보기</button>
+  </div>
+
+  <div class='question-card' id='qc-a6'><span class='q-num'>6</span>
+    <div class='q-text'><em>___</em> an interesting story this is!</div>
+    <div class='q-kor'>이것은 정말 흥미로운 이야기구나!</div>
+    <div class='choices' data-qid='a6' data-ans='What'><button class="choice" onclick="pickChoice(this)">How</button><button class="choice" onclick="pickChoice(this)">What</button><button class="choice" onclick="pickChoice(this)">Very</button><button class="choice" onclick="pickChoice(this)">So</button></div>
+    <div class='answer-hint' id='ah-a6'>💡 정답: <strong>What</strong> — 명사(story) 있음. interesting이 모음으로 시작하므로 What + an<br>📝 해석: 이것은 정말 흥미로운 이야기구나!</div>
+    <button class='hint-btn' onclick="showHint('a6')">💡 힌트 보기</button>
+  </div>
+
+  <div class='question-card' id='qc-a7'><span class='q-num'>7</span>
+    <div class='q-text'><em>___</em> delicious this homemade pizza tastes!</div>
+    <div class='q-kor'>이 수제 피자는 정말 맛있구나!</div>
+    <div class='choices' data-qid='a7' data-ans='How'><button class="choice" onclick="pickChoice(this)">What</button><button class="choice" onclick="pickChoice(this)">Very</button><button class="choice" onclick="pickChoice(this)">How</button><button class="choice" onclick="pickChoice(this)">A</button></div>
+    <div class='answer-hint' id='ah-a7'>💡 정답: <strong>How</strong> — 형용사(delicious)만 있음 → How. 「How + 형용사 + 주어 + 동사」<br>📝 해석: 이 수제 피자는 정말 맛있구나!</div>
+    <button class='hint-btn' onclick="showHint('a7')">💡 힌트 보기</button>
+  </div>
+
+  <div class='question-card' id='qc-a8'><span class='q-num'>8</span>
+    <div class='q-text'><em>___</em> a brave hero he is!</div>
+    <div class='q-kor'>그는 정말 용감한 영웅이구나!</div>
+    <div class='choices' data-qid='a8' data-ans='What'><button class="choice" onclick="pickChoice(this)">How</button><button class="choice" onclick="pickChoice(this)">A</button><button class="choice" onclick="pickChoice(this)">Very</button><button class="choice" onclick="pickChoice(this)">What</button></div>
+    <div class='answer-hint' id='ah-a8'>💡 정답: <strong>What</strong> — 명사(hero) 있음 → What. 「What + a + 형용사(brave) + 명사(hero)」<br>📝 해석: 그는 정말 용감한 영웅이구나!</div>
+    <button class='hint-btn' onclick="showHint('a8')">💡 힌트 보기</button>
+  </div>
+
+  <div class='question-card' id='qc-a9'><span class='q-num'>9</span>
+    <div class='q-text'><em>___</em> fast that train moves!</div>
+    <div class='q-kor'>그 기차는 정말 빠르게 움직이는구나!</div>
+    <div class='choices' data-qid='a9' data-ans='How'><button class="choice" onclick="pickChoice(this)">What</button><button class="choice" onclick="pickChoice(this)">How</button><button class="choice" onclick="pickChoice(this)">Very</button><button class="choice" onclick="pickChoice(this)">A</button></div>
+    <div class='answer-hint' id='ah-a9'>💡 정답: <strong>How</strong> — 부사(fast)만 있고 명사 없음 → How. (How는 형용사·부사 모두 수식 가능)<br>📝 해석: 그 기차는 정말 빠르게 움직이는구나!</div>
+    <button class='hint-btn' onclick="showHint('a9')">💡 힌트 보기</button>
+  </div>
+
+  <div class='question-card' id='qc-a10'><span class='q-num'>10</span>
+    <div class='q-text'><em>___</em> a difficult question the teacher asked!</div>
+    <div class='q-kor'>선생님이 정말 어려운 질문을 하셨구나!</div>
+    <div class='choices' data-qid='a10' data-ans='What'><button class="choice" onclick="pickChoice(this)">How</button><button class="choice" onclick="pickChoice(this)">A</button><button class="choice" onclick="pickChoice(this)">What</button><button class="choice" onclick="pickChoice(this)">Very</button></div>
+    <div class='answer-hint' id='ah-a10'>💡 정답: <strong>What</strong> — 명사(question) 있음 → What. 「What + a + 형용사(difficult) + 명사(question)」<br>📝 해석: 선생님이 정말 어려운 질문을 하셨구나!</div>
+    <button class='hint-btn' onclick="showHint('a10')">💡 힌트 보기</button>
+  </div>
+
+  <div class='question-card' id='qc-a11'><span class='q-num'>11</span>
+    <div class='q-sub'>평서문: The flower is very pretty. → 감탄문</div>
+    <div class='q-text'><input class="blank" id="bi-a11" placeholder="___" data-ans="How" autocomplete="off" style="min-width:80px"> pretty the flower is! <span class='ex'>(What / How)</span></div>
+    <button class='check-btn' onclick="checkBlank('a11')">✔ 확인</button>
+    <div class='answer-hint' id='ah-a11'>💡 정답: <strong>How</strong> — 명사 없이 형용사 pretty만 있음 → How<br>📝 해석: 그 꽃은 정말 예쁘구나!</div>
+    <button class='hint-btn' onclick="showHint('a11')">💡 힌트 보기</button>
+  </div>
+
+  <div class='question-card' id='qc-a12'><span class='q-num'>12</span>
+    <div class='q-sub'>평서문: This is a very fun board game. → 감탄문</div>
+    <div class='q-text'><input class="blank" id="bi-a12" placeholder="___" data-ans="What" autocomplete="off" style="min-width:80px"> a fun board game this is! <span class='ex'>(What / How)</span></div>
+    <button class='check-btn' onclick="checkBlank('a12')">✔ 확인</button>
+    <div class='answer-hint' id='ah-a12'>💡 정답: <strong>What</strong> — 명사(board game) 있음 → What<br>📝 해석: 이것은 정말 재미있는 보드게임이구나!</div>
+    <button class='hint-btn' onclick="showHint('a12')">💡 힌트 보기</button>
+  </div>
+
+  <div class='question-card' id='qc-a13'><span class='q-num'>13</span>
+    <div class='q-sub'>평서문: Your dog is very cute. → 감탄문</div>
+    <div class='q-text'><input class="blank" id="bi-a13" placeholder="___" data-ans="How" autocomplete="off" style="min-width:80px"> cute your dog is! <span class='ex'>(What / How)</span></div>
+    <button class='check-btn' onclick="checkBlank('a13')">✔ 확인</button>
+    <div class='answer-hint' id='ah-a13'>💡 정답: <strong>How</strong> — 형용사 cute만 있음 → How<br>📝 해석: 너의 강아지는 정말 귀엽구나!</div>
+    <button class='hint-btn' onclick="showHint('a13')">💡 힌트 보기</button>
+  </div>
+
+  <div class='question-card' id='qc-a14'><span class='q-num'>14</span>
+    <div class='q-sub'>평서문: She is a very talented dancer. → 감탄문</div>
+    <div class='q-text'><input class="blank" id="bi-a14" placeholder="___" data-ans="What" autocomplete="off" style="min-width:80px"> a talented dancer she is! <span class='ex'>(What / How)</span></div>
+    <button class='check-btn' onclick="checkBlank('a14')">✔ 확인</button>
+    <div class='answer-hint' id='ah-a14'>💡 정답: <strong>What</strong> — 명사(dancer) 있음 → What<br>📝 해석: 그녀는 정말 재능 있는 무용수구나!</div>
+    <button class='hint-btn' onclick="showHint('a14')">💡 힌트 보기</button>
+  </div>
+
+  <div class='question-card' id='qc-a15'><span class='q-num'>15</span>
+    <div class='q-sub'>평서문: They are very lovely roses. → 감탄문</div>
+    <div class='q-text'><input class="blank" id="bi-a15" placeholder="___" data-ans="What" autocomplete="off" style="min-width:80px"> lovely roses they are! <span class='ex'>(What / How)</span></div>
+    <button class='check-btn' onclick="checkBlank('a15')">✔ 확인</button>
+    <div class='answer-hint' id='ah-a15'>💡 정답: <strong>What</strong> — 복수 명사(roses) 있음 → What. (복수 명사 앞에는 a/an 없음)<br>📝 해석: 그것들은 정말 사랑스러운 장미들이구나!</div>
+    <button class='hint-btn' onclick="showHint('a15')">💡 힌트 보기</button>
+  </div>
+
+  <div class='question-card' id='qc-a16'><span class='q-num'>16</span>
+    <div class='q-sub'>평서문: The story is very funny. → 감탄문</div>
+    <div class='q-text'>How <input class="blank" id="bi-a16" placeholder="___" data-ans="funny" autocomplete="off" style="min-width:100px"> the story is! <span class='ex'>(형용사를 채우세요)</span></div>
+    <button class='check-btn' onclick="checkBlank('a16')">✔ 확인</button>
+    <div class='answer-hint' id='ah-a16'>💡 정답: <strong>funny</strong> — How 감탄문에서는 very 자리에 들어간 형용사가 How 바로 뒤로 옴<br>📝 해석: 그 이야기는 정말 재미있구나!</div>
+    <button class='hint-btn' onclick="showHint('a16')">💡 힌트 보기</button>
+  </div>
+
+  <div class='question-card' id='qc-a17'><span class='q-num'>17</span>
+    <div class='q-sub'>평서문: He is a very kind boy. → 감탄문</div>
+    <div class='q-text'>What a kind <input class="blank" id="bi-a17" placeholder="___" data-ans="boy" autocomplete="off" style="min-width:90px"> he is! <span class='ex'>(명사를 채우세요)</span></div>
+    <button class='check-btn' onclick="checkBlank('a17')">✔ 확인</button>
+    <div class='answer-hint' id='ah-a17'>💡 정답: <strong>boy</strong> — What 감탄문은 「What + a + 형용사 + 명사 + 주어 + 동사」 어순<br>📝 해석: 그는 정말 친절한 소년이구나!</div>
+    <button class='hint-btn' onclick="showHint('a17')">💡 힌트 보기</button>
+  </div>
+
+  <div class='question-card' id='qc-a18'><span class='q-num'>18</span>
+    <div class='q-sub'>평서문: The cake is very sweet. → 감탄문</div>
+    <div class='q-text'>How <input class="blank" id="bi-a18" placeholder="___" data-ans="sweet" autocomplete="off" style="min-width:100px"> the cake is! <span class='ex'>(형용사를 채우세요)</span></div>
+    <button class='check-btn' onclick="checkBlank('a18')">✔ 확인</button>
+    <div class='answer-hint' id='ah-a18'>💡 정답: <strong>sweet</strong> — How 뒤에 형용사 sweet<br>📝 해석: 그 케이크는 정말 달콤하구나!</div>
+    <button class='hint-btn' onclick="showHint('a18')">💡 힌트 보기</button>
+  </div>
+
+  <div class='question-card' id='qc-a19'><span class='q-num'>19</span>
+    <div class='q-sub'>평서문: It is a very long bridge. → 감탄문</div>
+    <div class='q-text'>What a <input class="blank" id="bi-a19" placeholder="___" data-ans="long" autocomplete="off" style="min-width:90px"> bridge it is! <span class='ex'>(형용사를 채우세요)</span></div>
+    <button class='check-btn' onclick="checkBlank('a19')">✔ 확인</button>
+    <div class='answer-hint' id='ah-a19'>💡 정답: <strong>long</strong> — What + a + 형용사(long) + 명사(bridge)<br>📝 해석: 그것은 정말 긴 다리구나!</div>
+    <button class='hint-btn' onclick="showHint('a19')">💡 힌트 보기</button>
+  </div>
+
+  <div class='question-card' id='qc-a20'><span class='q-num'>20</span>
+    <div class='q-sub'>평서문: This puzzle is very difficult. → 감탄문</div>
+    <div class='q-text'>How difficult <input class="blank" id="bi-a20" placeholder="___" data-ans="this puzzle is" autocomplete="off" style="min-width:160px">! <span class='ex'>(주어 + 동사 어순)</span></div>
+    <button class='check-btn' onclick="checkBlank('a20')">✔ 확인</button>
+    <div class='answer-hint' id='ah-a20'>💡 정답: <strong>this puzzle is</strong> — How + 형용사 뒤에 「주어 + 동사」가 옴<br>📝 해석: 이 퍼즐은 정말 어렵구나!</div>
+    <button class='hint-btn' onclick="showHint('a20')">💡 힌트 보기</button>
+  </div>
+</div>
+
+<!-- ── Section B: -thing + 형용사 ── -->
+<div class="sec" id="s1">
+  <div class="sec-hdr"><div class="lbl">Point B · 12문제</div><h2>-thing + 형용사</h2><div class="desc">선택형(1–7: 어순 식별 · 의문문·부정문에서 anything 선택 포함) + 빈칸(8–12: 우리말 → -thing + 형용사) · something/anything/nothing 같은 -thing형은 형용사가 <b>뒤에</b> 옴 (일반 명사와 어순 반대)</div></div>
+
+  <div class='question-card' id='qc-b1'><span class='q-num'>1</span>
+    <div class='q-text'>We want to eat <em>___</em> for lunch.</div>
+    <div class='q-kor'>우리는 점심으로 맛있는 것을 먹고 싶다.</div>
+    <div class='choices' data-qid='b1' data-ans='something delicious'><button class="choice" onclick="pickChoice(this)">delicious something</button><button class="choice" onclick="pickChoice(this)">something delicious</button><button class="choice" onclick="pickChoice(this)">something deliciously</button><button class="choice" onclick="pickChoice(this)">a delicious</button></div>
+    <div class='answer-hint' id='ah-b1'>💡 정답: <strong>something delicious</strong> — -thing형은 형용사가 뒤에! 일반 명사와 어순이 반대<br>📝 해석: 우리는 점심으로 맛있는 것을 먹고 싶다.</div>
+    <button class='hint-btn' onclick="showHint('b1')">💡 힌트 보기</button>
+  </div>
+
+  <div class='question-card' id='qc-b2'><span class='q-num'>2</span>
+    <div class='q-text'>Is there <em>___</em> in the gift box?</div>
+    <div class='q-kor'>선물 상자에 특별한 무엇이 있나요?</div>
+    <div class='choices' data-qid='b2' data-ans='anything special'><button class="choice" onclick="pickChoice(this)">special anything</button><button class="choice" onclick="pickChoice(this)">anything specially</button><button class="choice" onclick="pickChoice(this)">anything special</button><button class="choice" onclick="pickChoice(this)">a special anything</button></div>
+    <div class='answer-hint' id='ah-b2'>💡 정답: <strong>anything special</strong> — 의문문에서는 anything 사용, 형용사 special은 뒤에<br>📝 해석: 선물 상자 안에 특별한 무엇이 있나요?</div>
+    <button class='hint-btn' onclick="showHint('b2')">💡 힌트 보기</button>
+  </div>
+
+  <div class='question-card' id='qc-b3'><span class='q-num'>3</span>
+    <div class='q-text'>Sara is wearing <em>___</em> today.</div>
+    <div class='q-kor'>Sara는 오늘 예쁜 무언가를 입고 있다.</div>
+    <div class='choices' data-qid='b3' data-ans='something pretty'><button class="choice" onclick="pickChoice(this)">pretty something</button><button class="choice" onclick="pickChoice(this)">something prettily</button><button class="choice" onclick="pickChoice(this)">a pretty</button><button class="choice" onclick="pickChoice(this)">something pretty</button></div>
+    <div class='answer-hint' id='ah-b3'>💡 정답: <strong>something pretty</strong> — -thing + 형용사 어순<br>📝 해석: Sara는 오늘 예쁜 것을 입고 있다.</div>
+    <button class='hint-btn' onclick="showHint('b3')">💡 힌트 보기</button>
+  </div>
+
+  <div class='question-card' id='qc-b4'><span class='q-num'>4</span>
+    <div class='q-text'>Can I have <em>___</em> to drink?</div>
+    <div class='q-kor'>차가운 무언가를 마실 수 있을까요?</div>
+    <div class='choices' data-qid='b4' data-ans='something cold'><button class="choice" onclick="pickChoice(this)">cold something</button><button class="choice" onclick="pickChoice(this)">something cold</button><button class="choice" onclick="pickChoice(this)">something coldly</button><button class="choice" onclick="pickChoice(this)">a cold</button></div>
+    <div class='answer-hint' id='ah-b4'>💡 정답: <strong>something cold</strong> — -thing + 형용사 어순. 의문문에 something도 가능(권유 의미)<br>📝 해석: 제가 차가운 마실 것을 가질 수 있을까요?</div>
+    <button class='hint-btn' onclick="showHint('b4')">💡 힌트 보기</button>
+  </div>
+
+  <div class='question-card' id='qc-b5'><span class='q-num'>5</span>
+    <div class='q-text'>There is <em>___</em> for you on the table.</div>
+    <div class='q-kor'>탁자 위에 너를 위한 작은 무언가가 있어.</div>
+    <div class='choices' data-qid='b5' data-ans='something small'><button class="choice" onclick="pickChoice(this)">a small something</button><button class="choice" onclick="pickChoice(this)">something small</button><button class="choice" onclick="pickChoice(this)">small something</button><button class="choice" onclick="pickChoice(this)">smallness</button></div>
+    <div class='answer-hint' id='ah-b5'>💡 정답: <strong>something small</strong> — -thing은 형용사를 앞에 받지 않는다(반대 어순)<br>📝 해석: 탁자 위에 너를 위한 작은 것이 있어.</div>
+    <button class='hint-btn' onclick="showHint('b5')">💡 힌트 보기</button>
+  </div>
+
+  <div class='question-card' id='qc-b6'><span class='q-num'>6</span>
+    <div class='q-text'>He didn't say <em>___</em> at the meeting.</div>
+    <div class='q-kor'>그는 회의에서 중요한 무엇도 말하지 않았다.</div>
+    <div class='choices' data-qid='b6' data-ans='anything important'><button class="choice" onclick="pickChoice(this)">important anything</button><button class="choice" onclick="pickChoice(this)">anything important</button><button class="choice" onclick="pickChoice(this)">anything importantly</button><button class="choice" onclick="pickChoice(this)">things important</button></div>
+    <div class='answer-hint' id='ah-b6'>💡 정답: <strong>anything important</strong> — 부정문에서 anything 사용, 형용사 important는 뒤에<br>📝 해석: 그는 회의에서 중요한 어떤 것도 말하지 않았다.</div>
+    <button class='hint-btn' onclick="showHint('b6')">💡 힌트 보기</button>
+  </div>
+
+  <div class='question-card' id='qc-b7'><span class='q-num'>7</span>
+    <div class='q-text'>We saw <em>___</em> in the night sky.</div>
+    <div class='q-kor'>우리는 밤하늘에서 밝게 빛나는 무언가를 보았다.</div>
+    <div class='choices' data-qid='b7' data-ans='something bright'><button class="choice" onclick="pickChoice(this)">bright something</button><button class="choice" onclick="pickChoice(this)">something brightly</button><button class="choice" onclick="pickChoice(this)">something bright</button><button class="choice" onclick="pickChoice(this)">a bright</button></div>
+    <div class='answer-hint' id='ah-b7'>💡 정답: <strong>something bright</strong> — -thing + 형용사 어순<br>📝 해석: 우리는 밤하늘에서 밝은 무언가를 보았다.</div>
+    <button class='hint-btn' onclick="showHint('b7')">💡 힌트 보기</button>
+  </div>
+
+  <div class='question-card' id='qc-b8'><span class='q-num'>8</span>
+    <div class='q-sub'>우리말: 우리는 저녁으로 맛있는 것을 원한다.</div>
+    <div class='q-text'>We want <input class="blank" id="bi-b8" placeholder="something ..." data-ans="something tasty" autocomplete="off" style="min-width:160px"> for dinner. <span class='ex'>(tasty)</span></div>
+    <button class='check-btn' onclick="checkBlank('b8')">✔ 확인</button>
+    <div class='answer-hint' id='ah-b8'>💡 정답: <strong>something tasty</strong> — -thing + 형용사 어순<br>📝 해석: 우리는 저녁으로 맛있는 것을 원한다.</div>
+    <button class='hint-btn' onclick="showHint('b8')">💡 힌트 보기</button>
+  </div>
+
+  <div class='question-card' id='qc-b9'><span class='q-num'>9</span>
+    <div class='q-sub'>우리말: 너는 디저트로 달콤한 것을 원하지 않니?</div>
+    <div class='q-text'>Don't you want <input class="blank" id="bi-b9" placeholder="anything ..." data-ans="anything sweet" autocomplete="off" style="min-width:160px"> for dessert? <span class='ex'>(anything / sweet)</span></div>
+    <button class='check-btn' onclick="checkBlank('b9')">✔ 확인</button>
+    <div class='answer-hint' id='ah-b9'>💡 정답: <strong>anything sweet</strong> — 부정 의문문(don't) → anything 사용. -thing + 형용사 어순<br>📝 해석: 너는 디저트로 달콤한 어떤 것도 원하지 않니?</div>
+    <button class='hint-btn' onclick="showHint('b9')">💡 힌트 보기</button>
+  </div>
+
+  <div class='question-card' id='qc-b10'><span class='q-num'>10</span>
+    <div class='q-sub'>우리말: 그 가방 안에 흥미로운 것이 없다.</div>
+    <div class='q-text'>There is <input class="blank" id="bi-b10" placeholder="nothing ..." data-ans="nothing interesting" autocomplete="off" style="min-width:180px"> in the bag. <span class='ex'>(nothing / interesting)</span></div>
+    <button class='check-btn' onclick="checkBlank('b10')">✔ 확인</button>
+    <div class='answer-hint' id='ah-b10'>💡 정답: <strong>nothing interesting</strong> — nothing(부정 -thing) + 형용사 어순<br>📝 해석: 그 가방 안에 흥미로운 것이 아무것도 없다.</div>
+    <button class='hint-btn' onclick="showHint('b10')">💡 힌트 보기</button>
+  </div>
+
+  <div class='question-card' id='qc-b11'><span class='q-num'>11</span>
+    <div class='q-sub'>우리말: Jake는 친구를 위해 멋진 것을 준비했다.</div>
+    <div class='q-text'>Jake prepared <input class="blank" id="bi-b11" placeholder="something ..." data-ans="something nice" autocomplete="off" style="min-width:160px"> for his friend. <span class='ex'>(nice)</span></div>
+    <button class='check-btn' onclick="checkBlank('b11')">✔ 확인</button>
+    <div class='answer-hint' id='ah-b11'>💡 정답: <strong>something nice</strong> — -thing + 형용사<br>📝 해석: Jake는 친구를 위해 멋진 것을 준비했다.</div>
+    <button class='hint-btn' onclick="showHint('b11')">💡 힌트 보기</button>
+  </div>
+
+  <div class='question-card' id='qc-b12'><span class='q-num'>12</span>
+    <div class='q-sub'>우리말: 너에게 말해 줄 중요한 무언가가 있어.</div>
+    <div class='q-text'>I have <input class="blank" id="bi-b12" placeholder="something ..." data-ans="something important" autocomplete="off" style="min-width:200px"> to tell you. <span class='ex'>(important)</span></div>
+    <button class='check-btn' onclick="checkBlank('b12')">✔ 확인</button>
+    <div class='answer-hint' id='ah-b12'>💡 정답: <strong>something important</strong> — -thing + 형용사<br>📝 해석: 너에게 말해 줄 중요한 것이 있어.</div>
+    <button class='hint-btn' onclick="showHint('b12')">💡 힌트 보기</button>
+  </div>
+
+</div>
+
+<!-- ── Section C: 단어 배열 ── -->
+<div class="sec" id="s2">
+  <div class="sec-hdr"><div class="lbl">혼합 · 10문제</div><h2>단어 배열하기</h2><div class="desc">단어 칩 클릭 → 문장 완성! (다시 클릭하면 취소)</div></div>
+
+  <div class='question-card' id='qc-c1'><span class='q-num'>1</span>
+    <div class='q-text'>📌 정말 멋진 날이구나!</div>
+    <div class='word-pool' id='pool-c1'>
+      <button class="chip pool-chip" id="wc-c1-0" onclick="moveWord('c1',0,this)">it</button>
+      <button class="chip pool-chip" id="wc-c1-1" onclick="moveWord('c1',1,this)">a</button>
+      <button class="chip pool-chip" id="wc-c1-2" onclick="moveWord('c1',2,this)">wonderful</button>
+      <button class="chip pool-chip" id="wc-c1-3" onclick="moveWord('c1',3,this)">is</button>
+      <button class="chip pool-chip" id="wc-c1-4" onclick="moveWord('c1',4,this)">What</button>
+      <button class="chip pool-chip" id="wc-c1-5" onclick="moveWord('c1',5,this)">day</button>
+    </div>
+    <div class='answer-area' id='area-c1'><span class='area-ph'>여기에 단어를 놓으세요 →</span></div>
+    <button class='check-btn' data-qid='c1' data-ans='What a wonderful day it is' onclick="checkArrange(this)">✔ 확인</button>
+    <div class='answer-hint' id='ah-c1'>💡 정답: <strong>What a wonderful day it is</strong><br>📝 해석: 정말 멋진 날이구나!<br>👉 What + a + 형용사(wonderful) + 명사(day) + 주어(it) + 동사(is)</div>
+    <button class='hint-btn' onclick="showHint('c1')">💡 힌트 보기</button>
+  </div>
+
+  <div class='question-card' id='qc-c2'><span class='q-num'>2</span>
+    <div class='q-text'>📌 그 케이크는 정말 달콤하구나!</div>
+    <div class='word-pool' id='pool-c2'>
+      <button class="chip pool-chip" id="wc-c2-0" onclick="moveWord('c2',0,this)">cake</button>
+      <button class="chip pool-chip" id="wc-c2-1" onclick="moveWord('c2',1,this)">How</button>
+      <button class="chip pool-chip" id="wc-c2-2" onclick="moveWord('c2',2,this)">is</button>
+      <button class="chip pool-chip" id="wc-c2-3" onclick="moveWord('c2',3,this)">sweet</button>
+      <button class="chip pool-chip" id="wc-c2-4" onclick="moveWord('c2',4,this)">the</button>
+    </div>
+    <div class='answer-area' id='area-c2'><span class='area-ph'>여기에 단어를 놓으세요 →</span></div>
+    <button class='check-btn' data-qid='c2' data-ans='How sweet the cake is' onclick="checkArrange(this)">✔ 확인</button>
+    <div class='answer-hint' id='ah-c2'>💡 정답: <strong>How sweet the cake is</strong><br>📝 해석: 그 케이크는 정말 달콤하구나!<br>👉 How + 형용사(sweet) + 주어(the cake) + 동사(is)</div>
+    <button class='hint-btn' onclick="showHint('c2')">💡 힌트 보기</button>
+  </div>
+
+  <div class='question-card' id='qc-c3'><span class='q-num'>3</span>
+    <div class='q-text'>📌 그녀는 비싼 것을 샀다.</div>
+    <div class='word-pool' id='pool-c3'>
+      <button class="chip pool-chip" id="wc-c3-0" onclick="moveWord('c3',0,this)">expensive</button>
+      <button class="chip pool-chip" id="wc-c3-1" onclick="moveWord('c3',1,this)">She</button>
+      <button class="chip pool-chip" id="wc-c3-2" onclick="moveWord('c3',2,this)">something</button>
+      <button class="chip pool-chip" id="wc-c3-3" onclick="moveWord('c3',3,this)">bought</button>
+    </div>
+    <div class='answer-area' id='area-c3'><span class='area-ph'>여기에 단어를 놓으세요 →</span></div>
+    <button class='check-btn' data-qid='c3' data-ans='She bought something expensive' onclick="checkArrange(this)">✔ 확인</button>
+    <div class='answer-hint' id='ah-c3'>💡 정답: <strong>She bought something expensive</strong><br>📝 해석: 그녀는 비싼 것을 샀다.<br>👉 -thing + 형용사(expensive) 어순</div>
+    <button class='hint-btn' onclick="showHint('c3')">💡 힌트 보기</button>
+  </div>
+
+  <div class='question-card' id='qc-c4'><span class='q-num'>4</span>
+    <div class='q-text'>📌 너는 정말 친절한 사람이구나!</div>
+    <div class='word-pool' id='pool-c4'>
+      <button class="chip pool-chip" id="wc-c4-0" onclick="moveWord('c4',0,this)">person</button>
+      <button class="chip pool-chip" id="wc-c4-1" onclick="moveWord('c4',1,this)">a</button>
+      <button class="chip pool-chip" id="wc-c4-2" onclick="moveWord('c4',2,this)">are</button>
+      <button class="chip pool-chip" id="wc-c4-3" onclick="moveWord('c4',3,this)">kind</button>
+      <button class="chip pool-chip" id="wc-c4-4" onclick="moveWord('c4',4,this)">What</button>
+      <button class="chip pool-chip" id="wc-c4-5" onclick="moveWord('c4',5,this)">you</button>
+    </div>
+    <div class='answer-area' id='area-c4'><span class='area-ph'>여기에 단어를 놓으세요 →</span></div>
+    <button class='check-btn' data-qid='c4' data-ans='What a kind person you are' onclick="checkArrange(this)">✔ 확인</button>
+    <div class='answer-hint' id='ah-c4'>💡 정답: <strong>What a kind person you are</strong><br>📝 해석: 너는 정말 친절한 사람이구나!<br>👉 What + a + 형용사(kind) + 명사(person) + 주어(you) + 동사(are)</div>
+    <button class='hint-btn' onclick="showHint('c4')">💡 힌트 보기</button>
+  </div>
+
+  <div class='question-card' id='qc-c5'><span class='q-num'>5</span>
+    <div class='q-text'>📌 그 산은 정말 높구나!</div>
+    <div class='word-pool' id='pool-c5'>
+      <button class="chip pool-chip" id="wc-c5-0" onclick="moveWord('c5',0,this)">mountain</button>
+      <button class="chip pool-chip" id="wc-c5-1" onclick="moveWord('c5',1,this)">is</button>
+      <button class="chip pool-chip" id="wc-c5-2" onclick="moveWord('c5',2,this)">How</button>
+      <button class="chip pool-chip" id="wc-c5-3" onclick="moveWord('c5',3,this)">the</button>
+      <button class="chip pool-chip" id="wc-c5-4" onclick="moveWord('c5',4,this)">high</button>
+    </div>
+    <div class='answer-area' id='area-c5'><span class='area-ph'>여기에 단어를 놓으세요 →</span></div>
+    <button class='check-btn' data-qid='c5' data-ans='How high the mountain is' onclick="checkArrange(this)">✔ 확인</button>
+    <div class='answer-hint' id='ah-c5'>💡 정답: <strong>How high the mountain is</strong><br>📝 해석: 그 산은 정말 높구나!<br>👉 How + 형용사(high) + 주어(the mountain) + 동사(is)</div>
+    <button class='hint-btn' onclick="showHint('c5')">💡 힌트 보기</button>
+  </div>
+
+  <div class='question-card' id='qc-c6'><span class='q-num'>6</span>
+    <div class='q-text'>📌 우리는 시원한 것이 필요해.</div>
+    <div class='word-pool' id='pool-c6'>
+      <button class="chip pool-chip" id="wc-c6-0" onclick="moveWord('c6',0,this)">cool</button>
+      <button class="chip pool-chip" id="wc-c6-1" onclick="moveWord('c6',1,this)">need</button>
+      <button class="chip pool-chip" id="wc-c6-2" onclick="moveWord('c6',2,this)">We</button>
+      <button class="chip pool-chip" id="wc-c6-3" onclick="moveWord('c6',3,this)">something</button>
+    </div>
+    <div class='answer-area' id='area-c6'><span class='area-ph'>여기에 단어를 놓으세요 →</span></div>
+    <button class='check-btn' data-qid='c6' data-ans='We need something cool' onclick="checkArrange(this)">✔ 확인</button>
+    <div class='answer-hint' id='ah-c6'>💡 정답: <strong>We need something cool</strong><br>📝 해석: 우리는 시원한 것이 필요해.<br>👉 -thing + 형용사(cool) 어순</div>
+    <button class='hint-btn' onclick="showHint('c6')">💡 힌트 보기</button>
+  </div>
+
+  <div class='question-card' id='qc-c7'><span class='q-num'>7</span>
+    <div class='q-text'>📌 그것은 정말 흥미로운 책이구나!</div>
+    <div class='word-pool' id='pool-c7'>
+      <button class="chip pool-chip" id="wc-c7-0" onclick="moveWord('c7',0,this)">book</button>
+      <button class="chip pool-chip" id="wc-c7-1" onclick="moveWord('c7',1,this)">an</button>
+      <button class="chip pool-chip" id="wc-c7-2" onclick="moveWord('c7',2,this)">is</button>
+      <button class="chip pool-chip" id="wc-c7-3" onclick="moveWord('c7',3,this)">interesting</button>
+      <button class="chip pool-chip" id="wc-c7-4" onclick="moveWord('c7',4,this)">it</button>
+      <button class="chip pool-chip" id="wc-c7-5" onclick="moveWord('c7',5,this)">What</button>
+    </div>
+    <div class='answer-area' id='area-c7'><span class='area-ph'>여기에 단어를 놓으세요 →</span></div>
+    <button class='check-btn' data-qid='c7' data-ans='What an interesting book it is' onclick="checkArrange(this)">✔ 확인</button>
+    <div class='answer-hint' id='ah-c7'>💡 정답: <strong>What an interesting book it is</strong><br>📝 해석: 그것은 정말 흥미로운 책이구나!<br>👉 형용사 interesting이 모음으로 시작 → What + an. 「What + an + 형용사 + 명사 + 주어 + 동사」</div>
+    <button class='hint-btn' onclick="showHint('c7')">💡 힌트 보기</button>
+  </div>
+
+  <div class='question-card' id='qc-c8'><span class='q-num'>8</span>
+    <div class='q-text'>📌 그녀는 특별한 것을 준비했다.</div>
+    <div class='word-pool' id='pool-c8'>
+      <button class="chip pool-chip" id="wc-c8-0" onclick="moveWord('c8',0,this)">special</button>
+      <button class="chip pool-chip" id="wc-c8-1" onclick="moveWord('c8',1,this)">prepared</button>
+      <button class="chip pool-chip" id="wc-c8-2" onclick="moveWord('c8',2,this)">something</button>
+      <button class="chip pool-chip" id="wc-c8-3" onclick="moveWord('c8',3,this)">She</button>
+    </div>
+    <div class='answer-area' id='area-c8'><span class='area-ph'>여기에 단어를 놓으세요 →</span></div>
+    <button class='check-btn' data-qid='c8' data-ans='She prepared something special' onclick="checkArrange(this)">✔ 확인</button>
+    <div class='answer-hint' id='ah-c8'>💡 정답: <strong>She prepared something special</strong><br>📝 해석: 그녀는 특별한 것을 준비했다.<br>👉 -thing + 형용사(special) 어순</div>
+    <button class='hint-btn' onclick="showHint('c8')">💡 힌트 보기</button>
+  </div>
+
+  <div class='question-card' id='qc-c9'><span class='q-num'>9</span>
+    <div class='q-text'>📌 그 음악은 정말 아름답구나!</div>
+    <div class='word-pool' id='pool-c9'>
+      <button class="chip pool-chip" id="wc-c9-0" onclick="moveWord('c9',0,this)">music</button>
+      <button class="chip pool-chip" id="wc-c9-1" onclick="moveWord('c9',1,this)">is</button>
+      <button class="chip pool-chip" id="wc-c9-2" onclick="moveWord('c9',2,this)">the</button>
+      <button class="chip pool-chip" id="wc-c9-3" onclick="moveWord('c9',3,this)">beautiful</button>
+      <button class="chip pool-chip" id="wc-c9-4" onclick="moveWord('c9',4,this)">How</button>
+    </div>
+    <div class='answer-area' id='area-c9'><span class='area-ph'>여기에 단어를 놓으세요 →</span></div>
+    <button class='check-btn' data-qid='c9' data-ans='How beautiful the music is' onclick="checkArrange(this)">✔ 확인</button>
+    <div class='answer-hint' id='ah-c9'>💡 정답: <strong>How beautiful the music is</strong><br>📝 해석: 그 음악은 정말 아름답구나!<br>👉 How + 형용사(beautiful) + 주어(the music) + 동사(is)</div>
+    <button class='hint-btn' onclick="showHint('c9')">💡 힌트 보기</button>
+  </div>
+
+  <div class='question-card' id='qc-c10'><span class='q-num'>10</span>
+    <div class='q-text'>📌 그들은 새로운 것을 찾고 있다.</div>
+    <div class='word-pool' id='pool-c10'>
+      <button class="chip pool-chip" id="wc-c10-0" onclick="moveWord('c10',0,this)">new</button>
+      <button class="chip pool-chip" id="wc-c10-1" onclick="moveWord('c10',1,this)">looking</button>
+      <button class="chip pool-chip" id="wc-c10-2" onclick="moveWord('c10',2,this)">are</button>
+      <button class="chip pool-chip" id="wc-c10-3" onclick="moveWord('c10',3,this)">something</button>
+      <button class="chip pool-chip" id="wc-c10-4" onclick="moveWord('c10',4,this)">for</button>
+      <button class="chip pool-chip" id="wc-c10-5" onclick="moveWord('c10',5,this)">They</button>
+    </div>
+    <div class='answer-area' id='area-c10'><span class='area-ph'>여기에 단어를 놓으세요 →</span></div>
+    <button class='check-btn' data-qid='c10' data-ans='They are looking for something new' onclick="checkArrange(this)">✔ 확인</button>
+    <div class='answer-hint' id='ah-c10'>💡 정답: <strong>They are looking for something new</strong><br>📝 해석: 그들은 새로운 것을 찾고 있다.<br>👉 look for(~을 찾다) + something + 형용사(new). 진행형 are looking</div>
+    <button class='hint-btn' onclick="showHint('c10')">💡 힌트 보기</button>
+  </div>
+</div>
+
+<div id="result">
+  <div class="rc">
+    <div class="emoji" id="re">🎉</div><div class="title" id="rt">완료!</div>
+    <div class="score" id="rs">0점</div><div class="sub" id="rsub"></div>
+    <div class="rg">
+      <div class="rs"><div class="n" id="rc2">0</div><div class="l">✅ 정답</div></div>
+      <div class="rs"><div class="n" id="rw2">0</div><div class="l">❌ 오답</div></div>
+    </div>
+  </div>
+  <div class="rev" id="revbox" style="display:none"><h3>❌ 오답 복습</h3><div id="revitems"></div></div>
+  <button class="rb" onclick="location.reload()">🔄 다시 풀기</button>
+</div>
+
+<script>
+var TOTAL=42,SECTOTALS={a:20,b:12,c:10},secC={a:0,b:0,c:0},secW={a:0,b:0,c:0};
+var placed={"c1":[],"c2":[],"c3":[],"c4":[],"c5":[],"c6":[],"c7":[],"c8":[],"c9":[],"c10":[]},answered={},correct=0,wrong=0;
+
+function norm(s){
+  s=s.trim().toLowerCase().replace(/\s+/g,' ');
+  s=s.replace(/[.!?]$/,'');
+  s=s.replace(/isn't/g,'is not').replace(/aren't/g,'are not')
+     .replace(/wasn't/g,'was not').replace(/weren't/g,'were not')
+     .replace(/don't/g,'do not').replace(/doesn't/g,'does not')
+     .replace(/didn't/g,'did not').replace(/won't/g,'will not')
+     .replace(/shouldn't/g,'should not').replace(/can't/g,'cannot');
+  return s;
+}
+
+function sw(i,btn){
+  document.querySelectorAll('.sec').forEach(function(s){s.classList.remove('show');});
+  document.querySelectorAll('.tab').forEach(function(b){b.classList.remove('active');});
+  document.getElementById('s'+i).classList.add('show');
+  btn.classList.add('active');
+}
+function showHint(k){document.getElementById('ah-'+k).classList.add('show');}
+
+function pickChoice(btn){
+  var div=btn.parentElement;
+  var ans=div.dataset.ans;
+  var k=div.dataset.qid;
+  var card=document.getElementById('qc-'+k);
+  if(card.classList.contains('ok')||card.classList.contains('ng'))return;
+  var btns=div.querySelectorAll('.choice');
+  btns.forEach(function(b){b.disabled=true;});
+  var got=norm(btn.textContent.trim())===norm(ans);
+  btn.classList.add(got?'ok':'ng');
+  if(!got)btns.forEach(function(b){if(norm(b.textContent.trim())===norm(ans))b.classList.add('reveal');});
+  mark(k,got,btn.textContent.trim(),ans);
+}
+
+function checkBlank(k){
+  var inp=document.getElementById('bi-'+k);
+  var card=document.getElementById('qc-'+k);
+  if(card.classList.contains('ok')||card.classList.contains('ng'))return;
+  if(!inp.value.trim()){toast('답을 입력하세요!','ng');inp.focus();return;}
+  inp.disabled=true;
+  card.querySelector('.check-btn').disabled=true;
+  var got=norm(inp.value)===norm(inp.dataset.ans);
+  if(!got&&inp.dataset.ans2)got=norm(inp.value)===norm(inp.dataset.ans2);
+  inp.classList.add(got?'ok':'ng');
+  mark(k,got,inp.value.trim(),inp.dataset.ans);
+}
+document.addEventListener('keydown',function(e){
+  if(e.key==='Enter'&&e.target.classList.contains('blank'))
+    checkBlank(e.target.id.replace('bi-',''));
+});
+
+function moveWord(k,i,btn){
+  if(btn.style.visibility==='hidden'||btn.disabled)return;
+  btn.style.visibility='hidden';
+  placed[k].push({i:i,w:btn.textContent});
+  refreshArea(k);
+}
+function removeWord(k,pos){
+  var it=placed[k].splice(pos,1)[0];
+  var btn=document.getElementById('wc-'+k+'-'+it.i);
+  if(btn)btn.style.visibility='visible';
+  refreshArea(k);
+}
+function refreshArea(k){
+  var area=document.getElementById('area-'+k);
+  if(!placed[k].length){area.innerHTML='<span class="area-ph">여기에 단어를 놓으세요 →</span>';return;}
+  area.innerHTML='';
+  placed[k].forEach(function(it,pos){
+    var c=document.createElement('button');
+    c.className='chip ans-chip';c.textContent=it.w;
+    c.onclick=(function(p){return function(){removeWord(k,p);};})(pos);
+    area.appendChild(c);
+  });
+}
+function checkArrange(btn){
+  var k=btn.dataset.qid;
+  var ans=btn.dataset.ans;
+  var card=document.getElementById('qc-'+k);
+  if(card.classList.contains('ok')||card.classList.contains('ng'))return;
+  if(!placed[k].length){toast('단어를 배열하세요!','ng');return;}
+  var typed=placed[k].map(function(i){return i.w;}).join(' ');
+  btn.disabled=true;
+  document.querySelectorAll('#pool-'+k+' .pool-chip').forEach(function(c){c.style.visibility='hidden';c.disabled=true;});
+  var chips=document.querySelectorAll('#area-'+k+' .ans-chip');
+  var got=norm(typed)===norm(ans);
+  chips.forEach(function(c){c.classList.remove('ans-chip');c.classList.add(got?'ok-chip':'ng-chip');c.onclick=null;});
+  mark(k,got,typed,ans);
+}
+
+function mark(k,got,my,right){
+  if(answered[k])return;
+  answered[k]={got:got,my:my,right:right};
+  var card=document.getElementById('qc-'+k);
+  card.classList.add(got?'ok':'ng');
+  var b=document.createElement('div');b.className='done-badge';b.textContent=got?'✅':'❌';card.appendChild(b);
+  var pre=k[0];
+  if(got){correct++;secC[pre]++;toast('🎉 정답!','ok');}
+  else{wrong++;secW[pre]++;document.getElementById('ah-'+k).classList.add('show');toast('틀렸어요! 힌트 확인 👆','ng');}
+  var done=correct+wrong;
+  document.getElementById('sc-t').textContent=done;
+  document.getElementById('sc-c').textContent=correct;
+  document.getElementById('sc-w').textContent=wrong;
+  document.getElementById('pt').textContent=done+' / '+TOTAL;
+  document.getElementById('pf').style.width=(done/TOTAL*100)+'%';
+  var secDone=secC[pre]+secW[pre];
+  if(secDone===SECTOTALS[pre]){
+    (function(p,sc){
+      setTimeout(function(){
+        var opts={};
+        if(p==='a') opts={nextText:'-thing 탭으로 →',onNextClick:function(){var ol=document.getElementById('sp-overlay');if(ol)ol.remove();sw(1,document.querySelectorAll('.tab')[1]);}};
+        else if(p==='b') opts={nextText:'단어 배열 탭으로 →',onNextClick:function(){var ol=document.getElementById('sp-overlay');if(ol)ol.remove();sw(2,document.querySelectorAll('.tab')[2]);}};
+        showScorePopup(sc,SECTOTALS[p],opts);
+      },800);
+    })(pre,secC[pre]);
+  }
+  if(done===TOTAL)setTimeout(showResult,800);
+}
+function showResult(){
+  document.querySelectorAll('.sec').forEach(function(s){s.style.display='none';});
+  document.querySelector('.tabs').style.display='none';
+  document.getElementById('result').style.display='block';
+  var sc=Math.round(correct/TOTAL*100),e='😊',t='수고했어요!';
+  if(sc>=90){e='🏆';t='완벽해요!';}else if(sc>=70){e='🎉';t='잘 했어요!';}else if(sc>=50){e='💪';t='절반 이상 맞았어요!';}
+  document.getElementById('re').textContent=e;document.getElementById('rt').textContent=t;
+  document.getElementById('rs').textContent=sc+'점';
+  document.getElementById('rsub').textContent=correct+'문제 정답 / '+TOTAL+'문제';
+  document.getElementById('rc2').textContent=correct;document.getElementById('rw2').textContent=wrong;
+  var ws=Object.keys(answered).filter(function(k){return !answered[k].got;});
+  if(ws.length){
+    document.getElementById('revbox').style.display='block';
+    document.getElementById('revitems').innerHTML=ws.map(function(k){
+      var v=answered[k];
+      return '<div class="ri">내가 쓴 것: <span class="ma">'+(v.my||'(없음)')+'</span> → 정답: <span class="ca">'+v.right+'</span></div>';
+    }).join('');
+  }
+}
+function toast(msg,type){
+  var t=document.getElementById('toast');
+  t.textContent=msg;t.className='show '+(type||'');
+  clearTimeout(t._t);t._t=setTimeout(function(){t.classList.remove('show');},1800);
+}
+</script>
+<script>
+var vocabData={
+  'a1':[{w:'beautiful',k:'아름다운'},{w:'day',k:'날, 하루'}],
+  'a2':[{w:'tall',k:'(키가/높이가) 높은'},{w:'building',k:'건물'}],
+  'a3':[{w:'exciting',k:'신나는'},{w:'soccer game',k:'축구 경기'}],
+  'a4':[{w:'clever',k:'영리한'},{w:'idea',k:'생각'}],
+  'a5':[{w:'kind',k:'친절한'},{w:'father',k:'아버지'}],
+  'a6':[{w:'interesting',k:'흥미로운'},{w:'story',k:'이야기'},{w:'an',k:'모음 앞 a → an'}],
+  'a7':[{w:'delicious',k:'맛있는'},{w:'homemade',k:'수제의'},{w:'taste',k:'~한 맛이 나다'}],
+  'a8':[{w:'brave',k:'용감한'},{w:'hero',k:'영웅'}],
+  'a9':[{w:'fast',k:'빠르게 (부사)'},{w:'train',k:'기차'}],
+  'a10':[{w:'difficult',k:'어려운'},{w:'question',k:'질문'}],
+  'a11':[{w:'flower',k:'꽃'},{w:'pretty',k:'예쁜'}],
+  'a12':[{w:'fun',k:'재미있는'},{w:'board game',k:'보드게임'}],
+  'a13':[{w:'cute',k:'귀여운'}],
+  'a14':[{w:'talented',k:'재능 있는'},{w:'dancer',k:'무용수'}],
+  'a15':[{w:'lovely',k:'사랑스러운 (형용사)'},{w:'roses',k:'장미들'}],
+  'a16':[{w:'funny',k:'재미있는'},{w:'story',k:'이야기'}],
+  'a17':[{w:'kind',k:'친절한'},{w:'boy',k:'소년'}],
+  'a18':[{w:'sweet',k:'달콤한'},{w:'cake',k:'케이크'}],
+  'a19':[{w:'long',k:'긴'},{w:'bridge',k:'다리'}],
+  'a20':[{w:'puzzle',k:'퍼즐'},{w:'difficult',k:'어려운'}],
+  'b1':[{w:'delicious',k:'맛있는'},{w:'lunch',k:'점심'}],
+  'b2':[{w:'special',k:'특별한'},{w:'gift box',k:'선물 상자'}],
+  'b3':[{w:'pretty',k:'예쁜'},{w:'wearing',k:'입고 있는'}],
+  'b4':[{w:'cold',k:'차가운'},{w:'drink',k:'마시다'}],
+  'b5':[{w:'small',k:'작은'},{w:'table',k:'탁자'}],
+  'b6':[{w:'important',k:'중요한'},{w:'meeting',k:'회의'}],
+  'b7':[{w:'bright',k:'밝은'},{w:'night sky',k:'밤하늘'}],
+  'b8':[{w:'tasty',k:'맛있는'},{w:'dinner',k:'저녁식사'}],
+  'b9':[{w:'sweet',k:'달콤한'},{w:'dessert',k:'디저트'}],
+  'b10':[{w:'interesting',k:'흥미로운'},{w:'nothing',k:'아무것도 없음'}],
+  'b11':[{w:'nice',k:'멋진, 좋은'},{w:'prepare',k:'준비하다'}],
+  'b12':[{w:'important',k:'중요한'},{w:'tell',k:'말하다'}],
+  'c1':[{w:'wonderful',k:'멋진'},{w:'day',k:'날'}],
+  'c2':[{w:'sweet',k:'달콤한'},{w:'cake',k:'케이크'}],
+  'c3':[{w:'expensive',k:'비싼'},{w:'bought',k:'샀다 (buy의 과거)'}],
+  'c4':[{w:'kind',k:'친절한'},{w:'person',k:'사람'}],
+  'c5':[{w:'high',k:'높은'},{w:'mountain',k:'산'}],
+  'c6':[{w:'cool',k:'시원한'}],
+  'c7':[{w:'interesting',k:'흥미로운'},{w:'an',k:'모음 앞 a → an'}],
+  'c8':[{w:'special',k:'특별한'},{w:'prepared',k:'준비했다'}],
+  'c9':[{w:'beautiful',k:'아름다운'},{w:'music',k:'음악'}],
+  'c10':[{w:'look for',k:'~을 찾다'},{w:'new',k:'새로운'}]
+};
+document.addEventListener('DOMContentLoaded',function(){
+  var st=document.createElement('style');
+  st.textContent='.vi-vw{font-size:.72rem;background:#fef3c7;color:#92400e;border-radius:6px;padding:2px 8px;font-weight:600;margin:1px 2px;}';
+  document.head.appendChild(st);
+  Object.keys(vocabData).forEach(function(id){
+    var items=vocabData[id];
+    if(!items.length)return;
+    var card=document.getElementById('qc-'+id);
+    if(!card)return;
+    var hint=card.querySelector('.answer-hint');
+    if(!hint)return;
+    var vocHtml='<br><br>📖 <strong>단어:</strong> '+
+      items.map(function(v){return'<span class="vi-vw">'+v.w+' '+v.k+'</span>';}).join(' ');
+    hint.innerHTML+=vocHtml;
+  });
+});
+</script>
+<script src="../score-popup.js"></script>
+<script src="../sounds.js?v=2"></script>
+</body>
+</html>

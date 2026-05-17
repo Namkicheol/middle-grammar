@@ -37,10 +37,18 @@ description: middle-grammar 블로그 배포 워크플로우. 티스토리 기�
 - **이미지** (Pencil MCP 또는 Pexels w=600)
 - **색깔 박스·인용구**
 
-## 이미지 삽입
+## 이미지 삽입 (썸네일·본문 이미지)
 
-- **blog-image-pencil 스킬** 사용 — Pencil MCP로 3장 AI 생성
+**우선순위 (2026-05-17 사용자 지시)**: Hugging Face → Canva → Pencil
+
+| 순위 | 도구 | 비고 |
+|---|---|---|
+| 1차 | **Hugging Face** | 텍스트→이미지 무료, 사용자가 외부에서 프롬프트 입력 |
+| 2차 | **Canva** | Hugging Face 결과가 만족스럽지 않을 때 |
+| 최후 | **Pencil MCP** (blog-image-pencil 스킬) | 토큰 비용 큼, 다른 방법 모두 실패 시만 |
+
 - **크기**: `width="600"`
+- blog-deploy md 파일에는 Gemini용 프롬프트 텍스트(상세 묘사)를 작성해두고, 사용자가 외부 도구에 그대로 붙여넣어 사용한다.
 
 ## 글 작성 공통 규칙
 

@@ -305,7 +305,16 @@ function render() {
 }
 window.onload = render;
 
-// 클로드 로직 100% 반영
+function norm(s){
+    s=s.trim().toLowerCase().replace(/\s+/g,' ');
+    s=s.replace(/isn't/g,'is not').replace(/aren't/g,'are not')
+       .replace(/wasn't/g,'was not').replace(/weren't/g,'were not')
+       .replace(/don't/g,'do not').replace(/doesn't/g,'does not')
+       .replace(/didn't/g,'did not').replace(/won't/g,'will not')
+       .replace(/can't/g,'cannot').replace(/shouldn't/g,'should not');
+    return s;
+}
+
 function sw(i, btn) {
     document.querySelectorAll('.sec').forEach(s => s.classList.remove('show'));
     document.querySelectorAll('.tab').forEach(b => b.classList.remove('active'));
@@ -320,7 +329,7 @@ function checkChoice(btn, ans, k) {
     if (card.classList.contains('ok') || card.classList.contains('ng')) return;
     var btns = btn.parentElement.querySelectorAll('.choice');
     btns.forEach(b => b.disabled = true);
-    var got = btn.textContent.trim() === ans;
+    var got = norm(btn.textContent.trim()) === norm(ans);
     btn.classList.add(got ? 'ok' : 'ng');
     if (!got) btns.forEach(b => { if (b.textContent.trim()===ans) b.classList.add('reveal'); });
     mark(k, got);
@@ -334,13 +343,9 @@ function checkBlank(k) {
     let allGot = true;
     inps.forEach(inp => {
         inp.disabled = true;
-        if(!window._normDefined){
-            window.norm=function(s){s=s.trim().toLowerCase().replace(/\s+/g,' ');s=s.replace(/isn't/g,'is not').replace(/aren't/g,'are not').replace(/wasn't/g,'was not').replace(/weren't/g,'were not').replace(/don't/g,'do not').replace(/doesn't/g,'does not').replace(/didn't/g,'did not').replace(/won't/g,'will not').replace(/shouldn't/g,'should not').replace(/can't/g,'cannot');return s;};
-            window._normDefined=true;
-        }
-        var typed = window.norm(inp.value);
-        var ans = window.norm(inp.dataset.ans);
-        var got = (typed === ans || (inp.dataset.ans2 && typed === window.norm(inp.dataset.ans2)));
+        var typed = norm(inp.value);
+        var ans = norm(inp.dataset.ans);
+        var got = (typed === ans || (inp.dataset.ans2 && typed === norm(inp.dataset.ans2)));
         inp.classList.add(got ? 'ok' : 'ng');
         if(!got) allGot = false;
     });
@@ -386,12 +391,11 @@ function checkArrange(k, ans) {
     var card = document.getElementById('qc-'+k);
     if (card.classList.contains('ok') || card.classList.contains('ng')) return;
     if (!placed[k].length) { toast('단어를 배열하세요!', 'ng'); return; }
-    var typed = placed[k].map(i => i.w).join(' ').trim().toLowerCase().replace(/\s+/g, ' ');
-    var cleanAns = ans.trim().toLowerCase().replace(/\s+/g, ' ');
+    var typed = norm(placed[k].map(i => i.w).join(' '));
     card.querySelector('.check-btn').disabled = true;
     document.querySelectorAll('#pool-'+k+' .pool-chip').forEach(c => { c.style.visibility = 'hidden'; c.disabled = true; });
     var chips = document.querySelectorAll('#area-'+k+' .ans-chip');
-    var got = (typed === cleanAns);
+    var got = (typed === norm(ans));
     chips.forEach(c => {
         c.classList.remove('ans-chip'); c.classList.add(got ? 'ok-chip' : 'ng-chip'); c.onclick = null;
     });
@@ -406,7 +410,7 @@ function mark(k, got) {
     var b = document.createElement('div');
     b.className = 'done-badge'; b.textContent = got ? '✅' : '❌';
     card.appendChild(b);
-    var n = parseInt(k.slice(1)), si = n < 20 ? 0 : n < 40 ? 1 : 2;
+    var n = parseInt(k.slice(1)), si = n <= 20 ? 0 : n <= 40 ? 1 : 2;
     if (got) { correct++; secC[si]++; toast('🎉 정답!','ok'); }
     else { wrong++; secW[si]++; document.getElementById('ah-'+k).classList.add('show'); toast('틀렸어요! 해설 확인 👆','ng'); }
     var done = correct+wrong;

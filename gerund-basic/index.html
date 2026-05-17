@@ -309,7 +309,7 @@ function upd(id, isC) {
 
 function hMCQ(b, a, id) {
     let c = b.closest('.q-card'); if(st[id]) return;
-    let ok = (b.innerText.trim() === a);
+    let ok = (normAns(b.innerText.trim()) === normAns(a));
     c.querySelectorAll('.choice-btn').forEach(btn => {
         btn.disabled = true;
         if(btn.innerText.trim() === a) btn.classList.add('reveal');

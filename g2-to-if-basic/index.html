@@ -111,7 +111,7 @@ body{font-family:'Baloo 2','Noto Sans KR',sans-serif;background:var(--bg);paddin
   <div class='question-card' id='qc-a1'><span class='q-num'>1</span>
     <div class='q-text'>I need something ___ for the picnic.</div>
     <div class='q-kor'>소풍에 먹을 것이 필요하다.</div>
-    <div class='choices' data-qid='a1' data-ans='to eat'><button class="choice" onclick="pickChoice(this)">eating</button><button class="choice" onclick="pickChoice(this)">to eat</button><button class="choice" onclick="pickChoice(this)">to eating</button><button class="choice" onclick="pickChoice(this)">eaten</button></div>
+    <div class='choices' data-qid='a1' data-ans='to eat'><button class="choice" onclick="pickChoice(this)">eating</button><button class="choice" onclick="pickChoice(this)">to eat</button><button class="choice" onclick="pickChoice(this)">eat</button><button class="choice" onclick="pickChoice(this)">eaten</button></div>
     <div class='answer-hint' id='ah-a1'>💡 정답: <strong>to eat</strong> — something을 꾸미는 형용사적 to부정사: something + to eat<br>📝 해석: 소풍에 먹을 것이 필요하다.</div>
     <button class='hint-btn' onclick="showHint('a1')">💡 힌트 보기</button>
   </div>
@@ -143,7 +143,7 @@ body{font-family:'Baloo 2','Noto Sans KR',sans-serif;background:var(--bg);paddin
   <div class='question-card' id='qc-a5'><span class='q-num'>5</span>
     <div class='q-text'>They are looking for a guide ___ them around the city.</div>
     <div class='q-kor'>그들은 도시를 안내해 줄 가이드를 찾고 있다.</div>
-    <div class='choices' data-qid='a5' data-ans='to show'><button class="choice" onclick="pickChoice(this)">showing</button><button class="choice" onclick="pickChoice(this)">show</button><button class="choice" onclick="pickChoice(this)">to show</button><button class="choice" onclick="pickChoice(this)">to showing</button></div>
+    <div class='choices' data-qid='a5' data-ans='to show'><button class="choice" onclick="pickChoice(this)">showing</button><button class="choice" onclick="pickChoice(this)">show</button><button class="choice" onclick="pickChoice(this)">to show</button><button class="choice" onclick="pickChoice(this)">shown</button></div>
     <div class='answer-hint' id='ah-a5'>💡 정답: <strong>to show</strong> — a guide(명사) 뒤에 to show: "안내해 줄 가이드"<br>📝 해석: 그들은 도시를 안내해 줄 가이드를 찾고 있다.</div>
     <button class='hint-btn' onclick="showHint('a5')">💡 힌트 보기</button>
   </div>
@@ -317,7 +317,7 @@ body{font-family:'Baloo 2','Noto Sans KR',sans-serif;background:var(--bg);paddin
   <div class='question-card' id='qc-b4'><span class='q-num'>4</span>
     <div class='q-text'>If the weather ___ nice this weekend, let's go camping.</div>
     <div class='q-kor'>이번 주말 날씨가 좋으면, 캠핑 가자.</div>
-    <div class='choices' data-qid='b4' data-ans='is'><button class="choice" onclick="pickChoice(this)">is</button><button class="choice" onclick="pickChoice(this)">will be</button><button class="choice" onclick="pickChoice(this)">was</button><button class="choice" onclick="pickChoice(this)">would be</button></div>
+    <div class='choices' data-qid='b4' data-ans='is'><button class="choice" onclick="pickChoice(this)">is</button><button class="choice" onclick="pickChoice(this)">will be</button><button class="choice" onclick="pickChoice(this)">was</button><button class="choice" onclick="pickChoice(this)">being</button></div>
     <div class='answer-hint' id='ah-b4'>💡 정답: <strong>is</strong> — if절 안에서는 현재시제: will be (✗) → is (✓)<br>📝 해석: 이번 주말 날씨가 좋으면, 캠핑 가자.</div>
     <button class='hint-btn' onclick="showHint('b4')">💡 힌트 보기</button>
   </div>
@@ -376,7 +376,7 @@ body{font-family:'Baloo 2','Noto Sans KR',sans-serif;background:var(--bg);paddin
 
   <div class='question-card' id='qc-b11'><span class='q-num'>11</span>
     <div class='q-sub'>괄호 안의 동사를 올바른 형태로 빈칸을 채우세요.</div>
-    <div class='q-text'>If you <input class="blank" id="bi-b11" placeholder="___" data-ans="don't eat" data-ans2="do not eat" autocomplete="off" style="min-width:90px"> breakfast, you'll feel tired at school. <span class='ex'>(not, eat)</span></div>
+    <div class='q-text'>If you <input class="blank" id="bi-b11" placeholder="___" data-ans="don't eat" autocomplete="off" style="min-width:90px"> breakfast, you'll feel tired at school. <span class='ex'>(not, eat)</span></div>
     <div class='q-kor'>아침을 먹지 않으면, 학교에서 피곤할 것이다.</div>
     <button class='check-btn' onclick="checkBlank('b11')">✔ 확인</button>
     <div class='answer-hint' id='ah-b11'>💡 정답: <strong>don't eat</strong> (= do not eat) — if절 부정: will not → don't/do not<br>📝 해석: 아침을 먹지 않으면, 학교에서 피곤할 것이다.</div>
@@ -547,7 +547,7 @@ body{font-family:'Baloo 2','Noto Sans KR',sans-serif;background:var(--bg);paddin
     </div>
     <div class='answer-area' id='area-c8'><span class='area-ph'>여기에 단어를 놓으세요 →</span></div>
     <button class='check-btn' data-qid='c8' data-ans="You will miss the bus if you don't leave now" onclick="checkArrange(this)">✔ 확인</button>
-    <div class='answer-hint' id='ah-c8'>💡 정답: <strong>You will miss the bus if you don't leave now</strong><br>📌 구조: 주절(will miss) + if절(현재시제 don't leave)</div>
+    <div class='answer-hint' id='ah-c8'>💡 정답: <strong>You will miss the bus if you don't leave now</strong><br>📌 구조: 주절(will miss) + if절(현재시제 don't leave)<br>📝 해석: 지금 출발하지 않으면 버스를 놓칠 것이다.</div>
     <button class='hint-btn' onclick="showHint('c8')">💡 힌트 보기</button>
   </div>
 </div>

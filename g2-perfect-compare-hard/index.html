@@ -206,10 +206,10 @@ body{font-family:'Baloo 2','Noto Sans KR',sans-serif;background:var(--bg);paddin
     <div class="choices" data-qid="a3" data-ans="more interesting">
       <button class="choice" onclick="pickChoice(this)">more interesting</button>
       <button class="choice" onclick="pickChoice(this)">most interesting</button>
-      <button class="choice" onclick="pickChoice(this)">interestinger</button>
+      <button class="choice" onclick="pickChoice(this)">more interestingly</button>
       <button class="choice" onclick="pickChoice(this)">the most interesting</button>
     </div>
-    <div class="answer-hint" id="ah-a3">💡 정답: <strong>more interesting</strong> — 3음절 이상 형용사 비교급 = more + 원급 (interestinger ✗)<br>📝 해석: 이 책은 내가 지난주에 읽은 것보다 더 흥미롭다.</div>
+    <div class="answer-hint" id="ah-a3">💡 정답: <strong>more interesting</strong> — 3음절 이상 형용사 비교급 = more + 원급 (more interestingly ✗: interestingly는 부사형, 형용사 자리에 쓸 수 없음)<br>📝 해석: 이 책은 내가 지난주에 읽은 것보다 더 흥미롭다.</div>
     <button class="hint-btn" onclick="showHint('a3')">💡 힌트 보기</button>
   </div>
 
@@ -306,6 +306,7 @@ body{font-family:'Baloo 2','Noto Sans KR',sans-serif;background:var(--bg);paddin
       → (비교급으로) Amy is
       <input class="blank" id="bi-a11" placeholder="비교급으로..." data-ans="taller than Lily" autocomplete="off" style="min-width:160px">.
     </div>
+    <div class="vocab"><span class="vw">tall 키가 큰</span></div>
     <button class="check-btn" onclick="checkBlank('a11')">✔ 확인</button>
     <div class="answer-hint" id="ah-a11">💡 정답: <strong>taller than Lily</strong> — tall(1음절) 비교급 = taller + than<br>📝 해석: Amy는 Lily보다 키가 더 크다.</div>
     <button class="hint-btn" onclick="showHint('a11')">💡 힌트 보기</button>
@@ -327,7 +328,7 @@ body{font-family:'Baloo 2','Noto Sans KR',sans-serif;background:var(--bg);paddin
     <div class="q-text">
       <span class="kor-hint">🇰🇷 우리는 2020년부터 이 마을에 살고 있다.</span>
       We
-      <input class="blank" id="bi-a13" placeholder="현재완료로..." data-ans="have lived in this town since 2020" autocomplete="off" style="min-width:280px">. <span class="ex">(live / have / since)</span>
+      <input class="blank" id="bi-a13" placeholder="현재완료로..." data-ans="have lived in this town since 2020" autocomplete="off" style="min-width:280px">. <span class="ex">(live / have)</span>
     </div>
     <button class="check-btn" onclick="checkBlank('a13')">✔ 확인</button>
     <div class="answer-hint" id="ah-a13">💡 정답: <strong>have lived in this town since 2020</strong> — We + have + lived + since + 과거 시점<br>📝 해석: 우리는 2020년부터 이 마을에 살고 있다.</div>
@@ -481,11 +482,11 @@ body{font-family:'Baloo 2','Noto Sans KR',sans-serif;background:var(--bg);paddin
   <div class="question-card" id="qc-b10"><span class="q-num">25</span><span class="q-type ctx">지문 · 10번</span>
     <div class="q-text">The final relay was the
       <input class="blank" id="bi-b10" placeholder="___" data-ans="most" autocomplete="off" style="min-width:70px">
-      exciting moment of the day. <span class="ex">(most)</span>
+      exciting moment of the day. <span class="ex">(exciting)</span>
     </div>
     <div class="vocab"><span class="vw">exciting 신나는</span><span class="vw">moment 순간</span></div>
     <button class="check-btn" onclick="checkBlank('b10')">✔ 확인</button>
-    <div class="answer-hint" id="ah-b10">💡 정답: <strong>most</strong> — exciting(3음절) 최상급 = the most + 원급: the most exciting<br>📝 해석: 마지막 이어달리기는 그날의 가장 신나는 순간이었다.</div>
+    <div class="answer-hint" id="ah-b10">💡 정답: <strong>most</strong> — exciting(3음절 이상) 최상급 = the + most + 원급 형태. the _____ exciting에서 최상급 표지어 most가 들어가야 함<br>📝 해석: 마지막 이어달리기는 그날의 가장 신나는 순간이었다.</div>
     <button class="hint-btn" onclick="showHint('b10')">💡 힌트 보기</button>
   </div>
 </div>

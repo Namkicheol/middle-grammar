@@ -1032,15 +1032,483 @@ const GAME_QUESTIONS = {
         ]
       },
       {
-        "id": "g1_l2_gerund_hard_${id}",
-        "kor": "${q.kor}👉 해설: ${q.hint}${vHtml}",
-        "eng": "${q.eng.replace(/___/g, \"___\")}",
-        "ans": "${q.ans.replace(/",
+        "id": "g1_l2_gerund_basic_s0q1",
+        "kor": "나는 지금 책을 읽고 있다.",
+        "eng": "I ___ a book now.",
+        "ans": "am reading",
         "opts": [
-          "${q.ans.replace(/",
-          "${o}",
-          "is listening",
-          "are studying"
+          "am reading",
+          "is reading",
+          "are reading",
+          "reading"
+        ]
+      },
+      {
+        "id": "g1_l2_gerund_basic_s0q2",
+        "kor": "그녀는 노래를 부르고 있다.",
+        "eng": "She ___ a song.",
+        "ans": "is singing",
+        "opts": [
+          "am singing",
+          "are singing",
+          "singing",
+          "is singing"
+        ]
+      },
+      {
+        "id": "g1_l2_gerund_basic_s0q3",
+        "kor": "그들은 축구를 하고 있다.",
+        "eng": "They ___ soccer.",
+        "ans": "are playing",
+        "opts": [
+          "am playing",
+          "playing",
+          "are playing",
+          "is playing"
+        ]
+      },
+      {
+        "id": "g1_l2_gerund_basic_s0q4",
+        "kor": "아기가 자고 있다.",
+        "eng": "The baby ___.",
+        "ans": "is sleeping",
+        "opts": [
+          "sleeping",
+          "is sleeping",
+          "are sleeping",
+          "sleeps"
+        ]
+      },
+      {
+        "id": "g1_l2_gerund_basic_s0q5",
+        "kor": "우리는 점심을 먹고 있다.",
+        "eng": "We ___ lunch.",
+        "ans": "are eating",
+        "opts": [
+          "are eating",
+          "is eating",
+          "eating",
+          "eat"
+        ]
+      },
+      {
+        "id": "g1_l2_gerund_basic_s0q6",
+        "kor": "비가 오고 있다.",
+        "eng": "It ___.",
+        "ans": "is raining",
+        "opts": [
+          "are raining",
+          "rains",
+          "raining",
+          "is raining"
+        ]
+      },
+      {
+        "id": "g1_l2_gerund_basic_s0q7",
+        "kor": "너는 잘 하고 있어.",
+        "eng": "You ___ well.",
+        "ans": "are doing",
+        "opts": [
+          "is doing",
+          "doing",
+          "are doing",
+          "am doing"
+        ]
+      },
+      {
+        "id": "g1_l2_gerund_basic_s0q8",
+        "kor": "개가 짖고 있다.",
+        "eng": "The dog ___.",
+        "ans": "is barking",
+        "opts": [
+          "barking",
+          "is barking",
+          "am barking",
+          "are barking"
+        ]
+      },
+      {
+        "id": "g1_l2_gerund_basic_s0q9",
+        "kor": "그들은 뛰지 않고 있다.",
+        "eng": "They ___.",
+        "ans": "are not running",
+        "opts": [
+          "are not running",
+          "is not running",
+          "not running",
+          "run not"
+        ]
+      },
+      {
+        "id": "g1_l2_gerund_basic_s0q10",
+        "kor": "그는 TV를 보고 있다.",
+        "eng": "He ___ TV.",
+        "ans": "is watching",
+        "opts": [
+          "are watching",
+          "watch",
+          "watching",
+          "is watching"
+        ]
+      },
+      {
+        "id": "g1_l2_gerund_basic_s1q1",
+        "kor": "나는 수영하는 것을 즐긴다.",
+        "eng": "I enjoy ___.",
+        "ans": "swimming",
+        "opts": [
+          "to swimming",
+          "swims",
+          "swimming",
+          "swim"
+        ]
+      },
+      {
+        "id": "g1_l2_gerund_basic_s1q2",
+        "kor": "걷는 것은 건강에 좋다.",
+        "eng": "___ is good.",
+        "ans": "Walking",
+        "opts": [
+          "Walked",
+          "Walking",
+          "Walk",
+          "Walks"
+        ]
+      },
+      {
+        "id": "g1_l2_gerund_basic_s1q3",
+        "kor": "내 취미는 사진 찍기다.",
+        "eng": "My hobby is ___ pictures.",
+        "ans": "taking",
+        "opts": [
+          "taking",
+          "take",
+          "to taking",
+          "takes"
+        ]
+      },
+      {
+        "id": "g1_l2_gerund_basic_s1q4",
+        "kor": "그녀는 숙제하기를 끝냈다.",
+        "eng": "She finished ___ her homework.",
+        "ans": "doing",
+        "opts": [
+          "do",
+          "to do",
+          "done",
+          "doing"
+        ]
+      },
+      {
+        "id": "g1_l2_gerund_basic_s1q5",
+        "kor": "도와준 것 고마워.",
+        "eng": "Thanks for ___ me.",
+        "ans": "helping",
+        "opts": [
+          "helped",
+          "to help",
+          "helping",
+          "help"
+        ]
+      },
+      {
+        "id": "g1_l2_gerund_basic_s1q6",
+        "kor": "문 여는 것 괜찮니?",
+        "eng": "Do you mind ___ the door?",
+        "ans": "opening",
+        "opts": [
+          "opened",
+          "opening",
+          "open",
+          "to open"
+        ]
+      },
+      {
+        "id": "g1_l2_gerund_basic_s1q7",
+        "kor": "그는 담배 피우는 것을 포기했다.",
+        "eng": "He gave up ___.",
+        "ans": "smoking",
+        "opts": [
+          "smoking",
+          "smoke",
+          "to smoke",
+          "smoked"
+        ]
+      },
+      {
+        "id": "g1_l2_gerund_basic_s1q8",
+        "kor": "외식하는 게 어때?",
+        "eng": "How about ___ out?",
+        "ans": "eating",
+        "opts": [
+          "eat",
+          "to eat",
+          "ate",
+          "eating"
+        ]
+      },
+      {
+        "id": "g1_l2_gerund_basic_s1q9",
+        "kor": "그는 대답을 피했다.",
+        "eng": "He avoided ___.",
+        "ans": "answering",
+        "opts": [
+          "to answer",
+          "answered",
+          "answering",
+          "answer"
+        ]
+      },
+      {
+        "id": "g1_l2_gerund_basic_s1q10",
+        "kor": "책 읽기는 재밌다.",
+        "eng": "___ books is fun.",
+        "ans": "Reading",
+        "opts": [
+          "Reads",
+          "Reading",
+          "Read",
+          "To reading"
+        ]
+      },
+      {
+        "id": "g1_l2_gerund_hard_s0q1",
+        "kor": "Mia는 지금 식물에 물을 주고 있다.",
+        "eng": "Mia ___ the plants now.",
+        "ans": "is watering",
+        "opts": [
+          "is watering",
+          "waters",
+          "watered",
+          "watering"
+        ]
+      },
+      {
+        "id": "g1_l2_gerund_hard_s0q2",
+        "kor": "그들은 지금 커피를 마시고 있다.",
+        "eng": "They ___ coffee right now.",
+        "ans": "are drinking",
+        "opts": [
+          "drink",
+          "drinks",
+          "drinking",
+          "are drinking"
+        ]
+      },
+      {
+        "id": "g1_l2_gerund_hard_s0q3",
+        "kor": "Tom은 지금 숙제를 하고 있지 않다. 그는 게임을 하고 있다.",
+        "eng": "Tom ___ his homework now. He is playing a game.",
+        "ans": "is not doing",
+        "opts": [
+          "isn't done",
+          "not is doing",
+          "is not doing",
+          "doesn't do"
+        ]
+      },
+      {
+        "id": "g1_l2_gerund_hard_s0q4",
+        "kor": "우리는 지금 수영 강습에 가는 중이다.",
+        "eng": "We ___ to our swimming lesson now.",
+        "ans": "are going",
+        "opts": [
+          "is going",
+          "are going",
+          "go",
+          "goes"
+        ]
+      },
+      {
+        "id": "g1_l2_gerund_hard_s0q5",
+        "kor": "Jake는 지금 우체국으로 뛰어가고 있다.",
+        "eng": "Jake ___ to the post office now.",
+        "ans": "is running",
+        "opts": [
+          "is running",
+          "runs",
+          "run",
+          "running"
+        ]
+      },
+      {
+        "id": "g1_l2_gerund_hard_s0q6",
+        "kor": "333번 버스가 지금 오고 있다.",
+        "eng": "The 333 bus ___ now.",
+        "ans": "is coming",
+        "opts": [
+          "comes",
+          "come",
+          "coming",
+          "is coming"
+        ]
+      },
+      {
+        "id": "g1_l2_gerund_hard_s0q7",
+        "kor": "학생들은 지금 프랑스어를 배우고 있다.",
+        "eng": "The students ___ French now.",
+        "ans": "are learning",
+        "opts": [
+          "learns",
+          "learning",
+          "are learning",
+          "learn"
+        ]
+      },
+      {
+        "id": "g1_l2_gerund_hard_s0q8",
+        "kor": "그 남자는 지금 컴퓨터를 고치고 있다.",
+        "eng": "The man ___ the computer now.",
+        "ans": "is fixing",
+        "opts": [
+          "fixing",
+          "is fixing",
+          "fixes",
+          "fix"
+        ]
+      },
+      {
+        "id": "g1_l2_gerund_hard_s0q9",
+        "kor": "Sophie는 지금 거울을 보고 있다.",
+        "eng": "Sophie ___ in the mirror now.",
+        "ans": "is looking",
+        "opts": [
+          "is looking",
+          "looks",
+          "look",
+          "looking"
+        ]
+      },
+      {
+        "id": "g1_l2_gerund_hard_s0q10",
+        "kor": "우리 가족은 지금 새 식당에서 저녁을 먹고 있다.",
+        "eng": "My family ___ dinner at a new restaurant now.",
+        "ans": "is having",
+        "opts": [
+          "has",
+          "have",
+          "having",
+          "is having"
+        ]
+      },
+      {
+        "id": "g1_l2_gerund_hard_s1q1",
+        "kor": "나는 친구를 한 시간 동안 계속 기다렸다.",
+        "eng": "I kept ___ for one hour for my friend.",
+        "ans": "waiting",
+        "opts": [
+          "to wait",
+          "waited",
+          "waiting",
+          "wait"
+        ]
+      },
+      {
+        "id": "g1_l2_gerund_hard_s1q2",
+        "kor": "Jake는 스키 타기를 즐겨서 매년 겨울에 스키장에 간다.",
+        "eng": "Jake enjoys ___, so he goes to a ski resort every winter.",
+        "ans": "skiing",
+        "opts": [
+          "skied",
+          "skiing",
+          "ski",
+          "to ski"
+        ]
+      },
+      {
+        "id": "g1_l2_gerund_hard_s1q3",
+        "kor": "Sophie는 일찍 일어나는 것을 포기했다.",
+        "eng": "Sophie gave up ___ up early.",
+        "ans": "waking",
+        "opts": [
+          "waking",
+          "wake",
+          "woke",
+          "to wake"
+        ]
+      },
+      {
+        "id": "g1_l2_gerund_hard_s1q4",
+        "kor": "나는 보고서를 다 쓰고 잠자리에 들었다.",
+        "eng": "I finished ___ a paper and went to sleep.",
+        "ans": "writing",
+        "opts": [
+          "write",
+          "wrote",
+          "to write",
+          "writing"
+        ]
+      },
+      {
+        "id": "g1_l2_gerund_hard_s1q5",
+        "kor": "많은 인도 사람들은 돼지고기 먹는 것을 피한다.",
+        "eng": "Many Indian people avoid ___ pork.",
+        "ans": "eating",
+        "opts": [
+          "ate",
+          "to eat",
+          "eating",
+          "eat"
+        ]
+      },
+      {
+        "id": "g1_l2_gerund_hard_s1q6",
+        "kor": "Nora는 오디션을 위해 노래 부르는 것을 연습한다.",
+        "eng": "Nora practices ___ for the audition.",
+        "ans": "singing",
+        "opts": [
+          "to sing",
+          "singing",
+          "sing",
+          "sings"
+        ]
+      },
+      {
+        "id": "g1_l2_gerund_hard_s1q7",
+        "kor": "냉장고가 갑자기 작동을 멈췄다.",
+        "eng": "The refrigerator suddenly stopped ___.",
+        "ans": "working",
+        "opts": [
+          "working",
+          "work",
+          "worked",
+          "to work"
+        ]
+      },
+      {
+        "id": "g1_l2_gerund_hard_s1q8",
+        "kor": "Ella는 강아지와 산책하는 것을 즐긴다.",
+        "eng": "Ella enjoys ___ a walk with her dog.",
+        "ans": "taking",
+        "opts": [
+          "take",
+          "took",
+          "to take",
+          "taking"
+        ]
+      },
+      {
+        "id": "g1_l2_gerund_hard_s1q9",
+        "kor": "나는 언젠가 일본을 방문하고 싶다.",
+        "eng": "I want ___ Japan someday.",
+        "ans": "to visit",
+        "opts": [
+          "visited",
+          "visit",
+          "to visit",
+          "visiting"
+        ]
+      },
+      {
+        "id": "g1_l2_gerund_hard_s1q10",
+        "kor": "불 좀 꺼주실래요?",
+        "eng": "Would you mind ___ off the light?",
+        "ans": "turning",
+        "opts": [
+          "to turn",
+          "turning",
+          "turn",
+          "turned"
         ]
       }
     ]

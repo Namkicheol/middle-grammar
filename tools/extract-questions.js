@@ -160,7 +160,7 @@ function fillOptions(questions) {
 
 const UNITS = [
   { key: 'g1-l1', label: '중1 L1 · be동사 & 일반동사', color: '#0ea5e9', files: [{ file: 'be-verb/v2.html', pattern: 'A' }, { file: 'general-verb-hard/index.html', pattern: 'A' }] },
-  { key: 'g1-l2', label: '중1 L2 · 현재진행형 & 동명사', color: '#6366f1', files: [{ file: 'gerund-basic/index.html', pattern: 'B' }, { file: 'gerund-hard/index.html', pattern: 'A' }] },
+  { key: 'g1-l2', label: '중1 L2 · 현재진행형 & 동명사', color: '#6366f1', files: [{ file: 'gerund-basic/index.html', pattern: 'B' }, { file: 'gerund-basic/index2.html', pattern: 'B' }, { file: 'gerund-hard/index.html', pattern: 'B' }] },
   { key: 'g1-l3', label: '중1 L3 · be동사 과거형', color: '#22c55e', files: [{ file: 'past-be/index.html', pattern: 'A' }, { file: 'past-be-hard/index.html', pattern: 'A' }] },
   { key: 'g1-l4', label: '중1 L4 · to부정사 & will/should', color: '#f59e0b', files: [{ file: 'to-will-basic/index.html', pattern: 'A' }, { file: 'to-will-hard/index.html', pattern: 'A' }] },
   { key: 'g1-l5', label: '중1 L5 · 재귀대명사 & to부정사', color: '#8b5cf6', files: [{ file: 'reflexive-to-basic/index.html', pattern: 'A' }, { file: 'reflexive-to-hard/index.html', pattern: 'A' }] },

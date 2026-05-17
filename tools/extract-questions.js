@@ -72,8 +72,14 @@ function parsePatternA(html, unitKey) {
       }
     }
 
-    // MCQ only: skip fix/input/scramble types (no choices = not MCQ)
-    if (opts.length === 0) continue;
+    // Skip fix(오류수정) and scramble(배열) — instruction text not suitable for game
+    if (/q-type\s+fix|q-type\s+arr/.test(block)) continue;
+
+    // For non-MCQ questions, fall back to input data-ans
+    if (opts.length === 0) {
+      const inputMatch = block.match(/<input\b[^>]*data-ans=["']([^"']+)["'][^>]*>/);
+      if (inputMatch) ans = inputMatch[1].trim();
+    }
     if (!ans) continue;
 
     // Extract q-text
@@ -186,9 +192,14 @@ for (const unit of UNITS) {
     }
     const html = fs.readFileSync(filePath, 'utf8');
     const prefix = unit.key.replace(/-/g, '_') + '_' + path.dirname(source.file).replace(/\W+/g, '_');
-    questions.push(...(source.pattern === 'A' ? parsePatternA(html, prefix) : parsePatternB(html, prefix)));
+    const level = /hard|심화|practice/.test(source.file) ? 2 : 1;
+    const parsed = source.pattern === 'A' ? parsePatternA(html, prefix) : parsePatternB(html, prefix);
+    parsed.forEach(q => { q.level = level; });
+    questions.push(...parsed);
   }
 
+  // 기초(level 1) → 심화(level 2) 순 정렬
+  questions.sort((a, b) => (a.level || 1) - (b.level || 1));
   questions = fillOptions(questions);
 
   // Validate

@@ -15,7 +15,8 @@ const GAME_QUESTIONS = {
           "am",
           "are",
           "was"
-        ]
+        ],
+        "level": 1
       },
       {
         "id": "g1_l1_be_verb_a2",
@@ -27,7 +28,8 @@ const GAME_QUESTIONS = {
           "am",
           "be",
           "are"
-        ]
+        ],
+        "level": 1
       },
       {
         "id": "g1_l1_be_verb_a3",
@@ -39,7 +41,8 @@ const GAME_QUESTIONS = {
           "be",
           "are",
           "am"
-        ]
+        ],
+        "level": 1
       },
       {
         "id": "g1_l1_be_verb_a4",
@@ -51,7 +54,8 @@ const GAME_QUESTIONS = {
           "am",
           "is",
           "are"
-        ]
+        ],
+        "level": 1
       },
       {
         "id": "g1_l1_be_verb_a5",
@@ -63,7 +67,8 @@ const GAME_QUESTIONS = {
           "am",
           "are",
           "be"
-        ]
+        ],
+        "level": 1
       },
       {
         "id": "g1_l1_be_verb_a6",
@@ -75,7 +80,8 @@ const GAME_QUESTIONS = {
           "is",
           "be",
           "are"
-        ]
+        ],
+        "level": 1
       },
       {
         "id": "g1_l1_be_verb_a7",
@@ -87,7 +93,8 @@ const GAME_QUESTIONS = {
           "be",
           "are",
           "is"
-        ]
+        ],
+        "level": 1
       },
       {
         "id": "g1_l1_be_verb_a8",
@@ -99,7 +106,8 @@ const GAME_QUESTIONS = {
           "is not",
           "are not",
           "not is"
-        ]
+        ],
+        "level": 1
       },
       {
         "id": "g1_l1_be_verb_a9",
@@ -111,7 +119,8 @@ const GAME_QUESTIONS = {
           "are not",
           "not be",
           "am not"
-        ]
+        ],
+        "level": 1
       },
       {
         "id": "g1_l1_be_verb_a10",
@@ -123,7 +132,138 @@ const GAME_QUESTIONS = {
           "am not",
           "aren't not",
           "are not"
-        ]
+        ],
+        "level": 1
+      },
+      {
+        "id": "g1_l1_be_verb_a11",
+        "kor": "Sally와 그녀의 언니는 중학생이다.",
+        "eng": "Sally and her sister ___ middle school students.",
+        "ans": "are",
+        "opts": [
+          "has",
+          "eat",
+          "are",
+          "don"
+        ],
+        "level": 1
+      },
+      {
+        "id": "g1_l1_be_verb_a12",
+        "kor": "그 답은 맞지 않다. 그것은 틀렸다.",
+        "eng": "The answer ___ right. It is wrong.",
+        "ans": "is not",
+        "opts": [
+          "cleans",
+          "is not",
+          "speaks",
+          "starts"
+        ],
+        "level": 1
+      },
+      {
+        "id": "g1_l1_be_verb_a13",
+        "kor": "나는 축구부에 있다.",
+        "eng": "I ___ in the soccer club.",
+        "ans": "am",
+        "opts": [
+          "am",
+          "is",
+          "go",
+          "are"
+        ],
+        "level": 1
+      },
+      {
+        "id": "g1_l1_be_verb_a14",
+        "kor": "이 신발들은 예쁘다.",
+        "eng": "These shoes ___ pretty.",
+        "ans": "are",
+        "opts": [
+          "don",
+          "has",
+          "eat",
+          "are"
+        ],
+        "level": 1
+      },
+      {
+        "id": "g1_l1_be_verb_a15",
+        "kor": "Tom과 나는 절친한 친구이다.",
+        "eng": "Tom and I ___ best friends.",
+        "ans": "are",
+        "opts": [
+          "has",
+          "eat",
+          "are",
+          "don"
+        ],
+        "level": 1
+      },
+      {
+        "id": "g1_l1_be_verb_a16",
+        "kor": "오늘 날씨가 좋지 않다.",
+        "eng": "The weather ___ not nice today.",
+        "ans": "is",
+        "opts": [
+          "are",
+          "is",
+          "am",
+          "go"
+        ],
+        "level": 1
+      },
+      {
+        "id": "g1_l1_be_verb_a17",
+        "kor": "Jaeho는 한국 출신이다.",
+        "eng": "Jaeho ___ from Korea.",
+        "ans": "is",
+        "opts": [
+          "is",
+          "am",
+          "go",
+          "are"
+        ],
+        "level": 1
+      },
+      {
+        "id": "g1_l1_be_verb_a18",
+        "kor": "두 동아리 모두 재미있다!",
+        "eng": "Both clubs ___ fun!",
+        "ans": "are",
+        "opts": [
+          "don",
+          "has",
+          "eat",
+          "are"
+        ],
+        "level": 1
+      },
+      {
+        "id": "g1_l1_be_verb_a19",
+        "kor": "나는 축구 팬이 아니다. 나는 농구를 좋아한다.",
+        "eng": "I ___ not a soccer fan. I like basketball.",
+        "ans": "am",
+        "opts": [
+          "go",
+          "are",
+          "am",
+          "is"
+        ],
+        "level": 1
+      },
+      {
+        "id": "g1_l1_be_verb_a20",
+        "kor": "Michael은 선생님이 아니다. 그는 학생이다.",
+        "eng": "Michael ___ a teacher. He is a student.",
+        "ans": "is not",
+        "opts": [
+          "cleans",
+          "is not",
+          "speaks",
+          "starts"
+        ],
+        "level": 1
       },
       {
         "id": "g1_l1_be_verb_b1",
@@ -131,11 +271,25 @@ const GAME_QUESTIONS = {
         "eng": "I ___ two sisters. We resemble each other.",
         "ans": "have",
         "opts": [
-          "having",
-          "to have",
           "have",
-          "has"
-        ]
+          "has",
+          "having",
+          "to have"
+        ],
+        "level": 1
+      },
+      {
+        "id": "g1_l1_be_verb_b2",
+        "kor": "그는 세 가지 언어를 말한다.",
+        "eng": "He ___ three languages.",
+        "ans": "speaks",
+        "opts": [
+          "is not",
+          "starts",
+          "cleans",
+          "speaks"
+        ],
+        "level": 1
       },
       {
         "id": "g1_l1_be_verb_b3",
@@ -143,11 +297,25 @@ const GAME_QUESTIONS = {
         "eng": "Kevin ___ violin lessons on Mondays.",
         "ans": "takes",
         "opts": [
+          "took",
           "taking",
           "takes",
-          "take",
-          "took"
-        ]
+          "take"
+        ],
+        "level": 1
+      },
+      {
+        "id": "g1_l1_be_verb_b4",
+        "kor": "나는 지금 인천에 살지 않는다. 나는 수원에 산다.",
+        "eng": "I ___ in Incheon now. I live in Suwon.",
+        "ans": "don",
+        "opts": [
+          "eat",
+          "don",
+          "are",
+          "has"
+        ],
+        "level": 1
       },
       {
         "id": "g1_l1_be_verb_b5",
@@ -159,7 +327,21 @@ const GAME_QUESTIONS = {
           "teach",
           "taught",
           "teaching"
-        ]
+        ],
+        "level": 1
+      },
+      {
+        "id": "g1_l1_be_verb_b6",
+        "kor": "Christina는 고기를 먹지 않는다. 그녀는 채식주의자이다.",
+        "eng": "Christina ___ meat. She is a vegetarian.",
+        "ans": "doesn",
+        "opts": [
+          "takes",
+          "study",
+          "feels",
+          "doesn"
+        ],
+        "level": 1
       },
       {
         "id": "g1_l1_be_verb_b7",
@@ -167,11 +349,25 @@ const GAME_QUESTIONS = {
         "eng": "My parents ___ for a hospital. They are teachers.",
         "ans": "don't work",
         "opts": [
-          "doesn't work",
           "not work",
           "works not",
-          "don't work"
-        ]
+          "don't work",
+          "doesn't work"
+        ],
+        "level": 1
+      },
+      {
+        "id": "g1_l1_be_verb_b8",
+        "kor": "그 영화는 5분 후에 시작한다.",
+        "eng": "The movie ___ in five minutes.",
+        "ans": "starts",
+        "opts": [
+          "cleans",
+          "starts",
+          "is not",
+          "speaks"
+        ],
+        "level": 1
       },
       {
         "id": "g1_l1_be_verb_b9",
@@ -179,11 +375,25 @@ const GAME_QUESTIONS = {
         "eng": "Mia ___ to school on foot.",
         "ans": "goes",
         "opts": [
-          "went",
-          "going",
           "goes",
-          "go"
-        ]
+          "go",
+          "went",
+          "going"
+        ],
+        "level": 1
+      },
+      {
+        "id": "g1_l1_be_verb_b10",
+        "kor": "Ellie는 매일 집을 청소한다.",
+        "eng": "Ellie ___ her house every day.",
+        "ans": "cleans",
+        "opts": [
+          "is not",
+          "speaks",
+          "starts",
+          "cleans"
+        ],
+        "level": 1
       },
       {
         "id": "g1_l1_be_verb_b11",
@@ -191,11 +401,25 @@ const GAME_QUESTIONS = {
         "eng": "Sophie ___ camping with her family.",
         "ans": "goes",
         "opts": [
+          "went",
           "going",
           "goes",
-          "go",
-          "went"
-        ]
+          "go"
+        ],
+        "level": 1
+      },
+      {
+        "id": "g1_l1_be_verb_b12",
+        "kor": "나는 여가 시간에 친구들과 축구를 한다.",
+        "eng": "I ___ soccer with my friends in my free time.",
+        "ans": "play",
+        "opts": [
+          "does",
+          "play",
+          "have",
+          "goes"
+        ],
+        "level": 1
       },
       {
         "id": "g1_l1_be_verb_b13",
@@ -207,7 +431,21 @@ const GAME_QUESTIONS = {
           "studies",
           "studied",
           "studying"
-        ]
+        ],
+        "level": 1
+      },
+      {
+        "id": "g1_l1_be_verb_b14",
+        "kor": "그녀는 매일 운동하기 때문에 건강하다고 느낀다.",
+        "eng": "She ___ healthy because she exercises every day.",
+        "ans": "feels",
+        "opts": [
+          "takes",
+          "doesn",
+          "study",
+          "feels"
+        ],
+        "level": 1
       },
       {
         "id": "g1_l1_be_verb_b15",
@@ -215,11 +453,25 @@ const GAME_QUESTIONS = {
         "eng": "Diego ___ pictures of Bella online.",
         "ans": "posts",
         "opts": [
-          "post",
           "posted",
           "posting",
-          "posts"
-        ]
+          "posts",
+          "post"
+        ],
+        "level": 1
+      },
+      {
+        "id": "g1_l1_be_verb_b16",
+        "kor": "우리 가족은 매우 자주 캠핑을 간다.",
+        "eng": "My family ___ camping very often.",
+        "ans": "goes",
+        "opts": [
+          "does",
+          "goes",
+          "have",
+          "play"
+        ],
+        "level": 1
       },
       {
         "id": "g1_l1_be_verb_b17",
@@ -227,11 +479,25 @@ const GAME_QUESTIONS = {
         "eng": "Amara ___ dance moves every day.",
         "ans": "practices",
         "opts": [
-          "practiced",
-          "practicing",
           "practices",
-          "practice"
-        ]
+          "practice",
+          "practiced",
+          "practicing"
+        ],
+        "level": 1
+      },
+      {
+        "id": "g1_l1_be_verb_b18",
+        "kor": "그는 축구를 하지 않는다. 그는 야구를 좋아한다.",
+        "eng": "He ___ soccer. He likes baseball.",
+        "ans": "doesn",
+        "opts": [
+          "takes",
+          "study",
+          "feels",
+          "doesn"
+        ],
+        "level": 1
       },
       {
         "id": "g1_l1_be_verb_b19",
@@ -239,11 +505,25 @@ const GAME_QUESTIONS = {
         "eng": "The baby often ___ at night.",
         "ans": "cries",
         "opts": [
+          "cried",
           "crying",
           "cries",
-          "cry",
-          "cried"
-        ]
+          "cry"
+        ],
+        "level": 1
+      },
+      {
+        "id": "g1_l1_be_verb_b20",
+        "kor": "Sophie는 사진에서 바게트를 들고 있다. 그녀는 프랑스 출신이다!",
+        "eng": "Sophie ___ a baguette in the picture. She is from France!",
+        "ans": "has",
+        "opts": [
+          "eat",
+          "has",
+          "are",
+          "don"
+        ],
+        "level": 1
       },
       {
         "id": "g1_l1_general_verb_hard_a1",
@@ -255,7 +535,8 @@ const GAME_QUESTIONS = {
           "plays",
           "playing",
           "played"
-        ]
+        ],
+        "level": 2
       },
       {
         "id": "g1_l1_general_verb_hard_a2",
@@ -267,7 +548,8 @@ const GAME_QUESTIONS = {
           "going",
           "went",
           "go"
-        ]
+        ],
+        "level": 2
       },
       {
         "id": "g1_l1_general_verb_hard_a3",
@@ -279,7 +561,8 @@ const GAME_QUESTIONS = {
           "not like",
           "doesn't like",
           "don't like"
-        ]
+        ],
+        "level": 2
       },
       {
         "id": "g1_l1_general_verb_hard_a4",
@@ -291,7 +574,229 @@ const GAME_QUESTIONS = {
           "don't play",
           "doesn't play",
           "don't plays"
-        ]
+        ],
+        "level": 2
+      },
+      {
+        "id": "g1_l1_general_verb_hard_a9",
+        "kor": "Jessie는 매일 밤 일기장에 이야기를 쓴다.",
+        "eng": "원문: I write stories in my diary every night. → (주어를 Jessie로) Jessie ___ stories in her diary every night.",
+        "ans": "writes",
+        "opts": [
+          "writes",
+          "is not",
+          "speaks",
+          "starts"
+        ],
+        "level": 2
+      },
+      {
+        "id": "g1_l1_general_verb_hard_a10",
+        "kor": "그들은 일요일에 테니스를 치지 않는다.",
+        "eng": "원문: They play tennis on Sundays. → (부정문으로) They ___ tennis on Sundays.",
+        "ans": "don",
+        "opts": [
+          "are",
+          "has",
+          "eat",
+          "don"
+        ],
+        "level": 2
+      },
+      {
+        "id": "g1_l1_general_verb_hard_a11",
+        "kor": "내 언니는 주말마다 자기 방을 청소하지 않는다.",
+        "eng": "원문: My sister cleans her room every weekend. → (부정문으로) My sister ___ her room every weekend.",
+        "ans": "doesn",
+        "opts": [
+          "study",
+          "feels",
+          "doesn",
+          "takes"
+        ],
+        "level": 2
+      },
+      {
+        "id": "g1_l1_general_verb_hard_a12",
+        "kor": "유리는 친구들에게 자주 문자 메시지를 보낸다.",
+        "eng": "Yuri often ___ text messages to her friends.",
+        "ans": "sends",
+        "opts": [
+          "study",
+          "sends",
+          "takes",
+          "doesn"
+        ],
+        "level": 2
+      },
+      {
+        "id": "g1_l1_general_verb_hard_a13",
+        "kor": "나는 주말에 수학 숙제를 좋아하지 않는다.",
+        "eng": "I ___ math homework on weekends.",
+        "ans": "don",
+        "opts": [
+          "don",
+          "are",
+          "has",
+          "eat"
+        ],
+        "level": 2
+      },
+      {
+        "id": "g1_l1_general_verb_hard_a14",
+        "kor": "그 가수는 아름다운 목소리를 가지고 있다.",
+        "eng": "The singer ___ a beautiful voice.",
+        "ans": "has",
+        "opts": [
+          "are",
+          "don",
+          "eat",
+          "has"
+        ],
+        "level": 2
+      },
+      {
+        "id": "g1_l1_general_verb_hard_a15",
+        "kor": "우리는 주말에 수업이 없다.",
+        "eng": "We ___ classes on weekends.",
+        "ans": "don",
+        "opts": [
+          "has",
+          "eat",
+          "don",
+          "are"
+        ],
+        "level": 2
+      },
+      {
+        "id": "g1_l1_general_verb_hard_b1",
+        "kor": "나는 매일 학교에서 친구들과 점심을 먹는다.",
+        "eng": "I ___ lunch with my friends at school every day.",
+        "ans": "eat",
+        "opts": [
+          "has",
+          "eat",
+          "are",
+          "don"
+        ],
+        "level": 2
+      },
+      {
+        "id": "g1_l1_general_verb_hard_b2",
+        "kor": "내 가장 친한 친구 Amy는 집에서 도시락을 가져온다.",
+        "eng": "My best friend, Amy, ___ a packed lunch from home.",
+        "ans": "brings",
+        "opts": [
+          "brings",
+          "is not",
+          "speaks",
+          "starts"
+        ],
+        "level": 2
+      },
+      {
+        "id": "g1_l1_general_verb_hard_b3",
+        "kor": "우리는 같은 테이블에 앉아서 책에 대해 이야기한다.",
+        "eng": "We ___ at the same table and talk about books.",
+        "ans": "sit",
+        "opts": [
+          "are",
+          "don",
+          "has",
+          "sit"
+        ],
+        "level": 2
+      },
+      {
+        "id": "g1_l1_general_verb_hard_b4",
+        "kor": "Amy는 달콤한 음료를 좋아하지 않는다 — 그녀는 항상 물을 가져온다.",
+        "eng": "Amy ___ sweet drinks — she always brings water instead.",
+        "ans": "doesn",
+        "opts": [
+          "study",
+          "feels",
+          "doesn",
+          "takes"
+        ],
+        "level": 2
+      },
+      {
+        "id": "g1_l1_general_verb_hard_b5",
+        "kor": "금요일에 우리는 점심 후에 책을 반납하러 도서관에 간다.",
+        "eng": "On Fridays, we ___ the library after lunch to return our books.",
+        "ans": "visit",
+        "opts": [
+          "study",
+          "visit",
+          "takes",
+          "doesn"
+        ],
+        "level": 2
+      },
+      {
+        "id": "g1_l1_general_verb_hard_b6",
+        "kor": "토요일에 Jake의 가족은 함께 많은 것을 한다.",
+        "eng": "On Saturdays, Jake's family ___ many things together.",
+        "ans": "does",
+        "opts": [
+          "does",
+          "have",
+          "goes",
+          "play"
+        ],
+        "level": 2
+      },
+      {
+        "id": "g1_l1_general_verb_hard_b7",
+        "kor": "그의 아빠는 모두를 위해 아침을 요리한다.",
+        "eng": "His dad ___ breakfast for everyone.",
+        "ans": "cooks",
+        "opts": [
+          "takes",
+          "doesn",
+          "study",
+          "cooks"
+        ],
+        "level": 2
+      },
+      {
+        "id": "g1_l1_general_verb_hard_b8",
+        "kor": "그의 엄마는 커피를 마시지 않는다 — 그녀는 차를 더 좋아한다.",
+        "eng": "His mom ___ coffee — she prefers tea.",
+        "ans": "doesn",
+        "opts": [
+          "study",
+          "feels",
+          "doesn",
+          "takes"
+        ],
+        "level": 2
+      },
+      {
+        "id": "g1_l1_general_verb_hard_b9",
+        "kor": "Jake와 그의 여동생은 아침을 먹고 거실을 청소한다.",
+        "eng": "Jake and his sister ___ the living room after breakfast.",
+        "ans": "clean",
+        "opts": [
+          "study",
+          "clean",
+          "takes",
+          "doesn"
+        ],
+        "level": 2
+      },
+      {
+        "id": "g1_l1_general_verb_hard_b10",
+        "kor": "그런 다음 그들은 오후에 보드게임을 한다.",
+        "eng": "Then they ___ board games in the afternoon.",
+        "ans": "play",
+        "opts": [
+          "play",
+          "have",
+          "goes",
+          "does"
+        ],
+        "level": 2
       }
     ]
   },
@@ -309,7 +814,8 @@ const GAME_QUESTIONS = {
           "is reading",
           "are reading",
           "reading"
-        ]
+        ],
+        "level": 1
       },
       {
         "id": "g1_l2_gerund_basic_s0q2",
@@ -321,7 +827,8 @@ const GAME_QUESTIONS = {
           "are listening",
           "am listening",
           "is listening"
-        ]
+        ],
+        "level": 1
       },
       {
         "id": "g1_l2_gerund_basic_s0q3",
@@ -333,7 +840,8 @@ const GAME_QUESTIONS = {
           "plays",
           "are playing",
           "is playing"
-        ]
+        ],
+        "level": 1
       },
       {
         "id": "g1_l2_gerund_basic_s0q4",
@@ -345,7 +853,8 @@ const GAME_QUESTIONS = {
           "is sleeping",
           "are sleeping",
           "sleeps"
-        ]
+        ],
+        "level": 1
       },
       {
         "id": "g1_l2_gerund_basic_s0q5",
@@ -357,7 +866,8 @@ const GAME_QUESTIONS = {
           "is studying",
           "studies",
           "studying"
-        ]
+        ],
+        "level": 1
       },
       {
         "id": "g1_l2_gerund_basic_s0q6",
@@ -369,7 +879,8 @@ const GAME_QUESTIONS = {
           "are making",
           "making",
           "is making"
-        ]
+        ],
+        "level": 1
       },
       {
         "id": "g1_l2_gerund_basic_s0q7",
@@ -381,7 +892,8 @@ const GAME_QUESTIONS = {
           "rains",
           "is raining",
           "are raining"
-        ]
+        ],
+        "level": 1
       },
       {
         "id": "g1_l2_gerund_basic_s0q8",
@@ -393,7 +905,8 @@ const GAME_QUESTIONS = {
           "are watching",
           "is watching",
           "watching"
-        ]
+        ],
+        "level": 1
       },
       {
         "id": "g1_l2_gerund_basic_s0q9",
@@ -405,7 +918,8 @@ const GAME_QUESTIONS = {
           "am",
           "is",
           "be"
-        ]
+        ],
+        "level": 1
       },
       {
         "id": "g1_l2_gerund_basic_s0q10",
@@ -417,7 +931,8 @@ const GAME_QUESTIONS = {
           "are",
           "be",
           "is"
-        ]
+        ],
+        "level": 1
       },
       {
         "id": "g1_l2_gerund_basic_s1q1",
@@ -429,7 +944,8 @@ const GAME_QUESTIONS = {
           "played",
           "playing",
           "to play"
-        ]
+        ],
+        "level": 1
       },
       {
         "id": "g1_l2_gerund_basic_s1q2",
@@ -441,7 +957,8 @@ const GAME_QUESTIONS = {
           "Walking",
           "Walk",
           "Walks"
-        ]
+        ],
+        "level": 1
       },
       {
         "id": "g1_l2_gerund_basic_s1q3",
@@ -453,7 +970,8 @@ const GAME_QUESTIONS = {
           "to taking",
           "take",
           "took"
-        ]
+        ],
+        "level": 1
       },
       {
         "id": "g1_l2_gerund_basic_s1q4",
@@ -465,7 +983,8 @@ const GAME_QUESTIONS = {
           "do",
           "done",
           "doing"
-        ]
+        ],
+        "level": 1
       },
       {
         "id": "g1_l2_gerund_basic_s1q5",
@@ -477,7 +996,8 @@ const GAME_QUESTIONS = {
           "to help",
           "helping",
           "help"
-        ]
+        ],
+        "level": 1
       },
       {
         "id": "g1_l2_gerund_basic_s1q6",
@@ -489,7 +1009,8 @@ const GAME_QUESTIONS = {
           "opening",
           "open",
           "to open"
-        ]
+        ],
+        "level": 1
       },
       {
         "id": "g1_l2_gerund_basic_s1q7",
@@ -501,7 +1022,8 @@ const GAME_QUESTIONS = {
           "smoke",
           "to smoke",
           "smoked"
-        ]
+        ],
+        "level": 1
       },
       {
         "id": "g1_l2_gerund_basic_s1q8",
@@ -513,7 +1035,8 @@ const GAME_QUESTIONS = {
           "to eat",
           "ate",
           "eating"
-        ]
+        ],
+        "level": 1
       },
       {
         "id": "g1_l2_gerund_basic_s1q9",
@@ -525,7 +1048,8 @@ const GAME_QUESTIONS = {
           "To making",
           "Making",
           "Make"
-        ]
+        ],
+        "level": 1
       },
       {
         "id": "g1_l2_gerund_basic_s1q10",
@@ -537,7 +1061,8 @@ const GAME_QUESTIONS = {
           "seeing",
           "see",
           "saw"
-        ]
+        ],
+        "level": 1
       },
       {
         "id": "g1_l2_gerund_basic_s0q1",
@@ -549,7 +1074,8 @@ const GAME_QUESTIONS = {
           "is reading",
           "are reading",
           "reading"
-        ]
+        ],
+        "level": 1
       },
       {
         "id": "g1_l2_gerund_basic_s0q2",
@@ -561,7 +1087,8 @@ const GAME_QUESTIONS = {
           "are singing",
           "singing",
           "is singing"
-        ]
+        ],
+        "level": 1
       },
       {
         "id": "g1_l2_gerund_basic_s0q3",
@@ -573,7 +1100,8 @@ const GAME_QUESTIONS = {
           "playing",
           "are playing",
           "is playing"
-        ]
+        ],
+        "level": 1
       },
       {
         "id": "g1_l2_gerund_basic_s0q4",
@@ -585,7 +1113,8 @@ const GAME_QUESTIONS = {
           "is sleeping",
           "are sleeping",
           "sleeps"
-        ]
+        ],
+        "level": 1
       },
       {
         "id": "g1_l2_gerund_basic_s0q5",
@@ -597,7 +1126,8 @@ const GAME_QUESTIONS = {
           "is eating",
           "eating",
           "eat"
-        ]
+        ],
+        "level": 1
       },
       {
         "id": "g1_l2_gerund_basic_s0q6",
@@ -609,7 +1139,8 @@ const GAME_QUESTIONS = {
           "rains",
           "raining",
           "is raining"
-        ]
+        ],
+        "level": 1
       },
       {
         "id": "g1_l2_gerund_basic_s0q7",
@@ -621,7 +1152,8 @@ const GAME_QUESTIONS = {
           "doing",
           "are doing",
           "am doing"
-        ]
+        ],
+        "level": 1
       },
       {
         "id": "g1_l2_gerund_basic_s0q8",
@@ -633,7 +1165,8 @@ const GAME_QUESTIONS = {
           "is barking",
           "am barking",
           "are barking"
-        ]
+        ],
+        "level": 1
       },
       {
         "id": "g1_l2_gerund_basic_s0q9",
@@ -645,7 +1178,8 @@ const GAME_QUESTIONS = {
           "is not running",
           "not running",
           "run not"
-        ]
+        ],
+        "level": 1
       },
       {
         "id": "g1_l2_gerund_basic_s0q10",
@@ -657,7 +1191,8 @@ const GAME_QUESTIONS = {
           "watch",
           "watching",
           "is watching"
-        ]
+        ],
+        "level": 1
       },
       {
         "id": "g1_l2_gerund_basic_s1q1",
@@ -669,7 +1204,8 @@ const GAME_QUESTIONS = {
           "swims",
           "swimming",
           "swim"
-        ]
+        ],
+        "level": 1
       },
       {
         "id": "g1_l2_gerund_basic_s1q2",
@@ -681,7 +1217,8 @@ const GAME_QUESTIONS = {
           "Walking",
           "Walk",
           "Walks"
-        ]
+        ],
+        "level": 1
       },
       {
         "id": "g1_l2_gerund_basic_s1q3",
@@ -693,7 +1230,8 @@ const GAME_QUESTIONS = {
           "take",
           "to taking",
           "takes"
-        ]
+        ],
+        "level": 1
       },
       {
         "id": "g1_l2_gerund_basic_s1q4",
@@ -705,7 +1243,8 @@ const GAME_QUESTIONS = {
           "to do",
           "done",
           "doing"
-        ]
+        ],
+        "level": 1
       },
       {
         "id": "g1_l2_gerund_basic_s1q5",
@@ -717,7 +1256,8 @@ const GAME_QUESTIONS = {
           "to help",
           "helping",
           "help"
-        ]
+        ],
+        "level": 1
       },
       {
         "id": "g1_l2_gerund_basic_s1q6",
@@ -729,7 +1269,8 @@ const GAME_QUESTIONS = {
           "opening",
           "open",
           "to open"
-        ]
+        ],
+        "level": 1
       },
       {
         "id": "g1_l2_gerund_basic_s1q7",
@@ -741,7 +1282,8 @@ const GAME_QUESTIONS = {
           "smoke",
           "to smoke",
           "smoked"
-        ]
+        ],
+        "level": 1
       },
       {
         "id": "g1_l2_gerund_basic_s1q8",
@@ -753,7 +1295,8 @@ const GAME_QUESTIONS = {
           "to eat",
           "ate",
           "eating"
-        ]
+        ],
+        "level": 1
       },
       {
         "id": "g1_l2_gerund_basic_s1q9",
@@ -765,7 +1308,8 @@ const GAME_QUESTIONS = {
           "answered",
           "answering",
           "answer"
-        ]
+        ],
+        "level": 1
       },
       {
         "id": "g1_l2_gerund_basic_s1q10",
@@ -777,7 +1321,8 @@ const GAME_QUESTIONS = {
           "Reading",
           "Read",
           "To reading"
-        ]
+        ],
+        "level": 1
       },
       {
         "id": "g1_l2_gerund_hard_s0q1",
@@ -789,7 +1334,8 @@ const GAME_QUESTIONS = {
           "waters",
           "watered",
           "watering"
-        ]
+        ],
+        "level": 2
       },
       {
         "id": "g1_l2_gerund_hard_s0q2",
@@ -801,7 +1347,8 @@ const GAME_QUESTIONS = {
           "drinks",
           "drinking",
           "are drinking"
-        ]
+        ],
+        "level": 2
       },
       {
         "id": "g1_l2_gerund_hard_s0q3",
@@ -813,7 +1360,8 @@ const GAME_QUESTIONS = {
           "not is doing",
           "is not doing",
           "doesn't do"
-        ]
+        ],
+        "level": 2
       },
       {
         "id": "g1_l2_gerund_hard_s0q4",
@@ -825,7 +1373,8 @@ const GAME_QUESTIONS = {
           "are going",
           "go",
           "goes"
-        ]
+        ],
+        "level": 2
       },
       {
         "id": "g1_l2_gerund_hard_s0q5",
@@ -837,7 +1386,8 @@ const GAME_QUESTIONS = {
           "runs",
           "run",
           "running"
-        ]
+        ],
+        "level": 2
       },
       {
         "id": "g1_l2_gerund_hard_s0q6",
@@ -849,7 +1399,8 @@ const GAME_QUESTIONS = {
           "come",
           "coming",
           "is coming"
-        ]
+        ],
+        "level": 2
       },
       {
         "id": "g1_l2_gerund_hard_s0q7",
@@ -861,7 +1412,8 @@ const GAME_QUESTIONS = {
           "learning",
           "are learning",
           "learn"
-        ]
+        ],
+        "level": 2
       },
       {
         "id": "g1_l2_gerund_hard_s0q8",
@@ -873,7 +1425,8 @@ const GAME_QUESTIONS = {
           "is fixing",
           "fixes",
           "fix"
-        ]
+        ],
+        "level": 2
       },
       {
         "id": "g1_l2_gerund_hard_s0q9",
@@ -885,7 +1438,8 @@ const GAME_QUESTIONS = {
           "looks",
           "look",
           "looking"
-        ]
+        ],
+        "level": 2
       },
       {
         "id": "g1_l2_gerund_hard_s0q10",
@@ -897,7 +1451,8 @@ const GAME_QUESTIONS = {
           "have",
           "having",
           "is having"
-        ]
+        ],
+        "level": 2
       },
       {
         "id": "g1_l2_gerund_hard_s1q1",
@@ -909,7 +1464,8 @@ const GAME_QUESTIONS = {
           "waited",
           "waiting",
           "wait"
-        ]
+        ],
+        "level": 2
       },
       {
         "id": "g1_l2_gerund_hard_s1q2",
@@ -921,7 +1477,8 @@ const GAME_QUESTIONS = {
           "skiing",
           "ski",
           "to ski"
-        ]
+        ],
+        "level": 2
       },
       {
         "id": "g1_l2_gerund_hard_s1q3",
@@ -933,7 +1490,8 @@ const GAME_QUESTIONS = {
           "wake",
           "woke",
           "to wake"
-        ]
+        ],
+        "level": 2
       },
       {
         "id": "g1_l2_gerund_hard_s1q4",
@@ -945,7 +1503,8 @@ const GAME_QUESTIONS = {
           "wrote",
           "to write",
           "writing"
-        ]
+        ],
+        "level": 2
       },
       {
         "id": "g1_l2_gerund_hard_s1q5",
@@ -957,7 +1516,8 @@ const GAME_QUESTIONS = {
           "to eat",
           "eating",
           "eat"
-        ]
+        ],
+        "level": 2
       },
       {
         "id": "g1_l2_gerund_hard_s1q6",
@@ -969,7 +1529,8 @@ const GAME_QUESTIONS = {
           "singing",
           "sing",
           "sings"
-        ]
+        ],
+        "level": 2
       },
       {
         "id": "g1_l2_gerund_hard_s1q7",
@@ -981,7 +1542,8 @@ const GAME_QUESTIONS = {
           "work",
           "worked",
           "to work"
-        ]
+        ],
+        "level": 2
       },
       {
         "id": "g1_l2_gerund_hard_s1q8",
@@ -993,7 +1555,8 @@ const GAME_QUESTIONS = {
           "took",
           "to take",
           "taking"
-        ]
+        ],
+        "level": 2
       },
       {
         "id": "g1_l2_gerund_hard_s1q9",
@@ -1005,7 +1568,8 @@ const GAME_QUESTIONS = {
           "visit",
           "to visit",
           "visiting"
-        ]
+        ],
+        "level": 2
       },
       {
         "id": "g1_l2_gerund_hard_s1q10",
@@ -1017,7 +1581,8 @@ const GAME_QUESTIONS = {
           "turning",
           "turn",
           "turned"
-        ]
+        ],
+        "level": 2
       }
     ]
   },
@@ -1035,7 +1600,8 @@ const GAME_QUESTIONS = {
           "were",
           "am",
           "is"
-        ]
+        ],
+        "level": 1
       },
       {
         "id": "g1_l3_past_be_a2",
@@ -1047,7 +1613,8 @@ const GAME_QUESTIONS = {
           "are",
           "be",
           "were"
-        ]
+        ],
+        "level": 1
       },
       {
         "id": "g1_l3_past_be_a3",
@@ -1059,7 +1626,8 @@ const GAME_QUESTIONS = {
           "be",
           "was",
           "were"
-        ]
+        ],
+        "level": 1
       },
       {
         "id": "g1_l3_past_be_a4",
@@ -1071,7 +1639,8 @@ const GAME_QUESTIONS = {
           "were",
           "was",
           "is"
-        ]
+        ],
+        "level": 1
       },
       {
         "id": "g1_l3_past_be_a5",
@@ -1083,7 +1652,8 @@ const GAME_QUESTIONS = {
           "were",
           "are",
           "be"
-        ]
+        ],
+        "level": 1
       },
       {
         "id": "g1_l3_past_be_a6",
@@ -1095,7 +1665,8 @@ const GAME_QUESTIONS = {
           "is",
           "are",
           "were"
-        ]
+        ],
+        "level": 1
       },
       {
         "id": "g1_l3_past_be_a7",
@@ -1107,7 +1678,8 @@ const GAME_QUESTIONS = {
           "is",
           "were",
           "was"
-        ]
+        ],
+        "level": 1
       },
       {
         "id": "g1_l3_past_be_a8",
@@ -1119,7 +1691,8 @@ const GAME_QUESTIONS = {
           "was",
           "were",
           "are"
-        ]
+        ],
+        "level": 1
       },
       {
         "id": "g1_l3_past_be_a9",
@@ -1131,7 +1704,8 @@ const GAME_QUESTIONS = {
           "was",
           "is",
           "am"
-        ]
+        ],
+        "level": 1
       },
       {
         "id": "g1_l3_past_be_a10",
@@ -1143,7 +1717,138 @@ const GAME_QUESTIONS = {
           "are",
           "be",
           "was"
-        ]
+        ],
+        "level": 1
+      },
+      {
+        "id": "g1_l3_past_be_a11",
+        "kor": "나는 너를 다시 만나서 기뻤다.",
+        "eng": "I ___ happy to see you again.",
+        "ans": "was",
+        "opts": [
+          "weren",
+          "Was he",
+          "was",
+          "were"
+        ],
+        "level": 1
+      },
+      {
+        "id": "g1_l3_past_be_a12",
+        "kor": "나의 부모님은 하루 종일 직장에 계셨다.",
+        "eng": "My parents ___ at work all day.",
+        "ans": "were",
+        "opts": [
+          "Was he",
+          "were",
+          "was",
+          "weren"
+        ],
+        "level": 1
+      },
+      {
+        "id": "g1_l3_past_be_a13",
+        "kor": "그 영화는 매우 지루했다.",
+        "eng": "The movie ___ very boring.",
+        "ans": "was",
+        "opts": [
+          "was",
+          "were",
+          "weren",
+          "Was he"
+        ],
+        "level": 1
+      },
+      {
+        "id": "g1_l3_past_be_a14",
+        "kor": "Jack과 그의 형(동생)은 수영장에 있었다.",
+        "eng": "Jack and his brother ___ at the swimming pool.",
+        "ans": "were",
+        "opts": [
+          "was",
+          "weren",
+          "Was he",
+          "were"
+        ],
+        "level": 1
+      },
+      {
+        "id": "g1_l3_past_be_a15",
+        "kor": "교실은 조용했다.",
+        "eng": "It ___ quiet in the classroom.",
+        "ans": "was",
+        "opts": [
+          "weren",
+          "Was he",
+          "was",
+          "were"
+        ],
+        "level": 1
+      },
+      {
+        "id": "g1_l3_past_be_a16",
+        "kor": "우리는 초등학교 때 좋은 친구였다.",
+        "eng": "We ___ good friends in elementary school.",
+        "ans": "were",
+        "opts": [
+          "Was he",
+          "were",
+          "was",
+          "weren"
+        ],
+        "level": 1
+      },
+      {
+        "id": "g1_l3_past_be_a17",
+        "kor": "그 음식은 맛있었다!",
+        "eng": "The food ___ delicious!",
+        "ans": "was",
+        "opts": [
+          "was",
+          "were",
+          "weren",
+          "Was he"
+        ],
+        "level": 1
+      },
+      {
+        "id": "g1_l3_past_be_a18",
+        "kor": "학생들은 현장학습에 신이 났다.",
+        "eng": "The students ___ excited about the field trip.",
+        "ans": "were",
+        "opts": [
+          "was",
+          "weren",
+          "Was he",
+          "were"
+        ],
+        "level": 1
+      },
+      {
+        "id": "g1_l3_past_be_a19",
+        "kor": "Lisa는 어렸을 때 훌륭한 가수였다.",
+        "eng": "Lisa ___ a great singer when she was young.",
+        "ans": "was",
+        "opts": [
+          "weren",
+          "Was he",
+          "was",
+          "were"
+        ],
+        "level": 1
+      },
+      {
+        "id": "g1_l3_past_be_a20",
+        "kor": "너와 나는 과학 프로젝트의 파트너였다.",
+        "eng": "You and I ___ partners for the science project.",
+        "ans": "were",
+        "opts": [
+          "Was he",
+          "were",
+          "was",
+          "weren"
+        ],
+        "level": 1
       },
       {
         "id": "g1_l3_past_be_b1",
@@ -1151,11 +1856,12 @@ const GAME_QUESTIONS = {
         "eng": "He ___ at school yesterday. He was at home.",
         "ans": "was not",
         "opts": [
-          "not was",
-          "is not",
           "was not",
-          "were not"
-        ]
+          "were not",
+          "not was",
+          "is not"
+        ],
+        "level": 1
       },
       {
         "id": "g1_l3_past_be_b2",
@@ -1163,11 +1869,12 @@ const GAME_QUESTIONS = {
         "eng": "The children ___ quiet in the museum.",
         "ans": "were not",
         "opts": [
-          "are not",
-          "were not",
           "was not",
-          "not were"
-        ]
+          "not were",
+          "are not",
+          "were not"
+        ],
+        "level": 1
       },
       {
         "id": "g1_l3_past_be_b3",
@@ -1175,11 +1882,12 @@ const GAME_QUESTIONS = {
         "eng": "The weather ___ nice. It was rainy and windy.",
         "ans": "was not",
         "opts": [
-          "was not",
-          "were not",
           "is not",
-          "are not"
-        ]
+          "are not",
+          "was not",
+          "were not"
+        ],
+        "level": 1
       },
       {
         "id": "g1_l3_past_be_b4",
@@ -1187,11 +1895,12 @@ const GAME_QUESTIONS = {
         "eng": "I ___ nervous before the test. I was excited!",
         "ans": "was not",
         "opts": [
-          "were not",
-          "am not",
           "is not",
-          "was not"
-        ]
+          "was not",
+          "were not",
+          "am not"
+        ],
+        "level": 1
       },
       {
         "id": "g1_l3_past_be_b5",
@@ -1199,11 +1908,12 @@ const GAME_QUESTIONS = {
         "eng": "___ you at the library this afternoon? Yes, I was.",
         "ans": "Were",
         "opts": [
-          "Is",
-          "Are",
           "Were",
-          "Was"
-        ]
+          "Was",
+          "Is",
+          "Are"
+        ],
+        "level": 1
       },
       {
         "id": "g1_l3_past_be_b6",
@@ -1211,11 +1921,12 @@ const GAME_QUESTIONS = {
         "eng": "___ she happy with the result? No, she wasn't.",
         "ans": "Was",
         "opts": [
-          "Are",
-          "Was",
           "Were",
-          "Is"
-        ]
+          "Is",
+          "Are",
+          "Was"
+        ],
+        "level": 1
       },
       {
         "id": "g1_l3_past_be_b7",
@@ -1223,11 +1934,12 @@ const GAME_QUESTIONS = {
         "eng": "___ the test difficult? No, it wasn't.",
         "ans": "Was",
         "opts": [
-          "Was",
-          "Were",
           "Is",
-          "Are"
-        ]
+          "Are",
+          "Was",
+          "Were"
+        ],
+        "level": 1
       },
       {
         "id": "g1_l3_past_be_b8",
@@ -1235,11 +1947,12 @@ const GAME_QUESTIONS = {
         "eng": "___ they your classmates last year? Yes, they were.",
         "ans": "Were",
         "opts": [
-          "Was",
-          "Is",
           "Are",
-          "Were"
-        ]
+          "Were",
+          "Was",
+          "Is"
+        ],
+        "level": 1
       },
       {
         "id": "g1_l3_past_be_b9",
@@ -1247,11 +1960,12 @@ const GAME_QUESTIONS = {
         "eng": "My grandfather ___ a farmer. He was a doctor.",
         "ans": "was not",
         "opts": [
-          "is not",
-          "are not",
           "was not",
-          "were not"
-        ]
+          "were not",
+          "is not",
+          "are not"
+        ],
+        "level": 1
       },
       {
         "id": "g1_l3_past_be_b10",
@@ -1259,11 +1973,142 @@ const GAME_QUESTIONS = {
         "eng": "The apples ___ fresh. They were very old.",
         "ans": "were not",
         "opts": [
+          "was not",
+          "is not",
           "are not",
+          "were not"
+        ],
+        "level": 1
+      },
+      {
+        "id": "g1_l3_past_be_b11",
+        "kor": "Kate는 집에 없었다. 그녀는 학교에 있었다.",
+        "eng": "Kate ___ at home. She was at school.",
+        "ans": "was not",
+        "opts": [
+          "Was he",
+          "weren",
+          "was not",
+          "were not"
+        ],
+        "level": 1
+      },
+      {
+        "id": "g1_l3_past_be_b12",
+        "kor": "우리는 어제 바쁘지 않았다. 우리는 여가 시간이 많았다.",
+        "eng": "We ___ busy yesterday. We had a lot of free time.",
+        "ans": "were not",
+        "opts": [
+          "weren",
           "were not",
           "was not",
-          "is not"
-        ]
+          "Was he"
+        ],
+        "level": 1
+      },
+      {
+        "id": "g1_l3_past_be_b13",
+        "kor": "Sam과 Jay는 오늘 학교에 지각하지 않았다.",
+        "eng": "Sam and Jay ___ late for school today.",
+        "ans": "were not",
+        "opts": [
+          "were not",
+          "was not",
+          "Was he",
+          "weren"
+        ],
+        "level": 1
+      },
+      {
+        "id": "g1_l3_past_be_b14",
+        "kor": "박물관은 월요일에 열지 않았다. 문을 닫았다.",
+        "eng": "The museum ___ open on Mondays. It was closed.",
+        "ans": "was not",
+        "opts": [
+          "were not",
+          "Was he",
+          "weren",
+          "was not"
+        ],
+        "level": 1
+      },
+      {
+        "id": "g1_l3_past_be_b15",
+        "kor": "수프는 뜨겁지 않았다. 차가웠다.",
+        "eng": "The soup ___ hot. It was cold.",
+        "ans": "was not",
+        "opts": [
+          "Was he",
+          "weren",
+          "was not",
+          "were not"
+        ],
+        "level": 1
+      },
+      {
+        "id": "g1_l3_past_be_b16",
+        "kor": "너는 서울에서 태어났니? 아니, 아니야.",
+        "eng": "___ you born in Seoul? No, I wasn't.",
+        "ans": "Were",
+        "opts": [
+          "Was he",
+          "Were",
+          "was",
+          "weren"
+        ],
+        "level": 1
+      },
+      {
+        "id": "g1_l3_past_be_b17",
+        "kor": "어제 화창했니? 응, 화창했어.",
+        "eng": "___ it sunny yesterday? Yes, it was.",
+        "ans": "Was",
+        "opts": [
+          "Was",
+          "were",
+          "weren",
+          "Was he"
+        ],
+        "level": 1
+      },
+      {
+        "id": "g1_l3_past_be_b18",
+        "kor": "너의 아버지는 선생님이었니? 아니, 아니었어.",
+        "eng": "___ your father a teacher? No, he wasn't.",
+        "ans": "Was",
+        "opts": [
+          "were",
+          "weren",
+          "Was he",
+          "Was"
+        ],
+        "level": 1
+      },
+      {
+        "id": "g1_l3_past_be_b19",
+        "kor": "아이들은 교실에서 착했니? 응, 착했어.",
+        "eng": "___ the children good in the classroom? Yes, they were.",
+        "ans": "Were",
+        "opts": [
+          "weren",
+          "Was he",
+          "Were",
+          "was"
+        ],
+        "level": 1
+      },
+      {
+        "id": "g1_l3_past_be_b20",
+        "kor": "나는 시험 준비가 되어 있었다. 나는 매우 열심히 공부했다.",
+        "eng": "I ___ ready for the test. I studied very hard.",
+        "ans": "was",
+        "opts": [
+          "Was he",
+          "was",
+          "were",
+          "weren"
+        ],
+        "level": 1
       },
       {
         "id": "g1_l3_past_be_hard_a1",
@@ -1275,7 +2120,8 @@ const GAME_QUESTIONS = {
           "were",
           "wasn't",
           "weren't"
-        ]
+        ],
+        "level": 2
       },
       {
         "id": "g1_l3_past_be_hard_a2",
@@ -1287,7 +2133,8 @@ const GAME_QUESTIONS = {
           "weren't",
           "wasn't",
           "were"
-        ]
+        ],
+        "level": 2
       },
       {
         "id": "g1_l3_past_be_hard_a3",
@@ -1299,7 +2146,8 @@ const GAME_QUESTIONS = {
           "wasn't",
           "was",
           "weren't"
-        ]
+        ],
+        "level": 2
       },
       {
         "id": "g1_l3_past_be_hard_a4",
@@ -1311,7 +2159,229 @@ const GAME_QUESTIONS = {
           "were",
           "was",
           "wasn't"
-        ]
+        ],
+        "level": 2
+      },
+      {
+        "id": "g1_l3_past_be_hard_a9",
+        "kor": "그 아이들은 어제 놀이터에 있었다.",
+        "eng": "원문: The kids are in the playground now. → (과거형으로) The kids ___ in the playground yesterday.",
+        "ans": "were",
+        "opts": [
+          "were",
+          "was",
+          "weren",
+          "Was he"
+        ],
+        "level": 2
+      },
+      {
+        "id": "g1_l3_past_be_hard_a10",
+        "kor": "민정이는 연극 동아리 회원이 아니었다.",
+        "eng": "원문: Minjeong was a member of the drama club. → (부정문으로) Minjeong ___ a member of the drama club.",
+        "ans": "was not",
+        "opts": [
+          "were not",
+          "Was he",
+          "weren",
+          "was not"
+        ],
+        "level": 2
+      },
+      {
+        "id": "g1_l3_past_be_hard_a11",
+        "kor": "너의 부모님은 학교 축제에 계셨니?",
+        "eng": "원문: Your parents were at the school festival. → (의문문으로) ___ at the school festival?",
+        "ans": "Were your parents",
+        "opts": [
+          "was not",
+          "Was he",
+          "Were your parents",
+          "were not"
+        ],
+        "level": 2
+      },
+      {
+        "id": "g1_l3_past_be_hard_a12",
+        "kor": "어제 날씨는 매우 추웠다.",
+        "eng": "The weather ___ very cold yesterday.",
+        "ans": "was",
+        "opts": [
+          "Was he",
+          "was",
+          "were",
+          "weren"
+        ],
+        "level": 2
+      },
+      {
+        "id": "g1_l3_past_be_hard_a13",
+        "kor": "우리는 지난 주말에 집에 있지 않았다.",
+        "eng": "We ___ at home last weekend.",
+        "ans": "were not",
+        "opts": [
+          "were not",
+          "was not",
+          "Was he",
+          "weren"
+        ],
+        "level": 2
+      },
+      {
+        "id": "g1_l3_past_be_hard_a14",
+        "kor": "그는 지난 달에 아팠니?",
+        "eng": "그는 지난 달에 아팠니? ___ sick last month?",
+        "ans": "Was he",
+        "opts": [
+          "was not",
+          "weren",
+          "were",
+          "Was he"
+        ],
+        "level": 2
+      },
+      {
+        "id": "g1_l3_past_be_hard_a15",
+        "kor": "그 신발들은 우리 형의 것이었다.",
+        "eng": "The shoes ___ my brother's.",
+        "ans": "were",
+        "opts": [
+          "weren",
+          "Was he",
+          "were",
+          "was"
+        ],
+        "level": 2
+      },
+      {
+        "id": "g1_l3_past_be_hard_b1",
+        "kor": "지난 일요일은 소풍을 가기에 완벽한 날이었다.",
+        "eng": "Last Sunday ___ a perfect day for a picnic.",
+        "ans": "was",
+        "opts": [
+          "Was he",
+          "was",
+          "were",
+          "weren"
+        ],
+        "level": 2
+      },
+      {
+        "id": "g1_l3_past_be_hard_b2",
+        "kor": "내 남동생과 나는 매우 신이 나 있었다.",
+        "eng": "My brother and I ___ very excited.",
+        "ans": "were",
+        "opts": [
+          "were",
+          "was",
+          "weren",
+          "Was he"
+        ],
+        "level": 2
+      },
+      {
+        "id": "g1_l3_past_be_hard_b3",
+        "kor": "하늘은 맑고 푸르렀다.",
+        "eng": "The sky ___ clear and blue.",
+        "ans": "was",
+        "opts": [
+          "were",
+          "weren",
+          "Was he",
+          "was"
+        ],
+        "level": 2
+      },
+      {
+        "id": "g1_l3_past_be_hard_b4",
+        "kor": "그런데 샌드위치는 신선하지 않았다 — 엄마가 새 빵을 쓰는 걸 깜빡하셨다!",
+        "eng": "But the sandwiches ___ fresh — my mom forgot to use new bread!",
+        "ans": "weren",
+        "opts": [
+          "Was he",
+          "was",
+          "weren",
+          "were"
+        ],
+        "level": 2
+      },
+      {
+        "id": "g1_l3_past_be_hard_b5",
+        "kor": "그래도 그날 하루 전체가 멋진 추억이었다.",
+        "eng": "Still, the whole day ___ a wonderful memory.",
+        "ans": "was",
+        "opts": [
+          "Was he",
+          "was",
+          "were",
+          "weren"
+        ],
+        "level": 2
+      },
+      {
+        "id": "g1_l3_past_be_hard_b6",
+        "kor": "너는 어젯밤 재호네 집에 있었니?",
+        "eng": "___ you at Jaeho's house last night?",
+        "ans": "Were",
+        "opts": [
+          "Were",
+          "was",
+          "weren",
+          "Was he"
+        ],
+        "level": 2
+      },
+      {
+        "id": "g1_l3_past_be_hard_b7",
+        "kor": "내가 너에게 전화했는데, 너는 집에 없었다.",
+        "eng": "I called you, but you ___ at home.",
+        "ans": "weren",
+        "opts": [
+          "were",
+          "Was he",
+          "was",
+          "weren"
+        ],
+        "level": 2
+      },
+      {
+        "id": "g1_l3_past_be_hard_b8",
+        "kor": "재호의 부모님은 여행 중이셨다.",
+        "eng": "Jaeho's parents ___ on a trip.",
+        "ans": "were",
+        "opts": [
+          "weren",
+          "Was he",
+          "were",
+          "was"
+        ],
+        "level": 2
+      },
+      {
+        "id": "g1_l3_past_be_hard_b9",
+        "kor": "그래서 오직 그와 그의 강아지만 그곳에 있었다.",
+        "eng": "…so only he and his dog ___ there.",
+        "ans": "were",
+        "opts": [
+          "Was he",
+          "were",
+          "was",
+          "weren"
+        ],
+        "level": 2
+      },
+      {
+        "id": "g1_l3_past_be_hard_b10",
+        "kor": "거실은 피자와 보드게임으로 가득했다!",
+        "eng": "The living room ___ full of pizza and board games!",
+        "ans": "was",
+        "opts": [
+          "was",
+          "were",
+          "weren",
+          "Was he"
+        ],
+        "level": 2
       }
     ]
   },
@@ -1329,7 +2399,8 @@ const GAME_QUESTIONS = {
           "plays",
           "playing",
           "play"
-        ]
+        ],
+        "level": 1
       },
       {
         "id": "g1_l4_to_will_basic_a2",
@@ -1341,7 +2412,8 @@ const GAME_QUESTIONS = {
           "travels",
           "travel",
           "to travel"
-        ]
+        ],
+        "level": 1
       },
       {
         "id": "g1_l4_to_will_basic_a3",
@@ -1353,7 +2425,8 @@ const GAME_QUESTIONS = {
           "listened",
           "listening",
           "to listen"
-        ]
+        ],
+        "level": 1
       },
       {
         "id": "g1_l4_to_will_basic_a4",
@@ -1365,7 +2438,8 @@ const GAME_QUESTIONS = {
           "to finish",
           "finish",
           "finishing"
-        ]
+        ],
+        "level": 1
       },
       {
         "id": "g1_l4_to_will_basic_a5",
@@ -1377,7 +2451,8 @@ const GAME_QUESTIONS = {
           "to do",
           "does",
           "done"
-        ]
+        ],
+        "level": 1
       },
       {
         "id": "g1_l4_to_will_basic_a6",
@@ -1389,7 +2464,8 @@ const GAME_QUESTIONS = {
           "meeting",
           "meet",
           "to meet"
-        ]
+        ],
+        "level": 1
       },
       {
         "id": "g1_l4_to_will_basic_a7",
@@ -1401,7 +2477,8 @@ const GAME_QUESTIONS = {
           "kept",
           "to keep",
           "keeping"
-        ]
+        ],
+        "level": 1
       },
       {
         "id": "g1_l4_to_will_basic_a8",
@@ -1413,7 +2490,8 @@ const GAME_QUESTIONS = {
           "making",
           "to make",
           "made"
-        ]
+        ],
+        "level": 1
       },
       {
         "id": "g1_l4_to_will_basic_a9",
@@ -1425,7 +2503,8 @@ const GAME_QUESTIONS = {
           "riding",
           "rides",
           "rode"
-        ]
+        ],
+        "level": 1
       },
       {
         "id": "g1_l4_to_will_basic_a10",
@@ -1437,7 +2516,138 @@ const GAME_QUESTIONS = {
           "submits",
           "submitting",
           "to submit"
-        ]
+        ],
+        "level": 1
+      },
+      {
+        "id": "g1_l4_to_will_basic_a11",
+        "kor": "나는 새 노래를 배우고 싶다.",
+        "eng": "I want ___ a new song.",
+        "ans": "to learn",
+        "opts": [
+          "to study",
+          "Should I",
+          "to learn",
+          "to leave"
+        ],
+        "level": 1
+      },
+      {
+        "id": "g1_l4_to_will_basic_a12",
+        "kor": "Liam은 축구팀에 들어가기를 바란다.",
+        "eng": "Liam hopes ___ the soccer team.",
+        "ans": "to join",
+        "opts": [
+          "to keep",
+          "to join",
+          "to play",
+          "to meet"
+        ],
+        "level": 1
+      },
+      {
+        "id": "g1_l4_to_will_basic_a13",
+        "kor": "우리는 생일 파티를 열기로 결정했다.",
+        "eng": "We decided ___ a birthday party.",
+        "ans": "to have",
+        "opts": [
+          "to have",
+          "to play",
+          "to meet",
+          "to keep"
+        ],
+        "level": 1
+      },
+      {
+        "id": "g1_l4_to_will_basic_a14",
+        "kor": "Sophie는 오늘 일찍 떠나야 한다.",
+        "eng": "Sophie needs ___ early today.",
+        "ans": "to leave",
+        "opts": [
+          "to learn",
+          "to study",
+          "Should I",
+          "to leave"
+        ],
+        "level": 1
+      },
+      {
+        "id": "g1_l4_to_will_basic_a15",
+        "kor": "Tom은 그 질문에 답하기를 거부했다.",
+        "eng": "Tom refused ___ the question.",
+        "ans": "to answer",
+        "opts": [
+          "listening",
+          "to finish",
+          "to answer",
+          "to travel"
+        ],
+        "level": 1
+      },
+      {
+        "id": "g1_l4_to_will_basic_a16",
+        "kor": "그는 나의 숙제를 도와주기로 동의했다.",
+        "eng": "He agreed ___ me with my homework.",
+        "ans": "to help",
+        "opts": [
+          "to keep",
+          "to help",
+          "to play",
+          "to meet"
+        ],
+        "level": 1
+      },
+      {
+        "id": "g1_l4_to_will_basic_a17",
+        "kor": "Mia는 매일 아침 개를 산책시키기로 약속했다.",
+        "eng": "Mia promised ___ the dog every morning.",
+        "ans": "to walk",
+        "opts": [
+          "to walk",
+          "to play",
+          "to meet",
+          "to keep"
+        ],
+        "level": 1
+      },
+      {
+        "id": "g1_l4_to_will_basic_a18",
+        "kor": "나는 런던에서 영어를 공부할 계획이었다.",
+        "eng": "I planned ___ English in London.",
+        "ans": "to study",
+        "opts": [
+          "to learn",
+          "to leave",
+          "Should I",
+          "to study"
+        ],
+        "level": 1
+      },
+      {
+        "id": "g1_l4_to_will_basic_a19",
+        "kor": "우리 엄마는 주말에 추리 소설을 읽고 싶어 하신다.",
+        "eng": "My mom wants ___ mystery novels on weekends.",
+        "ans": "to read",
+        "opts": [
+          "to meet",
+          "to keep",
+          "to read",
+          "to play"
+        ],
+        "level": 1
+      },
+      {
+        "id": "g1_l4_to_will_basic_a20",
+        "kor": "Jake는 훌륭한 피아니스트가 되기를 바랐다.",
+        "eng": "Jake wished ___ a great pianist.",
+        "ans": "to become",
+        "opts": [
+          "to finish",
+          "to become",
+          "to travel",
+          "listening"
+        ],
+        "level": 1
       },
       {
         "id": "g1_l4_to_will_basic_b1",
@@ -1445,11 +2655,12 @@ const GAME_QUESTIONS = {
         "eng": "You ___ energy every day.",
         "ans": "should save",
         "opts": [
-          "should saves",
-          "should to save",
           "should save",
-          "will save"
-        ]
+          "will save",
+          "should saves",
+          "should to save"
+        ],
+        "level": 1
       },
       {
         "id": "g1_l4_to_will_basic_b2",
@@ -1457,11 +2668,12 @@ const GAME_QUESTIONS = {
         "eng": "She ___ a presentation in front of the class tomorrow.",
         "ans": "will do",
         "opts": [
-          "will to do",
-          "will do",
           "will does",
-          "should do"
-        ]
+          "should do",
+          "will to do",
+          "will do"
+        ],
+        "level": 1
       },
       {
         "id": "g1_l4_to_will_basic_b3",
@@ -1469,11 +2681,12 @@ const GAME_QUESTIONS = {
         "eng": "___ arrive there by 3 p.m.?",
         "ans": "Should I",
         "opts": [
-          "Should I",
-          "I should",
           "Do I should",
-          "Am I should"
-        ]
+          "Am I should",
+          "Should I",
+          "I should"
+        ],
+        "level": 1
       },
       {
         "id": "g1_l4_to_will_basic_b4",
@@ -1481,11 +2694,12 @@ const GAME_QUESTIONS = {
         "eng": "___ clean up your desk right now?",
         "ans": "Will you",
         "opts": [
-          "Should you",
-          "You will",
           "Will you to",
-          "Will you"
-        ]
+          "Will you",
+          "Should you",
+          "You will"
+        ],
+        "level": 1
       },
       {
         "id": "g1_l4_to_will_basic_b5",
@@ -1493,11 +2707,12 @@ const GAME_QUESTIONS = {
         "eng": "We ___ go to the park this afternoon.",
         "ans": "will not",
         "opts": [
-          "don't will",
-          "won't not",
           "will not",
-          "should not"
-        ]
+          "should not",
+          "don't will",
+          "won't not"
+        ],
+        "level": 1
       },
       {
         "id": "g1_l4_to_will_basic_b6",
@@ -1505,11 +2720,12 @@ const GAME_QUESTIONS = {
         "eng": "It ___ warm and sunny this weekend.",
         "ans": "will be",
         "opts": [
-          "is will",
-          "will be",
           "wills be",
-          "will is"
-        ]
+          "will is",
+          "is will",
+          "will be"
+        ],
+        "level": 1
       },
       {
         "id": "g1_l4_to_will_basic_b7",
@@ -1517,11 +2733,12 @@ const GAME_QUESTIONS = {
         "eng": "You ___ wear a helmet when you ride a bike.",
         "ans": "should",
         "opts": [
-          "should",
-          "shoulds",
           "should to",
-          "are should"
-        ]
+          "are should",
+          "should",
+          "shoulds"
+        ],
+        "level": 1
       },
       {
         "id": "g1_l4_to_will_basic_b8",
@@ -1529,11 +2746,12 @@ const GAME_QUESTIONS = {
         "eng": "Ben ___ eat candy before dinner.",
         "ans": "should not",
         "opts": [
-          "not should",
-          "doesn't should",
           "should not to",
-          "should not"
-        ]
+          "should not",
+          "not should",
+          "doesn't should"
+        ],
+        "level": 1
       },
       {
         "id": "g1_l4_to_will_basic_b9",
@@ -1541,11 +2759,12 @@ const GAME_QUESTIONS = {
         "eng": "___ we leave now? Yes, we should.",
         "ans": "Should",
         "opts": [
-          "Are",
-          "Will",
           "Should",
-          "Do"
-        ]
+          "Do",
+          "Are",
+          "Will"
+        ],
+        "level": 1
       },
       {
         "id": "g1_l4_to_will_basic_b10",
@@ -1553,11 +2772,142 @@ const GAME_QUESTIONS = {
         "eng": "I ___ call you later tonight.",
         "ans": "will",
         "opts": [
-          "do will",
-          "will",
           "am will",
-          "will to"
-        ]
+          "will to",
+          "do will",
+          "will"
+        ],
+        "level": 1
+      },
+      {
+        "id": "g1_l4_to_will_basic_b11",
+        "kor": "잘 지내. 내일 전화할게.",
+        "eng": "Take care. I ___ you tomorrow.",
+        "ans": "will call",
+        "opts": [
+          "listening",
+          "to finish",
+          "will call",
+          "to travel"
+        ],
+        "level": 1
+      },
+      {
+        "id": "g1_l4_to_will_basic_b12",
+        "kor": "그들은 오늘 시험을 봤다. 그들은 다음 주 월요일에 결과를 볼 것이다.",
+        "eng": "They took a test today. They ___ the result next Monday.",
+        "ans": "will see",
+        "opts": [
+          "to study",
+          "will see",
+          "to learn",
+          "to leave"
+        ],
+        "level": 1
+      },
+      {
+        "id": "g1_l4_to_will_basic_b13",
+        "kor": "너 또 늦게 일어났구나. 이제부터는 일찍 자야 한다. (충고)",
+        "eng": "You woke up late again. From now on, you ___ to sleep early.",
+        "ans": "should go",
+        "opts": [
+          "should go",
+          "to travel",
+          "listening",
+          "to finish"
+        ],
+        "level": 1
+      },
+      {
+        "id": "g1_l4_to_will_basic_b14",
+        "kor": "많은 사람들이 기다리고 있다. 너도 줄을 서야 한다.",
+        "eng": "Many people are waiting now. You ___ in line, too.",
+        "ans": "should wait",
+        "opts": [
+          "should save",
+          "should stay",
+          "will depart",
+          "should wait"
+        ],
+        "level": 1
+      },
+      {
+        "id": "g1_l4_to_will_basic_b15",
+        "kor": "밖에 비가 심하게 온다. 너는 집에 머물러야 한다. (충고)",
+        "eng": "It's raining hard outside. You ___ at home.",
+        "ans": "should stay",
+        "opts": [
+          "should wait",
+          "will depart",
+          "should stay",
+          "should save"
+        ],
+        "level": 1
+      },
+      {
+        "id": "g1_l4_to_will_basic_b16",
+        "kor": "택시가 곧 도착한다. 우리는 지금 집을 나서야 한다.",
+        "eng": "The taxi is arriving soon. We ___ home now.",
+        "ans": "should leave",
+        "opts": [
+          "should save",
+          "should leave",
+          "should sleep",
+          "should drink"
+        ],
+        "level": 1
+      },
+      {
+        "id": "g1_l4_to_will_basic_b17",
+        "kor": "Mia는 지금 13살이다. 그녀는 내년에 14살이 될 것이다.",
+        "eng": "Mia is 13 years old now. She ___ 14 years old next year.",
+        "ans": "will be",
+        "opts": [
+          "will be",
+          "to play",
+          "to meet",
+          "to keep"
+        ],
+        "level": 1
+      },
+      {
+        "id": "g1_l4_to_will_basic_b18",
+        "kor": "지원이는 열이 있다. 그녀는 의사를 만나야 한다. (충고)",
+        "eng": "Jiwon has a fever. She ___ a doctor.",
+        "ans": "should see",
+        "opts": [
+          "should not",
+          "will visit",
+          "should eat",
+          "should see"
+        ],
+        "level": 1
+      },
+      {
+        "id": "g1_l4_to_will_basic_b19",
+        "kor": "우리는 이른 기차를 타야 한다. 기차는 정오에 출발할 것이다.",
+        "eng": "We need to catch an early train. The train ___ at noon.",
+        "ans": "will depart",
+        "opts": [
+          "should wait",
+          "should stay",
+          "will depart",
+          "should save"
+        ],
+        "level": 1
+      },
+      {
+        "id": "g1_l4_to_will_basic_b20",
+        "kor": "수업이 곧 시작된다. 너는 휴대폰을 꺼야 한다.",
+        "eng": "The lesson starts soon. You ___ off your cell phone.",
+        "ans": "should turn",
+        "opts": [
+          "should stay",
+          "should turn",
+          "should save",
+          "should wait"
+        ],
+        "level": 1
       },
       {
         "id": "g1_l4_to_will_hard_a1",
@@ -1569,7 +2919,8 @@ const GAME_QUESTIONS = {
           "watch",
           "watches",
           "to watch"
-        ]
+        ],
+        "level": 2
       },
       {
         "id": "g1_l4_to_will_hard_a2",
@@ -1581,7 +2932,8 @@ const GAME_QUESTIONS = {
           "are",
           "do",
           "should"
-        ]
+        ],
+        "level": 2
       },
       {
         "id": "g1_l4_to_will_hard_a3",
@@ -1593,7 +2945,8 @@ const GAME_QUESTIONS = {
           "arriving",
           "arrive",
           "arrives"
-        ]
+        ],
+        "level": 2
       },
       {
         "id": "g1_l4_to_will_hard_a4",
@@ -1605,7 +2958,229 @@ const GAME_QUESTIONS = {
           "making",
           "make",
           "to make"
-        ]
+        ],
+        "level": 2
+      },
+      {
+        "id": "g1_l4_to_will_hard_a9",
+        "kor": "Jane은 엄마와 함께 쇼핑하러 갈 것이다.",
+        "eng": "원문: Jane goes shopping with her mom. → (will을 사용한 긍정문으로) Jane ___ shopping with her mom.",
+        "ans": "will go",
+        "opts": [
+          "will go",
+          "to play",
+          "to meet",
+          "to keep"
+        ],
+        "level": 2
+      },
+      {
+        "id": "g1_l4_to_will_hard_a10",
+        "kor": "기차는 제시간에 도착하지 않을 것이다.",
+        "eng": "원문: The train arrives on time. → (will을 사용한 부정문으로) The train ___ on time.",
+        "ans": "will not arrive",
+        "opts": [
+          "should not eat",
+          "should leave",
+          "should sleep",
+          "will not arrive"
+        ],
+        "level": 2
+      },
+      {
+        "id": "g1_l4_to_will_hard_a11",
+        "kor": "너는 이웃에게 예의 바르게 행동해야 한다.",
+        "eng": "원문: You are polite to your neighbors. → (should를 사용한 긍정문으로) You ___ polite to your neighbors.",
+        "ans": "should be",
+        "opts": [
+          "listening",
+          "to finish",
+          "should be",
+          "to travel"
+        ],
+        "level": 2
+      },
+      {
+        "id": "g1_l4_to_will_hard_a12",
+        "kor": "나는 중국어를 공부하기로 결정했다.",
+        "eng": "I decided ___ Chinese.",
+        "ans": "to study",
+        "opts": [
+          "Should I",
+          "to study",
+          "to learn",
+          "to leave"
+        ],
+        "level": 2
+      },
+      {
+        "id": "g1_l4_to_will_hard_a13",
+        "kor": "우리는 내일 박물관을 방문할 것이다.",
+        "eng": "We ___ the museum tomorrow.",
+        "ans": "will visit",
+        "opts": [
+          "will visit",
+          "should not",
+          "should see",
+          "should eat"
+        ],
+        "level": 2
+      },
+      {
+        "id": "g1_l4_to_will_hard_a14",
+        "kor": "너는 많이 자야 한다.",
+        "eng": "You ___ a lot.",
+        "ans": "should sleep",
+        "opts": [
+          "should leave",
+          "should drink",
+          "should save",
+          "should sleep"
+        ],
+        "level": 2
+      },
+      {
+        "id": "g1_l4_to_will_hard_a15",
+        "kor": "그는 의사가 되고 싶어한다.",
+        "eng": "He wants ___ a doctor.",
+        "ans": "to become",
+        "opts": [
+          "listening",
+          "to finish",
+          "to become",
+          "to travel"
+        ],
+        "level": 2
+      },
+      {
+        "id": "g1_l4_to_will_hard_b1",
+        "kor": "이번 여름, 우리 가족은 캐나다로 여행 갈 것이다.",
+        "eng": "This summer, my family ___ to Canada.",
+        "ans": "will travel",
+        "opts": [
+          "should stay",
+          "will travel",
+          "should save",
+          "should wait"
+        ],
+        "level": 2
+      },
+      {
+        "id": "g1_l4_to_will_hard_b2",
+        "kor": "우리는 토론토에 계신 이모를 방문할 계획이었다.",
+        "eng": "We planned ___ my aunt in Toronto.",
+        "ans": "to visit",
+        "opts": [
+          "to visit",
+          "to learn",
+          "to leave",
+          "to study"
+        ],
+        "level": 2
+      },
+      {
+        "id": "g1_l4_to_will_hard_b3",
+        "kor": "내 남동생은 유명한 장소들을 많이 보기를 바란다.",
+        "eng": "My brother hopes ___ many famous places.",
+        "ans": "to see",
+        "opts": [
+          "making",
+          "should",
+          "arrive",
+          "to see"
+        ],
+        "level": 2
+      },
+      {
+        "id": "g1_l4_to_will_hard_b4",
+        "kor": "우리 항공편은 토요일 오전 8시에 출발할 것이다.",
+        "eng": "Our flight ___ at 8 a.m. on Saturday.",
+        "ans": "will depart",
+        "opts": [
+          "should wait",
+          "should stay",
+          "will depart",
+          "should save"
+        ],
+        "level": 2
+      },
+      {
+        "id": "g1_l4_to_will_hard_b5",
+        "kor": "나는 이번 여행을 가게 되어 정말 신이 난다!",
+        "eng": "I'm so excited ___ on this trip!",
+        "ans": "to go",
+        "opts": [
+          "should",
+          "to go",
+          "doing",
+          "making"
+        ],
+        "level": 2
+      },
+      {
+        "id": "g1_l4_to_will_hard_b6",
+        "kor": "건강을 유지하는 것이 중요하다.",
+        "eng": "It's important ___ healthy.",
+        "ans": "to stay",
+        "opts": [
+          "to stay",
+          "to play",
+          "to meet",
+          "to keep"
+        ],
+        "level": 2
+      },
+      {
+        "id": "g1_l4_to_will_hard_b7",
+        "kor": "너는 매일 채소를 먹어야 한다.",
+        "eng": "You ___ vegetables every day.",
+        "ans": "should eat",
+        "opts": [
+          "should not",
+          "should see",
+          "will visit",
+          "should eat"
+        ],
+        "level": 2
+      },
+      {
+        "id": "g1_l4_to_will_hard_b8",
+        "kor": "너는 물도 많이 마셔야 한다.",
+        "eng": "You ___ a lot of water, too.",
+        "ans": "should drink",
+        "opts": [
+          "should sleep",
+          "should save",
+          "should drink",
+          "should leave"
+        ],
+        "level": 2
+      },
+      {
+        "id": "g1_l4_to_will_hard_b9",
+        "kor": "너는 식사 전에 사탕을 너무 많이 먹으면 안 된다.",
+        "eng": "You ___ too much candy before meals.",
+        "ans": "should not eat",
+        "opts": [
+          "should sleep",
+          "should not eat",
+          "will not arrive",
+          "should leave"
+        ],
+        "level": 2
+      },
+      {
+        "id": "g1_l4_to_will_hard_b10",
+        "kor": "이런 규칙들을 따르면, 너는 매일 아침 상쾌하게 느낄 것이다!",
+        "eng": "If you follow these rules, you ___ great every morning!",
+        "ans": "will feel",
+        "opts": [
+          "will feel",
+          "to travel",
+          "listening",
+          "to finish"
+        ],
+        "level": 2
       }
     ]
   },
@@ -1623,7 +3198,8 @@ const GAME_QUESTIONS = {
           "her",
           "hers",
           "she"
-        ]
+        ],
+        "level": 1
       },
       {
         "id": "g1_l5_reflexive_to_basic_a2",
@@ -1635,7 +3211,8 @@ const GAME_QUESTIONS = {
           "my",
           "mine",
           "myself"
-        ]
+        ],
+        "level": 1
       },
       {
         "id": "g1_l5_reflexive_to_basic_a3",
@@ -1647,7 +3224,8 @@ const GAME_QUESTIONS = {
           "ourself",
           "ourselves",
           "us"
-        ]
+        ],
+        "level": 1
       },
       {
         "id": "g1_l5_reflexive_to_basic_a4",
@@ -1659,7 +3237,8 @@ const GAME_QUESTIONS = {
           "yourselves",
           "yourself",
           "yours"
-        ]
+        ],
+        "level": 1
       },
       {
         "id": "g1_l5_reflexive_to_basic_a5",
@@ -1671,7 +3250,8 @@ const GAME_QUESTIONS = {
           "it",
           "its",
           "itselves"
-        ]
+        ],
+        "level": 1
       },
       {
         "id": "g1_l5_reflexive_to_basic_a6",
@@ -1683,7 +3263,8 @@ const GAME_QUESTIONS = {
           "they",
           "theirs",
           "themselves"
-        ]
+        ],
+        "level": 1
       },
       {
         "id": "g1_l5_reflexive_to_basic_a7",
@@ -1695,7 +3276,8 @@ const GAME_QUESTIONS = {
           "he",
           "himself",
           "him"
-        ]
+        ],
+        "level": 1
       },
       {
         "id": "g1_l5_reflexive_to_basic_a8",
@@ -1707,7 +3289,8 @@ const GAME_QUESTIONS = {
           "yourself",
           "you",
           "your"
-        ]
+        ],
+        "level": 1
       },
       {
         "id": "g1_l5_reflexive_to_basic_a9",
@@ -1719,7 +3302,8 @@ const GAME_QUESTIONS = {
           "it",
           "its",
           "themself"
-        ]
+        ],
+        "level": 1
       },
       {
         "id": "g1_l5_reflexive_to_basic_a10",
@@ -1731,7 +3315,138 @@ const GAME_QUESTIONS = {
           "themself",
           "their",
           "themselves"
-        ]
+        ],
+        "level": 1
+      },
+      {
+        "id": "g1_l5_reflexive_to_basic_a11",
+        "kor": "Lucas는 축제에서 즐거운 시간을 보냈다.",
+        "eng": "Lucas enjoyed ___ at the festival.",
+        "ans": "himself",
+        "opts": [
+          "to read",
+          "to feed",
+          "himself",
+          "herself"
+        ],
+        "level": 1
+      },
+      {
+        "id": "g1_l5_reflexive_to_basic_a12",
+        "kor": "할머니가 직접 이 스카프를 만드셨다.",
+        "eng": "Grandma made this scarf ___.",
+        "ans": "herself",
+        "opts": [
+          "to feed",
+          "herself",
+          "himself",
+          "to read"
+        ],
+        "level": 1
+      },
+      {
+        "id": "g1_l5_reflexive_to_basic_a13",
+        "kor": "앉아서 편하게 계세요.",
+        "eng": "Please sit down and make ___ at home.",
+        "ans": "yourself",
+        "opts": [
+          "yourself",
+          "to avoid",
+          "to learn",
+          "to check"
+        ],
+        "level": 1
+      },
+      {
+        "id": "g1_l5_reflexive_to_basic_a14",
+        "kor": "7학년 학생들이 직접 학교 콘서트를 준비했다.",
+        "eng": "The seventh graders prepared the school concert ___.",
+        "ans": "themselves",
+        "opts": [
+          "yourselves",
+          "to explain",
+          "to prepare",
+          "themselves"
+        ],
+        "level": 1
+      },
+      {
+        "id": "g1_l5_reflexive_to_basic_a15",
+        "kor": "하나는 시내 상점 유리창에 비친 자신을 보고 미소 지었다.",
+        "eng": "Hana smiled at ___ in the shop window downtown.",
+        "ans": "herself",
+        "opts": [
+          "to read",
+          "to feed",
+          "herself",
+          "himself"
+        ],
+        "level": 1
+      },
+      {
+        "id": "g1_l5_reflexive_to_basic_a16",
+        "kor": "나는 직접 이 사진을 찍었다.",
+        "eng": "I took this picture ___.",
+        "ans": "myself",
+        "opts": [
+          "to win",
+          "myself",
+          "itself",
+          "to buy"
+        ],
+        "level": 1
+      },
+      {
+        "id": "g1_l5_reflexive_to_basic_a17",
+        "kor": "늙은 개가 혼자 누웠다.",
+        "eng": "The old dog lay down by ___.",
+        "ans": "itself",
+        "opts": [
+          "itself",
+          "myself",
+          "to buy",
+          "to win"
+        ],
+        "level": 1
+      },
+      {
+        "id": "g1_l5_reflexive_to_basic_a18",
+        "kor": "우리는 우리 자신을 위해 선물을 샀다.",
+        "eng": "We bought gifts for ___.",
+        "ans": "ourselves",
+        "opts": [
+          "to borrow",
+          "yourselves",
+          "themselves",
+          "ourselves"
+        ],
+        "level": 1
+      },
+      {
+        "id": "g1_l5_reflexive_to_basic_a19",
+        "kor": "Henry는 직접 그 노래를 썼다.",
+        "eng": "Henry wrote the song ___.",
+        "ans": "himself",
+        "opts": [
+          "to read",
+          "to feed",
+          "himself",
+          "herself"
+        ],
+        "level": 1
+      },
+      {
+        "id": "g1_l5_reflexive_to_basic_a20",
+        "kor": "Ava, 스페인어를 스스로 배웠나요?",
+        "eng": "Did you teach ___ Spanish, Ava?",
+        "ans": "yourself",
+        "opts": [
+          "to check",
+          "yourself",
+          "to avoid",
+          "to learn"
+        ],
+        "level": 1
       },
       {
         "id": "g1_l5_reflexive_to_basic_b1",
@@ -1739,11 +3454,12 @@ const GAME_QUESTIONS = {
         "eng": "Yuna went to the library ___ a book.",
         "ans": "to read",
         "opts": [
-          "reading",
-          "reads",
           "to read",
-          "read"
-        ]
+          "read",
+          "reading",
+          "reads"
+        ],
+        "level": 1
       },
       {
         "id": "g1_l5_reflexive_to_basic_b2",
@@ -1751,11 +3467,12 @@ const GAME_QUESTIONS = {
         "eng": "Emily worked part-time ___ a tablet for drawing.",
         "ans": "to buy",
         "opts": [
-          "buys",
-          "to buy",
           "buy",
-          "bought"
-        ]
+          "bought",
+          "buys",
+          "to buy"
+        ],
+        "level": 1
       },
       {
         "id": "g1_l5_reflexive_to_basic_b3",
@@ -1763,11 +3480,12 @@ const GAME_QUESTIONS = {
         "eng": "목적('~하기 위해')의 to부정사가 쓰인 문장을 고르시오.",
         "ans": "He studied hard to pass the exam.",
         "opts": [
-          "He studied hard to pass the exam.",
-          "I want to visit Paris.",
           "She plans to become a nurse.",
-          "We decided to move to Busan."
-        ]
+          "We decided to move to Busan.",
+          "He studied hard to pass the exam.",
+          "I want to visit Paris."
+        ],
+        "level": 1
       },
       {
         "id": "g1_l5_reflexive_to_basic_b4",
@@ -1775,11 +3493,12 @@ const GAME_QUESTIONS = {
         "eng": "Noah texted his teacher ___ his absence.",
         "ans": "to explain",
         "opts": [
-          "explain",
-          "explained",
           "explaining",
-          "to explain"
-        ]
+          "to explain",
+          "explain",
+          "explained"
+        ],
+        "level": 1
       },
       {
         "id": "g1_l5_reflexive_to_basic_b5",
@@ -1787,11 +3506,12 @@ const GAME_QUESTIONS = {
         "eng": "She practiced every day ___ the contest.",
         "ans": "to win",
         "opts": [
-          "winning",
-          "wins",
           "to win",
-          "win"
-        ]
+          "win",
+          "winning",
+          "wins"
+        ],
+        "level": 1
       },
       {
         "id": "g1_l5_reflexive_to_basic_b6",
@@ -1799,11 +3519,12 @@ const GAME_QUESTIONS = {
         "eng": "다음 문장의 올바른 해석을 고르시오.She went to the market to buy vegetables.",
         "ans": "그녀는 채소를 사기 위해 시장에 갔다.",
         "opts": [
-          "그녀는 채소를 팔기 위해 시장에 갔다.",
-          "그녀는 채소를 사기 위해 시장에 갔다.",
           "그녀는 채소를 사는 것을 좋아해서 시장에 갔다.",
-          "그녀는 시장에 가서 채소를 사기로 결정했다."
-        ]
+          "그녀는 시장에 가서 채소를 사기로 결정했다.",
+          "그녀는 채소를 팔기 위해 시장에 갔다.",
+          "그녀는 채소를 사기 위해 시장에 갔다."
+        ],
+        "level": 1
       },
       {
         "id": "g1_l5_reflexive_to_basic_b7",
@@ -1811,11 +3532,12 @@ const GAME_QUESTIONS = {
         "eng": "They left early ___ the traffic.",
         "ans": "to avoid",
         "opts": [
-          "to avoid",
-          "avoid",
           "avoiding",
-          "avoids"
-        ]
+          "avoids",
+          "to avoid",
+          "avoid"
+        ],
+        "level": 1
       },
       {
         "id": "g1_l5_reflexive_to_basic_b8",
@@ -1823,11 +3545,12 @@ const GAME_QUESTIONS = {
         "eng": "Mom cooked dinner ___ us all.",
         "ans": "to feed",
         "opts": [
-          "feed",
-          "feeding",
           "feeds",
-          "to feed"
-        ]
+          "to feed",
+          "feed",
+          "feeding"
+        ],
+        "level": 1
       },
       {
         "id": "g1_l5_reflexive_to_basic_b9",
@@ -1835,11 +3558,12 @@ const GAME_QUESTIONS = {
         "eng": "밑줄 친 to부정사가 '목적(~하기 위해)'으로 쓰인 것을 고르시오.",
         "ans": "They turned off the lights to save power.",
         "opts": [
-          "She plans to travel to Japan.",
-          "Tom promised to be on time.",
           "They turned off the lights to save power.",
-          "I need to sleep more."
-        ]
+          "I need to sleep more.",
+          "She plans to travel to Japan.",
+          "Tom promised to be on time."
+        ],
+        "level": 1
       },
       {
         "id": "g1_l5_reflexive_to_basic_b10",
@@ -1847,11 +3571,142 @@ const GAME_QUESTIONS = {
         "eng": "I use this app ___ new words.",
         "ans": "to learn",
         "opts": [
-          "learning",
-          "to learn",
           "learn",
-          "learned"
-        ]
+          "learned",
+          "learning",
+          "to learn"
+        ],
+        "level": 1
+      },
+      {
+        "id": "g1_l5_reflexive_to_basic_b11",
+        "kor": "Lena는 이메일을 확인하기 위해 컴퓨터를 켰다.",
+        "eng": "Lena turned on the computer ___ her email.",
+        "ans": "to check",
+        "opts": [
+          "to avoid",
+          "to learn",
+          "to check",
+          "yourself"
+        ],
+        "level": 1
+      },
+      {
+        "id": "g1_l5_reflexive_to_basic_b12",
+        "kor": "그는 친구를 만나기 위해 카페에 갔다.",
+        "eng": "He went to the cafe ___ his friend.",
+        "ans": "to meet",
+        "opts": [
+          "to read",
+          "to meet",
+          "herself",
+          "himself"
+        ],
+        "level": 1
+      },
+      {
+        "id": "g1_l5_reflexive_to_basic_b13",
+        "kor": "Olivia는 오빠를 행복하게 하기 위해 쿠키를 구웠다.",
+        "eng": "Olivia baked cookies ___ her brother happy.",
+        "ans": "to make",
+        "opts": [
+          "to make",
+          "herself",
+          "himself",
+          "to read"
+        ],
+        "level": 1
+      },
+      {
+        "id": "g1_l5_reflexive_to_basic_b14",
+        "kor": "나는 전기를 절약하기 위해 불을 껐다.",
+        "eng": "I turned off the light ___ power.",
+        "ans": "to save",
+        "opts": [
+          "herself",
+          "himself",
+          "to read",
+          "to save"
+        ],
+        "level": 1
+      },
+      {
+        "id": "g1_l5_reflexive_to_basic_b15",
+        "kor": "팀은 경기에서 이기기 위해 열심히 연습했다.",
+        "eng": "The team worked hard ___ the game.",
+        "ans": "to win",
+        "opts": [
+          "itself",
+          "to buy",
+          "to win",
+          "myself"
+        ],
+        "level": 1
+      },
+      {
+        "id": "g1_l5_reflexive_to_basic_b16",
+        "kor": "Ben은 질문을 하기 위해 손을 들었다.",
+        "eng": "Ben raised his hand ___ a question.",
+        "ans": "to ask",
+        "opts": [
+          "to buy",
+          "to ask",
+          "myself",
+          "itself"
+        ],
+        "level": 1
+      },
+      {
+        "id": "g1_l5_reflexive_to_basic_b17",
+        "kor": "그들은 버스를 잡기 위해 빠르게 걸었다.",
+        "eng": "They walked fast ___ the bus.",
+        "ans": "to catch",
+        "opts": [
+          "to catch",
+          "yourself",
+          "to avoid",
+          "to learn"
+        ],
+        "level": 1
+      },
+      {
+        "id": "g1_l5_reflexive_to_basic_b18",
+        "kor": "우리는 신선한 공기를 마시기 위해 창문을 열었다.",
+        "eng": "We opened the window ___ fresh air.",
+        "ans": "to get",
+        "opts": [
+          "myself",
+          "itself",
+          "to buy",
+          "to get"
+        ],
+        "level": 1
+      },
+      {
+        "id": "g1_l5_reflexive_to_basic_b19",
+        "kor": "Sam은 한국어를 공부하기 위해 그 앱을 다운로드했다.",
+        "eng": "Sam downloaded the app ___ Korean.",
+        "ans": "to study",
+        "opts": [
+          "to avoid",
+          "to learn",
+          "to study",
+          "yourself"
+        ],
+        "level": 1
+      },
+      {
+        "id": "g1_l5_reflexive_to_basic_b20",
+        "kor": "Mia는 시험을 준비하기 위해 내 책을 빌렸다.",
+        "eng": "Mia borrowed my book ___ for the test.",
+        "ans": "to prepare",
+        "opts": [
+          "to explain",
+          "to prepare",
+          "yourselves",
+          "themselves"
+        ],
+        "level": 1
       },
       {
         "id": "g1_l5_reflexive_to_hard_a1",
@@ -1863,7 +3718,8 @@ const GAME_QUESTIONS = {
           "borrows",
           "borrowing",
           "borrowed"
-        ]
+        ],
+        "level": 2
       },
       {
         "id": "g1_l5_reflexive_to_hard_a2",
@@ -1875,7 +3731,8 @@ const GAME_QUESTIONS = {
           "themself",
           "theirs",
           "themselves"
-        ]
+        ],
+        "level": 2
       },
       {
         "id": "g1_l5_reflexive_to_hard_a3",
@@ -1887,7 +3744,8 @@ const GAME_QUESTIONS = {
           "I",
           "myself",
           "me"
-        ]
+        ],
+        "level": 2
       },
       {
         "id": "g1_l5_reflexive_to_hard_a4",
@@ -1899,7 +3757,8 @@ const GAME_QUESTIONS = {
           "They held a bake sale to raise money for charity.",
           "She wants to become a nurse.",
           "He decided to stay home all day."
-        ]
+        ],
+        "level": 2
       },
       {
         "id": "g1_l5_reflexive_to_hard_a9",
@@ -1911,7 +3770,216 @@ const GAME_QUESTIONS = {
           "그녀는 지도 읽기를 원해서 숲 밖으로 나갔다.",
           "그녀는 지도를 읽으면서 숲속에서 길을 잃었다.",
           "그녀는 숲 지도를 읽어서 길을 결정했다."
-        ]
+        ],
+        "level": 2
+      },
+      {
+        "id": "g1_l5_reflexive_to_hard_a10",
+        "kor": "Dylan은 객실을 예약하려고 호텔에 전화했다.",
+        "eng": "원문 1: Dylan called the hotel.원문 2: He wanted to book a room. → (to부정사로 합치기) Dylan called the hotel ___ a room.",
+        "ans": "to book",
+        "opts": [
+          "herself",
+          "himself",
+          "to read",
+          "to book"
+        ],
+        "level": 2
+      },
+      {
+        "id": "g1_l5_reflexive_to_hard_a11",
+        "kor": "Noah는 주말마다 자전거를 타려고 강변 산책로에 갔다.",
+        "eng": "원문 1: Noah went to the riverside trail.원문 2: He wanted to ride his bike on weekends. → (to부정사로 합치기) Noah went to the riverside trail ___ his bike on weekends.",
+        "ans": "to ride",
+        "opts": [
+          "himself",
+          "to read",
+          "to ride",
+          "herself"
+        ],
+        "level": 2
+      },
+      {
+        "id": "g1_l5_reflexive_to_hard_a12",
+        "kor": "그녀는 자기 자신을 위해 케이크를 만들었다.",
+        "eng": "She made a cake for ___ .",
+        "ans": "herself",
+        "opts": [
+          "to feed",
+          "herself",
+          "himself",
+          "to read"
+        ],
+        "level": 2
+      },
+      {
+        "id": "g1_l5_reflexive_to_hard_a13",
+        "kor": "Sofia는 새 친구를 사귀려고 학교 밴드에 가입했다.",
+        "eng": "원문 1: Sofia joined the school band.원문 2: She wanted to make new friends. → (to부정사로 합치기) Sofia joined the school band ___ new friends.",
+        "ans": "to make",
+        "opts": [
+          "to make",
+          "herself",
+          "himself",
+          "to read"
+        ],
+        "level": 2
+      },
+      {
+        "id": "g1_l5_reflexive_to_hard_a14",
+        "kor": "내 남동생은 숙제를 직접 끝냈다.",
+        "eng": "My little brother finished his homework ___ .",
+        "ans": "himself",
+        "opts": [
+          "herself",
+          "to read",
+          "to feed",
+          "himself"
+        ],
+        "level": 2
+      },
+      {
+        "id": "g1_l5_reflexive_to_hard_a15",
+        "kor": "그는 할머니를 방문하려고 병원에 갔다.",
+        "eng": "He went to the hospital ___ his grandmother.",
+        "ans": "to visit",
+        "opts": [
+          "to avoid",
+          "to learn",
+          "to visit",
+          "yourself"
+        ],
+        "level": 2
+      },
+      {
+        "id": "g1_l5_reflexive_to_hard_b1",
+        "kor": "우리 엄마는 매주 온라인으로 새 조리법을 독학하신다.",
+        "eng": "My mom teaches ___ new recipes online every week.",
+        "ans": "herself",
+        "opts": [
+          "to feed",
+          "herself",
+          "himself",
+          "to read"
+        ],
+        "level": 2
+      },
+      {
+        "id": "g1_l5_reflexive_to_hard_b2",
+        "kor": "내 남동생은 계란을 부치다가 자신을 데었다.",
+        "eng": "My brother burned ___ while frying eggs.",
+        "ans": "himself",
+        "opts": [
+          "himself",
+          "herself",
+          "to read",
+          "to feed"
+        ],
+        "level": 2
+      },
+      {
+        "id": "g1_l5_reflexive_to_hard_b3",
+        "kor": "나는 칼에 베어 나 자신을 다쳤다.",
+        "eng": "I cut ___ with a knife.",
+        "ans": "myself",
+        "opts": [
+          "itself",
+          "to buy",
+          "to win",
+          "myself"
+        ],
+        "level": 2
+      },
+      {
+        "id": "g1_l5_reflexive_to_hard_b4",
+        "kor": "아빠는 우리 모두를 위해 직접 큰 피자를 만드셨다.",
+        "eng": "My dad made a big pizza ___ for all of us.",
+        "ans": "himself",
+        "opts": [
+          "to read",
+          "to feed",
+          "himself",
+          "herself"
+        ],
+        "level": 2
+      },
+      {
+        "id": "g1_l5_reflexive_to_hard_b5",
+        "kor": "우리는 웃으며 \"즐기자!\"라고 말했다.",
+        "eng": "We laughed and said, \"Let's enjoy ___ !\"",
+        "ans": "ourselves",
+        "opts": [
+          "themselves",
+          "ourselves",
+          "to borrow",
+          "yourselves"
+        ],
+        "level": 2
+      },
+      {
+        "id": "g1_l5_reflexive_to_hard_b6",
+        "kor": "Ben은 장식품을 사려고 가게에 갔다.",
+        "eng": "Ben went to the store ___ some decorations.",
+        "ans": "to buy",
+        "opts": [
+          "to buy",
+          "myself",
+          "itself",
+          "to win"
+        ],
+        "level": 2
+      },
+      {
+        "id": "g1_l5_reflexive_to_hard_b7",
+        "kor": "Mia는 훌륭한 공연을 하려고 매일 자기 노래를 연습한다.",
+        "eng": "Mia practices her song every day ___ a great performance.",
+        "ans": "to give",
+        "opts": [
+          "herself",
+          "himself",
+          "to read",
+          "to give"
+        ],
+        "level": 2
+      },
+      {
+        "id": "g1_l5_reflexive_to_hard_b8",
+        "kor": "Jake는 많은 학생들을 우리 부스로 데려오려고 포스터를 디자인한다.",
+        "eng": "Jake designs posters ___ many students to our booth.",
+        "ans": "to bring",
+        "opts": [
+          "to avoid",
+          "to learn",
+          "to bring",
+          "yourself"
+        ],
+        "level": 2
+      },
+      {
+        "id": "g1_l5_reflexive_to_hard_b9",
+        "kor": "우리는 동아리를 위해 돈을 모으려고 간식도 판다.",
+        "eng": "We also sell snacks ___ money for our club.",
+        "ans": "to raise",
+        "opts": [
+          "to learn",
+          "to raise",
+          "yourself",
+          "to avoid"
+        ],
+        "level": 2
+      },
+      {
+        "id": "g1_l5_reflexive_to_hard_b10",
+        "kor": "나는 무대에서 최선을 다하기 위해 열심히 노력할 것이다.",
+        "eng": "I will work hard ___ my best on stage.",
+        "ans": "to do",
+        "opts": [
+          "to do",
+          "myself",
+          "itself",
+          "to buy"
+        ],
+        "level": 2
       }
     ]
   },
@@ -1929,7 +3997,8 @@ const GAME_QUESTIONS = {
           "safely",
           "safety",
           "safeness"
-        ]
+        ],
+        "level": 1
       },
       {
         "id": "g1_l6_look_because_basic_a2",
@@ -1941,7 +4010,8 @@ const GAME_QUESTIONS = {
           "creation",
           "creating",
           "creative"
-        ]
+        ],
+        "level": 1
       },
       {
         "id": "g1_l6_look_because_basic_a3",
@@ -1953,7 +4023,8 @@ const GAME_QUESTIONS = {
           "loveliness",
           "lovely",
           "love"
-        ]
+        ],
+        "level": 1
       },
       {
         "id": "g1_l6_look_because_basic_a4",
@@ -1965,7 +4036,8 @@ const GAME_QUESTIONS = {
           "nervous",
           "nervously",
           "nervousness"
-        ]
+        ],
+        "level": 1
       },
       {
         "id": "g1_l6_look_because_basic_a5",
@@ -1977,7 +4049,8 @@ const GAME_QUESTIONS = {
           "livelily",
           "live",
           "livelihood"
-        ]
+        ],
+        "level": 1
       },
       {
         "id": "g1_l6_look_because_basic_a6",
@@ -1989,7 +4062,8 @@ const GAME_QUESTIONS = {
           "amaze",
           "amazed",
           "amazing"
-        ]
+        ],
+        "level": 1
       },
       {
         "id": "g1_l6_look_because_basic_a7",
@@ -2001,7 +4075,8 @@ const GAME_QUESTIONS = {
           "adoration",
           "adorable",
           "adorably"
-        ]
+        ],
+        "level": 1
       },
       {
         "id": "g1_l6_look_because_basic_a8",
@@ -2013,7 +4088,8 @@ const GAME_QUESTIONS = {
           "friendly",
           "friendliness",
           "friendship"
-        ]
+        ],
+        "level": 1
       },
       {
         "id": "g1_l6_look_because_basic_a9",
@@ -2025,7 +4101,8 @@ const GAME_QUESTIONS = {
           "wonderfully",
           "wonder",
           "wondering"
-        ]
+        ],
+        "level": 1
       },
       {
         "id": "g1_l6_look_because_basic_a10",
@@ -2037,7 +4114,138 @@ const GAME_QUESTIONS = {
           "sourness",
           "souring",
           "sour"
-        ]
+        ],
+        "level": 1
+      },
+      {
+        "id": "g1_l6_look_because_basic_a11",
+        "kor": "큰 폭풍 전에 하늘이 어두워 보인다.",
+        "eng": "The sky looks ___ before a big storm.",
+        "ans": "dark",
+        "opts": [
+          "sour",
+          "loud",
+          "dark",
+          "safe"
+        ],
+        "level": 1
+      },
+      {
+        "id": "g1_l6_look_because_basic_a12",
+        "kor": "오븐에서 쿠키가 훌륭한 향기가 난다.",
+        "eng": "The cookies smell ___ from the oven.",
+        "ans": "wonderful",
+        "opts": [
+          "adorable",
+          "wonderful",
+          "realistic",
+          "creative"
+        ],
+        "level": 1
+      },
+      {
+        "id": "g1_l6_look_because_basic_a13",
+        "kor": "홀의 음악은 정말 크게 들린다.",
+        "eng": "The music in the hall sounds really ___.",
+        "ans": "loud",
+        "opts": [
+          "loud",
+          "safe",
+          "sour",
+          "dark"
+        ],
+        "level": 1
+      },
+      {
+        "id": "g1_l6_look_because_basic_a14",
+        "kor": "이 페퍼민트 사탕은 정말 달콤한 맛이 난다.",
+        "eng": "This peppermint candy tastes really ___.",
+        "ans": "sweet",
+        "opts": [
+          "feels",
+          "smell",
+          "sound",
+          "sweet"
+        ],
+        "level": 1
+      },
+      {
+        "id": "g1_l6_look_because_basic_a15",
+        "kor": "새 담요는 부드럽고 편안하게 느껴진다.",
+        "eng": "The new blanket feels ___ and comfortable.",
+        "ans": "soft",
+        "opts": [
+          "sour",
+          "dark",
+          "soft",
+          "safe"
+        ],
+        "level": 1
+      },
+      {
+        "id": "g1_l6_look_because_basic_a16",
+        "kor": "Jake는 긴 하이킹 후 매우 피곤하게 느껴진다.",
+        "eng": "Jake ___ very tired after the long hike.",
+        "ans": "feels",
+        "opts": [
+          "sound",
+          "feels",
+          "sweet",
+          "smell"
+        ],
+        "level": 1
+      },
+      {
+        "id": "g1_l6_look_because_basic_a17",
+        "kor": "정원의 장미는 비 온 후 정말 좋은 향기가 난다.",
+        "eng": "The roses in the garden ___ really nice after the rain.",
+        "ans": "smell",
+        "opts": [
+          "smell",
+          "sweet",
+          "feels",
+          "sound"
+        ],
+        "level": 1
+      },
+      {
+        "id": "g1_l6_look_because_basic_a18",
+        "kor": "책상 위의 새 스피커는 정말 크게 들린다.",
+        "eng": "The new speakers on the desk ___ really loud.",
+        "ans": "sound",
+        "opts": [
+          "sweet",
+          "feels",
+          "smell",
+          "sound"
+        ],
+        "level": 1
+      },
+      {
+        "id": "g1_l6_look_because_basic_a19",
+        "kor": "이 딸기 셔벗은 달콤하고 시원한 맛이 난다.",
+        "eng": "This strawberry sorbet ___ sweet and cold.",
+        "ans": "tastes",
+        "opts": [
+          "lively",
+          "nervous",
+          "tastes",
+          "lovely"
+        ],
+        "level": 1
+      },
+      {
+        "id": "g1_l6_look_because_basic_a20",
+        "kor": "침대 위의 베개는 부드럽고 푹신하게 느껴진다.",
+        "eng": "The pillows on the bed ___ soft and fluffy.",
+        "ans": "feel",
+        "opts": [
+          "dark",
+          "feel",
+          "safe",
+          "sour"
+        ],
+        "level": 1
       },
       {
         "id": "g1_l6_look_because_basic_b1",
@@ -2045,11 +4253,12 @@ const GAME_QUESTIONS = {
         "eng": "We stayed inside ___.",
         "ans": "because it was raining heavily",
         "opts": [
-          "because we wanted to go out",
-          "because the sun was bright",
           "because it was raining heavily",
-          "because the weather was nice"
-        ]
+          "because the weather was nice",
+          "because we wanted to go out",
+          "because the sun was bright"
+        ],
+        "level": 1
       },
       {
         "id": "g1_l6_look_because_basic_b2",
@@ -2057,11 +4266,12 @@ const GAME_QUESTIONS = {
         "eng": "Jaden ate only a little ___.",
         "ans": "because he wasn't feeling well",
         "opts": [
-          "because the meal looked delicious",
-          "because he wasn't feeling well",
           "because he was very hungry",
-          "because he loved the food"
-        ]
+          "because he loved the food",
+          "because the meal looked delicious",
+          "because he wasn't feeling well"
+        ],
+        "level": 1
       },
       {
         "id": "g1_l6_look_because_basic_b3",
@@ -2069,11 +4279,12 @@ const GAME_QUESTIONS = {
         "eng": "___, she missed the school bus.",
         "ans": "Because she got up late",
         "opts": [
-          "Because she got up late",
-          "Because she left home early",
           "Because she was on time",
-          "When she ran fast"
-        ]
+          "When she ran fast",
+          "Because she got up late",
+          "Because she left home early"
+        ],
+        "level": 1
       },
       {
         "id": "g1_l6_look_because_basic_b4",
@@ -2081,11 +4292,12 @@ const GAME_QUESTIONS = {
         "eng": "Tom turned off the TV ___.",
         "ans": "because he needed to study",
         "opts": [
-          "because he wanted to watch more",
-          "because it was his favorite show",
           "because the show was interesting",
-          "because he needed to study"
-        ]
+          "because he needed to study",
+          "because he wanted to watch more",
+          "because it was his favorite show"
+        ],
+        "level": 1
       },
       {
         "id": "g1_l6_look_because_basic_b5",
@@ -2093,11 +4305,12 @@ const GAME_QUESTIONS = {
         "eng": "___, we couldn't go on the picnic.",
         "ans": "Because there was a big storm",
         "opts": [
-          "Because everyone wanted to go",
-          "When we had enough food",
           "Because there was a big storm",
-          "Because the weather was sunny"
-        ]
+          "Because the weather was sunny",
+          "Because everyone wanted to go",
+          "When we had enough food"
+        ],
+        "level": 1
       },
       {
         "id": "g1_l6_look_because_basic_b6",
@@ -2105,11 +4318,12 @@ const GAME_QUESTIONS = {
         "eng": "Leo borrowed my umbrella ___.",
         "ans": "because he forgot his own",
         "opts": [
-          "because it wasn't raining",
-          "because he forgot his own",
           "because it was a hot day",
-          "because he had one already"
-        ]
+          "because he had one already",
+          "because it wasn't raining",
+          "because he forgot his own"
+        ],
+        "level": 1
       },
       {
         "id": "g1_l6_look_because_basic_b7",
@@ -2117,11 +4331,12 @@ const GAME_QUESTIONS = {
         "eng": "Amy got a perfect score on the test ___.",
         "ans": "because she reviewed her notes every day",
         "opts": [
-          "because she reviewed her notes every day",
-          "because she didn't study at all",
           "because she played all day",
-          "because she forgot the material"
-        ]
+          "because she forgot the material",
+          "because she reviewed her notes every day",
+          "because she didn't study at all"
+        ],
+        "level": 1
       },
       {
         "id": "g1_l6_look_because_basic_b8",
@@ -2129,11 +4344,12 @@ const GAME_QUESTIONS = {
         "eng": "___, we ordered extra chairs.",
         "ans": "Because we were expecting many visitors",
         "opts": [
-          "Because there were enough seats",
-          "Because only a few guests came",
           "Because the room was empty",
-          "Because we were expecting many visitors"
-        ]
+          "Because we were expecting many visitors",
+          "Because there were enough seats",
+          "Because only a few guests came"
+        ],
+        "level": 1
       },
       {
         "id": "g1_l6_look_because_basic_b9",
@@ -2141,11 +4357,12 @@ const GAME_QUESTIONS = {
         "eng": "Sam put on sunscreen ___.",
         "ans": "because the sun was very strong",
         "opts": [
-          "because he didn't like the beach",
-          "because he wanted to stay inside",
           "because the sun was very strong",
-          "because it was a cloudy day"
-        ]
+          "because it was a cloudy day",
+          "because he didn't like the beach",
+          "because he wanted to stay inside"
+        ],
+        "level": 1
       },
       {
         "id": "g1_l6_look_because_basic_b10",
@@ -2153,11 +4370,38 @@ const GAME_QUESTIONS = {
         "eng": "Nora went to bed early ___.",
         "ans": "because she had an early practice the next day",
         "opts": [
-          "because she finished homework late",
-          "because she had an early practice the next day",
           "because she wasn't tired",
-          "because she wanted to stay up late"
-        ]
+          "because she wanted to stay up late",
+          "because she finished homework late",
+          "because she had an early practice the next day"
+        ],
+        "level": 1
+      },
+      {
+        "id": "g1_l6_look_because_basic_b11",
+        "kor": "Chris는 매우 목이 말라서 물 세 잔을 마셨다.",
+        "eng": "Chris drank three glasses of water ___.",
+        "ans": "because he was very thirsty",
+        "opts": [
+          "Because there was a big storm",
+          "because he forgot his own",
+          "because he was very thirsty",
+          "because he needed to study"
+        ],
+        "level": 1
+      },
+      {
+        "id": "g1_l6_look_because_basic_b12",
+        "kor": "Ben은 도시락을 잊어버려서 하루 종일 배가 고팠다.",
+        "eng": "Ben was hungry all day ___.",
+        "ans": "because he forgot his lunch box",
+        "opts": [
+          "because he wasn't feeling well",
+          "because he forgot his lunch box",
+          "because the sun was very strong",
+          "because it was raining heavily"
+        ],
+        "level": 1
       },
       {
         "id": "g1_l6_look_because_hard_a3",
@@ -2169,7 +4413,8 @@ const GAME_QUESTIONS = {
           "wonderfully",
           "wonder",
           "wondering"
-        ]
+        ],
+        "level": 2
       },
       {
         "id": "g1_l6_look_because_hard_a4",
@@ -2181,7 +4426,60 @@ const GAME_QUESTIONS = {
           "when",
           "but",
           "because"
-        ]
+        ],
+        "level": 2
+      },
+      {
+        "id": "g1_l6_look_because_hard_a12",
+        "kor": "저 다리는 밤에 무서워 보인다.👉 look + 형용사 scary · That bridge(단수) → looks",
+        "eng": "저 다리는 밤에 무서워 보인다. → 영어로 쓰세요: ___",
+        "ans": "That bridge looks scary at night",
+        "opts": [
+          "because he forgot his lunch box",
+          "because it was raining heavily",
+          "That bridge looks scary at night",
+          "because the sun was very strong"
+        ],
+        "level": 2
+      },
+      {
+        "id": "g1_l6_look_because_hard_a13",
+        "kor": "비가 많이 왔기 때문에, 경기가 취소되었다.👉 또는: The game was canceled because it rained heavily.",
+        "eng": "비가 많이 왔기 때문에, 경기가 취소되었다. → 영어로 쓰세요: ___",
+        "ans": "Because it rained heavily the game was canceled",
+        "opts": [
+          "because she reviewed her notes every day",
+          "Because it rained heavily the game was canceled",
+          "because she had an early practice the next day",
+          "He went to bed early because he was very tired"
+        ],
+        "level": 2
+      },
+      {
+        "id": "g1_l6_look_because_hard_a14",
+        "kor": "저 아이스크림은 정말 맛있어 보인다.look + 형용사 delicious · That ice cream(단수) → looks",
+        "eng": "저 아이스크림은 정말 맛있어 보인다. → 영어로 쓰세요: ___",
+        "ans": "That ice cream looks really delicious",
+        "opts": [
+          "That ice cream looks really delicious",
+          "Because we were expecting many visitors",
+          "because she reviewed her notes every day",
+          "That bridge looks scary at night"
+        ],
+        "level": 2
+      },
+      {
+        "id": "g1_l6_look_because_hard_a15",
+        "kor": "그는 너무 피곤했기 때문에 일찍 잠자리에 들었다.또는: Because he was very tired, he went to bed early.",
+        "eng": "그는 너무 피곤했기 때문에 일찍 잠자리에 들었다. → 영어로 쓰세요: ___",
+        "ans": "He went to bed early because he was very tired",
+        "opts": [
+          "because she had an early practice the next day",
+          "Because it rained heavily the game was canceled",
+          "because she reviewed her notes every day",
+          "He went to bed early because he was very tired"
+        ],
+        "level": 2
       },
       {
         "id": "g1_l6_look_because_hard_b1",
@@ -2193,7 +4491,8 @@ const GAME_QUESTIONS = {
           "amaze",
           "amazing",
           "amazingly"
-        ]
+        ],
+        "level": 2
       },
       {
         "id": "g1_l6_look_because_hard_b2",
@@ -2205,7 +4504,8 @@ const GAME_QUESTIONS = {
           "impressive",
           "impressively",
           "impression"
-        ]
+        ],
+        "level": 2
       },
       {
         "id": "g1_l6_look_because_hard_b3",
@@ -2217,7 +4517,8 @@ const GAME_QUESTIONS = {
           "brightly",
           "live",
           "liveliness"
-        ]
+        ],
+        "level": 2
       },
       {
         "id": "g1_l6_look_because_hard_b4",
@@ -2229,7 +4530,8 @@ const GAME_QUESTIONS = {
           "realism",
           "realize",
           "realistic"
-        ]
+        ],
+        "level": 2
       },
       {
         "id": "g1_l6_look_because_hard_b5",
@@ -2241,7 +4543,8 @@ const GAME_QUESTIONS = {
           "greatly good",
           "great",
           "greatly"
-        ]
+        ],
+        "level": 2
       },
       {
         "id": "g1_l6_look_because_hard_b6",
@@ -2253,7 +4556,8 @@ const GAME_QUESTIONS = {
           "because",
           "so",
           "but"
-        ]
+        ],
+        "level": 2
       },
       {
         "id": "g1_l6_look_because_hard_b7",
@@ -2265,7 +4569,8 @@ const GAME_QUESTIONS = {
           "So",
           "But",
           "When"
-        ]
+        ],
+        "level": 2
       },
       {
         "id": "g1_l6_look_because_hard_b8",
@@ -2277,7 +4582,8 @@ const GAME_QUESTIONS = {
           "but",
           "and",
           "because"
-        ]
+        ],
+        "level": 2
       },
       {
         "id": "g1_l6_look_because_hard_b9",
@@ -2289,7 +4595,8 @@ const GAME_QUESTIONS = {
           "So",
           "Because",
           "Since"
-        ]
+        ],
+        "level": 2
       },
       {
         "id": "g1_l6_look_because_hard_b10",
@@ -2301,7 +4608,8 @@ const GAME_QUESTIONS = {
           "because",
           "so",
           "when"
-        ]
+        ],
+        "level": 2
       }
     ]
   },
@@ -2319,7 +4627,8 @@ const GAME_QUESTIONS = {
           "I",
           "my",
           "mine"
-        ]
+        ],
+        "level": 1
       },
       {
         "id": "g2_l1_g2_give_relclause_basic_a2",
@@ -2331,7 +4640,8 @@ const GAME_QUESTIONS = {
           "our",
           "ours",
           "us"
-        ]
+        ],
+        "level": 1
       },
       {
         "id": "g2_l1_g2_give_relclause_basic_a3",
@@ -2343,7 +4653,8 @@ const GAME_QUESTIONS = {
           "theirs",
           "them",
           "they"
-        ]
+        ],
+        "level": 1
       },
       {
         "id": "g2_l1_g2_give_relclause_basic_a4",
@@ -2355,7 +4666,8 @@ const GAME_QUESTIONS = {
           "him",
           "he",
           "his"
-        ]
+        ],
+        "level": 1
       },
       {
         "id": "g2_l1_g2_give_relclause_basic_a5",
@@ -2367,7 +4679,8 @@ const GAME_QUESTIONS = {
           "she",
           "hers",
           "herself"
-        ]
+        ],
+        "level": 1
       },
       {
         "id": "g2_l1_g2_give_relclause_basic_a6",
@@ -2379,7 +4692,8 @@ const GAME_QUESTIONS = {
           "of",
           "by",
           "to"
-        ]
+        ],
+        "level": 1
       },
       {
         "id": "g2_l1_g2_give_relclause_basic_a7",
@@ -2391,7 +4705,8 @@ const GAME_QUESTIONS = {
           "at",
           "for",
           "to"
-        ]
+        ],
+        "level": 1
       },
       {
         "id": "g2_l1_g2_give_relclause_basic_a8",
@@ -2403,7 +4718,112 @@ const GAME_QUESTIONS = {
           "for",
           "to",
           "of"
-        ]
+        ],
+        "level": 1
+      },
+      {
+        "id": "g2_l1_g2_give_relclause_basic_a13",
+        "kor": "그녀는 우리에게 자신의 과학 프로젝트를 보여주었다.",
+        "eng": "She showed ___ her science project.",
+        "ans": "us",
+        "opts": [
+          "us",
+          "me",
+          "to",
+          "him"
+        ],
+        "level": 1
+      },
+      {
+        "id": "g2_l1_g2_give_relclause_basic_a14",
+        "kor": "삼촌이 나에게 아름다운 그림을 주셨다.",
+        "eng": "My uncle gave ___ a beautiful painting.",
+        "ans": "me",
+        "opts": [
+          "us",
+          "to",
+          "him",
+          "me"
+        ],
+        "level": 1
+      },
+      {
+        "id": "g2_l1_g2_give_relclause_basic_a15",
+        "kor": "코치는 그들에게 새로운 수비 전략을 가르쳐 주었다.",
+        "eng": "The coach taught ___ a new defensive strategy.",
+        "ans": "them",
+        "opts": [
+          "him",
+          "her",
+          "them",
+          "that"
+        ],
+        "level": 1
+      },
+      {
+        "id": "g2_l1_g2_give_relclause_basic_a16",
+        "kor": "Jake는 그녀에게 방수 재킷을 빌려주었다.",
+        "eng": "Jake lent ___ his waterproof jacket.",
+        "ans": "her",
+        "opts": [
+          "who",
+          "her",
+          "him",
+          "for"
+        ],
+        "level": 1
+      },
+      {
+        "id": "g2_l1_g2_give_relclause_basic_a17",
+        "kor": "그녀는 우리에게 재미있는 농담을 해 주었다.",
+        "eng": "She told ___.",
+        "ans": "us a funny joke",
+        "opts": [
+          "us a funny joke",
+          "for her brother",
+          "her a wooden toy",
+          "which won her a prize"
+        ],
+        "level": 1
+      },
+      {
+        "id": "g2_l1_g2_give_relclause_basic_a18",
+        "kor": "이웃이 나에게 신선한 채소를 좀 주었다.",
+        "eng": "My neighbor gave ___.",
+        "ans": "me some fresh vegetables",
+        "opts": [
+          "them the best viewpoint",
+          "who was wearing a red hat",
+          "who has a beautiful voice",
+          "me some fresh vegetables"
+        ],
+        "level": 1
+      },
+      {
+        "id": "g2_l1_g2_give_relclause_basic_a19",
+        "kor": "할아버지가 그녀에게 나무 장난감을 만들어 주셨다.",
+        "eng": "Grandpa made ___.",
+        "ans": "her a wooden toy",
+        "opts": [
+          "for her brother",
+          "which won her a prize",
+          "her a wooden toy",
+          "us a funny joke"
+        ],
+        "level": 1
+      },
+      {
+        "id": "g2_l1_g2_give_relclause_basic_a20",
+        "kor": "가이드가 그들에게 최고의 전망 포인트를 보여주었다.",
+        "eng": "The guide showed ___.",
+        "ans": "them the best viewpoint",
+        "opts": [
+          "who has a beautiful voice",
+          "them the best viewpoint",
+          "me some fresh vegetables",
+          "who was wearing a red hat"
+        ],
+        "level": 1
       },
       {
         "id": "g2_l1_g2_give_relclause_basic_b1",
@@ -2415,7 +4835,8 @@ const GAME_QUESTIONS = {
           "which",
           "what",
           "whom"
-        ]
+        ],
+        "level": 1
       },
       {
         "id": "g2_l1_g2_give_relclause_basic_b2",
@@ -2427,7 +4848,8 @@ const GAME_QUESTIONS = {
           "whom",
           "what",
           "that"
-        ]
+        ],
+        "level": 1
       },
       {
         "id": "g2_l1_g2_give_relclause_basic_b3",
@@ -2439,7 +4861,8 @@ const GAME_QUESTIONS = {
           "whom",
           "who",
           "which"
-        ]
+        ],
+        "level": 1
       },
       {
         "id": "g2_l1_g2_give_relclause_basic_b4",
@@ -2451,7 +4874,8 @@ const GAME_QUESTIONS = {
           "which",
           "who",
           "whom"
-        ]
+        ],
+        "level": 1
       },
       {
         "id": "g2_l1_g2_give_relclause_basic_b5",
@@ -2463,7 +4887,8 @@ const GAME_QUESTIONS = {
           "which",
           "what",
           "whom"
-        ]
+        ],
+        "level": 1
       },
       {
         "id": "g2_l1_g2_give_relclause_basic_b6",
@@ -2475,7 +4900,8 @@ const GAME_QUESTIONS = {
           "whom",
           "what",
           "that"
-        ]
+        ],
+        "level": 1
       },
       {
         "id": "g2_l1_g2_give_relclause_basic_b7",
@@ -2487,7 +4913,8 @@ const GAME_QUESTIONS = {
           "what",
           "that",
           "who"
-        ]
+        ],
+        "level": 1
       },
       {
         "id": "g2_l1_g2_give_relclause_basic_b8",
@@ -2499,7 +4926,60 @@ const GAME_QUESTIONS = {
           "that",
           "who",
           "whom"
-        ]
+        ],
+        "level": 1
+      },
+      {
+        "id": "g2_l1_g2_give_relclause_basic_b9",
+        "kor": "그는 프랑스에서 훈련을 받은 셰프이다.",
+        "eng": "He is a chef ___ trained in France.",
+        "ans": "who",
+        "opts": [
+          "who",
+          "him",
+          "her",
+          "for"
+        ],
+        "level": 1
+      },
+      {
+        "id": "g2_l1_g2_give_relclause_basic_b10",
+        "kor": "나는 영화 마지막에 나오는 그 노래가 좋다.",
+        "eng": "I like the song ___ plays at the end of the movie.",
+        "ans": "that",
+        "opts": [
+          "them",
+          "him",
+          "her",
+          "that"
+        ],
+        "level": 1
+      },
+      {
+        "id": "g2_l1_g2_give_relclause_basic_b11",
+        "kor": "나는 발코니에서 꽃을 기르는 이웃이 있다.",
+        "eng": "I have a neighbor ___.",
+        "ans": "who grows flowers on her balcony",
+        "opts": [
+          "which tracks his daily steps",
+          "who was wearing a red hat",
+          "who grows flowers on her balcony",
+          "which had many dinosaur fossils"
+        ],
+        "level": 1
+      },
+      {
+        "id": "g2_l1_g2_give_relclause_basic_b12",
+        "kor": "그는 매일 걸음 수를 추적하는 앱을 사용한다.",
+        "eng": "He uses an app ___.",
+        "ans": "which tracks his daily steps",
+        "opts": [
+          "who has a beautiful voice",
+          "which tracks his daily steps",
+          "who was wearing a red hat",
+          "which had many dinosaur fossils"
+        ],
+        "level": 1
       },
       {
         "id": "g2_l1_g2_give_relclause_hard_a1",
@@ -2511,7 +4991,8 @@ const GAME_QUESTIONS = {
           "for us",
           "to us",
           "ours"
-        ]
+        ],
+        "level": 2
       },
       {
         "id": "g2_l1_g2_give_relclause_hard_a2",
@@ -2523,7 +5004,8 @@ const GAME_QUESTIONS = {
           "with",
           "of",
           "for"
-        ]
+        ],
+        "level": 2
       },
       {
         "id": "g2_l1_g2_give_relclause_hard_a3",
@@ -2535,7 +5017,8 @@ const GAME_QUESTIONS = {
           "where",
           "who",
           "which"
-        ]
+        ],
+        "level": 2
       },
       {
         "id": "g2_l1_g2_give_relclause_hard_a4",
@@ -2547,7 +5030,229 @@ const GAME_QUESTIONS = {
           "which",
           "who",
           "what"
-        ]
+        ],
+        "level": 2
+      },
+      {
+        "id": "g2_l1_g2_give_relclause_hard_a9",
+        "kor": "나는 빨간 모자를 쓰고 있던 여자를 봤다.",
+        "eng": "두 문장 합치기: I saw a woman. / She was wearing a red hat. → I saw a woman ___.",
+        "ans": "who was wearing a red hat",
+        "opts": [
+          "who was wearing a red hat",
+          "who has a beautiful voice",
+          "me some fresh vegetables",
+          "them the best viewpoint"
+        ],
+        "level": 2
+      },
+      {
+        "id": "g2_l1_g2_give_relclause_hard_a10",
+        "kor": "선생님이 우리에게 시험지를 나눠 주셨다.",
+        "eng": "어순 전환: The teacher gave us the test papers. → (to를 사용해) The teacher gave the test papers ___.",
+        "ans": "to us",
+        "opts": [
+          "which",
+          "them",
+          "that",
+          "to us"
+        ],
+        "level": 2
+      },
+      {
+        "id": "g2_l1_g2_give_relclause_hard_a11",
+        "kor": "우리는 공룡 화석이 많이 있는 박물관을 방문했다.",
+        "eng": "두 문장 합치기: We visited a museum. / It had many dinosaur fossils. → We visited a museum ___.",
+        "ans": "which had many dinosaur fossils",
+        "opts": [
+          "which tracks his daily steps",
+          "who was wearing a red hat",
+          "which had many dinosaur fossils",
+          "who grows flowers on her balcony"
+        ],
+        "level": 2
+      },
+      {
+        "id": "g2_l1_g2_give_relclause_hard_a12",
+        "kor": "선생님은 우리에게 그 정답을 보여 주셨다.",
+        "eng": "The teacher showed the answer ___.",
+        "ans": "to us",
+        "opts": [
+          "that",
+          "to us",
+          "which",
+          "them"
+        ],
+        "level": 2
+      },
+      {
+        "id": "g2_l1_g2_give_relclause_hard_a13",
+        "kor": "그녀는 남동생을 위해 쿠키를 구워 주었다.",
+        "eng": "She baked cookies ___.",
+        "ans": "for her brother",
+        "opts": [
+          "for her brother",
+          "us a funny joke",
+          "her a wooden toy",
+          "which won her a prize"
+        ],
+        "level": 2
+      },
+      {
+        "id": "g2_l1_g2_give_relclause_hard_a14",
+        "kor": "나는 아름다운 목소리를 가진 가수를 알고 있다.",
+        "eng": "I know a singer ___.",
+        "ans": "who has a beautiful voice",
+        "opts": [
+          "who was wearing a red hat",
+          "me some fresh vegetables",
+          "them the best viewpoint",
+          "who has a beautiful voice"
+        ],
+        "level": 2
+      },
+      {
+        "id": "g2_l1_g2_give_relclause_hard_a15",
+        "kor": "그것이 그녀에게 상을 가져다 준 그림이다.",
+        "eng": "That is the painting ___.",
+        "ans": "which won her a prize",
+        "opts": [
+          "me some fresh vegetables",
+          "who was wearing a red hat",
+          "which won her a prize",
+          "them the best viewpoint"
+        ],
+        "level": 2
+      },
+      {
+        "id": "g2_l1_g2_give_relclause_hard_b1",
+        "kor": "Mr. Lee는 온 가족을 위해 푸짐한 아침 식사를 요리했다.",
+        "eng": "Mr. Lee cooked a big breakfast ___ the whole family.",
+        "ans": "for",
+        "opts": [
+          "who",
+          "for",
+          "him",
+          "her"
+        ],
+        "level": 2
+      },
+      {
+        "id": "g2_l1_g2_give_relclause_hard_b2",
+        "kor": "Mrs. Lee는 쇼핑을 가야 했던 언니에게 차를 빌려주었다.",
+        "eng": "Mrs. Lee lent her car ___ her sister.",
+        "ans": "to",
+        "opts": [
+          "to",
+          "me",
+          "us",
+          "him"
+        ],
+        "level": 2
+      },
+      {
+        "id": "g2_l1_g2_give_relclause_hard_b3",
+        "kor": "Jake는 사촌에게 오래된 만화책을 넘겨주었다.",
+        "eng": "Jake passed his old comic books ___ his cousin.",
+        "ans": "to",
+        "opts": [
+          "me",
+          "us",
+          "him",
+          "to"
+        ],
+        "level": 2
+      },
+      {
+        "id": "g2_l1_g2_give_relclause_hard_b4",
+        "kor": "Amy는 반 친구들을 위해 우정 팔찌를 만들었다.",
+        "eng": "Amy made friendship bracelets ___ her classmates.",
+        "ans": "for",
+        "opts": [
+          "her",
+          "who",
+          "for",
+          "him"
+        ],
+        "level": 2
+      },
+      {
+        "id": "g2_l1_g2_give_relclause_hard_b5",
+        "kor": "Amy는 선생님께 미술 작품을 보여 드렸다.",
+        "eng": "Amy showed her art project ___ her teacher.",
+        "ans": "to",
+        "opts": [
+          "him",
+          "to",
+          "me",
+          "us"
+        ],
+        "level": 2
+      },
+      {
+        "id": "g2_l1_g2_give_relclause_hard_b6",
+        "kor": "Emma는 노래하기를 좋아하는 학생이다.",
+        "eng": "Emma is a student ___ loves to sing.",
+        "ans": "who",
+        "opts": [
+          "who",
+          "him",
+          "her",
+          "for"
+        ],
+        "level": 2
+      },
+      {
+        "id": "g2_l1_g2_give_relclause_hard_b7",
+        "kor": "그녀는 강당의 모든 사람들을 울게 만든 노래를 불렀다.",
+        "eng": "She sang a song ___ made everyone in the hall cry.",
+        "ans": "which",
+        "opts": [
+          "to us",
+          "them",
+          "that",
+          "which"
+        ],
+        "level": 2
+      },
+      {
+        "id": "g2_l1_g2_give_relclause_hard_b8",
+        "kor": "Jake는 학교 밴드에서 드럼을 치는 남학생이다.",
+        "eng": "Jake is the boy ___ plays drums in the school band.",
+        "ans": "who",
+        "opts": [
+          "her",
+          "for",
+          "who",
+          "him"
+        ],
+        "level": 2
+      },
+      {
+        "id": "g2_l1_g2_give_relclause_hard_b9",
+        "kor": "그는 음악실에서 빌린 드럼 세트를 사용했다.",
+        "eng": "He used a drum set ___ was borrowed from the music room.",
+        "ans": "which",
+        "opts": [
+          "that",
+          "which",
+          "to us",
+          "them"
+        ],
+        "level": 2
+      },
+      {
+        "id": "g2_l1_g2_give_relclause_hard_b10",
+        "kor": "그것은 선생님들 모두를 놀라게 한 멋진 공연이었다.",
+        "eng": "It was a wonderful show ___ surprised all the teachers.",
+        "ans": "which",
+        "opts": [
+          "which",
+          "to us",
+          "them",
+          "that"
+        ],
+        "level": 2
       }
     ]
   },
@@ -2565,7 +5270,8 @@ const GAME_QUESTIONS = {
           "has",
           "had",
           "do"
-        ]
+        ],
+        "level": 1
       },
       {
         "id": "g2_l2_g2_perfect_compare_basic_a2",
@@ -2577,7 +5283,8 @@ const GAME_QUESTIONS = {
           "had",
           "does",
           "has"
-        ]
+        ],
+        "level": 1
       },
       {
         "id": "g2_l2_g2_perfect_compare_basic_a3",
@@ -2589,7 +5296,8 @@ const GAME_QUESTIONS = {
           "having",
           "have",
           "has"
-        ]
+        ],
+        "level": 1
       },
       {
         "id": "g2_l2_g2_perfect_compare_basic_a4",
@@ -2601,7 +5309,8 @@ const GAME_QUESTIONS = {
           "has",
           "have",
           "had"
-        ]
+        ],
+        "level": 1
       },
       {
         "id": "g2_l2_g2_perfect_compare_basic_a5",
@@ -2613,7 +5322,8 @@ const GAME_QUESTIONS = {
           "has",
           "had",
           "were"
-        ]
+        ],
+        "level": 1
       },
       {
         "id": "g2_l2_g2_perfect_compare_basic_a6",
@@ -2625,7 +5335,8 @@ const GAME_QUESTIONS = {
           "have written",
           "is writing",
           "has written"
-        ]
+        ],
+        "level": 1
       },
       {
         "id": "g2_l2_g2_perfect_compare_basic_a7",
@@ -2637,7 +5348,8 @@ const GAME_QUESTIONS = {
           "are heard",
           "have heard",
           "have hear"
-        ]
+        ],
+        "level": 1
       },
       {
         "id": "g2_l2_g2_perfect_compare_basic_a8",
@@ -2649,7 +5361,8 @@ const GAME_QUESTIONS = {
           "has broken",
           "has broke",
           "have broken"
-        ]
+        ],
+        "level": 1
       },
       {
         "id": "g2_l2_g2_perfect_compare_basic_a9",
@@ -2661,7 +5374,60 @@ const GAME_QUESTIONS = {
           "has playing",
           "is played",
           "have played"
-        ]
+        ],
+        "level": 1
+      },
+      {
+        "id": "g2_l2_g2_perfect_compare_basic_a13",
+        "kor": "내 고양이는 하루 종일 저 소파에서 잠을 잤다.",
+        "eng": "My cat ___ on that sofa all day.",
+        "ans": "has slept",
+        "opts": [
+          "have heard",
+          "has broken",
+          "has played",
+          "has slept"
+        ],
+        "level": 1
+      },
+      {
+        "id": "g2_l2_g2_perfect_compare_basic_a14",
+        "kor": "우리는 아직 그 프로젝트를 끝내지 못했다.",
+        "eng": "We ___ the project yet.",
+        "ans": "have not finished",
+        "opts": [
+          "the most expensive",
+          "more interesting",
+          "have not finished",
+          "more comfortable"
+        ],
+        "level": 1
+      },
+      {
+        "id": "g2_l2_g2_perfect_compare_basic_a15",
+        "kor": "그녀는 지금까지 여섯 나라를 방문했다.",
+        "eng": "She ___ six countries so far.",
+        "ans": "has visited",
+        "opts": [
+          "the highest",
+          "has visited",
+          "has written",
+          "the tallest"
+        ],
+        "level": 1
+      },
+      {
+        "id": "g2_l2_g2_perfect_compare_basic_a16",
+        "kor": "나는 초등학교 때부터 그를 알아 왔다.",
+        "eng": "I ___ him since we were in elementary school.",
+        "ans": "have known",
+        "opts": [
+          "have known",
+          "have heard",
+          "has broken",
+          "has played"
+        ],
+        "level": 1
       },
       {
         "id": "g2_l2_g2_perfect_compare_basic_a17",
@@ -2673,7 +5439,8 @@ const GAME_QUESTIONS = {
           "in",
           "at",
           "for"
-        ]
+        ],
+        "level": 1
       },
       {
         "id": "g2_l2_g2_perfect_compare_basic_a18",
@@ -2685,7 +5452,8 @@ const GAME_QUESTIONS = {
           "from",
           "since",
           "for"
-        ]
+        ],
+        "level": 1
       },
       {
         "id": "g2_l2_g2_perfect_compare_basic_a19",
@@ -2697,7 +5465,8 @@ const GAME_QUESTIONS = {
           "since",
           "for",
           "at"
-        ]
+        ],
+        "level": 1
       },
       {
         "id": "g2_l2_g2_perfect_compare_basic_a20",
@@ -2709,7 +5478,8 @@ const GAME_QUESTIONS = {
           "since",
           "during",
           "from"
-        ]
+        ],
+        "level": 1
       },
       {
         "id": "g2_l2_g2_perfect_compare_basic_b1",
@@ -2721,7 +5491,8 @@ const GAME_QUESTIONS = {
           "lightest",
           "most light",
           "lighter"
-        ]
+        ],
+        "level": 1
       },
       {
         "id": "g2_l2_g2_perfect_compare_basic_b2",
@@ -2733,7 +5504,8 @@ const GAME_QUESTIONS = {
           "difficultly",
           "more difficult",
           "difficulter"
-        ]
+        ],
+        "level": 1
       },
       {
         "id": "g2_l2_g2_perfect_compare_basic_b3",
@@ -2745,7 +5517,8 @@ const GAME_QUESTIONS = {
           "faster",
           "more fast",
           "fastest"
-        ]
+        ],
+        "level": 1
       },
       {
         "id": "g2_l2_g2_perfect_compare_basic_b4",
@@ -2757,7 +5530,8 @@ const GAME_QUESTIONS = {
           "comfortabler",
           "most comfortable",
           "comfortablest"
-        ]
+        ],
+        "level": 1
       },
       {
         "id": "g2_l2_g2_perfect_compare_basic_b5",
@@ -2769,7 +5543,8 @@ const GAME_QUESTIONS = {
           "hottest",
           "hoter",
           "hotter"
-        ]
+        ],
+        "level": 1
       },
       {
         "id": "g2_l2_g2_perfect_compare_basic_b6",
@@ -2781,7 +5556,8 @@ const GAME_QUESTIONS = {
           "most tallest",
           "the tallest",
           "taller"
-        ]
+        ],
+        "level": 1
       },
       {
         "id": "g2_l2_g2_perfect_compare_basic_b7",
@@ -2793,7 +5569,8 @@ const GAME_QUESTIONS = {
           "the most expensive",
           "more expensive",
           "most expensive"
-        ]
+        ],
+        "level": 1
       },
       {
         "id": "g2_l2_g2_perfect_compare_basic_b8",
@@ -2805,7 +5582,34 @@ const GAME_QUESTIONS = {
           "the better",
           "the most good",
           "gooder"
-        ]
+        ],
+        "level": 1
+      },
+      {
+        "id": "g2_l2_g2_perfect_compare_basic_b9",
+        "kor": "에베레스트산은 세계에서 가장 높은 산이다.",
+        "eng": "Mount Everest is ___ mountain in the world.",
+        "ans": "the highest",
+        "opts": [
+          "has written",
+          "has visited",
+          "the tallest",
+          "the highest"
+        ],
+        "level": 1
+      },
+      {
+        "id": "g2_l2_g2_perfect_compare_basic_b10",
+        "kor": "내 개가 네 것보다 더 작다.",
+        "eng": "My dog is ___ than yours.",
+        "ans": "smaller",
+        "opts": [
+          "fastest",
+          "faster",
+          "smaller",
+          "lighter"
+        ],
+        "level": 1
       },
       {
         "id": "g2_l2_g2_perfect_compare_hard_a1",
@@ -2813,11 +5617,12 @@ const GAME_QUESTIONS = {
         "eng": "She ___ lived in Seoul for ten years.",
         "ans": "has",
         "opts": [
-          "have",
-          "had",
           "is",
-          "has"
-        ]
+          "has",
+          "have",
+          "had"
+        ],
+        "level": 2
       },
       {
         "id": "g2_l2_g2_perfect_compare_hard_a2",
@@ -2825,11 +5630,12 @@ const GAME_QUESTIONS = {
         "eng": "Tom has studied piano ___ he was seven years old.",
         "ans": "since",
         "opts": [
-          "at",
-          "from",
           "since",
-          "for"
-        ]
+          "for",
+          "at",
+          "from"
+        ],
+        "level": 2
       },
       {
         "id": "g2_l2_g2_perfect_compare_hard_a3",
@@ -2837,11 +5643,12 @@ const GAME_QUESTIONS = {
         "eng": "This book is ___ than the one I read last week.",
         "ans": "more interesting",
         "opts": [
-          "the most interesting",
-          "more interesting",
           "most interesting",
-          "more interestingly"
-        ]
+          "more interestingly",
+          "the most interesting",
+          "more interesting"
+        ],
+        "level": 2
       },
       {
         "id": "g2_l2_g2_perfect_compare_hard_a4",
@@ -2849,11 +5656,233 @@ const GAME_QUESTIONS = {
         "eng": "Jake is ___ student in the whole school.",
         "ans": "the tallest",
         "opts": [
-          "the tallest",
-          "tallest",
           "the taller",
-          "most tall"
-        ]
+          "most tall",
+          "the tallest",
+          "tallest"
+        ],
+        "level": 2
+      },
+      {
+        "id": "g2_l2_g2_perfect_compare_hard_a9",
+        "kor": "Tom은 3년 동안 부산에 살고 있다.",
+        "eng": "Tom started living in Busan 3 years ago. He still lives there. → (현재완료로) Tom has lived in Busan ___.",
+        "ans": "for three years",
+        "opts": [
+          "more interesting",
+          "for three years",
+          "more difficult",
+          "more comfortable"
+        ],
+        "level": 2
+      },
+      {
+        "id": "g2_l2_g2_perfect_compare_hard_a10",
+        "kor": "우리는 그 박물관을 두 번 방문했다.",
+        "eng": "We visited the museum last year. We also visited it the year before. → (현재완료로) We ___.",
+        "ans": "have visited the museum twice",
+        "opts": [
+          "have visited the museum twice",
+          "much more difficult than this one",
+          "have lived in this town since 2020",
+          "has read the book twice"
+        ],
+        "level": 2
+      },
+      {
+        "id": "g2_l2_g2_perfect_compare_hard_a11",
+        "kor": "Amy는 Lily보다 키가 더 크다.",
+        "eng": "Amy: 168cm / Lily: 164cm → (비교급으로) Amy is ___.",
+        "ans": "taller than Lily",
+        "opts": [
+          "more comfortable",
+          "more interesting",
+          "have not finished",
+          "taller than Lily"
+        ],
+        "level": 2
+      },
+      {
+        "id": "g2_l2_g2_perfect_compare_hard_a12",
+        "kor": "그녀는 그 책을 두 번 읽었다.",
+        "eng": "She ___.",
+        "ans": "has read the book twice",
+        "opts": [
+          "the most expensive",
+          "have not finished",
+          "has read the book twice",
+          "the highest in Korea"
+        ],
+        "level": 2
+      },
+      {
+        "id": "g2_l2_g2_perfect_compare_hard_a13",
+        "kor": "우리는 2020년부터 이 마을에 살고 있다.",
+        "eng": "We ___.",
+        "ans": "have lived in this town since 2020",
+        "opts": [
+          "has read the book twice",
+          "have lived in this town since 2020",
+          "much more difficult than this one",
+          "have visited the museum twice"
+        ],
+        "level": 2
+      },
+      {
+        "id": "g2_l2_g2_perfect_compare_hard_a14",
+        "kor": "이 산이 한국에서 가장 높다.",
+        "eng": "This mountain is ___.",
+        "ans": "the highest in Korea",
+        "opts": [
+          "the highest in Korea",
+          "the most expensive",
+          "have not finished",
+          "has read the book twice"
+        ],
+        "level": 2
+      },
+      {
+        "id": "g2_l2_g2_perfect_compare_hard_a15",
+        "kor": "그 문제는 이것보다 훨씬 더 어렵다.",
+        "eng": "The problem is ___.",
+        "ans": "much more difficult than this one",
+        "opts": [
+          "have lived in this town since 2020",
+          "have visited the museum twice",
+          "has read the book twice",
+          "much more difficult than this one"
+        ],
+        "level": 2
+      },
+      {
+        "id": "g2_l2_g2_perfect_compare_hard_b1",
+        "kor": "그녀는 3년 동안 피아노를 공부해 왔다.",
+        "eng": "She ___ studied piano for three years.",
+        "ans": "has",
+        "opts": [
+          "won",
+          "have",
+          "has",
+          "for"
+        ],
+        "level": 2
+      },
+      {
+        "id": "g2_l2_g2_perfect_compare_hard_b2",
+        "kor": "그녀는 이미 두 개의 대회에서 우승했다.",
+        "eng": "She has already ___ two competitions.",
+        "ans": "won",
+        "opts": [
+          "have",
+          "won",
+          "has",
+          "for"
+        ],
+        "level": 2
+      },
+      {
+        "id": "g2_l2_g2_perfect_compare_hard_b3",
+        "kor": "선생님은 그녀가 여섯 살 때부터 매일 연습해 왔다고 말한다.",
+        "eng": "Her teacher says she has practiced every day ___ she was six.",
+        "ans": "since",
+        "opts": [
+          "since",
+          "begun",
+          "have",
+          "faster"
+        ],
+        "level": 2
+      },
+      {
+        "id": "g2_l2_g2_perfect_compare_hard_b4",
+        "kor": "그녀는 또한 더 어린 학생들을 가르치기 시작했다.",
+        "eng": "She has also ___ teaching younger students.",
+        "ans": "begun",
+        "opts": [
+          "since",
+          "have",
+          "faster",
+          "begun"
+        ],
+        "level": 2
+      },
+      {
+        "id": "g2_l2_g2_perfect_compare_hard_b5",
+        "kor": "부모님은 그녀가 이렇게 열심히 하는 모습을 본 적이 없다고 말한다.",
+        "eng": "Her parents say they have never ___ her work so hard before.",
+        "ans": "seen",
+        "opts": [
+          "most",
+          "has",
+          "seen",
+          "have"
+        ],
+        "level": 2
+      },
+      {
+        "id": "g2_l2_g2_perfect_compare_hard_b6",
+        "kor": "Tom은 Jake보다 더 빨랐다.",
+        "eng": "Tom was ___ than Jake.",
+        "ans": "faster",
+        "opts": [
+          "higher",
+          "faster",
+          "hotter",
+          "harder"
+        ],
+        "level": 2
+      },
+      {
+        "id": "g2_l2_g2_perfect_compare_hard_b7",
+        "kor": "Amy는 모두 중에서 가장 빠르게 달렸다.",
+        "eng": "Amy ran the ___ of all.",
+        "ans": "fastest",
+        "opts": [
+          "fastest",
+          "lighter",
+          "smaller",
+          "faster"
+        ],
+        "level": 2
+      },
+      {
+        "id": "g2_l2_g2_perfect_compare_hard_b8",
+        "kor": "높이뛰기는 대부분의 학생들에게 멀리뛰기보다 더 어려웠다.",
+        "eng": "The high jump was ___ than the long jump.",
+        "ans": "harder",
+        "opts": [
+          "faster",
+          "hotter",
+          "higher",
+          "harder"
+        ],
+        "level": 2
+      },
+      {
+        "id": "g2_l2_g2_perfect_compare_hard_b9",
+        "kor": "우리 팀은 이어달리기에서 작년보다 더 높은 점수를 냈다.",
+        "eng": "Our team scored ___ than last year in the relay race.",
+        "ans": "higher",
+        "opts": [
+          "hotter",
+          "harder",
+          "higher",
+          "faster"
+        ],
+        "level": 2
+      },
+      {
+        "id": "g2_l2_g2_perfect_compare_hard_b10",
+        "kor": "마지막 이어달리기는 그날의 가장 신나는 순간이었다.",
+        "eng": "The final relay was the ___ exciting moment of the day.",
+        "ans": "most",
+        "opts": [
+          "has",
+          "most",
+          "have",
+          "seen"
+        ],
+        "level": 2
       }
     ]
   },
@@ -2871,7 +5900,8 @@ const GAME_QUESTIONS = {
           "eating",
           "eat",
           "eaten"
-        ]
+        ],
+        "level": 1
       },
       {
         "id": "g2_l3_g2_to_if_basic_a2",
@@ -2883,7 +5913,8 @@ const GAME_QUESTIONS = {
           "submitted",
           "submit",
           "to submit"
-        ]
+        ],
+        "level": 1
       },
       {
         "id": "g2_l3_g2_to_if_basic_a3",
@@ -2895,7 +5926,8 @@ const GAME_QUESTIONS = {
           "studying",
           "to study",
           "study"
-        ]
+        ],
+        "level": 1
       },
       {
         "id": "g2_l3_g2_to_if_basic_a4",
@@ -2907,7 +5939,8 @@ const GAME_QUESTIONS = {
           "to announce",
           "announcing",
           "announced"
-        ]
+        ],
+        "level": 1
       },
       {
         "id": "g2_l3_g2_to_if_basic_a5",
@@ -2919,7 +5952,8 @@ const GAME_QUESTIONS = {
           "showing",
           "show",
           "shown"
-        ]
+        ],
+        "level": 1
       },
       {
         "id": "g2_l3_g2_to_if_basic_a6",
@@ -2931,7 +5965,8 @@ const GAME_QUESTIONS = {
           "sit on",
           "sitting on",
           "to sit on"
-        ]
+        ],
+        "level": 1
       },
       {
         "id": "g2_l3_g2_to_if_basic_a7",
@@ -2943,7 +5978,8 @@ const GAME_QUESTIONS = {
           "writing with",
           "to write with",
           "to write"
-        ]
+        ],
+        "level": 1
       },
       {
         "id": "g2_l3_g2_to_if_basic_a8",
@@ -2955,7 +5991,8 @@ const GAME_QUESTIONS = {
           "to talk about",
           "talk about",
           "talking about"
-        ]
+        ],
+        "level": 1
       },
       {
         "id": "g2_l3_g2_to_if_basic_a9",
@@ -2967,7 +6004,112 @@ const GAME_QUESTIONS = {
           "to drink",
           "drink from",
           "drinking from"
-        ]
+        ],
+        "level": 1
+      },
+      {
+        "id": "g2_l3_g2_to_if_basic_a13",
+        "kor": "Mia는 아이디어를 적을 노트가 필요하다.",
+        "eng": "Mia wants a notebook ___ her ideas.",
+        "ans": "to write down",
+        "opts": [
+          "to write with",
+          "to talk about",
+          "to drink from",
+          "to write down"
+        ],
+        "level": 1
+      },
+      {
+        "id": "g2_l3_g2_to_if_basic_a14",
+        "kor": "우리는 시험을 준비할 시간이 더 필요하다.",
+        "eng": "We need more time ___ for the test.",
+        "ans": "to prepare",
+        "opts": [
+          "to submit",
+          "to announce",
+          "to prepare",
+          "to talk to"
+        ],
+        "level": 1
+      },
+      {
+        "id": "g2_l3_g2_to_if_basic_a15",
+        "kor": "그는 주말에 방문할 멋진 카페를 찾았다.",
+        "eng": "He found a nice café ___ on weekends.",
+        "ans": "to visit",
+        "opts": [
+          "to drink",
+          "to visit",
+          "to study",
+          "to check"
+        ],
+        "level": 1
+      },
+      {
+        "id": "g2_l3_g2_to_if_basic_a16",
+        "kor": "나는 내 과제를 도와줄 누군가가 필요하다.",
+        "eng": "I need someone ___ with my project.",
+        "ans": "to help",
+        "opts": [
+          "to help",
+          "to show",
+          "to read",
+          "forgets"
+        ],
+        "level": 1
+      },
+      {
+        "id": "g2_l3_g2_to_if_basic_a17",
+        "kor": "회의 시작 전에 확인할 것이 있나요?",
+        "eng": "Is there anything ___ before the meeting starts?",
+        "ans": "to check",
+        "opts": [
+          "to study",
+          "to visit",
+          "to drink",
+          "to check"
+        ],
+        "level": 1
+      },
+      {
+        "id": "g2_l3_g2_to_if_basic_a18",
+        "kor": "냉장고에 먹을 것이 없다.",
+        "eng": "There is nothing ___ in the fridge.",
+        "ans": "to eat",
+        "opts": [
+          "to show",
+          "to help",
+          "to eat",
+          "return"
+        ],
+        "level": 1
+      },
+      {
+        "id": "g2_l3_g2_to_if_basic_a19",
+        "kor": "차가운 마실 것 좀 가져다 주세요.",
+        "eng": "Please bring me something cold ___.",
+        "ans": "to drink",
+        "opts": [
+          "to check",
+          "to drink",
+          "to study",
+          "to visit"
+        ],
+        "level": 1
+      },
+      {
+        "id": "g2_l3_g2_to_if_basic_a20",
+        "kor": "그녀는 외로울 때 이야기 나눌 친한 친구가 있다.",
+        "eng": "She has a close friend ___ when she feels lonely.",
+        "ans": "to talk to",
+        "opts": [
+          "to talk to",
+          "to prepare",
+          "to submit",
+          "to announce"
+        ],
+        "level": 1
       },
       {
         "id": "g2_l3_g2_to_if_basic_b1",
@@ -2979,7 +6121,8 @@ const GAME_QUESTIONS = {
           "rained",
           "is raining",
           "rains"
-        ]
+        ],
+        "level": 1
       },
       {
         "id": "g2_l3_g2_to_if_basic_b2",
@@ -2991,7 +6134,8 @@ const GAME_QUESTIONS = {
           "is needing",
           "needs",
           "will need"
-        ]
+        ],
+        "level": 1
       },
       {
         "id": "g2_l3_g2_to_if_basic_b3",
@@ -3003,7 +6147,8 @@ const GAME_QUESTIONS = {
           "doesn't arrive",
           "won't arrive",
           "didn't arrive"
-        ]
+        ],
+        "level": 1
       },
       {
         "id": "g2_l3_g2_to_if_basic_b4",
@@ -3015,7 +6160,8 @@ const GAME_QUESTIONS = {
           "will be",
           "was",
           "being"
-        ]
+        ],
+        "level": 1
       },
       {
         "id": "g2_l3_g2_to_if_basic_b5",
@@ -3027,7 +6173,60 @@ const GAME_QUESTIONS = {
           "didn't leave",
           "not leave",
           "don't leave"
-        ]
+        ],
+        "level": 1
+      },
+      {
+        "id": "g2_l3_g2_to_if_basic_b9",
+        "kor": "비가 많이 오면, 우리는 집에 있을 것이다.",
+        "eng": "If it ___ heavily, we will stay home.",
+        "ans": "rains",
+        "opts": [
+          "rests",
+          "to eat",
+          "rains",
+          "needs"
+        ],
+        "level": 1
+      },
+      {
+        "id": "g2_l3_g2_to_if_basic_b10",
+        "kor": "충분히 쉬면, 그녀는 나아질 것이다.",
+        "eng": "She will feel better if she ___ enough.",
+        "ans": "rests",
+        "opts": [
+          "to eat",
+          "rests",
+          "rains",
+          "needs"
+        ],
+        "level": 1
+      },
+      {
+        "id": "g2_l3_g2_to_if_basic_b11",
+        "kor": "아침을 먹지 않으면, 학교에서 피곤할 것이다.",
+        "eng": "If you ___ breakfast, you'll feel tired at school.",
+        "ans": "don",
+        "opts": [
+          "don",
+          "get",
+          "is",
+          "gets"
+        ],
+        "level": 1
+      },
+      {
+        "id": "g2_l3_g2_to_if_basic_b12",
+        "kor": "더 따뜻해지면, 창문을 열자.",
+        "eng": "If it ___ warmer, let's open the windows.",
+        "ans": "gets",
+        "opts": [
+          "rains",
+          "needs",
+          "rests",
+          "gets"
+        ],
+        "level": 1
       },
       {
         "id": "g2_l3_g2_to_if_hard_a1",
@@ -3039,7 +6238,8 @@ const GAME_QUESTIONS = {
           "reads",
           "to read",
           "to reading"
-        ]
+        ],
+        "level": 2
       },
       {
         "id": "g2_l3_g2_to_if_hard_a2",
@@ -3051,7 +6251,8 @@ const GAME_QUESTIONS = {
           "to sit on",
           "sitting on",
           "to sitting on"
-        ]
+        ],
+        "level": 2
       },
       {
         "id": "g2_l3_g2_to_if_hard_a3",
@@ -3063,7 +6264,8 @@ const GAME_QUESTIONS = {
           "will rain",
           "is raining",
           "rained"
-        ]
+        ],
+        "level": 2
       },
       {
         "id": "g2_l3_g2_to_if_hard_a4",
@@ -3075,7 +6277,229 @@ const GAME_QUESTIONS = {
           "returned",
           "to return",
           "return"
-        ]
+        ],
+        "level": 2
+      },
+      {
+        "id": "g2_l3_g2_to_if_hard_a9",
+        "kor": "그녀는 책을 넣을 가방이 필요하다.",
+        "eng": "두 문장 합치기: She needs a bag. / She can put her books in it. → (to부정사로) She needs a bag ___.",
+        "ans": "to put her books in",
+        "opts": [
+          "if you study hard",
+          "If you leave now",
+          "to put her books in",
+          "to review his notes"
+        ],
+        "level": 2
+      },
+      {
+        "id": "g2_l3_g2_to_if_hard_a10",
+        "kor": "Jake는 필기를 복습할 시간이 필요하다.",
+        "eng": "두 문장 합치기: Jake needs time. / He can review his notes. → (to부정사로) Jake needs time ___.",
+        "ans": "to review his notes",
+        "opts": [
+          "If you leave now",
+          "to review his notes",
+          "to put her books in",
+          "if you study hard"
+        ],
+        "level": 2
+      },
+      {
+        "id": "g2_l3_g2_to_if_hard_a11",
+        "kor": "열심히 공부하면 좋은 점수를 받을 것이다.",
+        "eng": "두 문장 합치기: Study hard. / Then you will get a good grade. → (if를 사용해) You will get a good grade ___.",
+        "ans": "if you study hard",
+        "opts": [
+          "if you study hard",
+          "If you leave now",
+          "to put her books in",
+          "to review his notes"
+        ],
+        "level": 2
+      },
+      {
+        "id": "g2_l3_g2_to_if_hard_a12",
+        "kor": "나는 읽을 책이 없다.",
+        "eng": "I have no book ___.",
+        "ans": "to read",
+        "opts": [
+          "to show",
+          "to help",
+          "forgets",
+          "to read"
+        ],
+        "level": 2
+      },
+      {
+        "id": "g2_l3_g2_to_if_hard_a13",
+        "kor": "그녀는 이야기할 누군가가 필요하다.",
+        "eng": "She needs someone ___.",
+        "ans": "to talk to",
+        "opts": [
+          "to submit",
+          "to announce",
+          "to talk to",
+          "to prepare"
+        ],
+        "level": 2
+      },
+      {
+        "id": "g2_l3_g2_to_if_hard_a14",
+        "kor": "지금 출발하면 제때 도착할 것이다.",
+        "eng": "지금 출발하면 제때 도착할 것이다. ___, you will arrive on time.",
+        "ans": "If you leave now",
+        "opts": [
+          "to write with",
+          "If you leave now",
+          "if you study hard",
+          "doesn't arrive"
+        ],
+        "level": 2
+      },
+      {
+        "id": "g2_l3_g2_to_if_hard_a15",
+        "kor": "더 많이 연습하지 않으면 그는 다음 대회를 이기지 못할 것이다.",
+        "eng": "He will not win the next contest ___.",
+        "ans": "if he doesn",
+        "opts": [
+          "if he doesn",
+          "to announce",
+          "don't leave",
+          "to write in"
+        ],
+        "level": 2
+      },
+      {
+        "id": "g2_l3_g2_to_if_hard_b1",
+        "kor": "Mia는 오늘 수업에 가져갈 것이 많았다.",
+        "eng": "Mia had many things ___ to her classes today.",
+        "ans": "to carry",
+        "opts": [
+          "to study",
+          "to visit",
+          "to check",
+          "to carry"
+        ],
+        "level": 2
+      },
+      {
+        "id": "g2_l3_g2_to_if_hard_b2",
+        "kor": "그녀는 수업 중에 필기할 공책을 챙겼다.",
+        "eng": "She packed her notebook ___ during lessons.",
+        "ans": "to write in",
+        "opts": [
+          "don't leave",
+          "if he doesn",
+          "to write in",
+          "to announce"
+        ],
+        "level": 2
+      },
+      {
+        "id": "g2_l3_g2_to_if_hard_b3",
+        "kor": "그녀는 마실 물병도 가져왔다.",
+        "eng": "She also brought a water bottle ___.",
+        "ans": "to drink from",
+        "opts": [
+          "to write down",
+          "to drink from",
+          "to write with",
+          "to talk about"
+        ],
+        "level": 2
+      },
+      {
+        "id": "g2_l3_g2_to_if_hard_b4",
+        "kor": "가방 안에는 집에 가는 버스에서 읽을 소설이 있었다.",
+        "eng": "In her bag, there was a novel ___ on the bus ride home.",
+        "ans": "to read",
+        "opts": [
+          "to read",
+          "to show",
+          "to help",
+          "forgets"
+        ],
+        "level": 2
+      },
+      {
+        "id": "g2_l3_g2_to_if_hard_b5",
+        "kor": "그녀는 먹을 것이 없었다 — 간식 상자를 잊어버린 것이다!",
+        "eng": "She had nothing ___ — she had forgotten her snack box!",
+        "ans": "to eat",
+        "opts": [
+          "return",
+          "to show",
+          "to help",
+          "to eat"
+        ],
+        "level": 2
+      },
+      {
+        "id": "g2_l3_g2_to_if_hard_b6",
+        "kor": "이번 일요일 날씨가 좋으면 Jake는 공원에 갈 것이다.",
+        "eng": "If the weather ___ fine this Sunday, Jake will go to the park.",
+        "ans": "is",
+        "opts": [
+          "get",
+          "gets",
+          "is",
+          "don"
+        ],
+        "level": 2
+      },
+      {
+        "id": "g2_l3_g2_to_if_hard_b7",
+        "kor": "Mia는 정오까지 숙제를 끝내면 올 것이다.",
+        "eng": "Mia will come if she ___ her homework by noon.",
+        "ans": "finishes",
+        "opts": [
+          "to check",
+          "finishes",
+          "to study",
+          "to visit"
+        ],
+        "level": 2
+      },
+      {
+        "id": "g2_l3_g2_to_if_hard_b8",
+        "kor": "Jake가 물병을 잊어버리면 Mia가 자신의 것을 나눠줄 것이다.",
+        "eng": "If Jake ___ his water bottle, Mia will share hers.",
+        "ans": "forgets",
+        "opts": [
+          "forgets",
+          "to show",
+          "to help",
+          "to read"
+        ],
+        "level": 2
+      },
+      {
+        "id": "g2_l3_g2_to_if_hard_b9",
+        "kor": "피곤해지면 그들은 휴식을 취할 것이다.",
+        "eng": "They will take a break if they ___ tired.",
+        "ans": "get",
+        "opts": [
+          "don",
+          "is",
+          "gets",
+          "get"
+        ],
+        "level": 2
+      },
+      {
+        "id": "g2_l3_g2_to_if_hard_b10",
+        "kor": "오후에 비가 오면 그들은 대신 실내 카페에 갈 것이다.",
+        "eng": "But if it ___ in the afternoon, they will go to an indoor café.",
+        "ans": "rains",
+        "opts": [
+          "rests",
+          "to eat",
+          "rains",
+          "needs"
+        ],
+        "level": 2
       }
     ]
   },
@@ -3093,7 +6517,8 @@ const GAME_QUESTIONS = {
           "very",
           "too",
           "quite"
-        ]
+        ],
+        "level": 1
       },
       {
         "id": "g2_l4_g2_sothat_passive_basic_a2",
@@ -3105,7 +6530,8 @@ const GAME_QUESTIONS = {
           "very",
           "quite",
           "so"
-        ]
+        ],
+        "level": 1
       },
       {
         "id": "g2_l4_g2_sothat_passive_basic_a3",
@@ -3117,7 +6543,8 @@ const GAME_QUESTIONS = {
           "because",
           "that",
           "which"
-        ]
+        ],
+        "level": 1
       },
       {
         "id": "g2_l4_g2_sothat_passive_basic_a4",
@@ -3129,7 +6556,8 @@ const GAME_QUESTIONS = {
           "that",
           "when",
           "but"
-        ]
+        ],
+        "level": 1
       },
       {
         "id": "g2_l4_g2_sothat_passive_basic_a5",
@@ -3141,7 +6569,8 @@ const GAME_QUESTIONS = {
           "because",
           "which",
           "but"
-        ]
+        ],
+        "level": 1
       },
       {
         "id": "g2_l4_g2_sothat_passive_basic_a6",
@@ -3153,7 +6582,8 @@ const GAME_QUESTIONS = {
           "when",
           "but",
           "that"
-        ]
+        ],
+        "level": 1
       },
       {
         "id": "g2_l4_g2_sothat_passive_basic_a7",
@@ -3165,7 +6595,8 @@ const GAME_QUESTIONS = {
           "deliciousness",
           "delicious",
           "deliciously"
-        ]
+        ],
+        "level": 1
       },
       {
         "id": "g2_l4_g2_sothat_passive_basic_a8",
@@ -3177,7 +6608,8 @@ const GAME_QUESTIONS = {
           "beautifully",
           "beautiful",
           "beauty"
-        ]
+        ],
+        "level": 1
       },
       {
         "id": "g2_l4_g2_sothat_passive_basic_a9",
@@ -3189,7 +6621,8 @@ const GAME_QUESTIONS = {
           "difficultly",
           "difficulty",
           "differ"
-        ]
+        ],
+        "level": 1
       },
       {
         "id": "g2_l4_g2_sothat_passive_basic_a10",
@@ -3201,7 +6634,112 @@ const GAME_QUESTIONS = {
           "hardness",
           "harder",
           "hard"
-        ]
+        ],
+        "level": 1
+      },
+      {
+        "id": "g2_l4_g2_sothat_passive_basic_a13",
+        "kor": "카레가 너무 매워서 우리는 물을 많이 마셨다.",
+        "eng": "The curry was so ___ that we drank lots of water.",
+        "ans": "spicy",
+        "opts": [
+          "fixed",
+          "happy",
+          "spicy",
+          "tired"
+        ],
+        "level": 1
+      },
+      {
+        "id": "g2_l4_g2_sothat_passive_basic_a14",
+        "kor": "Jake는 너무 열심히 공부해서 만점을 받았다.",
+        "eng": "Jake studied so ___ that he got perfect marks.",
+        "ans": "hard",
+        "opts": [
+          "good",
+          "hard",
+          "that",
+          "were"
+        ],
+        "level": 1
+      },
+      {
+        "id": "g2_l4_g2_sothat_passive_basic_a15",
+        "kor": "그 가수는 너무 인기가 있어서 팬들이 밤새 기다렸다.",
+        "eng": "The singer was so ___ that fans waited all night.",
+        "ans": "popular",
+        "opts": [
+          "popular",
+          "is sung",
+          "are kept",
+          "was held"
+        ],
+        "level": 1
+      },
+      {
+        "id": "g2_l4_g2_sothat_passive_basic_a16",
+        "kor": "Yuna는 너무 피곤해서 일찍 잠자리에 들었다.",
+        "eng": "Yuna felt so ___ that she went to bed early.",
+        "ans": "tired",
+        "opts": [
+          "spicy",
+          "fixed",
+          "happy",
+          "tired"
+        ],
+        "level": 1
+      },
+      {
+        "id": "g2_l4_g2_sothat_passive_basic_a17",
+        "kor": "그 게임은 너무 흥미로워서 우리는 밤새 깨어 있었다.",
+        "eng": "The game was ___ we stayed up all night.",
+        "ans": "so exciting that",
+        "opts": [
+          "was built in 1950",
+          "were borrowed",
+          "so exciting that",
+          "so quickly that"
+        ],
+        "level": 1
+      },
+      {
+        "id": "g2_l4_g2_sothat_passive_basic_a18",
+        "kor": "그녀는 너무 늦게 도착해서 공연이 이미 시작되었다.",
+        "eng": "She arrived ___ the show had already started.",
+        "ans": "so late that",
+        "opts": [
+          "was designed",
+          "so late that",
+          "so good that",
+          "are prepared"
+        ],
+        "level": 1
+      },
+      {
+        "id": "g2_l4_g2_sothat_passive_basic_a19",
+        "kor": "케이크가 너무 맛있어 보여서 Mia는 먹고 싶어서 기다릴 수가 없었다.",
+        "eng": "The cake looked ___ Mia couldn't wait to eat it.",
+        "ans": "so good that",
+        "opts": [
+          "so good that",
+          "so late that",
+          "are prepared",
+          "was designed"
+        ],
+        "level": 1
+      },
+      {
+        "id": "g2_l4_g2_sothat_passive_basic_a20",
+        "kor": "그 선수는 너무 빠르게 움직여서 아무도 그녀를 잡을 수 없었다.",
+        "eng": "The runner moved ___ nobody could catch her.",
+        "ans": "so quickly that",
+        "opts": [
+          "so exciting that",
+          "were borrowed",
+          "so heavy that",
+          "so quickly that"
+        ],
+        "level": 1
       },
       {
         "id": "g2_l4_g2_sothat_passive_basic_b1",
@@ -3213,7 +6751,8 @@ const GAME_QUESTIONS = {
           "is breaking",
           "was broken",
           "broken"
-        ]
+        ],
+        "level": 1
       },
       {
         "id": "g2_l4_g2_sothat_passive_basic_b2",
@@ -3225,7 +6764,8 @@ const GAME_QUESTIONS = {
           "fixed",
           "was fixed",
           "is fixed"
-        ]
+        ],
+        "level": 1
       },
       {
         "id": "g2_l4_g2_sothat_passive_basic_b3",
@@ -3237,7 +6777,8 @@ const GAME_QUESTIONS = {
           "keep",
           "kept",
           "is kept"
-        ]
+        ],
+        "level": 1
       },
       {
         "id": "g2_l4_g2_sothat_passive_basic_b4",
@@ -3249,7 +6790,8 @@ const GAME_QUESTIONS = {
           "built",
           "is built",
           "was built"
-        ]
+        ],
+        "level": 1
       },
       {
         "id": "g2_l4_g2_sothat_passive_basic_b5",
@@ -3261,7 +6803,8 @@ const GAME_QUESTIONS = {
           "are",
           "were",
           "is"
-        ]
+        ],
+        "level": 1
       },
       {
         "id": "g2_l4_g2_sothat_passive_basic_b6",
@@ -3273,7 +6816,8 @@ const GAME_QUESTIONS = {
           "was",
           "are",
           "am"
-        ]
+        ],
+        "level": 1
       },
       {
         "id": "g2_l4_g2_sothat_passive_basic_b7",
@@ -3285,7 +6829,8 @@ const GAME_QUESTIONS = {
           "was",
           "is",
           "am"
-        ]
+        ],
+        "level": 1
       },
       {
         "id": "g2_l4_g2_sothat_passive_basic_b8",
@@ -3297,7 +6842,60 @@ const GAME_QUESTIONS = {
           "are",
           "am",
           "is"
-        ]
+        ],
+        "level": 1
+      },
+      {
+        "id": "g2_l4_g2_sothat_passive_basic_b9",
+        "kor": "어제 교과서 몇 권이 도서관에서 빌려졌다.",
+        "eng": "Some textbooks ___ from the library yesterday.",
+        "ans": "were borrowed",
+        "opts": [
+          "was destroyed",
+          "so late that",
+          "were borrowed",
+          "so heavy that"
+        ],
+        "level": 1
+      },
+      {
+        "id": "g2_l4_g2_sothat_passive_basic_b10",
+        "kor": "과학 전시회가 지난달 우리 학교에서 열렸다.",
+        "eng": "The science fair ___ in our school last month.",
+        "ans": "was held",
+        "opts": [
+          "are sold",
+          "was held",
+          "are kept",
+          "is given"
+        ],
+        "level": 1
+      },
+      {
+        "id": "g2_l4_g2_sothat_passive_basic_b11",
+        "kor": "이 민요는 매 학교 축제에서 불린다.",
+        "eng": "This folk song ___ at every school festival.",
+        "ans": "is sung",
+        "opts": [
+          "is sung",
+          "popular",
+          "are kept",
+          "was held"
+        ],
+        "level": 1
+      },
+      {
+        "id": "g2_l4_g2_sothat_passive_basic_b12",
+        "kor": "이 거리들은 매주 주말 자원봉사자들에 의해 청소된다.",
+        "eng": "These streets ___ by volunteers every weekend.",
+        "ans": "are cleaned",
+        "opts": [
+          "beautifully",
+          "were scored",
+          "is prepared",
+          "are cleaned"
+        ],
+        "level": 1
       },
       {
         "id": "g2_l4_g2_sothat_passive_hard_a1",
@@ -3309,7 +6907,8 @@ const GAME_QUESTIONS = {
           "quite",
           "so",
           "very"
-        ]
+        ],
+        "level": 2
       },
       {
         "id": "g2_l4_g2_sothat_passive_hard_a2",
@@ -3321,7 +6920,8 @@ const GAME_QUESTIONS = {
           "were",
           "is",
           "was"
-        ]
+        ],
+        "level": 2
       },
       {
         "id": "g2_l4_g2_sothat_passive_hard_a3",
@@ -3333,7 +6933,8 @@ const GAME_QUESTIONS = {
           "when",
           "because",
           "which"
-        ]
+        ],
+        "level": 2
       },
       {
         "id": "g2_l4_g2_sothat_passive_hard_a4",
@@ -3345,7 +6946,489 @@ const GAME_QUESTIONS = {
           "are given",
           "were given",
           "is given"
-        ]
+        ],
+        "level": 2
+      },
+      {
+        "id": "g2_l4_g2_sothat_passive_hard_a9",
+        "kor": "Jake의 팀이 세 골을 득점했다. → 세 골이 Jake의 팀에 의해 득점되었다.",
+        "eng": "Jake's team scored three goals. → Three goals ___ by Jake's team.",
+        "ans": "were scored",
+        "opts": [
+          "are cleaned",
+          "is prepared",
+          "were scored",
+          "beautifully"
+        ],
+        "level": 2
+      },
+      {
+        "id": "g2_l4_g2_sothat_passive_hard_a10",
+        "kor": "교통이 너무 심해서 우리는 늦게 도착했다.",
+        "eng": "The traffic was very heavy. We arrived late. → The traffic was ___ we arrived late.",
+        "ans": "so heavy that",
+        "opts": [
+          "so late that",
+          "so heavy that",
+          "were borrowed",
+          "was destroyed"
+        ],
+        "level": 2
+      },
+      {
+        "id": "g2_l4_g2_sothat_passive_hard_a11",
+        "kor": "주방장이 매 시즌마다 새 메뉴를 준비한다. → 새 메뉴가 매 시즌마다 주방장에 의해 준비된다.",
+        "eng": "The chef prepares a new menu every season. → A new menu ___ by the chef every season.",
+        "ans": "is prepared",
+        "opts": [
+          "is prepared",
+          "beautifully",
+          "are cleaned",
+          "were scored"
+        ],
+        "level": 2
+      },
+      {
+        "id": "g2_l4_g2_sothat_passive_hard_a12",
+        "kor": "그 박물관은 1950년에 세워졌다.",
+        "eng": "The museum ___.",
+        "ans": "was built in 1950",
+        "opts": [
+          "so exciting that",
+          "so quickly that",
+          "was designed by Mia",
+          "was built in 1950"
+        ],
+        "level": 2
+      },
+      {
+        "id": "g2_l4_g2_sothat_passive_hard_a13",
+        "kor": "그 노래는 너무 아름다워서 모두가 눈물을 흘렸다.",
+        "eng": "The song was ___.",
+        "ans": "so beautiful that everyone cried",
+        "opts": [
+          "was designed by Mia",
+          "was built in 1950",
+          "so beautiful that everyone cried",
+          "so long that we couldn"
+        ],
+        "level": 2
+      },
+      {
+        "id": "g2_l4_g2_sothat_passive_hard_a14",
+        "kor": "이 학교는 Mia의 아버지에 의해 설계되었다.",
+        "eng": "This school ___.",
+        "ans": "was designed by Mia",
+        "opts": [
+          "so long that we couldn",
+          "was designed by Mia",
+          "was built in 1950",
+          "so exciting that"
+        ],
+        "level": 2
+      },
+      {
+        "id": "g2_l4_g2_sothat_passive_hard_a15",
+        "kor": "영화가 너무 길어서 우리는 다 보지 못했다.",
+        "eng": "The movie was ___.",
+        "ans": "so long that we couldn",
+        "opts": [
+          "so long that we couldn",
+          "was designed by Mia",
+          "was built in 1950",
+          "so exciting that"
+        ],
+        "level": 2
+      },
+      {
+        "id": "g2_l4_g2_sothat_passive_hard_b1",
+        "kor": "야채들이 너무 신선해서 그는 계획했던 것보다 더 많이 샀다.",
+        "eng": "The vegetables were ___ fresh that he bought more than he had planned.",
+        "ans": "so",
+        "opts": [
+          "is",
+          "was",
+          "are",
+          "so"
+        ],
+        "level": 2
+      },
+      {
+        "id": "g2_l4_g2_sothat_passive_hard_b2",
+        "kor": "직접 만든 빵이 너무 좋은 냄새가 나서 근처의 모든 사람들이 가판대로 끌렸다.",
+        "eng": "The homemade bread smelled so ___ that everyone nearby was attracted.",
+        "ans": "good",
+        "opts": [
+          "hard",
+          "were",
+          "good",
+          "that"
+        ],
+        "level": 2
+      },
+      {
+        "id": "g2_l4_g2_sothat_passive_hard_b3",
+        "kor": "거리 밴드가 너무 크게 연주해서 시장 전체가 그들을 들을 수 있었다.",
+        "eng": "A street band played ___ loudly that the whole market could hear them.",
+        "ans": "so",
+        "opts": [
+          "are",
+          "so",
+          "is",
+          "was"
+        ],
+        "level": 2
+      },
+      {
+        "id": "g2_l4_g2_sothat_passive_hard_b4",
+        "kor": "Jake는 너무 행복해서 다음 주에 다시 오기로 결정했다.",
+        "eng": "Jake felt so ___ that he decided to come back the next week.",
+        "ans": "happy",
+        "opts": [
+          "happy",
+          "spicy",
+          "tired",
+          "fixed"
+        ],
+        "level": 2
+      },
+      {
+        "id": "g2_l4_g2_sothat_passive_hard_b5",
+        "kor": "가방이 너무 무거워서 그는 택시를 타야 했다.",
+        "eng": "His bags were so heavy ___ he had to take a taxi.",
+        "ans": "that",
+        "opts": [
+          "hard",
+          "were",
+          "good",
+          "that"
+        ],
+        "level": 2
+      },
+      {
+        "id": "g2_l4_g2_sothat_passive_hard_b6",
+        "kor": "매년, 학교 장기자랑은 학생회에 의해 기획된다.",
+        "eng": "Every year, the school talent show ___ organized by the student council.",
+        "ans": "is",
+        "opts": [
+          "was",
+          "are",
+          "is",
+          "so"
+        ],
+        "level": 2
+      },
+      {
+        "id": "g2_l4_g2_sothat_passive_hard_b7",
+        "kor": "올해, 체육관이 미술부에 의해 아름답게 장식되었다.",
+        "eng": "This year, the gym ___ decorated beautifully by the art club.",
+        "ans": "was",
+        "opts": [
+          "that",
+          "was",
+          "are",
+          "so"
+        ],
+        "level": 2
+      },
+      {
+        "id": "g2_l4_g2_sothat_passive_hard_b8",
+        "kor": "노래부터 마술까지 많은 순서들이 무대에서 공연되었다.",
+        "eng": "Many acts ___ performed on stage, from singing to magic tricks.",
+        "ans": "were",
+        "opts": [
+          "were",
+          "that",
+          "hard",
+          "good"
+        ],
+        "level": 2
+      },
+      {
+        "id": "g2_l4_g2_sothat_passive_hard_b9",
+        "kor": "모든 공연이 학교 미디어팀에 의해 촬영되었다.",
+        "eng": "All the performances ___ filmed by the school media team.",
+        "ans": "were",
+        "opts": [
+          "that",
+          "hard",
+          "good",
+          "were"
+        ],
+        "level": 2
+      },
+      {
+        "id": "g2_l4_g2_sothat_passive_hard_b10",
+        "kor": "최고 공연자 상이 Yuna라는 이름의 1학년 학생에게 주어졌다.",
+        "eng": "The best performer award ___ given to a first-year student named Yuna.",
+        "ans": "was",
+        "opts": [
+          "so",
+          "that",
+          "was",
+          "are"
+        ],
+        "level": 2
+      },
+      {
+        "id": "g2_l4_g2_passive_practice_a1",
+        "kor": "Jake가 창문을 깼다. → 창문은 Jake에 의해 깨졌다.",
+        "eng": "The window ___ by Jake.",
+        "ans": "was broken",
+        "opts": [
+          "difficult",
+          "was broken",
+          "delicious",
+          "beautifully"
+        ],
+        "level": 2
+      },
+      {
+        "id": "g2_l4_g2_passive_practice_a2",
+        "kor": "Mia가 이 편지를 썼다. → 이 편지는 Mia에 의해 쓰여졌다.",
+        "eng": "This letter ___ by Mia.",
+        "ans": "was written",
+        "opts": [
+          "was written",
+          "beautifully",
+          "are cleaned",
+          "were scored"
+        ],
+        "level": 2
+      },
+      {
+        "id": "g2_l4_g2_passive_practice_a3",
+        "kor": "학생들이 교실을 청소했다. → 교실은 학생들에 의해 청소되었다.",
+        "eng": "The classroom ___ by the students.",
+        "ans": "was cleaned",
+        "opts": [
+          "beautifully",
+          "are cleaned",
+          "were scored",
+          "was cleaned"
+        ],
+        "level": 2
+      },
+      {
+        "id": "g2_l4_g2_passive_practice_a4",
+        "kor": "우리 선생님이 영어를 가르친다. → 영어는 우리 선생님에 의해 가르쳐진다.",
+        "eng": "English ___ by our teacher.",
+        "ans": "is taught",
+        "opts": [
+          "difficult",
+          "was built",
+          "is taught",
+          "delicious"
+        ],
+        "level": 2
+      },
+      {
+        "id": "g2_l4_g2_passive_practice_a5",
+        "kor": "요리사가 식사를 준비한다. → 식사는 요리사에 의해 준비된다.",
+        "eng": "The meals ___ by the chef.",
+        "ans": "are prepared",
+        "opts": [
+          "was designed",
+          "are prepared",
+          "so late that",
+          "so good that"
+        ],
+        "level": 2
+      },
+      {
+        "id": "g2_l4_g2_passive_practice_a6",
+        "kor": "Sam이 이 그림을 그렸다. → 이 그림은 Sam에 의해 그려졌다.",
+        "eng": "This picture ___ by Sam.",
+        "ans": "was painted",
+        "opts": [
+          "was painted",
+          "beautifully",
+          "are cleaned",
+          "were scored"
+        ],
+        "level": 2
+      },
+      {
+        "id": "g2_l4_g2_passive_practice_a7",
+        "kor": "아이들이 잃어버린 개를 찾았다. → 잃어버린 개는 아이들에 의해 발견되었다.",
+        "eng": "A lost dog ___ by the kids.",
+        "ans": "was found",
+        "opts": [
+          "delicious",
+          "difficult",
+          "was built",
+          "was found"
+        ],
+        "level": 2
+      },
+      {
+        "id": "g2_l4_g2_passive_practice_a8",
+        "kor": "그 회사가 이 제품들을 판매한다. → 이 제품들은 그 회사에 의해 판매된다.",
+        "eng": "These products ___ by the company.",
+        "ans": "are sold",
+        "opts": [
+          "was held",
+          "is given",
+          "are sold",
+          "are kept"
+        ],
+        "level": 2
+      },
+      {
+        "id": "g2_l4_g2_passive_practice_a9",
+        "kor": "Alex가 이 웹사이트를 디자인했다. → 이 웹사이트는 Alex에 의해 디자인되었다.",
+        "eng": "This website ___ by Alex.",
+        "ans": "was designed",
+        "opts": [
+          "are prepared",
+          "was designed",
+          "so late that",
+          "so good that"
+        ],
+        "level": 2
+      },
+      {
+        "id": "g2_l4_g2_passive_practice_a10",
+        "kor": "바람이 오래된 다리를 파괴했다. → 오래된 다리는 바람에 의해 파괴되었다.",
+        "eng": "The old bridge ___ by the wind.",
+        "ans": "was destroyed",
+        "opts": [
+          "was destroyed",
+          "were borrowed",
+          "so heavy that",
+          "so late that"
+        ],
+        "level": 2
+      },
+      {
+        "id": "g2_l4_g2_passive_practice_b1",
+        "kor": "창문이 Jake에 의해 깨졌다. → Jake가 창문을 깼다.",
+        "eng": "Jake ___ the window.",
+        "ans": "broke",
+        "opts": [
+          "spicy",
+          "tired",
+          "fixed",
+          "broke"
+        ],
+        "level": 2
+      },
+      {
+        "id": "g2_l4_g2_passive_practice_b2",
+        "kor": "이 노래는 Yuna에 의해 불려졌다. → Yuna가 이 노래를 불렀다.",
+        "eng": "Yuna ___ this song.",
+        "ans": "sang",
+        "opts": [
+          "hard",
+          "were",
+          "sang",
+          "that"
+        ],
+        "level": 2
+      },
+      {
+        "id": "g2_l4_g2_passive_practice_b3",
+        "kor": "케이크는 Mia의 엄마에 의해 만들어진다. → Mia의 엄마가 케이크를 만든다.",
+        "eng": "Mia's mom ___ the cake.",
+        "ans": "makes",
+        "opts": [
+          "fixed",
+          "makes",
+          "spicy",
+          "tired"
+        ],
+        "level": 2
+      },
+      {
+        "id": "g2_l4_g2_passive_practice_b4",
+        "kor": "소포들이 배달기사에 의해 배달되었다. → 배달기사가 소포들을 배달했다.",
+        "eng": "The driver ___ the packages.",
+        "ans": "delivered",
+        "opts": [
+          "delivered",
+          "delicious",
+          "difficult",
+          "was built"
+        ],
+        "level": 2
+      },
+      {
+        "id": "g2_l4_g2_passive_practice_b5",
+        "kor": "보고서가 Alex에 의해 작성되었다. → Alex가 보고서를 작성했다.",
+        "eng": "Alex ___ the report.",
+        "ans": "wrote",
+        "opts": [
+          "spicy",
+          "tired",
+          "fixed",
+          "wrote"
+        ],
+        "level": 2
+      },
+      {
+        "id": "g2_l4_g2_passive_practice_b6",
+        "kor": "꽃들은 나의 할머니에 의해 물을 받는다. → 나의 할머니가 꽃들에 물을 준다.",
+        "eng": "My grandmother ___ the flowers.",
+        "ans": "waters",
+        "opts": [
+          "spicy",
+          "popular",
+          "waters",
+          "follow"
+        ],
+        "level": 2
+      },
+      {
+        "id": "g2_l4_g2_passive_practice_b7",
+        "kor": "공원이 시에 의해 건설되었다. → 시가 공원을 건설했다.",
+        "eng": "The city ___ the park.",
+        "ans": "built",
+        "opts": [
+          "fixed",
+          "built",
+          "spicy",
+          "tired"
+        ],
+        "level": 2
+      },
+      {
+        "id": "g2_l4_g2_passive_practice_b8",
+        "kor": "규칙들은 모든 선수들에 의해 따라진다. → 모든 선수들이 규칙들을 따른다.",
+        "eng": "All players ___ the rules.",
+        "ans": "follow",
+        "opts": [
+          "follow",
+          "waters",
+          "spicy",
+          "popular"
+        ],
+        "level": 2
+      },
+      {
+        "id": "g2_l4_g2_passive_practice_b9",
+        "kor": "트로피가 교장선생님에 의해 주어졌다. → 교장선생님이 트로피를 주었다.",
+        "eng": "The principal ___ the trophy.",
+        "ans": "gave",
+        "opts": [
+          "that",
+          "hard",
+          "were",
+          "gave"
+        ],
+        "level": 2
+      },
+      {
+        "id": "g2_l4_g2_passive_practice_b10",
+        "kor": "영어는 전 세계 많은 사람들에 의해 말해진다. → 전 세계 많은 사람들이 영어를 말한다.",
+        "eng": "Many people around the world ___ English.",
+        "ans": "speak",
+        "opts": [
+          "tired",
+          "fixed",
+          "speak",
+          "spicy"
+        ],
+        "level": 2
       }
     ]
   },

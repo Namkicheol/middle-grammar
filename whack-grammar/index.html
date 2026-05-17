@@ -57,10 +57,11 @@ header{display:flex;align-items:center;gap:8px;padding:12px 14px 6px;position:re
 .combo{color:#ea580c;}
 
 /* ── quiz card ── */
-.qcard{margin:2px 14px 8px;background:rgba(255,255,255,.92);border:1px solid rgba(255,255,255,.95);border-radius:18px;padding:11px 14px;text-align:center;box-shadow:0 8px 20px rgba(15,23,42,.08);position:relative;z-index:3;}
+.qcard{margin:2px 14px 8px;background:rgba(255,255,255,.92);border:1px solid rgba(255,255,255,.95);border-radius:18px;padding:11px 14px;text-align:center;box-shadow:0 8px 20px rgba(15,23,42,.08);position:relative;z-index:3;min-height:96px;}
 .qkor{font-size:.84rem;font-weight:700;color:#475569;margin-bottom:4px;font-family:'Noto Sans KR',sans-serif;}
 .qeng{font-size:1.05rem;font-weight:900;color:var(--ink);letter-spacing:.2px;}
-.qeng .qwrong{display:inline-block;padding:1px 8px;color:#dc2626;background:#fee2e2;border:1.5px solid #fca5a5;border-radius:8px;text-decoration:line-through;font-weight:900;}
+.qeng .qwrong{display:inline-block;padding:2px 10px;color:#dc2626;background:#fee2e2;border:2px solid #fca5a5;border-radius:9px;text-decoration:line-through;text-decoration-thickness:2px;font-weight:900;font-size:1.18em;line-height:1.15;animation:qwrong-pulse 1.4s ease-in-out infinite;}
+@keyframes qwrong-pulse{0%,100%{background:#fee2e2;transform:scale(1);}50%{background:#fecaca;transform:scale(1.04);}}
 .qhint{font-size:.7rem;font-weight:800;color:#dc2626;letter-spacing:.5px;margin-top:5px;}
 .qmeta{display:flex;justify-content:center;gap:14px;margin-top:4px;font-size:.66rem;font-weight:800;color:#64748b;letter-spacing:.5px;}
 .qmeta .qbar{display:inline-block;width:60px;height:5px;background:#e2e8f0;border-radius:99px;overflow:hidden;vertical-align:middle;margin-left:4px;}
@@ -93,7 +94,7 @@ header{display:flex;align-items:center;gap:8px;padding:12px 14px 6px;position:re
 .mole-whisker{position:absolute;bottom:32%;width:22%;height:1px;background:rgba(28,25,23,.7);box-shadow:0 4px 0 rgba(28,25,23,.5);}
 .mole-whisker.l{left:6%;transform:rotate(-6deg);}
 .mole-whisker.r{right:6%;transform:rotate(6deg);}
-.mole-sign{position:absolute;bottom:115%;left:50%;transform:translateX(-50%);background:linear-gradient(180deg,#fef3c7,#fde68a);border:2px solid #b45309;border-radius:9px;padding:3px 11px;font-size:.92rem;font-weight:900;color:#7c2d12;box-shadow:0 4px 8px rgba(120,53,15,.32),inset 0 1px 0 rgba(255,255,255,.6);white-space:nowrap;font-family:'Baloo 2',sans-serif;}
+.mole-sign{position:absolute;bottom:115%;left:50%;transform:translateX(-50%);background:linear-gradient(180deg,#fef3c7,#fde68a);border:2px solid #b45309;border-radius:9px;padding:3px 9px;font-size:.86rem;line-height:1.05;font-weight:900;color:#7c2d12;box-shadow:0 4px 8px rgba(120,53,15,.32),inset 0 1px 0 rgba(255,255,255,.6);white-space:normal;max-width:140%;text-align:center;font-family:'Baloo 2',sans-serif;}
 .mole-sign::after{content:'';position:absolute;top:100%;left:50%;width:3px;height:14px;background:#7c2d12;transform:translateX(-50%);border-radius:1px;}
 
 /* ── motion phases ── */
@@ -242,6 +243,7 @@ header{display:flex;align-items:center;gap:8px;padding:12px 14px 6px;position:re
   </div>
 </div>
 
+<script>function toast(msg, type){}</script>
 <script src="../sounds.js"></script>
 <script src="../score-popup.js"></script>
 <script src="../game/questions.js"></script>
@@ -321,7 +323,9 @@ function shuffle(arr) {
 function pickQuestionPool(key) {
   const src = GAME_QUESTIONS[key];
   if (!src) return [];
-  return shuffle(src.questions.slice()).slice(0, ROUND_QUESTIONS);
+  // whack mode needs a fill-in-blank shape; skip metas without '___'
+  const playable = src.questions.filter(q => /_{3,}/.test(q.eng || ''));
+  return shuffle(playable.slice()).slice(0, ROUND_QUESTIONS);
 }
 
 function startGame() {
@@ -369,7 +373,9 @@ function renderQuestion() {
   // sentence reads as an error to fix, then student picks the right answer mole
   const wrongOpt = q.opts.find(o => o !== q.ans) || '____';
   const safe = wrongOpt.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
-  qEng.innerHTML = q.eng.replace(/_{3,}/g, `<span class="qwrong">${safe}</span>`);
+  // strip parenthetical hints like '(be)' / '(be, 부정형)' — they suit fill-in-blank, not error-correction
+  const cleaned = q.eng.replace(/\s*\([^)]*\)/g, '');
+  qEng.innerHTML = cleaned.replace(/_{3,}/g, `<span class="qwrong">${safe}</span>`);
   qProg.textContent = `${qIdx + 1} / ${questionPool.length}`;
 }
 

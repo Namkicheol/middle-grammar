@@ -72,8 +72,8 @@ function parsePatternA(html, unitKey) {
       }
     }
 
-    const inputMatch = block.match(/<input\b[^>]*data-ans=["'][^"']+["'][^>]*>/);
-    if (!ans && inputMatch) ans = attr(inputMatch[0], 'data-ans');
+    // MCQ only: skip fix/input/scramble types (no choices = not MCQ)
+    if (opts.length === 0) continue;
     if (!ans) continue;
 
     // Extract q-text

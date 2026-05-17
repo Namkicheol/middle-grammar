@@ -6,381 +6,453 @@
 <title>중학 영어 문법 워크시트</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@600;700;800;900&display=swap" rel="stylesheet">
-<!-- Pretendard: 현재 가장 세련된 한글 웹폰트 -->
+<link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@600;700;800&family=Plus+Jakarta+Sans:wght@600;700;800&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css">
 <style>
 :root{
-  --blue:#0ea5e9;--dark:#0c4a6e;--purple:#6366f1;
-  --green:#22c55e;--grn-bg:#f0fdf4;
-  --amber:#f59e0b;--amb-bg:#fffbeb;
-  --sky:#e0f2fe;--bg:#f0f9ff;--white:#fff;--gray:#94a3b8;
-  --bdr:#e2e8f0;
+  --ink:#0f172a;--ink2:#1e293b;--mute:#64748b;--mute2:#94a3b8;
+  --bg:#f5f7ff;--white:#fff;--bdr:#e6ecf6;
+
+  /* 카드 컬러 팔레트 */
+  --c-sky-bg:#dbeafe;     --c-sky-bg2:#bfdbfe;     --c-sky-dk:#1e40af;
+  --c-mint-bg:#ccfbf1;    --c-mint-bg2:#99f6e4;    --c-mint-dk:#115e59;
+  --c-peach-bg:#fee2e2;   --c-peach-bg2:#fecaca;   --c-peach-dk:#9f1239;
+  --c-amber-bg:#fef3c7;   --c-amber-bg2:#fde68a;   --c-amber-dk:#92400e;
+  --c-lav-bg:#ede9fe;     --c-lav-bg2:#ddd6fe;     --c-lav-dk:#5b21b6;
+  --c-rose-bg:#fce7f3;    --c-rose-bg2:#fbcfe8;    --c-rose-dk:#9d174d;
 }
 *{margin:0;padding:0;box-sizing:border-box;}
-body{font-family:'Pretendard','Plus Jakarta Sans',sans-serif;background:var(--bg);min-height:100vh;padding-bottom:60px;font-size:16px;}
-
-/* ══════════════════════════════
-   ✨ NEW BEAUTIFUL HEADER
-══════════════════════════════ */
-.header {
-  background: linear-gradient(135deg, #0f0c29 0%, #1a1a4e 30%, #24243e 60%, #0d1b4b 100%);
-  padding: 64px 20px 92px;
-  text-align: center;
-  position: relative;
-  overflow: hidden;
-}
-
-/* 도트 격자 패턴 */
-.header::before {
-  content: '';
-  position: absolute;
-  inset: 0;
-  background-image: radial-gradient(rgba(255,255,255,.06) 1px, transparent 1px);
-  background-size: 26px 26px;
-  pointer-events: none;
-}
-
-/* 아래쪽 웨이브 */
-.header::after {
-  content: '';
-  position: absolute;
-  bottom: -1px;
-  left: 50%;
-  transform: translateX(-50%);
-  width: 140%;
-  height: 72px;
-  background: var(--bg);
-  border-radius: 50% 50% 0 0;
-}
-
-/* 빛나는 orb 장식 */
-.header-orb {
-  position: absolute;
-  border-radius: 50%;
-  pointer-events: none;
-  filter: blur(70px);
-}
-.header-orb--1 {
-  width: 380px; height: 380px;
-  background: radial-gradient(circle, rgba(99,102,241,.45) 0%, transparent 70%);
-  top: -120px; right: -80px;
-  animation: orbFloat 10s ease-in-out infinite;
-}
-.header-orb--2 {
-  width: 280px; height: 280px;
-  background: radial-gradient(circle, rgba(14,165,233,.4) 0%, transparent 70%);
-  bottom: 0px; left: -60px;
-  animation: orbFloat 12s ease-in-out infinite reverse;
-}
-.header-orb--3 {
-  width: 200px; height: 200px;
-  background: radial-gradient(circle, rgba(168,85,247,.35) 0%, transparent 70%);
-  top: 40%; left: 50%;
-  transform: translateX(-50%);
-  animation: orbFloat 8s ease-in-out infinite;
-}
-
-@keyframes orbFloat {
-  0%, 100% { transform: translateY(0); }
-  50% { transform: translateY(-20px); }
-}
-
-/* 플로팅 알파벳 장식 */
-.header-deco {
-  position: absolute;
-  font-family: 'Plus Jakarta Sans', sans-serif;
-  font-weight: 900;
-  color: rgba(255,255,255,.06);
-  pointer-events: none;
-  user-select: none;
-  line-height: 1;
-}
-.header-deco--1 { font-size: 150px; top: -20px; left: 2%; animation: floatA 9s ease-in-out infinite; }
-.header-deco--2 { font-size: 95px;  top: 8px; right: 4%; animation: floatA 11s ease-in-out infinite reverse; }
-.header-deco--3 { font-size: 80px;  bottom: 55px; left: 9%; animation: floatA 7s ease-in-out infinite; }
-.header-deco--4 { font-size: 115px; bottom: 35px; right: 7%; animation: floatA 13s ease-in-out infinite reverse; }
-
-@keyframes floatA {
-  0%, 100% { transform: translateY(0) rotate(0deg); }
-  40%       { transform: translateY(-14px) rotate(4deg); }
-  70%       { transform: translateY(7px) rotate(-3deg); }
-}
-
-/* 헤더 내부 콘텐츠 */
-.header-inner {
-  position: relative;
-  z-index: 2;
-}
-
-/* ── 뱃지 ── */
-.hbadge {
-  display: inline-flex;
-  align-items: center;
-  gap: 8px;
-  background: rgba(255,255,255,.1);
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
-  color: rgba(255,255,255,.92);
-  font-family: 'Plus Jakarta Sans', sans-serif;
-  font-size: 11.5px;
-  font-weight: 700;
-  letter-spacing: 2.8px;
-  text-transform: uppercase;
-  padding: 8px 22px;
-  border-radius: 30px;
-  margin-bottom: 24px;
-  border: 1px solid rgba(255,255,255,.22);
-  box-shadow: 0 4px 24px rgba(0,0,0,.25), inset 0 1px 0 rgba(255,255,255,.18);
-}
-
-.hbadge-dot {
-  width: 7px; height: 7px;
-  background: #4ade80;
-  border-radius: 50%;
-  box-shadow: 0 0 10px #4ade80, 0 0 20px rgba(74,222,128,.5);
-  animation: dotPulse 2s ease-in-out infinite;
-  flex-shrink: 0;
-}
-
-@keyframes dotPulse {
-  0%, 100% { opacity: 1; transform: scale(1); box-shadow: 0 0 10px #4ade80, 0 0 20px rgba(74,222,128,.5); }
-  50% { opacity: .8; transform: scale(1.4); box-shadow: 0 0 6px #4ade80, 0 0 12px rgba(74,222,128,.3); }
-}
-
-/* ── 타이틀 ── */
-.header h1 {
-  color: #fff;
-  font-family: 'Pretendard', sans-serif;
-  font-size: 3.5rem;
-  font-weight: 900;
-  line-height: 1.15;
-  margin-bottom: 16px;
-  letter-spacing: -1.5px;
-  text-shadow: 0 4px 30px rgba(0,0,0,.4);
-}
-
-.header h1 em {
-  font-style: normal;
-  background: linear-gradient(135deg, #fde68a 0%, #fbbf24 50%, #f59e0b 100%);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
-  filter: drop-shadow(0 0 24px rgba(251,191,36,.6));
-}
-
-.header h1 small {
-  display: block;
-  font-size: .95rem;
-  font-weight: 600;
-  color: rgba(255,255,255,.55);
-  letter-spacing: 4px;
-  margin-top: 10px;
-  text-transform: uppercase;
-  -webkit-text-fill-color: rgba(255,255,255,.55);
-}
-
-/* ── 설명 ── */
-.header p {
-  color: rgba(255,255,255,.65);
-  font-size: .95rem;
-  line-height: 1.75;
-  max-width: 370px;
-  margin: 0 auto 24px;
-}
-
-.header-actions {
-  display: flex;
-  justify-content: center;
-  flex-wrap: wrap;
-  gap: 12px;
-  margin-bottom: 34px;
-}
-
-.header-action {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  gap: 10px;
-  min-height: 74px;
-  min-width: 280px;
-  padding: 0 42px;
-  border-radius: 20px;
-  background: linear-gradient(135deg, #fde68a 0%, #fbbf24 100%);
-  color: #0f172a;
-  font-weight: 900;
-  font-size: 1.34rem;
-  text-decoration: none;
-  box-shadow: 0 18px 44px rgba(251,191,36,.38);
-  transition: transform .18s ease, box-shadow .18s ease;
-}
-
-.header-action:hover {
-  transform: translateY(-3px);
-  box-shadow: 0 24px 56px rgba(251,191,36,.48);
-}
-
-/* ── 스탯 카드 ── */
-.stats {
-  display: flex;
-  justify-content: center;
-  gap: 14px;
-  flex-wrap: wrap;
-}
-
-.stat {
-  background: rgba(255,255,255,.09);
-  backdrop-filter: blur(14px);
-  -webkit-backdrop-filter: blur(14px);
-  border: 1px solid rgba(255,255,255,.18);
-  border-radius: 22px;
-  padding: 18px 34px;
-  text-align: center;
-  min-width: 92px;
-  box-shadow:
-    0 8px 32px rgba(0,0,0,.2),
-    inset 0 1px 0 rgba(255,255,255,.18),
-    inset 0 -1px 0 rgba(0,0,0,.1);
-  transition: transform .22s ease, box-shadow .22s ease;
-  position: relative;
-  overflow: hidden;
-}
-
-.stat::before {
-  content: '';
-  position: absolute;
-  top: 0; left: 0; right: 0;
-  height: 1px;
-  background: linear-gradient(90deg, transparent, rgba(255,255,255,.4), transparent);
-}
-
-.stat:hover {
-  transform: translateY(-5px);
-  box-shadow:
-    0 16px 48px rgba(0,0,0,.25),
-    inset 0 1px 0 rgba(255,255,255,.25);
-}
-
-.stat-n {
-  font-size: 2.3rem;
-  font-weight: 900;
-  color: #fde68a;
-  line-height: 1;
-  text-shadow: 0 0 24px rgba(253,230,138,.6);
-}
-
-.stat-l {
-  font-size: .73rem;
-  color: rgba(255,255,255,.6);
-  margin-top: 6px;
-  font-weight: 700;
-  letter-spacing: 1.5px;
+body{
+  font-family:'Pretendard','Plus Jakarta Sans',sans-serif;
+  background:var(--bg);min-height:100vh;
+  padding-bottom:60px;font-size:16px;color:var(--ink);
+  -webkit-font-smoothing:antialiased;
 }
 
 /* ══════════════════════════════
-   이하 기존 스타일 유지
+   HEADER — 밝은 파스텔 + SVG 일러스트
 ══════════════════════════════ */
-.wrap{max-width:800px;margin:0 auto;padding:32px 16px 24px;}
-.unit-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px;}
-@media(max-width:560px){.unit-grid{grid-template-columns:1fr;}}
+.header{
+  position:relative;
+  padding:64px 20px 96px;
+  text-align:center;
+  overflow:hidden;
+  background:
+    radial-gradient(1200px 540px at 18% 6%,  #cfe0ff 0%, transparent 60%),
+    radial-gradient(950px 480px at 88% 14%,  #ffd5e8 0%, transparent 60%),
+    radial-gradient(950px 560px at 50% 110%, #c8f5e3 0%, transparent 65%),
+    linear-gradient(180deg, #eef3ff 0%, #f5f7ff 100%);
+}
 
+/* 도트 그리드 (부드럽게 마스킹) */
+.header::before{
+  content:'';position:absolute;inset:0;
+  background-image:radial-gradient(rgba(99,102,241,.10) 1px, transparent 1px);
+  background-size:24px 24px;pointer-events:none;
+  mask-image:radial-gradient(ellipse 75% 70% at 50% 50%, #000 50%, transparent 100%);
+  -webkit-mask-image:radial-gradient(ellipse 75% 70% at 50% 50%, #000 50%, transparent 100%);
+}
+
+/* 하단 부드러운 컷 */
+.header::after{
+  content:'';position:absolute;bottom:-1px;left:0;right:0;height:64px;
+  background:var(--bg);
+  border-radius:50% 50% 0 0 / 100% 100% 0 0;
+}
+
+/* 떠다니는 파스텔 도형 */
+.blob{position:absolute;border-radius:50%;filter:blur(40px);pointer-events:none;opacity:.55;}
+.blob--1{width:300px;height:300px;background:#a5b4fc;top:-80px;left:-60px;animation:float 14s ease-in-out infinite;}
+.blob--2{width:260px;height:260px;background:#fda4af;top:-40px;right:-40px;animation:float 16s ease-in-out infinite reverse;}
+.blob--3{width:220px;height:220px;background:#67e8f9;bottom:30px;left:30%;animation:float 12s ease-in-out infinite;}
+@keyframes float{
+  0%,100%{transform:translate(0,0) scale(1);}
+  50%{transform:translate(20px,-22px) scale(1.06);}
+}
+
+/* SVG 떠다니는 스티커 — 책/별/연필/말풍선 */
+.sticker{position:absolute;pointer-events:none;user-select:none;animation:bob 5s ease-in-out infinite;}
+.sticker svg{display:block;filter:drop-shadow(0 6px 14px rgba(15,23,42,.10));}
+.sticker--1{top:12%; left:6%;  width:64px; animation-delay:0s;}
+.sticker--2{top:8%;  right:8%; width:56px; animation-delay:.6s;}
+.sticker--3{top:58%; left:7%;  width:50px; animation-delay:1.2s;}
+.sticker--4{top:52%; right:6%; width:60px; animation-delay:1.8s;}
+@keyframes bob{
+  0%,100%{transform:translateY(0) rotate(0deg);}
+  50%{transform:translateY(-10px) rotate(6deg);}
+}
+
+.header-inner{position:relative;z-index:2;}
+
+/* 뱃지 */
+.hbadge{
+  display:inline-flex;align-items:center;gap:8px;
+  background:rgba(255,255,255,.78);
+  backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);
+  color:#4338ca;
+  font-family:'Plus Jakarta Sans',sans-serif;
+  font-size:11.5px;font-weight:800;letter-spacing:2.4px;
+  text-transform:uppercase;
+  padding:8px 20px;border-radius:30px;margin-bottom:22px;
+  border:1px solid rgba(99,102,241,.22);
+  box-shadow:0 6px 20px rgba(99,102,241,.16);
+}
+.hbadge-dot{
+  width:7px;height:7px;background:#22c55e;border-radius:50%;
+  box-shadow:0 0 8px #22c55e;
+  animation:dotPulse 2s ease-in-out infinite;
+}
+@keyframes dotPulse{0%,100%{opacity:1;transform:scale(1);}50%{opacity:.5;transform:scale(1.4);}}
+
+/* 타이틀 */
+.header h1{
+  font-family:'Baloo 2','Pretendard',sans-serif;
+  font-size:3.4rem;font-weight:800;line-height:1.1;
+  letter-spacing:-1px;margin-bottom:14px;color:var(--ink);
+}
+.header h1 em{
+  font-style:normal;
+  background:linear-gradient(120deg,#0ea5e9 0%,#6366f1 50%,#a855f7 100%);
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;
+}
+.header h1 small{
+  display:block;
+  font-family:'Plus Jakarta Sans',sans-serif;
+  font-size:.88rem;font-weight:700;color:#6366f1;
+  letter-spacing:4px;margin-top:12px;text-transform:uppercase;
+  -webkit-text-fill-color:#6366f1;
+}
+.header p{
+  color:#475569;font-size:1rem;line-height:1.7;
+  max-width:380px;margin:0 auto 24px;
+}
+
+/* 게임 버튼 */
+.header-actions{display:flex;justify-content:center;flex-wrap:wrap;gap:12px;margin-bottom:30px;}
+.header-action{
+  display:inline-flex;align-items:center;justify-content:center;gap:12px;
+  min-height:64px;min-width:260px;padding:0 36px;
+  border-radius:18px;
+  background:linear-gradient(135deg,#0ea5e9 0%,#6366f1 100%);
+  color:#fff;font-family:'Baloo 2','Pretendard',sans-serif;
+  font-weight:800;font-size:1.22rem;letter-spacing:-.3px;
+  text-decoration:none;
+  box-shadow:0 14px 32px rgba(99,102,241,.32);
+  transition:transform .18s,box-shadow .18s;
+}
+.header-action:hover{transform:translateY(-3px);box-shadow:0 20px 44px rgba(99,102,241,.42);}
+.header-action .play-ico{
+  width:24px;height:24px;border-radius:8px;
+  background:rgba(255,255,255,.22);
+  display:inline-flex;align-items:center;justify-content:center;
+}
+
+/* 스탯 */
+.stats{display:flex;justify-content:center;gap:12px;flex-wrap:wrap;}
+.stat{
+  background:rgba(255,255,255,.78);
+  backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);
+  border:1px solid rgba(99,102,241,.16);
+  border-radius:18px;padding:16px 30px;text-align:center;min-width:96px;
+  box-shadow:0 6px 18px rgba(99,102,241,.08);
+  transition:transform .2s,box-shadow .2s;
+}
+.stat:hover{transform:translateY(-3px);box-shadow:0 12px 28px rgba(99,102,241,.16);}
+.stat-n{
+  font-family:'Baloo 2',sans-serif;
+  font-size:2.2rem;font-weight:800;line-height:1;
+  background:linear-gradient(120deg,#0ea5e9,#6366f1);
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;
+}
+.stat-l{font-size:.74rem;color:#64748b;margin-top:6px;font-weight:700;letter-spacing:1.5px;}
+
+/* ══════════════════════════════
+   섹션 헤더
+══════════════════════════════ */
+.wrap{max-width:880px;margin:0 auto;padding:36px 16px 28px;}
 .section-label{
-  font-size:.8rem;font-weight:700;letter-spacing:2px;text-transform:uppercase;
-  color:var(--gray);margin-bottom:16px;padding-left:2px;
+  display:flex;align-items:center;gap:12px;
+  font-family:'Baloo 2','Pretendard',sans-serif;
+  font-size:1.18rem;font-weight:800;color:var(--ink);
+  margin-bottom:20px;padding-left:2px;letter-spacing:-.3px;
 }
+.section-label .icon{
+  width:36px;height:36px;border-radius:12px;
+  background:linear-gradient(135deg,#0ea5e9,#6366f1);
+  display:inline-flex;align-items:center;justify-content:center;
+  box-shadow:0 6px 14px rgba(99,102,241,.32);
+  flex-shrink:0;
+}
+.section-label.g2 .icon{background:linear-gradient(135deg,#f59e0b,#fb7185);box-shadow:0 6px 14px rgba(251,113,133,.32);}
+.section-label .count{
+  font-family:'Plus Jakarta Sans',sans-serif;
+  font-size:.72rem;font-weight:700;
+  color:#94a3b8;letter-spacing:1.6px;margin-left:auto;
+}
+
+/* ══════════════════════════════
+   카드 그리드
+══════════════════════════════ */
+.unit-grid{display:grid;grid-template-columns:1fr 1fr;gap:18px;}
+@media(max-width:600px){.unit-grid{grid-template-columns:1fr;}}
 
 @keyframes slideUp{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:translateY(0)}}
 .unit-card{
-  background:var(--white);border-radius:20px;
-  border:1.5px solid var(--bdr);
-  padding:24px 24px 22px;
-  box-shadow:0 2px 12px rgba(14,165,233,.06);
-  text-decoration:none;color:inherit;display:block;
   position:relative;overflow:hidden;
-  transition:transform .18s,box-shadow .18s,border-color .18s;
-  animation:slideUp .35s ease both;
+  background:var(--white);
+  border:1px solid var(--bdr);
+  border-radius:24px;
+  padding:0 0 22px;
+  box-shadow:0 4px 18px rgba(15,23,42,.04);
+  text-decoration:none;color:inherit;display:block;
+  transition:transform .22s,box-shadow .22s,border-color .22s;
+  animation:slideUp .4s ease both;
+  cursor:pointer;
 }
 .unit-card:hover{
-  transform:translateY(-4px);
-  box-shadow:0 10px 30px rgba(14,165,233,.15);
-  border-color:var(--blue);
+  transform:translateY(-5px);
+  box-shadow:0 18px 38px rgba(15,23,42,.10);
+  border-color:rgba(99,102,241,.28);
 }
-.unit-card::before{
-  content:'';position:absolute;top:0;left:0;width:5px;height:100%;
-  background:var(--blue);border-radius:5px 0 0 5px;
-}
-.unit-card.hard::before{background:linear-gradient(180deg,var(--amber),#f97316);}
 
-.card-top{display:flex;align-items:flex-start;gap:16px;margin-bottom:14px;}
-.unit-num{
-  width:46px;height:46px;border-radius:12px;flex-shrink:0;
-  background:var(--sky);color:var(--dark);
+/* 카드 헤로 영역 (컬러 일러스트 존) */
+.card-hero{
+  position:relative;height:90px;
+  display:flex;align-items:center;justify-content:space-between;
+  padding:18px 22px;overflow:hidden;
+}
+.card-hero::before{
+  content:'';position:absolute;inset:0;
+  background-image:
+    radial-gradient(circle at 80% 20%, rgba(255,255,255,.5) 0%, transparent 50%),
+    radial-gradient(circle at 20% 80%, rgba(255,255,255,.35) 0%, transparent 50%);
+  pointer-events:none;
+}
+.card-hero .unit-num{
+  position:relative;z-index:2;
+  width:48px;height:48px;border-radius:16px;
+  background:rgba(255,255,255,.92);
   display:flex;align-items:center;justify-content:center;
-  font-weight:800;font-size:1rem;
+  font-family:'Baloo 2',sans-serif;font-weight:800;font-size:1.05rem;
+  box-shadow:0 6px 14px rgba(15,23,42,.10);
 }
-.unit-card.hard .unit-num{background:var(--amb-bg);color:#92400e;}
+.card-hero .hero-art{position:relative;z-index:2;opacity:.95;}
+.card-hero .hero-art svg{display:block;filter:drop-shadow(0 4px 8px rgba(15,23,42,.10));}
 
-.card-info{flex:1;min-width:0;}
-.card-title{font-size:1.2rem;font-weight:800;color:var(--dark);line-height:1.3;margin-bottom:6px;}
-.card-sub{font-size:.9rem;color:var(--gray);line-height:1.55;}
+/* 카드 헤로 컬러 변형 */
+.unit-card[data-c="sky"]    .card-hero{background:linear-gradient(135deg,var(--c-sky-bg),var(--c-sky-bg2));}
+.unit-card[data-c="sky"]    .card-hero .unit-num{color:var(--c-sky-dk);}
+.unit-card[data-c="mint"]   .card-hero{background:linear-gradient(135deg,var(--c-mint-bg),var(--c-mint-bg2));}
+.unit-card[data-c="mint"]   .card-hero .unit-num{color:var(--c-mint-dk);}
+.unit-card[data-c="peach"]  .card-hero{background:linear-gradient(135deg,var(--c-peach-bg),var(--c-peach-bg2));}
+.unit-card[data-c="peach"]  .card-hero .unit-num{color:var(--c-peach-dk);}
+.unit-card[data-c="amber"]  .card-hero{background:linear-gradient(135deg,var(--c-amber-bg),var(--c-amber-bg2));}
+.unit-card[data-c="amber"]  .card-hero .unit-num{color:var(--c-amber-dk);}
+.unit-card[data-c="lav"]    .card-hero{background:linear-gradient(135deg,var(--c-lav-bg),var(--c-lav-bg2));}
+.unit-card[data-c="lav"]    .card-hero .unit-num{color:var(--c-lav-dk);}
+.unit-card[data-c="rose"]   .card-hero{background:linear-gradient(135deg,var(--c-rose-bg),var(--c-rose-bg2));}
+.unit-card[data-c="rose"]   .card-hero .unit-num{color:var(--c-rose-dk);}
 
+/* 카드 본문 */
+.card-body{padding:18px 22px 0;}
+.card-title{
+  font-family:'Baloo 2','Pretendard',sans-serif;
+  font-size:1.18rem;font-weight:800;color:var(--ink);
+  line-height:1.3;margin-bottom:6px;letter-spacing:-.3px;
+}
+.card-sub{font-size:.9rem;color:var(--mute);line-height:1.55;margin-bottom:14px;}
+
+/* 뱃지 */
 .badges{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:16px;}
-.badge{font-size:.78rem;font-weight:700;padding:4px 12px;border-radius:10px;font-family:inherit;}
-.badge.basic{background:var(--sky);color:var(--dark);}
-.badge.hard{background:var(--amb-bg);color:#92400e;}
-.badge.new{background:#fde8ff;color:#7c3aed;}
-.badge.topic{background:#f1f5f9;color:#475569;}
-.badge.practice{background:#ccfbf1;color:#0f766e;}
-
-.ws-list{display:grid;grid-template-columns:1fr 1fr;gap:10px;}
-@media(max-width:400px){.ws-list{grid-template-columns:1fr;}}
-.ws-btn{
-  display:flex;align-items:center;gap:10px;
-  background:var(--bg);border:1.5px solid var(--bdr);
-  border-radius:12px;padding:12px 14px;
-  text-decoration:none;color:var(--dark);
-  transition:all .15s;
+.badge{
+  display:inline-flex;align-items:center;gap:6px;
+  font-size:.73rem;font-weight:700;
+  padding:5px 11px;border-radius:999px;
+  font-family:'Plus Jakarta Sans','Pretendard',sans-serif;
 }
-.ws-btn:hover{border-color:var(--blue);background:var(--sky);}
-.unit-card.hard .ws-btn:hover{border-color:var(--amber);background:var(--amb-bg);}
-.ws-icon{font-size:1.25rem;flex-shrink:0;}
-.ws-type{font-size:.75rem;font-weight:700;color:var(--gray);letter-spacing:.5px;text-transform:uppercase;}
-.ws-name{font-size:.95rem;font-weight:700;line-height:1.3;}
-.ws-cnt{font-size:.8rem;color:var(--gray);}
+.badge::before{content:'';width:5px;height:5px;border-radius:50%;background:currentColor;}
+.badge.basic{background:#e0f2fe;color:#0369a1;}
+.badge.hard{background:#fef3c7;color:#92400e;}
+.badge.new{background:#fae8ff;color:#a21caf;}
+.badge.practice{background:#ccfbf1;color:#0f766e;}
+.badge.topic{background:#f1f5f9;color:#475569;}
+.badge.topic::before{display:none;}
 
-.footer{text-align:center;padding:28px 20px;font-size:.85rem;color:var(--gray);border-top:1px solid var(--bdr);background:var(--white);}
+/* 워크시트 버튼 */
+.ws-list{display:grid;grid-template-columns:1fr 1fr;gap:10px;padding:0 22px;}
+@media(max-width:420px){.ws-list{grid-template-columns:1fr;}}
+.ws-list.single{grid-template-columns:1fr;}
+.ws-btn{
+  display:flex;align-items:center;gap:12px;
+  background:#f5f7ff;border:1px solid #e2e8f0;border-radius:14px;
+  padding:11px 13px;
+  text-decoration:none;color:var(--ink);
+  transition:border-color .15s,background .15s,transform .15s;cursor:pointer;
+}
+.ws-btn:hover{border-color:#6366f1;background:#eef2ff;transform:translateY(-2px);}
+.ws-btn[data-type="hard"]:hover{border-color:#fb7185;background:#fff1f2;}
+.ws-btn[data-type="practice"]:hover{border-color:#14b8a6;background:#f0fdfa;}
+.ws-ico{
+  width:32px;height:32px;flex-shrink:0;border-radius:10px;
+  display:flex;align-items:center;justify-content:center;
+}
+.ws-btn[data-type="basic"]    .ws-ico{background:linear-gradient(135deg,#dbeafe,#bfdbfe);color:#1e40af;}
+.ws-btn[data-type="hard"]     .ws-ico{background:linear-gradient(135deg,#fef3c7,#fde68a);color:#92400e;}
+.ws-btn[data-type="practice"] .ws-ico{background:linear-gradient(135deg,#ccfbf1,#99f6e4);color:#115e59;}
+.ws-text{min-width:0;}
+.ws-type{font-size:.68rem;font-weight:700;color:#94a3b8;letter-spacing:.6px;text-transform:uppercase;}
+.ws-name{font-size:.92rem;font-weight:700;line-height:1.3;color:var(--ink);}
+.ws-cnt{font-size:.76rem;color:#64748b;margin-top:1px;}
+
+/* 푸터 */
+.footer{
+  text-align:center;padding:30px 20px;
+  font-size:.85rem;color:#94a3b8;background:transparent;
+}
 
 /* 반응형 */
 @media(max-width:480px){
-  .header h1 { font-size: 2.6rem; }
-  .header-action {
-    width: 100%;
-    max-width: 320px;
-    min-width: 0;
-    min-height: 64px;
-    font-size: 1.16rem;
-  }
-  .stat { padding: 14px 22px; }
-  .stat-n { font-size: 1.9rem; }
+  .header{padding:54px 18px 84px;}
+  .header h1{font-size:2.5rem;}
+  .header-action{width:100%;max-width:320px;min-width:0;min-height:60px;font-size:1.12rem;}
+  .stat{padding:14px 22px;}
+  .stat-n{font-size:1.85rem;}
+  .blob{filter:blur(30px);opacity:.4;}
+  .sticker--1,.sticker--2{width:48px;}
+  .sticker--3,.sticker--4{width:40px;}
+  .card-hero{height:80px;padding:14px 18px;}
+  .card-body{padding:16px 18px 0;}
+  .ws-list{padding:0 18px;}
 }
 </style>
 </head>
 <body>
 
-<!-- ✨ 새 헤더 -->
-<div class="header">
-  <!-- 빛나는 orb 장식 -->
-  <div class="header-orb header-orb--1"></div>
-  <div class="header-orb header-orb--2"></div>
-  <div class="header-orb header-orb--3"></div>
+<!-- SVG 심볼 정의 -->
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <defs>
+    <!-- 단원별 일러스트 (모두 viewBox 0 0 60 60) -->
+    <symbol id="i-book" viewBox="0 0 60 60">
+      <path d="M10 10c0-2 1-3 3-3h14c3 0 5 1 5 3v40c0-2-2-3-5-3H13c-2 0-3 1-3 3V10z" fill="#fff" stroke="currentColor" stroke-width="2.5" stroke-linejoin="round"/>
+      <path d="M50 10c0-2-1-3-3-3H33c-3 0-5 1-5 3v40c0-2 2-3 5-3h14c2 0 3 1 3 3V10z" fill="#fff" stroke="currentColor" stroke-width="2.5" stroke-linejoin="round"/>
+      <line x1="16" y1="18" x2="26" y2="18" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+      <line x1="16" y1="24" x2="24" y2="24" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+      <line x1="34" y1="18" x2="44" y2="18" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+      <line x1="34" y1="24" x2="42" y2="24" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+    </symbol>
+    <symbol id="i-bolt" viewBox="0 0 60 60">
+      <path d="M34 6L14 32h12L22 54l22-28H30L34 6z" fill="#fff" stroke="currentColor" stroke-width="2.5" stroke-linejoin="round"/>
+    </symbol>
+    <symbol id="i-gear" viewBox="0 0 60 60">
+      <circle cx="30" cy="30" r="10" fill="#fff" stroke="currentColor" stroke-width="2.5"/>
+      <circle cx="30" cy="30" r="3.5" fill="currentColor"/>
+      <g stroke="currentColor" stroke-width="2.5" stroke-linecap="round">
+        <line x1="30" y1="8" x2="30" y2="16"/>
+        <line x1="30" y1="44" x2="30" y2="52"/>
+        <line x1="8" y1="30" x2="16" y2="30"/>
+        <line x1="44" y1="30" x2="52" y2="30"/>
+        <line x1="14" y1="14" x2="20" y2="20"/>
+        <line x1="40" y1="40" x2="46" y2="46"/>
+        <line x1="46" y1="14" x2="40" y2="20"/>
+        <line x1="20" y1="40" x2="14" y2="46"/>
+      </g>
+    </symbol>
+    <symbol id="i-clock" viewBox="0 0 60 60">
+      <circle cx="30" cy="30" r="22" fill="#fff" stroke="currentColor" stroke-width="2.5"/>
+      <path d="M30 16v14l-9 5" stroke="currentColor" stroke-width="2.8" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+      <circle cx="30" cy="30" r="2" fill="currentColor"/>
+    </symbol>
+    <symbol id="i-rocket" viewBox="0 0 60 60">
+      <path d="M30 6c-8 6-14 16-14 24v10l6 4 4-3 4 3 6-4V30c0-8-6-18-14-24z" fill="#fff" stroke="currentColor" stroke-width="2.5" stroke-linejoin="round"/>
+      <circle cx="30" cy="24" r="4" fill="currentColor"/>
+      <path d="M16 40l-6 12 10-3M44 40l6 12-10-3" stroke="currentColor" stroke-width="2.5" stroke-linejoin="round" fill="#fff"/>
+    </symbol>
+    <symbol id="i-mirror" viewBox="0 0 60 60">
+      <circle cx="30" cy="22" r="14" fill="#fff" stroke="currentColor" stroke-width="2.5"/>
+      <path d="M22 18c0-3 3-6 6-6" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" fill="none"/>
+      <line x1="30" y1="36" x2="30" y2="50" stroke="currentColor" stroke-width="3" stroke-linecap="round"/>
+      <line x1="22" y1="52" x2="38" y2="52" stroke="currentColor" stroke-width="3" stroke-linecap="round"/>
+    </symbol>
+    <symbol id="i-eye" viewBox="0 0 60 60">
+      <path d="M6 30c5-9 14-14 24-14s19 5 24 14c-5 9-14 14-24 14S11 39 6 30z" fill="#fff" stroke="currentColor" stroke-width="2.5" stroke-linejoin="round"/>
+      <circle cx="30" cy="30" r="7" fill="currentColor"/>
+      <circle cx="33" cy="27" r="2" fill="#fff"/>
+    </symbol>
+    <symbol id="i-gift" viewBox="0 0 60 60">
+      <rect x="10" y="22" width="40" height="28" rx="3" fill="#fff" stroke="currentColor" stroke-width="2.5"/>
+      <rect x="8" y="16" width="44" height="10" rx="3" fill="#fff" stroke="currentColor" stroke-width="2.5"/>
+      <line x1="30" y1="16" x2="30" y2="50" stroke="currentColor" stroke-width="2.5"/>
+      <path d="M30 16c-4-8-14-6-12 0 2 4 8 0 12 0zM30 16c4-8 14-6 12 0-2 4-8 0-12 0z" fill="#fff" stroke="currentColor" stroke-width="2.5" stroke-linejoin="round"/>
+    </symbol>
+    <symbol id="i-chart" viewBox="0 0 60 60">
+      <rect x="10" y="34" width="8" height="18" rx="2" fill="#fff" stroke="currentColor" stroke-width="2.5"/>
+      <rect x="26" y="22" width="8" height="30" rx="2" fill="#fff" stroke="currentColor" stroke-width="2.5"/>
+      <rect x="42" y="14" width="8" height="38" rx="2" fill="#fff" stroke="currentColor" stroke-width="2.5"/>
+      <path d="M10 14l16 10 16-12" stroke="currentColor" stroke-width="2.5" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+      <circle cx="42" cy="12" r="3" fill="currentColor"/>
+    </symbol>
+    <symbol id="i-branch" viewBox="0 0 60 60">
+      <circle cx="30" cy="12" r="5" fill="#fff" stroke="currentColor" stroke-width="2.5"/>
+      <circle cx="14" cy="48" r="5" fill="#fff" stroke="currentColor" stroke-width="2.5"/>
+      <circle cx="46" cy="48" r="5" fill="#fff" stroke="currentColor" stroke-width="2.5"/>
+      <path d="M30 17v14M30 31c0 6-8 8-14 12M30 31c0 6 8 8 14 12" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" fill="none"/>
+    </symbol>
+    <symbol id="i-link" viewBox="0 0 60 60">
+      <path d="M20 30a8 8 0 018-8h6" stroke="currentColor" stroke-width="2.8" stroke-linecap="round" fill="none"/>
+      <rect x="6" y="22" width="20" height="16" rx="8" fill="#fff" stroke="currentColor" stroke-width="2.5"/>
+      <rect x="34" y="22" width="20" height="16" rx="8" fill="#fff" stroke="currentColor" stroke-width="2.5"/>
+      <line x1="26" y1="30" x2="34" y2="30" stroke="currentColor" stroke-width="2.8" stroke-linecap="round"/>
+        </symbol>
 
-  <!-- 플로팅 알파벳 -->
-  <div class="header-deco header-deco--1">G</div>
-  <div class="header-deco header-deco--2">R</div>
-  <div class="header-deco header-deco--3">A</div>
-  <div class="header-deco header-deco--4">M</div>
+    <symbol id="i-spark" viewBox="0 0 60 60">
+      <path d="M30 6l5 14 14 5-14 5-5 14-5-14-14-5 14-5z" fill="#fff" stroke="currentColor" stroke-width="2.5" stroke-linejoin="round"/>
+      <circle cx="48" cy="14" r="3" fill="currentColor"/>
+      <circle cx="12" cy="46" r="2.5" fill="currentColor"/>
+    </symbol>
 
-  <!-- 메인 콘텐츠 -->
+    <symbol id="i-build" viewBox="0 0 60 60">
+      <rect x="10" y="26" width="40" height="22" rx="3" fill="#fff" stroke="currentColor" stroke-width="2.5"/>
+      <path d="M14 26l4-8h24l4 8" fill="#fff" stroke="currentColor" stroke-width="2.5" stroke-linejoin="round"/>
+      <circle cx="22" cy="37" r="3" fill="currentColor"/>
+      <circle cx="38" cy="37" r="3" fill="currentColor"/>
+      <line x1="30" y1="18" x2="30" y2="10" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"/>
+      <circle cx="30" cy="8" r="2.5" fill="currentColor"/>
+    </symbol>
+
+    <!-- 헤더 떠다니는 스티커 -->
+    <symbol id="s-star" viewBox="0 0 40 40">
+      <path d="M20 4l5 11 12 1-9 8 3 12-11-7-11 7 3-12-9-8 12-1z" fill="#fbbf24" stroke="#f59e0b" stroke-width="1.5" stroke-linejoin="round"/>
+    </symbol>
+    <symbol id="s-pencil" viewBox="0 0 40 40">
+      <rect x="6" y="18" width="22" height="6" rx="1" transform="rotate(-30 17 21)" fill="#a5b4fc" stroke="#6366f1" stroke-width="1.5"/>
+      <path d="M3 33l3-10 5 5z" fill="#fef3c7" stroke="#6366f1" stroke-width="1.5" stroke-linejoin="round"/>
+      <path d="M3 33l5 2-2-7z" fill="#1f2937"/>
+    </symbol>
+    <symbol id="s-bubble" viewBox="0 0 40 40">
+      <path d="M6 8h28a4 4 0 014 4v14a4 4 0 01-4 4H18l-8 6v-6H6a4 4 0 01-4-4V12a4 4 0 014-4z" fill="#fda4af" stroke="#fb7185" stroke-width="1.5" stroke-linejoin="round"/>
+      <circle cx="14" cy="19" r="2" fill="#fff"/>
+      <circle cx="20" cy="19" r="2" fill="#fff"/>
+      <circle cx="26" cy="19" r="2" fill="#fff"/>
+    </symbol>
+    <symbol id="s-heart" viewBox="0 0 40 40">
+      <path d="M20 33s-12-8-12-17a7 7 0 0112-5 7 7 0 0112 5c0 9-12 17-12 17z" fill="#67e8f9" stroke="#0891b2" stroke-width="1.5" stroke-linejoin="round"/>
+    </symbol>
+    <symbol id="s-play" viewBox="0 0 24 24">
+      <path d="M8 5v14l11-7z" fill="#fde68a"/>
+    </symbol>
+  </defs>
+</svg>
+
+<header class="header">
+  <div class="blob blob--1"></div>
+  <div class="blob blob--2"></div>
+  <div class="blob blob--3"></div>
+
+  <div class="sticker sticker--1"><svg viewBox="0 0 40 40"><use href="#s-star"/></svg></div>
+  <div class="sticker sticker--2"><svg viewBox="0 0 40 40"><use href="#s-bubble"/></svg></div>
+  <div class="sticker sticker--3"><svg viewBox="0 0 40 40"><use href="#s-heart"/></svg></div>
+  <div class="sticker sticker--4"><svg viewBox="0 0 40 40"><use href="#s-pencil"/></svg></div>
+
   <div class="header-inner">
     <div class="hbadge">
       <span class="hbadge-dot"></span>
@@ -391,49 +463,49 @@ body{font-family:'Pretendard','Plus Jakarta Sans',sans-serif;background:var(--bg
     <p>단원별 개념 정리 + 자동채점 인터랙티브 문제</p>
 
     <div class="header-actions">
-      <a class="header-action" href="game/">문법 게임하러 가기</a>
+      <a class="header-action" href="game/">
+        <span class="play-ico"><svg width="14" height="14" viewBox="0 0 24 24"><use href="#s-play"/></svg></span>
+        문법 게임하러 가기
+      </a>
     </div>
 
     <div class="stats">
-      <div class="stat">
-        <div class="stat-n">10</div>
-        <div class="stat-l">단원</div>
-      </div>
-      <div class="stat">
-        <div class="stat-n">17</div>
-        <div class="stat-l">워크시트</div>
-      </div>
-      <div class="stat">
-        <div class="stat-n">650+</div>
-        <div class="stat-l">연습문제</div>
-      </div>
+      <div class="stat"><div class="stat-n">10</div><div class="stat-l">단원</div></div>
+      <div class="stat"><div class="stat-n">17</div><div class="stat-l">워크시트</div></div>
+      <div class="stat"><div class="stat-n">650+</div><div class="stat-l">연습문제</div></div>
     </div>
   </div>
-</div>
+</header>
 
-<!-- 기존 콘텐츠 유지 -->
+<!-- 중1 -->
 <div class="wrap">
-  <div class="section-label">📚 단원 목록</div>
+  <div class="section-label">
+    <span class="icon"><svg width="18" height="18" viewBox="0 0 60 60" style="color:#fff"><use href="#i-book"/></svg></span>
+    중1 단원 목록
+    <span class="count">GRADE 1</span>
+  </div>
+
   <div class="unit-grid">
 
     <!-- L1: be동사 -->
-    <a class="unit-card" href="be-verb/v2.html">
-      <div class="card-top">
+    <a class="unit-card" data-c="sky" href="be-verb/v2.html">
+      <div class="card-hero">
         <div class="unit-num">01</div>
-        <div class="card-info">
-          <div class="card-title">be동사 &amp; 일반동사 현재형</div>
-          <div class="card-sub">am / is / are · 부정형 · 어순 배열</div>
+        <div class="hero-art"><svg width="56" height="56" viewBox="0 0 60 60" style="color:var(--c-sky-dk)"><use href="#i-book"/></svg></div>
+      </div>
+      <div class="card-body">
+        <div class="card-title">be동사 &amp; 일반동사 현재형</div>
+        <div class="card-sub">am / is / are · 부정형 · 어순 배열</div>
+        <div class="badges">
+          <span class="badge basic">기초</span>
+          <span class="badge topic">현재형</span>
+          <span class="badge topic">부정문</span>
+          <span class="badge topic">어순</span>
         </div>
       </div>
-      <div class="badges">
-        <span class="badge basic">🌱 기초</span>
-        <span class="badge topic">현재형</span>
-        <span class="badge topic">부정문</span>
-        <span class="badge topic">어순</span>
-      </div>
-      <div class="ws-list">
-        <div class="ws-btn">
-          <span class="ws-icon">✏️</span>
+      <div class="ws-list single">
+        <div class="ws-btn" data-type="basic">
+          <span class="ws-ico"><svg width="16" height="16" viewBox="0 0 60 60"><use href="#i-book"/></svg></span>
           <div class="ws-text">
             <div class="ws-type">Live Worksheet</div>
             <div class="ws-name">be동사 워크시트</div>
@@ -444,23 +516,24 @@ body{font-family:'Pretendard','Plus Jakarta Sans',sans-serif;background:var(--bg
     </a>
 
     <!-- L1: 일반동사 심화 -->
-    <a class="unit-card hard" href="general-verb-hard/">
-      <div class="card-top">
+    <a class="unit-card" data-c="amber" href="general-verb-hard/">
+      <div class="card-hero">
         <div class="unit-num">01</div>
-        <div class="card-info">
-          <div class="card-title">일반동사 현재형 심화</div>
-          <div class="card-sub">3인칭 단수 변화 · 부정문 · 문맥 파악</div>
+        <div class="hero-art"><svg width="56" height="56" viewBox="0 0 60 60" style="color:var(--c-amber-dk)"><use href="#i-bolt"/></svg></div>
+      </div>
+      <div class="card-body">
+        <div class="card-title">일반동사 현재형 심화</div>
+        <div class="card-sub">3인칭 단수 변화 · 부정문 · 문맥 파악</div>
+        <div class="badges">
+          <span class="badge hard">심화</span>
+          <span class="badge new">NEW</span>
+          <span class="badge topic">-s/-es/-ies</span>
+          <span class="badge topic">does not</span>
         </div>
       </div>
-      <div class="badges">
-        <span class="badge hard">⚡ 심화</span>
-        <span class="badge new">🆕 NEW</span>
-        <span class="badge topic">-s/-es/-ies</span>
-        <span class="badge topic">does not</span>
-      </div>
-      <div class="ws-list">
-        <div class="ws-btn">
-          <span class="ws-icon">🎯</span>
+      <div class="ws-list single">
+        <div class="ws-btn" data-type="hard">
+          <span class="ws-ico"><svg width="16" height="16" viewBox="0 0 60 60"><use href="#i-bolt"/></svg></span>
           <div class="ws-text">
             <div class="ws-type">심화 워크시트</div>
             <div class="ws-name">일반동사 심화</div>
@@ -470,32 +543,33 @@ body{font-family:'Pretendard','Plus Jakarta Sans',sans-serif;background:var(--bg
       </div>
     </a>
 
-    <!-- L2: 동명사 기초+심화 -->
-    <div class="unit-card">
-      <div class="card-top">
+    <!-- L2: 동명사 -->
+    <div class="unit-card" data-c="mint">
+      <div class="card-hero">
         <div class="unit-num">02</div>
-        <div class="card-info">
-          <div class="card-title">현재진행형 vs 동명사</div>
-          <div class="card-sub">be + -ing · 주어·목적어 역할 · 상황별 구별</div>
+        <div class="hero-art"><svg width="56" height="56" viewBox="0 0 60 60" style="color:var(--c-mint-dk)"><use href="#i-gear"/></svg></div>
+      </div>
+      <div class="card-body">
+        <div class="card-title">현재진행형 vs 동명사</div>
+        <div class="card-sub">be + -ing · 주어·목적어 역할 · 상황별 구별</div>
+        <div class="badges">
+          <span class="badge basic">기초</span>
+          <span class="badge hard">심화</span>
+          <span class="badge topic">동명사</span>
+          <span class="badge topic">형태 구별</span>
         </div>
       </div>
-      <div class="badges">
-        <span class="badge basic">🌱 기초</span>
-        <span class="badge hard">⚡ 심화</span>
-        <span class="badge topic">동명사</span>
-        <span class="badge topic">형태 구별</span>
-      </div>
       <div class="ws-list">
-        <div class="ws-btn" onclick="location.href='gerund-basic/'" style="cursor:pointer">
-          <span class="ws-icon">✏️</span>
+        <div class="ws-btn" data-type="basic" onclick="location.href='gerund-basic/'">
+          <span class="ws-ico"><svg width="16" height="16" viewBox="0 0 60 60"><use href="#i-book"/></svg></span>
           <div class="ws-text">
             <div class="ws-type">Grammar Master</div>
             <div class="ws-name">기초 워크시트</div>
             <div class="ws-cnt">50문제</div>
           </div>
         </div>
-        <div class="ws-btn" onclick="location.href='gerund-hard/'" style="cursor:pointer">
-          <span class="ws-icon">🎯</span>
+        <div class="ws-btn" data-type="hard" onclick="location.href='gerund-hard/'">
+          <span class="ws-ico"><svg width="16" height="16" viewBox="0 0 60 60"><use href="#i-bolt"/></svg></span>
           <div class="ws-text">
             <div class="ws-type">Grammar Master</div>
             <div class="ws-name">심화 50제</div>
@@ -505,33 +579,34 @@ body{font-family:'Pretendard','Plus Jakarta Sans',sans-serif;background:var(--bg
       </div>
     </div>
 
-    <!-- L3: be동사 과거형 -->
-    <div class="unit-card">
-      <div class="card-top">
+    <!-- L3: be 과거형 -->
+    <div class="unit-card" data-c="lav">
+      <div class="card-hero">
         <div class="unit-num">03</div>
-        <div class="card-info">
-          <div class="card-title">be동사 과거형 — was / were</div>
-          <div class="card-sub">was · were · 부정문 · 의문문</div>
+        <div class="hero-art"><svg width="56" height="56" viewBox="0 0 60 60" style="color:var(--c-lav-dk)"><use href="#i-clock"/></svg></div>
+      </div>
+      <div class="card-body">
+        <div class="card-title">be동사 과거형 — was / were</div>
+        <div class="card-sub">was · were · 부정문 · 의문문</div>
+        <div class="badges">
+          <span class="badge basic">기초</span>
+          <span class="badge hard">심화</span>
+          <span class="badge new">NEW</span>
+          <span class="badge topic">was/were</span>
+          <span class="badge topic">맥락 파악</span>
         </div>
       </div>
-      <div class="badges">
-        <span class="badge basic">🌱 기초</span>
-        <span class="badge hard">⚡ 심화</span>
-        <span class="badge new">🆕 NEW</span>
-        <span class="badge topic">was/were</span>
-        <span class="badge topic">맥락 파악</span>
-      </div>
       <div class="ws-list">
-        <div class="ws-btn" onclick="location.href='past-be/'" style="cursor:pointer">
-          <span class="ws-icon">✏️</span>
+        <div class="ws-btn" data-type="basic" onclick="location.href='past-be/'">
+          <span class="ws-ico"><svg width="16" height="16" viewBox="0 0 60 60"><use href="#i-clock"/></svg></span>
           <div class="ws-text">
             <div class="ws-type">기초 워크시트</div>
             <div class="ws-name">과거형 기초</div>
             <div class="ws-cnt">45문제</div>
           </div>
         </div>
-        <div class="ws-btn" onclick="location.href='past-be-hard/'" style="cursor:pointer">
-          <span class="ws-icon">🎯</span>
+        <div class="ws-btn" data-type="hard" onclick="location.href='past-be-hard/'">
+          <span class="ws-ico"><svg width="16" height="16" viewBox="0 0 60 60"><use href="#i-bolt"/></svg></span>
           <div class="ws-text">
             <div class="ws-type">심화 워크시트</div>
             <div class="ws-name">맥락 파악 심화</div>
@@ -541,33 +616,34 @@ body{font-family:'Pretendard','Plus Jakarta Sans',sans-serif;background:var(--bg
       </div>
     </div>
 
-    <!-- L4: to부정사 & 조동사 will/should -->
-    <div class="unit-card">
-      <div class="card-top">
+    <!-- L4: to + will/should -->
+    <div class="unit-card" data-c="rose">
+      <div class="card-hero">
         <div class="unit-num">04</div>
-        <div class="card-info">
-          <div class="card-title">to부정사 &amp; 조동사 will/should</div>
-          <div class="card-sub">동사 목적어 to부정사 · will · should</div>
+        <div class="hero-art"><svg width="56" height="56" viewBox="0 0 60 60" style="color:var(--c-rose-dk)"><use href="#i-rocket"/></svg></div>
+      </div>
+      <div class="card-body">
+        <div class="card-title">to부정사 &amp; 조동사 will/should</div>
+        <div class="card-sub">동사 목적어 to부정사 · will · should</div>
+        <div class="badges">
+          <span class="badge basic">기초</span>
+          <span class="badge hard">심화</span>
+          <span class="badge new">NEW</span>
+          <span class="badge topic">to부정사</span>
+          <span class="badge topic">will/should</span>
         </div>
       </div>
-      <div class="badges">
-        <span class="badge basic">🌱 기초</span>
-        <span class="badge hard">⚡ 심화</span>
-        <span class="badge new">🆕 NEW</span>
-        <span class="badge topic">to부정사</span>
-        <span class="badge topic">will/should</span>
-      </div>
       <div class="ws-list">
-        <div class="ws-btn" onclick="location.href='to-will-basic/'" style="cursor:pointer">
-          <span class="ws-icon">✏️</span>
+        <div class="ws-btn" data-type="basic" onclick="location.href='to-will-basic/'">
+          <span class="ws-ico"><svg width="16" height="16" viewBox="0 0 60 60"><use href="#i-rocket"/></svg></span>
           <div class="ws-text">
             <div class="ws-type">기초 워크시트</div>
             <div class="ws-name">to부정사·조동사 기초</div>
             <div class="ws-cnt">45문제</div>
           </div>
         </div>
-        <div class="ws-btn" onclick="location.href='to-will-hard/'" style="cursor:pointer">
-          <span class="ws-icon">🎯</span>
+        <div class="ws-btn" data-type="hard" onclick="location.href='to-will-hard/'">
+          <span class="ws-ico"><svg width="16" height="16" viewBox="0 0 60 60"><use href="#i-bolt"/></svg></span>
           <div class="ws-text">
             <div class="ws-type">심화 워크시트</div>
             <div class="ws-name">오류수정·지문 심화</div>
@@ -577,32 +653,33 @@ body{font-family:'Pretendard','Plus Jakarta Sans',sans-serif;background:var(--bg
       </div>
     </div>
 
-    <!-- L5: 재귀대명사 & 목적 to부정사 -->
-    <div class="unit-card">
-      <div class="card-top">
+    <!-- L5: 재귀대명사 -->
+    <div class="unit-card" data-c="peach">
+      <div class="card-hero">
         <div class="unit-num">05</div>
-        <div class="card-info">
-          <div class="card-title">재귀대명사 &amp; 목적 to부정사</div>
-          <div class="card-sub">myself/himself 등 · ~하기 위해 to+동사원형</div>
+        <div class="hero-art"><svg width="56" height="56" viewBox="0 0 60 60" style="color:var(--c-peach-dk)"><use href="#i-mirror"/></svg></div>
+      </div>
+      <div class="card-body">
+        <div class="card-title">재귀대명사 &amp; 목적 to부정사</div>
+        <div class="card-sub">myself/himself 등 · ~하기 위해 to+동사원형</div>
+        <div class="badges">
+          <span class="badge basic">기초</span>
+          <span class="badge hard">심화</span>
+          <span class="badge topic">재귀대명사</span>
+          <span class="badge topic">목적 to부정사</span>
         </div>
       </div>
-      <div class="badges">
-        <span class="badge basic">🌱 기초</span>
-        <span class="badge hard">⚡ 심화</span>
-        <span class="badge topic">재귀대명사</span>
-        <span class="badge topic">목적 to부정사</span>
-      </div>
       <div class="ws-list">
-        <div class="ws-btn" onclick="location.href='reflexive-to-basic/'" style="cursor:pointer">
-          <span class="ws-icon">✏️</span>
+        <div class="ws-btn" data-type="basic" onclick="location.href='reflexive-to-basic/'">
+          <span class="ws-ico"><svg width="16" height="16" viewBox="0 0 60 60"><use href="#i-mirror"/></svg></span>
           <div class="ws-text">
             <div class="ws-type">기초 워크시트</div>
             <div class="ws-name">재귀대명사·to부정사 기초</div>
             <div class="ws-cnt">45문제</div>
           </div>
         </div>
-        <div class="ws-btn" onclick="location.href='reflexive-to-hard/'" style="cursor:pointer">
-          <span class="ws-icon">🎯</span>
+        <div class="ws-btn" data-type="hard" onclick="location.href='reflexive-to-hard/'">
+          <span class="ws-ico"><svg width="16" height="16" viewBox="0 0 60 60"><use href="#i-bolt"/></svg></span>
           <div class="ws-text">
             <div class="ws-type">심화 워크시트</div>
             <div class="ws-name">오류수정·지문 심화</div>
@@ -612,33 +689,34 @@ body{font-family:'Pretendard','Plus Jakarta Sans',sans-serif;background:var(--bg
       </div>
     </div>
 
-    <!-- L6: 감각동사 look & because -->
-    <div class="unit-card">
-      <div class="card-top">
+    <!-- L6: look & because -->
+    <div class="unit-card" data-c="sky">
+      <div class="card-hero">
         <div class="unit-num">06</div>
-        <div class="card-info">
-          <div class="card-title">감각동사 look &amp; 이유 접속사 because</div>
-          <div class="card-sub">look + 형용사 · because + 원인절</div>
+        <div class="hero-art"><svg width="56" height="56" viewBox="0 0 60 60" style="color:var(--c-sky-dk)"><use href="#i-eye"/></svg></div>
+      </div>
+      <div class="card-body">
+        <div class="card-title">감각동사 look &amp; 이유 접속사 because</div>
+        <div class="card-sub">look + 형용사 · because + 원인절</div>
+        <div class="badges">
+          <span class="badge basic">기초</span>
+          <span class="badge hard">심화</span>
+          <span class="badge new">NEW</span>
+          <span class="badge topic">look+형용사</span>
+          <span class="badge topic">because</span>
         </div>
       </div>
-      <div class="badges">
-        <span class="badge basic">🌱 기초</span>
-        <span class="badge hard">⚡ 심화</span>
-        <span class="badge new">🆕 NEW</span>
-        <span class="badge topic">look+형용사</span>
-        <span class="badge topic">because</span>
-      </div>
       <div class="ws-list">
-        <div class="ws-btn" onclick="location.href='look-because-basic/'" style="cursor:pointer">
-          <span class="ws-icon">✏️</span>
+        <div class="ws-btn" data-type="basic" onclick="location.href='look-because-basic/'">
+          <span class="ws-ico"><svg width="16" height="16" viewBox="0 0 60 60"><use href="#i-eye"/></svg></span>
           <div class="ws-text">
             <div class="ws-type">기초 워크시트</div>
-            <div class="ws-name">look & because 기초</div>
+            <div class="ws-name">look &amp; because 기초</div>
             <div class="ws-cnt">42문제</div>
           </div>
         </div>
-        <div class="ws-btn" onclick="location.href='look-because-hard/'" style="cursor:pointer">
-          <span class="ws-icon">🎯</span>
+        <div class="ws-btn" data-type="hard" onclick="location.href='look-because-hard/'">
+          <span class="ws-ico"><svg width="16" height="16" viewBox="0 0 60 60"><use href="#i-bolt"/></svg></span>
           <div class="ws-text">
             <div class="ws-type">심화 워크시트</div>
             <div class="ws-name">오류수정·지문 심화</div>
@@ -649,32 +727,33 @@ body{font-family:'Pretendard','Plus Jakarta Sans',sans-serif;background:var(--bg
     </div>
 
     <!-- L7: make + 형용사 & 접속사 that -->
-    <div class="unit-card">
-      <div class="card-top">
+    <div class="unit-card" data-c="mint">
+      <div class="card-hero">
         <div class="unit-num">07</div>
-        <div class="card-info">
-          <div class="card-title">make + 형용사 &amp; 접속사 that</div>
-          <div class="card-sub">make + 목적어 + 형용사 · think/believe/say + that 절</div>
+        <div class="hero-art"><svg width="56" height="56" viewBox="0 0 60 60" style="color:var(--c-mint-dk)"><use href="#i-build"/></svg></div>
+      </div>
+      <div class="card-body">
+        <div class="card-title">make + 형용사 &amp; 접속사 that</div>
+        <div class="card-sub">make + 목적어 + 형용사 · think/believe/say + that 절</div>
+        <div class="badges">
+          <span class="badge basic">기초</span>
+          <span class="badge hard">심화</span>
+          <span class="badge new">NEW</span>
+          <span class="badge topic">make+형용사</span>
+          <span class="badge topic">접속사 that</span>
         </div>
       </div>
-      <div class="badges">
-        <span class="badge basic">🌱 기초</span>
-        <span class="badge hard">⚡ 심화</span>
-        <span class="badge new">🆕 NEW</span>
-        <span class="badge topic">make+형용사</span>
-        <span class="badge topic">접속사 that</span>
-      </div>
       <div class="ws-list">
-        <div class="ws-btn" onclick="location.href='make-that-basic/'" style="cursor:pointer">
-          <span class="ws-icon">✏️</span>
+        <div class="ws-btn" data-type="basic" onclick="location.href='make-that-basic/'">
+          <span class="ws-ico"><svg width="16" height="16" viewBox="0 0 60 60"><use href="#i-build"/></svg></span>
           <div class="ws-text">
             <div class="ws-type">기초 워크시트</div>
             <div class="ws-name">make &amp; that 기초</div>
             <div class="ws-cnt">42문제</div>
           </div>
         </div>
-        <div class="ws-btn" onclick="location.href='make-that-hard/'" style="cursor:pointer">
-          <span class="ws-icon">🎯</span>
+        <div class="ws-btn" data-type="hard" onclick="location.href='make-that-hard/'">
+          <span class="ws-ico"><svg width="16" height="16" viewBox="0 0 60 60"><use href="#i-bolt"/></svg></span>
           <div class="ws-text">
             <div class="ws-type">심화 워크시트</div>
             <div class="ws-name">오류수정·지문 심화</div>
@@ -685,32 +764,33 @@ body{font-family:'Pretendard','Plus Jakarta Sans',sans-serif;background:var(--bg
     </div>
 
     <!-- L8: 감탄문 What/How & -thing + 형용사 -->
-    <div class="unit-card">
-      <div class="card-top">
+    <div class="unit-card" data-c="amber">
+      <div class="card-hero">
         <div class="unit-num">08</div>
-        <div class="card-info">
-          <div class="card-title">감탄문 &amp; -thing + 형용사</div>
-          <div class="card-sub">What/How 감탄문 · something/anything + 형용사 (뒤 어순)</div>
+        <div class="hero-art"><svg width="56" height="56" viewBox="0 0 60 60" style="color:var(--c-amber-dk)"><use href="#i-spark"/></svg></div>
+      </div>
+      <div class="card-body">
+        <div class="card-title">감탄문 &amp; -thing + 형용사</div>
+        <div class="card-sub">What/How 감탄문 · something/anything + 형용사 (뒤 어순)</div>
+        <div class="badges">
+          <span class="badge basic">기초</span>
+          <span class="badge hard">심화</span>
+          <span class="badge new">NEW</span>
+          <span class="badge topic">감탄문</span>
+          <span class="badge topic">-thing + 형용사</span>
         </div>
       </div>
-      <div class="badges">
-        <span class="badge basic">🌱 기초</span>
-        <span class="badge hard">⚡ 심화</span>
-        <span class="badge new">🆕 NEW</span>
-        <span class="badge topic">감탄문</span>
-        <span class="badge topic">-thing + 형용사</span>
-      </div>
       <div class="ws-list">
-        <div class="ws-btn" onclick="location.href='exclaim-something-basic/'" style="cursor:pointer">
-          <span class="ws-icon">✏️</span>
+        <div class="ws-btn" data-type="basic" onclick="location.href='exclaim-something-basic/'">
+          <span class="ws-ico"><svg width="16" height="16" viewBox="0 0 60 60"><use href="#i-spark"/></svg></span>
           <div class="ws-text">
             <div class="ws-type">기초 워크시트</div>
             <div class="ws-name">감탄문 &amp; -thing 기초</div>
             <div class="ws-cnt">42문제</div>
           </div>
         </div>
-        <div class="ws-btn" onclick="location.href='exclaim-something-hard/'" style="cursor:pointer">
-          <span class="ws-icon">🎯</span>
+        <div class="ws-btn" data-type="hard" onclick="location.href='exclaim-something-hard/'">
+          <span class="ws-ico"><svg width="16" height="16" viewBox="0 0 60 60"><use href="#i-bolt"/></svg></span>
           <div class="ws-text">
             <div class="ws-type">심화 워크시트</div>
             <div class="ws-name">오류수정·지문 심화</div>
@@ -723,38 +803,44 @@ body{font-family:'Pretendard','Plus Jakarta Sans',sans-serif;background:var(--bg
   </div>
 </div>
 
-<!-- ── 중2 섹션 ── -->
+<!-- 중2 -->
 <div class="wrap">
-  <div class="section-label">📗 중2 단원 목록</div>
+  <div class="section-label g2">
+    <span class="icon"><svg width="18" height="18" viewBox="0 0 60 60" style="color:#fff"><use href="#i-rocket"/></svg></span>
+    중2 단원 목록
+    <span class="count">GRADE 2</span>
+  </div>
+
   <div class="unit-grid">
 
-    <!-- 중2 L1: 수여동사 + 주격 관계대명사 -->
-    <div class="unit-card">
-      <div class="card-top">
+    <!-- 중2 L1 -->
+    <div class="unit-card" data-c="rose">
+      <div class="card-hero">
         <div class="unit-num">01</div>
-        <div class="card-info">
-          <div class="card-title">수여동사 &amp; 주격 관계대명사</div>
-          <div class="card-sub">give/tell + IO + DO · to/for/of · who/which/that</div>
+        <div class="hero-art"><svg width="56" height="56" viewBox="0 0 60 60" style="color:var(--c-rose-dk)"><use href="#i-gift"/></svg></div>
+      </div>
+      <div class="card-body">
+        <div class="card-title">수여동사 &amp; 주격 관계대명사</div>
+        <div class="card-sub">give/tell + IO + DO · to/for/of · who/which/that</div>
+        <div class="badges">
+          <span class="badge basic">기초</span>
+          <span class="badge hard">심화</span>
+          <span class="badge new">NEW</span>
+          <span class="badge topic">수여동사</span>
+          <span class="badge topic">주격 관계대명사</span>
         </div>
       </div>
-      <div class="badges">
-        <span class="badge basic">🌱 기초</span>
-        <span class="badge hard">⚡ 심화</span>
-        <span class="badge new">🆕 NEW</span>
-        <span class="badge topic">수여동사</span>
-        <span class="badge topic">주격 관계대명사</span>
-      </div>
       <div class="ws-list">
-        <div class="ws-btn" onclick="location.href='g2-give-relclause-basic/'" style="cursor:pointer">
-          <span class="ws-icon">✏️</span>
+        <div class="ws-btn" data-type="basic" onclick="location.href='g2-give-relclause-basic/'">
+          <span class="ws-ico"><svg width="16" height="16" viewBox="0 0 60 60"><use href="#i-gift"/></svg></span>
           <div class="ws-text">
             <div class="ws-type">기초 워크시트</div>
             <div class="ws-name">수여동사 &amp; 관계대명사 기초</div>
             <div class="ws-cnt">42문제</div>
           </div>
         </div>
-        <div class="ws-btn" onclick="location.href='g2-give-relclause-hard/'" style="cursor:pointer">
-          <span class="ws-icon">🎯</span>
+        <div class="ws-btn" data-type="hard" onclick="location.href='g2-give-relclause-hard/'">
+          <span class="ws-ico"><svg width="16" height="16" viewBox="0 0 60 60"><use href="#i-bolt"/></svg></span>
           <div class="ws-text">
             <div class="ws-type">심화 워크시트</div>
             <div class="ws-name">오류수정·문장전환 심화</div>
@@ -764,33 +850,34 @@ body{font-family:'Pretendard','Plus Jakarta Sans',sans-serif;background:var(--bg
       </div>
     </div>
 
-    <!-- 중2 L2: 현재완료 + 비교급·최상급 -->
-    <div class="unit-card">
-      <div class="card-top">
+    <!-- 중2 L2 -->
+    <div class="unit-card" data-c="mint">
+      <div class="card-hero">
         <div class="unit-num">02</div>
-        <div class="card-info">
-          <div class="card-title">현재완료 &amp; 비교급·최상급</div>
-          <div class="card-sub">have/has+p.p. · since/for · -er/-est · more/most</div>
+        <div class="hero-art"><svg width="56" height="56" viewBox="0 0 60 60" style="color:var(--c-mint-dk)"><use href="#i-chart"/></svg></div>
+      </div>
+      <div class="card-body">
+        <div class="card-title">현재완료 &amp; 비교급·최상급</div>
+        <div class="card-sub">have/has+p.p. · since/for · -er/-est · more/most</div>
+        <div class="badges">
+          <span class="badge basic">기초</span>
+          <span class="badge hard">심화</span>
+          <span class="badge new">NEW</span>
+          <span class="badge topic">현재완료</span>
+          <span class="badge topic">비교급·최상급</span>
         </div>
       </div>
-      <div class="badges">
-        <span class="badge basic">🌱 기초</span>
-        <span class="badge hard">⚡ 심화</span>
-        <span class="badge new">🆕 NEW</span>
-        <span class="badge topic">현재완료</span>
-        <span class="badge topic">비교급·최상급</span>
-      </div>
       <div class="ws-list">
-        <div class="ws-btn" onclick="location.href='g2-perfect-compare-basic/'" style="cursor:pointer">
-          <span class="ws-icon">✏️</span>
+        <div class="ws-btn" data-type="basic" onclick="location.href='g2-perfect-compare-basic/'">
+          <span class="ws-ico"><svg width="16" height="16" viewBox="0 0 60 60"><use href="#i-chart"/></svg></span>
           <div class="ws-text">
             <div class="ws-type">기초 워크시트</div>
             <div class="ws-name">현재완료 &amp; 비교급·최상급 기초</div>
             <div class="ws-cnt">40문제</div>
           </div>
         </div>
-        <div class="ws-btn" onclick="location.href='g2-perfect-compare-hard/'" style="cursor:pointer">
-          <span class="ws-icon">🎯</span>
+        <div class="ws-btn" data-type="hard" onclick="location.href='g2-perfect-compare-hard/'">
+          <span class="ws-ico"><svg width="16" height="16" viewBox="0 0 60 60"><use href="#i-bolt"/></svg></span>
           <div class="ws-text">
             <div class="ws-type">심화 워크시트</div>
             <div class="ws-name">오류수정·문장바꾸기 심화</div>
@@ -800,32 +887,33 @@ body{font-family:'Pretendard','Plus Jakarta Sans',sans-serif;background:var(--bg
       </div>
     </div>
 
-    <!-- 중2 L3: 형용사적 to부정사 + 접속사 if -->
-    <div class="unit-card">
-      <div class="card-top">
+    <!-- 중2 L3 -->
+    <div class="unit-card" data-c="lav">
+      <div class="card-hero">
         <div class="unit-num">03</div>
-        <div class="card-info">
-          <div class="card-title">형용사적 to부정사 &amp; 접속사 if</div>
-          <div class="card-sub">명사 수식 to부정사 · to+전치사 · if절 현재시제</div>
+        <div class="hero-art"><svg width="56" height="56" viewBox="0 0 60 60" style="color:var(--c-lav-dk)"><use href="#i-branch"/></svg></div>
+      </div>
+      <div class="card-body">
+        <div class="card-title">형용사적 to부정사 &amp; 접속사 if</div>
+        <div class="card-sub">명사 수식 to부정사 · to+전치사 · if절 현재시제</div>
+        <div class="badges">
+          <span class="badge basic">기초</span>
+          <span class="badge hard">심화</span>
+          <span class="badge topic">to부정사</span>
+          <span class="badge topic">접속사 if</span>
         </div>
       </div>
-      <div class="badges">
-        <span class="badge basic">🌱 기초</span>
-        <span class="badge hard">⚡ 심화</span>
-        <span class="badge topic">to부정사</span>
-        <span class="badge topic">접속사 if</span>
-      </div>
       <div class="ws-list">
-        <div class="ws-btn" onclick="location.href='g2-to-if-basic/'" style="cursor:pointer">
-          <span class="ws-icon">✏️</span>
+        <div class="ws-btn" data-type="basic" onclick="location.href='g2-to-if-basic/'">
+          <span class="ws-ico"><svg width="16" height="16" viewBox="0 0 60 60"><use href="#i-branch"/></svg></span>
           <div class="ws-text">
             <div class="ws-type">기초 워크시트</div>
             <div class="ws-name">형용사적 to부정사 &amp; if 기초</div>
             <div class="ws-cnt">40문제</div>
           </div>
         </div>
-        <div class="ws-btn" onclick="location.href='g2-to-if-hard/'" style="cursor:pointer">
-          <span class="ws-icon">🎯</span>
+        <div class="ws-btn" data-type="hard" onclick="location.href='g2-to-if-hard/'">
+          <span class="ws-ico"><svg width="16" height="16" viewBox="0 0 60 60"><use href="#i-bolt"/></svg></span>
           <div class="ws-text">
             <div class="ws-type">심화 워크시트</div>
             <div class="ws-name">오류수정·문장완성 심화</div>
@@ -835,46 +923,47 @@ body{font-family:'Pretendard','Plus Jakarta Sans',sans-serif;background:var(--bg
       </div>
     </div>
 
-    <!-- 중2 L4: so ~ that + 수동태 -->
-    <div class="unit-card">
-      <div class="card-top">
+    <!-- 중2 L4 -->
+    <div class="unit-card" data-c="amber">
+      <div class="card-hero">
         <div class="unit-num">04</div>
-        <div class="card-info">
-          <div class="card-title">so ~ that &amp; 수동태</div>
-          <div class="card-sub">너무 ~해서 … · be+p.p. 수동표현</div>
+        <div class="hero-art"><svg width="56" height="56" viewBox="0 0 60 60" style="color:var(--c-amber-dk)"><use href="#i-link"/></svg></div>
+      </div>
+      <div class="card-body">
+        <div class="card-title">so ~ that &amp; 수동태</div>
+        <div class="card-sub">너무 ~해서 … · be+p.p. 수동표현</div>
+        <div class="badges">
+          <span class="badge basic">기초</span>
+          <span class="badge hard">심화</span>
+          <span class="badge practice">연습</span>
+          <span class="badge new">NEW</span>
+          <span class="badge topic">so ~ that</span>
+          <span class="badge topic">수동태</span>
         </div>
       </div>
-      <div class="badges">
-        <span class="badge basic">🌱 기초</span>
-        <span class="badge hard">⚡ 심화</span>
-        <span class="badge practice">🔄 연습</span>
-        <span class="badge new">🆕 NEW</span>
-        <span class="badge topic">so ~ that</span>
-        <span class="badge topic">수동태</span>
-      </div>
       <div class="ws-list">
-        <div class="ws-btn" onclick="location.href='g2-sothat-passive-basic/'" style="cursor:pointer">
-          <span class="ws-icon">✏️</span>
+        <div class="ws-btn" data-type="basic" onclick="location.href='g2-sothat-passive-basic/'">
+          <span class="ws-ico"><svg width="16" height="16" viewBox="0 0 60 60"><use href="#i-link"/></svg></span>
           <div class="ws-text">
             <div class="ws-type">기초 워크시트</div>
             <div class="ws-name">so ~ that &amp; 수동태 기초</div>
             <div class="ws-cnt">40문제</div>
           </div>
         </div>
-        <div class="ws-btn" onclick="location.href='g2-sothat-passive-hard/'" style="cursor:pointer">
-          <span class="ws-icon">🎯</span>
+        <div class="ws-btn" data-type="hard" onclick="location.href='g2-sothat-passive-hard/'">
+          <span class="ws-ico"><svg width="16" height="16" viewBox="0 0 60 60"><use href="#i-bolt"/></svg></span>
           <div class="ws-text">
             <div class="ws-type">심화 워크시트</div>
             <div class="ws-name">오류수정·문장전환 심화</div>
             <div class="ws-cnt">25문제</div>
           </div>
         </div>
-        <div class="ws-btn" onclick="location.href='g2-passive-practice/'" style="cursor:pointer">
-          <span class="ws-icon">🔄</span>
+        <div class="ws-btn" data-type="practice" onclick="location.href='g2-passive-practice/'" style="grid-column:1/-1">
+          <span class="ws-ico"><svg width="16" height="16" viewBox="0 0 60 60"><use href="#i-gear"/></svg></span>
           <div class="ws-text">
             <div class="ws-type">변환 연습</div>
-            <div class="ws-name">수동태 변환 연습</div>
-            <div class="ws-cnt">20문제 · 능↔수</div>
+            <div class="ws-name">수동태 변환 연습 · 능동↔수동</div>
+            <div class="ws-cnt">20문제</div>
           </div>
         </div>
       </div>
@@ -883,9 +972,7 @@ body{font-family:'Pretendard','Plus Jakarta Sans',sans-serif;background:var(--bg
   </div>
 </div>
 
-<div class="footer">
-  중학 영어 문법 워크시트 · Grammar Practice for Middle School
-</div>
+<div class="footer">중학 영어 문법 워크시트 · Grammar Practice for Middle School</div>
 
 </body>
 </html>

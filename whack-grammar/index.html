@@ -191,6 +191,73 @@ header{display:flex;align-items:center;gap:8px;padding:12px 14px 6px;position:re
 .field.ok-flash::after{content:'';position:absolute;inset:0;background:radial-gradient(circle at 50% 50%,rgba(34,197,94,.4),transparent 65%);pointer-events:none;animation:flashOut .35s ease-out forwards;}
 .field.ng-flash::after{content:'';position:absolute;inset:0;background:radial-gradient(circle at 50% 50%,rgba(220,38,38,.42),transparent 65%);pointer-events:none;animation:flashOut .35s ease-out forwards;}
 @keyframes flashOut{from{opacity:1;}to{opacity:0;}}
+
+/* ── impact: shake & smash ring ── */
+.field.shake{animation:shakeField .38s cubic-bezier(.36,.07,.19,.97);}
+@keyframes shakeField{
+  0%,100%{transform:translate(0,0);}
+  12%{transform:translate(-11px,5px) rotate(-1.3deg);}
+  26%{transform:translate(12px,-6px) rotate(1.5deg);}
+  42%{transform:translate(-9px,5px) rotate(-1deg);}
+  58%{transform:translate(8px,-4px) rotate(.8deg);}
+  74%{transform:translate(-5px,3px) rotate(-.4deg);}
+  88%{transform:translate(3px,-1px);}
+}
+#app.shake-mid{animation:shakeMid .42s cubic-bezier(.36,.07,.19,.97);}
+@keyframes shakeMid{
+  0%,100%{transform:translate(0,0);}
+  18%{transform:translate(-6px,3px) rotate(-.5deg);}
+  38%{transform:translate(7px,-4px) rotate(.6deg);}
+  58%{transform:translate(-4px,2px) rotate(-.3deg);}
+  78%{transform:translate(3px,-1px) rotate(.2deg);}
+}
+.smash{position:absolute;width:18px;height:18px;border-radius:50%;border:5px solid #fef3c7;
+  transform:translate(-50%,-50%);pointer-events:none;z-index:6;
+  box-shadow:0 0 24px rgba(254,243,199,.85),0 0 6px rgba(217,119,6,.7);
+  animation:smashRing .5s cubic-bezier(.2,.7,.3,1) forwards;}
+.smash.ng{border-color:#fecaca;box-shadow:0 0 24px rgba(254,202,202,.85),0 0 6px rgba(220,38,38,.6);}
+@keyframes smashRing{
+  0%{opacity:0;transform:translate(-50%,-50%) scale(.2);border-width:8px;}
+  18%{opacity:1;}
+  100%{opacity:0;transform:translate(-50%,-50%) scale(5.2);border-width:1px;}
+}
+.spark{position:absolute;width:5px;height:18px;background:linear-gradient(180deg,#fef3c7,rgba(254,243,199,0));
+  transform-origin:50% 100%;pointer-events:none;z-index:6;border-radius:2px;
+  animation:sparkOut .42s ease-out forwards;}
+@keyframes sparkOut{
+  0%{opacity:0;transform:translate(-50%,-50%) rotate(var(--a,0deg)) scaleY(.3);}
+  20%{opacity:1;}
+  100%{opacity:0;transform:translate(-50%,-50%) rotate(var(--a,0deg)) scaleY(2.4) translateY(-22px);}
+}
+
+/* ── game over sequence ── */
+#app.shake-strong{animation:shakeStrong .9s cubic-bezier(.36,.07,.19,.97);}
+@keyframes shakeStrong{
+  0%,100%{transform:translate(0,0);}
+  10%{transform:translate(-12px,5px) rotate(-1deg);}
+  22%{transform:translate(13px,-8px) rotate(1.2deg);}
+  35%{transform:translate(-11px,6px) rotate(-.8deg);}
+  48%{transform:translate(10px,-5px) rotate(.6deg);}
+  62%{transform:translate(-7px,3px) rotate(-.4deg);}
+  78%{transform:translate(5px,-2px) rotate(.3deg);}
+  92%{transform:translate(-2px,1px);}
+}
+.gover-overlay{position:absolute;inset:0;pointer-events:none;z-index:18;
+  background:radial-gradient(circle at 50% 45%,rgba(127,29,29,0) 0%,rgba(76,5,25,.55) 55%,rgba(15,23,42,.78) 100%);
+  opacity:0;animation:goverFade 1.5s ease-out forwards;}
+@keyframes goverFade{0%{opacity:0;}25%{opacity:1;}100%{opacity:1;}}
+.gover-text{position:absolute;left:50%;top:46%;
+  font-family:'Baloo 2',sans-serif;font-weight:900;font-size:3rem;letter-spacing:3px;color:#fef2f2;
+  text-shadow:0 0 28px rgba(254,202,202,.9),0 5px 0 #7f1d1d,0 8px 24px rgba(0,0,0,.55);
+  pointer-events:none;z-index:19;white-space:nowrap;
+  animation:goverDrop 1.4s cubic-bezier(.2,1.4,.3,1) forwards;}
+@keyframes goverDrop{
+  0%{opacity:0;transform:translate(-50%,-180%) scale(.5) rotate(-12deg);}
+  35%{opacity:1;transform:translate(-50%,-50%) scale(1.18) rotate(3deg);}
+  55%{transform:translate(-50%,-50%) scale(.96) rotate(-1deg);}
+  72%{transform:translate(-50%,-50%) scale(1.04) rotate(.6deg);}
+  100%{opacity:1;transform:translate(-50%,-50%) scale(1) rotate(0);}
+}
 </style>
 </head>
 <body>
@@ -408,6 +475,8 @@ function onQTimeout() {
   answered = true;
   loseHp();
   spawnStrike('시간초과', 'ng');
+  playWhackMiss();
+  if (hp <= 0) { triggerGameOver(); return; }
   setTimeout(advance, 700);
 }
 
@@ -502,6 +571,9 @@ function handleHit(e, mole, slotIdx, word) {
   if (rec) clearTimeout(rec.lifeTimer);
   liveMoles.delete(slotIdx);
   mole.style.pointerEvents = 'none';
+  spawnSmash(mole, correct ? 'ok' : 'ng');
+  shakeField();
+  playWhackHit();   // 망치 충돌은 정답/오답 동일하게 들림
   if (correct) {
     answered = true;
     correctCount++;
@@ -524,11 +596,163 @@ function handleHit(e, mole, slotIdx, word) {
     mole.classList.remove('up', 'popping');
     mole.classList.add('miss');
     spawnStrike('빗나감!', 'ng');
-    if (typeof window.toast === 'function') window.toast('틀렸어요', 'ng');
+    playWhackMiss();  // thud 위에 whoosh 레이어
     setTimeout(() => submergeMole(mole), 380);
     updateHud();
-    if (hp <= 0) { answered = true; setTimeout(endGame, 600); }
+    if (hp <= 0) { answered = true; triggerGameOver(); }
   }
+}
+
+function shakeField() {
+  field.classList.remove('shake');
+  // force reflow so the animation restarts
+  void field.offsetWidth;
+  field.classList.add('shake');
+  const app = document.getElementById('app');
+  app.classList.remove('shake-mid');
+  void app.offsetWidth;
+  app.classList.add('shake-mid');
+  setTimeout(() => app.classList.remove('shake-mid'), 460);
+}
+
+// ── inline 사운드 (whack 전용, sounds.js 건드리지 않음) ──────────────
+let _whackCtx = null;
+function whackAC() {
+  if (!_whackCtx) {
+    try { _whackCtx = new (window.AudioContext || window.webkitAudioContext)(); }
+    catch (e) { return null; }
+  }
+  if (_whackCtx.state === 'suspended') _whackCtx.resume().catch(() => {});
+  return _whackCtx;
+}
+function _tone(c, freq, type, t0, dur, vol) {
+  const osc = c.createOscillator();
+  const g = c.createGain();
+  osc.type = type;
+  osc.frequency.setValueAtTime(freq, t0);
+  g.gain.setValueAtTime(vol, t0);
+  g.gain.exponentialRampToValueAtTime(0.0001, t0 + dur);
+  osc.connect(g); g.connect(c.destination);
+  osc.start(t0); osc.stop(t0 + dur + 0.05);
+}
+function _noiseBurst(c, t0, dur, vol, cutoff) {
+  const len = Math.max(1, Math.floor(c.sampleRate * dur));
+  const buf = c.createBuffer(1, len, c.sampleRate);
+  const data = buf.getChannelData(0);
+  for (let i = 0; i < len; i++) data[i] = (Math.random() * 2 - 1) * Math.pow(1 - i / len, 1.6);
+  const src = c.createBufferSource();
+  src.buffer = buf;
+  const filt = c.createBiquadFilter();
+  filt.type = 'lowpass';
+  filt.frequency.value = cutoff || 1800;
+  const g = c.createGain();
+  g.gain.setValueAtTime(vol, t0);
+  g.gain.exponentialRampToValueAtTime(0.0001, t0 + dur);
+  src.connect(filt); filt.connect(g); g.connect(c.destination);
+  src.start(t0); src.stop(t0 + dur + 0.02);
+}
+function playWhackHit() {
+  const c = whackAC(); if (!c) return;
+  const t = c.currentTime;
+  // 저역 thud: 110→55Hz
+  const osc = c.createOscillator();
+  const g = c.createGain();
+  osc.type = 'sine';
+  osc.frequency.setValueAtTime(110, t);
+  osc.frequency.exponentialRampToValueAtTime(55, t + 0.14);
+  g.gain.setValueAtTime(0.55, t);
+  g.gain.exponentialRampToValueAtTime(0.0001, t + 0.22);
+  osc.connect(g); g.connect(c.destination);
+  osc.start(t); osc.stop(t + 0.26);
+  _noiseBurst(c, t, 0.07, 0.32, 2400);     // 상단 crack
+  _tone(c, 880, 'triangle', t + 0.015, 0.08, 0.12); // 메탈릭 핑
+}
+function playWhackMiss() {
+  const c = whackAC(); if (!c) return;
+  const t = c.currentTime;
+  _noiseBurst(c, t, 0.18, 0.14, 900);
+  const osc = c.createOscillator();
+  const g = c.createGain();
+  osc.type = 'sawtooth';
+  osc.frequency.setValueAtTime(330, t);
+  osc.frequency.exponentialRampToValueAtTime(160, t + 0.22);
+  g.gain.setValueAtTime(0.14, t);
+  g.gain.exponentialRampToValueAtTime(0.0001, t + 0.28);
+  osc.connect(g); g.connect(c.destination);
+  osc.start(t); osc.stop(t + 0.32);
+}
+function playGameOver() {
+  const c = whackAC(); if (!c) return;
+  const t = c.currentTime;
+  const thud = c.createOscillator();
+  const tg = c.createGain();
+  thud.type = 'sine';
+  thud.frequency.setValueAtTime(160, t);
+  thud.frequency.exponentialRampToValueAtTime(50, t + 0.5);
+  tg.gain.setValueAtTime(0.5, t);
+  tg.gain.exponentialRampToValueAtTime(0.0001, t + 0.7);
+  thud.connect(tg); tg.connect(c.destination);
+  thud.start(t); thud.stop(t + 0.74);
+  _tone(c, 523.25, 'triangle', t + 0.05, 0.18, 0.22); // C5
+  _tone(c, 466.16, 'triangle', t + 0.22, 0.18, 0.22); // Bb4
+  _tone(c, 369.99, 'triangle', t + 0.40, 0.22, 0.24); // F#4
+  _tone(c, 311.13, 'triangle', t + 0.62, 0.40, 0.26); // Eb4
+}
+
+function spawnSmash(mole, type) {
+  const slot = mole.parentNode;
+  if (!slot) return;
+  // 두더지 머리 기준 위치
+  const ring = document.createElement('div');
+  ring.className = 'smash' + (type === 'ng' ? ' ng' : '');
+  ring.style.left = '50%';
+  ring.style.top = '36%';
+  slot.appendChild(ring);
+  setTimeout(() => ring.remove(), 560);
+  // 스파크 6방향 (정답일 때만)
+  if (type === 'ok') {
+    for (let i = 0; i < 6; i++) {
+      const sp = document.createElement('div');
+      sp.className = 'spark';
+      sp.style.left = '50%';
+      sp.style.top = '36%';
+      sp.style.setProperty('--a', `${i * 60 + (Math.random() - .5) * 20}deg`);
+      slot.appendChild(sp);
+      setTimeout(() => sp.remove(), 480);
+    }
+  }
+}
+
+function triggerGameOver() {
+  // 두더지/타이머 즉시 정지하지만 게임 오버 연출 후 endGame 호출
+  cancelAnimationFrame(qTimerRaf);
+  clearTimeout(spawnTimer);
+  clearTimeout(qTimeoutTimer);
+  liveMoles.forEach(({mole, lifeTimer}) => {
+    clearTimeout(lifeTimer);
+    submergeMole(mole);
+  });
+  liveMoles.clear();
+  // 강한 흔들림
+  const app = document.getElementById('app');
+  app.classList.remove('shake-strong');
+  void app.offsetWidth;
+  app.classList.add('shake-strong');
+  // 어두운 오버레이 + GAME OVER 텍스트
+  const overlay = document.createElement('div');
+  overlay.className = 'gover-overlay';
+  app.appendChild(overlay);
+  const text = document.createElement('div');
+  text.className = 'gover-text';
+  text.textContent = 'GAME OVER';
+  app.appendChild(text);
+  playGameOver();
+  setTimeout(() => {
+    overlay.remove();
+    text.remove();
+    app.classList.remove('shake-strong');
+    endGame();
+  }, 1700);
 }
 
 function loseHp() {

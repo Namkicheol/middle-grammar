@@ -72,14 +72,9 @@ function parsePatternA(html, unitKey) {
       }
     }
 
-    // Skip fix(오류수정) and scramble(배열) — instruction text not suitable for game
+    // Skip fix(오류수정), scramble(배열), and input(주관식) — not suitable for MCQ game
     if (/q-type\s+fix|q-type\s+arr/.test(block)) continue;
-
-    // For non-MCQ questions, fall back to input data-ans
-    if (opts.length === 0) {
-      const inputMatch = block.match(/<input\b[^>]*data-ans=["']([^"']+)["'][^>]*>/);
-      if (inputMatch) ans = inputMatch[1].trim();
-    }
+    if (opts.length === 0) continue;
     if (!ans) continue;
 
     // Extract q-text

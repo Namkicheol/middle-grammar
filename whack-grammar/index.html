@@ -70,6 +70,23 @@ header{display:flex;align-items:center;gap:8px;padding:12px 14px 6px;position:re
   text-shadow:0 0 6px rgba(34,211,238,.5);}
 .hud-card .val{font-variant-numeric:tabular-nums;color:var(--ink);
   text-shadow:0 0 10px rgba(224,231,255,.45);}
+/* 점수판 크게 강조 */
+.hud-card.score-big{padding:8px 16px;background:linear-gradient(135deg,rgba(34,211,238,.14),rgba(168,85,247,.18));
+  border:1.5px solid rgba(34,211,238,.55);box-shadow:0 0 22px rgba(34,211,238,.32),0 0 44px rgba(168,85,247,.22),inset 0 0 16px rgba(34,211,238,.1);}
+.hud-card.score-big .val{font-size:1.5rem;color:#fff;
+  text-shadow:0 0 14px rgba(255,255,255,.85),0 0 26px rgba(34,211,238,.85),0 0 40px rgba(168,85,247,.5);
+  transition:transform .14s cubic-bezier(.3,1.6,.4,1);}
+.hud-card.score-big .val.score-bump{transform:scale(1.22);}
+/* ×2 부스트 표시 */
+.hud-card.boost{background:linear-gradient(135deg,rgba(251,191,36,.18),rgba(232,121,249,.22));
+  border-color:rgba(251,191,36,.65);box-shadow:0 0 22px rgba(251,191,36,.4),0 0 38px rgba(232,121,249,.3);
+  animation:boostPulse 1.05s ease-in-out infinite;}
+.hud-card.boost .lbl{color:var(--neon-amber);text-shadow:0 0 8px rgba(251,191,36,.7);}
+.hud-card.boost .val{color:#fff;text-shadow:0 0 12px rgba(251,191,36,.85),0 0 22px rgba(232,121,249,.6);}
+@keyframes boostPulse{
+  0%,100%{box-shadow:0 0 22px rgba(251,191,36,.4),0 0 38px rgba(232,121,249,.3);}
+  50%{box-shadow:0 0 34px rgba(251,191,36,.7),0 0 56px rgba(232,121,249,.55);}
+}
 .hp-row{display:flex;gap:4px;}
 .hp-row span{width:14px;height:14px;border-radius:50%;
   background:radial-gradient(circle at 35% 32%,#fecdd3 0%,#f87171 50%,#dc2626 100%);
@@ -167,6 +184,82 @@ header{display:flex;align-items:center;gap:8px;padding:12px 14px 6px;position:re
     0 0 32px rgba(251,191,36,.45);
   white-space:nowrap;padding:0 6px;background:none;border:none;}
 .mole-sign::after{display:none;}
+
+/* ── 아이템 스킨 ── */
+/* 골드: 황금색 몸통 + 황금 단어 + 별 마크 */
+.mole.gold .mole-body{
+  background:radial-gradient(ellipse at 50% 28%,#fde047 0%,#f59e0b 50%,#92400e 100%);
+  border-color:rgba(251,191,36,.9);
+  box-shadow:0 0 32px rgba(251,191,36,.75),0 0 56px rgba(251,191,36,.45),
+    inset 0 -10px 14px rgba(120,53,15,.55),inset 0 6px 0 rgba(254,243,199,.45);
+}
+.mole.gold .mole-sign{color:#fff;
+  text-shadow:0 0 10px rgba(255,255,255,.95),0 0 22px rgba(251,191,36,1),0 0 44px rgba(217,119,6,.85);}
+.mole.gold .mole-sign::before{content:'⭐ ';font-size:1.1em;}
+.mole.gold .mole-sign::after{content:' ⭐';display:inline;font-size:1.1em;position:static;background:none;width:auto;height:auto;}
+.mole.gold .mole-eye{background:radial-gradient(circle at 50% 50%,#fff 0%,#fde047 35%,#b45309 75%,transparent 100%);
+  box-shadow:0 0 14px rgba(253,224,71,.95);}
+
+/* 다이아: 시안/하얀 다이아 빛 + 단어 */
+.mole.diamond .mole-body{
+  background:radial-gradient(ellipse at 50% 28%,#e0f7fa 0%,#67e8f9 45%,#0e7490 100%);
+  border-color:rgba(34,211,238,1);
+  box-shadow:0 0 36px rgba(34,211,238,.85),0 0 64px rgba(165,243,252,.55),
+    inset 0 -10px 14px rgba(8,51,68,.55),inset 0 6px 0 rgba(224,247,250,.5);
+  animation:diamondShimmer 1.2s ease-in-out infinite;
+}
+@keyframes diamondShimmer{
+  0%,100%{filter:brightness(1) hue-rotate(0deg);}
+  50%{filter:brightness(1.18) hue-rotate(-12deg);}
+}
+.mole.diamond .mole-sign{color:#fff;
+  text-shadow:0 0 12px rgba(255,255,255,.95),0 0 24px rgba(34,211,238,1),0 0 44px rgba(165,243,252,.85);}
+.mole.diamond .mole-sign::before{content:'💎 ';font-size:1.1em;}
+.mole.diamond .mole-sign::after{content:' ×2';display:inline;font-size:.85em;color:var(--neon-amber);position:static;background:none;width:auto;height:auto;
+  text-shadow:0 0 8px rgba(251,191,36,.85);}
+.mole.diamond .mole-eye{background:radial-gradient(circle at 50% 50%,#fff 0%,#a7f3d0 30%,#0891b2 75%,transparent 100%);}
+
+/* 폭탄: 어두운 줄무늬 + 빨간 글로우 + 도화선 */
+.mole.bomb .mole-body{
+  background:
+    repeating-linear-gradient(135deg,#1a0a0a 0,#1a0a0a 6px,#3a0a0a 6px,#3a0a0a 12px),
+    radial-gradient(ellipse at 50% 28%,#7f1d1d 0%,#0a0a0a 70%);
+  border-color:rgba(248,113,113,.9);
+  box-shadow:0 0 28px rgba(248,113,113,.7),0 0 52px rgba(220,38,38,.5),
+    inset 0 -10px 14px rgba(0,0,0,.85),inset 0 6px 0 rgba(248,113,113,.22);
+  animation:bombTick .55s steps(2) infinite;
+}
+@keyframes bombTick{
+  0%,49%{filter:brightness(1);}
+  50%,100%{filter:brightness(1.35);}
+}
+.mole.bomb .mole-eye{background:radial-gradient(circle at 50% 50%,#fff 0%,#f87171 28%,#7f1d1d 70%,transparent 100%);
+  box-shadow:0 0 14px rgba(248,113,113,.95),0 0 24px rgba(248,113,113,.6);}
+.mole.bomb .mole-snout,.mole.bomb .mole-nose{display:none;}
+.mole.bomb .mole-sign{display:none;}
+.mole.bomb .mole-body::before{content:'💣';position:absolute;top:-22%;left:50%;transform:translateX(-50%);
+  font-size:1.6rem;filter:drop-shadow(0 0 8px rgba(248,113,113,.9));animation:bombFuse .7s ease-in-out infinite;}
+@keyframes bombFuse{
+  0%,100%{transform:translateX(-50%) rotate(-6deg) scale(1);}
+  50%{transform:translateX(-50%) rotate(6deg) scale(1.08);}
+}
+
+/* 하트: 핑크 몸통 + 하트 마크 */
+.mole.heart .mole-body{
+  background:radial-gradient(ellipse at 50% 28%,#fce7f3 0%,#f472b6 45%,#831843 100%);
+  border-color:rgba(244,114,182,.9);
+  box-shadow:0 0 28px rgba(244,114,182,.7),0 0 50px rgba(244,114,182,.45),
+    inset 0 -10px 14px rgba(131,24,67,.6),inset 0 6px 0 rgba(252,231,243,.5);
+}
+.mole.heart .mole-eye{background:radial-gradient(circle at 50% 50%,#fff 0%,#fbcfe8 30%,#be185d 75%,transparent 100%);}
+.mole.heart .mole-sign{display:none;}
+.mole.heart .mole-body::before{content:'❤️';position:absolute;top:-22%;left:50%;transform:translateX(-50%);
+  font-size:1.7rem;filter:drop-shadow(0 0 8px rgba(244,114,182,.9));
+  animation:heartBeat .65s ease-in-out infinite;}
+@keyframes heartBeat{
+  0%,100%{transform:translateX(-50%) scale(1);}
+  50%{transform:translateX(-50%) scale(1.18);}
+}
 
 /* ── motion phases ── */
 .mole.popping{animation:molePop .42s cubic-bezier(.32,1.4,.42,1) forwards;}
@@ -376,8 +469,9 @@ header{display:flex;align-items:center;gap:8px;padding:12px 14px 6px;position:re
     <span style="width:40px;"></span>
   </header>
   <div class="hud">
-    <div class="hud-card"><span class="lbl">점수</span><span class="val" id="hud-score">0</span></div>
+    <div class="hud-card score-big"><span class="lbl">점수</span><span class="val" id="hud-score">0</span></div>
     <div class="hud-card"><span class="lbl">콤보</span><span class="val combo" id="hud-combo">×0</span></div>
+    <div class="hud-card boost hide" id="hud-boost"><span class="lbl">×2</span><span class="val" id="hud-boost-time">10</span></div>
     <div class="hud-card"><span class="lbl">HP</span><div class="hp-row" id="hud-hp"><span></span><span></span><span></span></div></div>
   </div>
   <div class="qcard">
@@ -455,6 +549,26 @@ const qBar = document.getElementById('q-bar');
 const hudScore = document.getElementById('hud-score');
 const hudCombo = document.getElementById('hud-combo');
 const hudHp = document.getElementById('hud-hp');
+const hudBoost = document.getElementById('hud-boost');
+const hudBoostTime = document.getElementById('hud-boost-time');
+
+// ── 아이템 시스템 상태 ────────────────────────────────
+const MAX_HP = 3;
+let scoreMultiplier = 1;
+let multiplierUntil = 0;
+let multiplierRaf = 0;
+let bombTimer = 0;
+let heartTimer = 0;
+// 정답 모래에 골드/다이아 스킨 적용 확률
+const GOLD_CHANCE = 0.10;
+const DIAMOND_CHANCE = 0.05;
+// 폭탄/하트 스폰 주기 (ms) — 매번 확률로 발동
+const BOMB_INTERVAL = [4000, 7000];
+const BOMB_CHANCE = 0.55;
+const HEART_INTERVAL = [6000, 10000];
+const HEART_CHANCE = 0.45;
+const SPECIAL_LIFE_MIN = 2200;
+const SPECIAL_LIFE_MAX = 3400;
 
 function buildGrid() {
   grid.innerHTML = '';
@@ -503,13 +617,18 @@ function pickQuestionPool(key) {
 function startGame() {
   questionPool = pickQuestionPool(unitKey);
   if (!questionPool.length) { alert('문제를 불러올 수 없어요.'); return; }
-  qIdx = 0; score = 0; combo = 0; bestCombo = 0; hp = 3; correctCount = 0;
+  qIdx = 0; score = 0; combo = 0; bestCombo = 0; hp = MAX_HP; correctCount = 0;
+  endBoost();
+  clearTimeout(bombTimer); clearTimeout(heartTimer);
   document.getElementById('screen-start').classList.add('hide');
   document.getElementById('screen-end').classList.add('hide');
   buildGrid();
   updateHud();
   gameRunning = true;
   nextQuestion();
+  // 특수 아이템 스폰 사이클 시작
+  scheduleBomb();
+  scheduleHeart();
 }
 
 function endGame() {
@@ -517,6 +636,9 @@ function endGame() {
   cancelAnimationFrame(qTimerRaf);
   clearTimeout(spawnTimer);
   clearTimeout(qTimeoutTimer);
+  clearTimeout(bombTimer);
+  clearTimeout(heartTimer);
+  endBoost();
   liveMoles.forEach((rec) => {
     if (rec.lifeTimer) clearTimeout(rec.lifeTimer);
     if (rec.mole) rec.mole.remove();
@@ -649,7 +771,14 @@ function spawnMole() {
   const slotIdx = avail[Math.floor(Math.random() * avail.length)];
   const slot = grid.children[slotIdx];
   const mole = document.createElement('div');
-  mole.className = 'mole show popping';
+  // 정답 단어인 경우에만 골드/다이아 스킨 추첨
+  let skin = '';
+  if (word === currentAns) {
+    const r = Math.random();
+    if (r < DIAMOND_CHANCE) skin = ' diamond';
+    else if (r < DIAMOND_CHANCE + GOLD_CHANCE) skin = ' gold';
+  }
+  mole.className = 'mole show popping' + skin;
   mole.innerHTML = `
     <div class="mole-sign">${word}</div>
     <div class="mole-body">
@@ -675,6 +804,62 @@ function spawnMole() {
   scheduleSpawn(SPAWN_INTERVAL[0] + Math.random() * (SPAWN_INTERVAL[1] - SPAWN_INTERVAL[0]));
 }
 
+// 폭탄/하트 등 특수 모래 스폰
+function spawnSpecial(kind) {
+  if (!gameRunning || answered) return null;
+  const occupied = new Set(liveMoles.keys());
+  const avail = [];
+  for (let i = 0; i < SLOT_COUNT; i++) {
+    if (occupied.has(i)) continue;
+    if (grid.children[i].querySelector('.mole')) continue;
+    avail.push(i);
+  }
+  if (!avail.length) return null;
+  const slotIdx = avail[Math.floor(Math.random() * avail.length)];
+  const slot = grid.children[slotIdx];
+  const mole = document.createElement('div');
+  mole.className = `mole show popping ${kind}`;
+  mole.innerHTML = `
+    <div class="mole-body">
+      <div class="mole-eye l"></div><div class="mole-eye r"></div>
+    </div>`;
+  slot.appendChild(mole);
+  setTimeout(() => {
+    if (mole.parentNode) mole.classList.replace('popping', 'up');
+  }, 420);
+  mole.addEventListener('click', (e) => handleHit(e, mole, slotIdx, null), { once: true });
+  mole.addEventListener('touchend', (e) => { e.preventDefault(); handleHit(e, mole, slotIdx, null); }, { once: true });
+  const life = SPECIAL_LIFE_MIN + Math.random() * (SPECIAL_LIFE_MAX - SPECIAL_LIFE_MIN);
+  const lifeTimer = setTimeout(() => {
+    if (liveMoles.has(slotIdx)) {
+      submergeMole(mole);
+      liveMoles.delete(slotIdx);
+    }
+  }, life);
+  liveMoles.set(slotIdx, { mole, lifeTimer, word: null, kind });
+  return slotIdx;
+}
+
+function scheduleBomb() {
+  clearTimeout(bombTimer);
+  const delay = BOMB_INTERVAL[0] + Math.random() * (BOMB_INTERVAL[1] - BOMB_INTERVAL[0]);
+  bombTimer = setTimeout(() => {
+    if (!gameRunning) return;
+    if (Math.random() < BOMB_CHANCE) spawnSpecial('bomb');
+    scheduleBomb();
+  }, delay);
+}
+function scheduleHeart() {
+  clearTimeout(heartTimer);
+  const delay = HEART_INTERVAL[0] + Math.random() * (HEART_INTERVAL[1] - HEART_INTERVAL[0]);
+  heartTimer = setTimeout(() => {
+    if (!gameRunning) return;
+    // HP가 부족할 때만 등장
+    if (hp < MAX_HP && Math.random() < HEART_CHANCE) spawnSpecial('heart');
+    scheduleHeart();
+  }, delay);
+}
+
 function submergeMole(mole) {
   if (!mole || !mole.parentNode) return;
   mole.classList.remove('up', 'popping');
@@ -685,29 +870,41 @@ function submergeMole(mole) {
 
 function handleHit(e, mole, slotIdx, word) {
   if (!gameRunning || answered) return;
-  const correct = word === currentAns;
-  // remove from live tracking
+  // 특수 모래 처리
   const rec = liveMoles.get(slotIdx);
   if (rec) clearTimeout(rec.lifeTimer);
   liveMoles.delete(slotIdx);
   mole.style.pointerEvents = 'none';
+  const kind = rec && rec.kind;
+  if (kind === 'bomb') { onBombHit(mole); return; }
+  if (kind === 'heart') { onHeartHit(mole); return; }
+  // 일반 정답/오답
+  const correct = word === currentAns;
   spawnSmash(mole, correct ? 'ok' : 'ng');
   shakeField();
-  playWhackHit();   // 망치 충돌은 정답/오답 동일하게 들림
+  playWhackHit();
   if (correct) {
     answered = true;
     correctCount++;
     combo++;
     bestCombo = Math.max(bestCombo, combo);
-    const gain = 100 + Math.min(combo - 1, 9) * 20;
+    const baseGain = 100 + Math.min(combo - 1, 9) * 20;
+    const goldBonus = mole.classList.contains('gold') ? 500 : 0;
+    const diamond = mole.classList.contains('diamond');
+    const mult = boostActive() ? 2 : 1;
+    const gain = (baseGain + goldBonus) * mult;
     score += gain;
+    if (diamond) activateBoost(10);
     mole.classList.remove('up', 'popping');
     mole.classList.add('hit');
     burstDust(mole);
-    spawnPop(`+${gain}`);
-    spawnStrike(combo > 1 ? `${combo}콤보!` : '정답!', 'ok');
+    const popLabel = goldBonus ? `+${gain} ⭐` : (diamond ? `+${gain} 💎×2` : `+${gain}`);
+    spawnPop(popLabel);
+    const strikeLabel = diamond ? '×2 부스트!' : (goldBonus ? '골드!' : (combo > 1 ? `${combo}콤보!` : '정답!'));
+    spawnStrike(strikeLabel, 'ok');
     if (typeof window.toast === 'function') window.toast('맞아!', 'ok');
     setTimeout(() => mole.remove(), 420);
+    bumpScoreUI();
     updateHud();
     setTimeout(advance, 560);
   } else {
@@ -716,12 +913,79 @@ function handleHit(e, mole, slotIdx, word) {
     mole.classList.remove('up', 'popping');
     mole.classList.add('miss');
     spawnStrike('빗나감!', 'ng');
-    playWhackMiss();  // thud 위에 whoosh 레이어
+    playWhackMiss();
     setTimeout(() => submergeMole(mole), 380);
     updateHud();
     if (hp <= 0) { answered = true; triggerGameOver(); }
   }
 }
+
+function onBombHit(mole) {
+  spawnSmash(mole, 'ng');
+  shakeField();
+  playWhackMiss();
+  score = Math.max(0, score - 200);
+  hp = Math.max(0, hp - 1);
+  combo = 0;
+  endBoost();  // 폭탄에 부스트 해제
+  mole.classList.remove('up', 'popping');
+  mole.classList.add('hit');
+  field.classList.add('ng-flash');
+  setTimeout(() => field.classList.remove('ng-flash'), 340);
+  spawnPop('−200 💣');
+  spawnStrike('폭탄!', 'ng');
+  setTimeout(() => mole.remove(), 420);
+  bumpScoreUI();
+  updateHud();
+  if (hp <= 0) { answered = true; triggerGameOver(); }
+}
+
+function onHeartHit(mole) {
+  shakeField();
+  playWhackHit();
+  hp = Math.min(MAX_HP, hp + 1);
+  mole.classList.remove('up', 'popping');
+  mole.classList.add('hit');
+  burstDust(mole);
+  field.classList.add('ok-flash');
+  setTimeout(() => field.classList.remove('ok-flash'), 340);
+  spawnPop('HP +1 ❤️');
+  spawnStrike('회복!', 'ok');
+  setTimeout(() => mole.remove(), 420);
+  updateHud();
+}
+
+// ── ×2 부스트 ────────────────────────────────────────
+function boostActive() { return performance.now() < multiplierUntil; }
+function activateBoost(seconds) {
+  multiplierUntil = performance.now() + seconds * 1000;
+  scoreMultiplier = 2;
+  hudBoost.classList.remove('hide');
+  cancelAnimationFrame(multiplierRaf);
+  tickBoost();
+}
+function endBoost() {
+  multiplierUntil = 0;
+  scoreMultiplier = 1;
+  hudBoost.classList.add('hide');
+  cancelAnimationFrame(multiplierRaf);
+}
+function tickBoost() {
+  const left = multiplierUntil - performance.now();
+  if (left <= 0) { endBoost(); return; }
+  hudBoostTime.textContent = Math.ceil(left / 1000);
+  multiplierRaf = requestAnimationFrame(tickBoost);
+}
+
+function bumpScoreUI() {
+  hudScore.classList.remove('score-bump');
+  void hudScore.offsetWidth;
+  hudScore.classList.add('score-bump');
+  setTimeout(() => hudScore.classList.remove('score-bump'), 240);
+}
+
+// 점수 계산식에 score-bump 자동 적용을 위해 기존 점수 변경 후 호출 보장하도록 일반 정답 외 경로 처리:
+function _scoreChanged() { bumpScoreUI(); }
 
 function shakeField() {
   field.classList.remove('shake');
@@ -848,6 +1112,9 @@ function triggerGameOver() {
   cancelAnimationFrame(qTimerRaf);
   clearTimeout(spawnTimer);
   clearTimeout(qTimeoutTimer);
+  clearTimeout(bombTimer);
+  clearTimeout(heartTimer);
+  endBoost();
   liveMoles.forEach(({mole, lifeTimer}) => {
     clearTimeout(lifeTimer);
     submergeMole(mole);

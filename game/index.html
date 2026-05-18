@@ -2422,12 +2422,15 @@ function resizeCanvas() {
 }
 
 function randomActiveColor() {
+  const palette = COLORS.slice(0, stageConfig().colors);
   const active = new Set();
   for (let r = 0; r < ROWS; r++)
     for (let c = 0; c < COLS; c++)
       if (grid[r][c]) active.add(grid[r][c]);
-  const arr = active.size > 0 ? [...active] : COLORS.slice(0,5);
-  return arr[Math.floor(Math.random() * arr.length)];
+  // 슈터는 스테이지 팔레트 전체에서 균등하게 추첨한다.
+  // 단, 그리드에 한 가지 색만 남아 있는 막판에는 그 색만 발사해야 클리어가 가능하므로 active로 좁힌다.
+  const pool = active.size === 1 ? [...active] : palette;
+  return pool[Math.floor(Math.random() * pool.length)];
 }
 
 function newShooterBubble() {

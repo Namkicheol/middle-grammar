@@ -1271,19 +1271,11 @@ function endSpeedQuiz(reason) {
   const title = reason === 'time' ? '시간 종료!' : '스피드 퀴즈 완료!';
   showToast(best.isNew ? '스피드 퀴즈 신기록!' : title, best.isNew ? 'ok' : '');
   showScorePopup(speedCorrect, speedTotal, {
-    nextText: '메뉴로',
+    nextText: '메인화면',
     onNextClick: goStart
   });
   const retryBtn = document.getElementById('sp-retry');
   if (retryBtn) retryBtn.onclick = () => startSpeedQuiz(speedUnit);
-  const btns = document.getElementById('sp-btns');
-  if (btns && !document.getElementById('sp-home')) {
-    const homeBtn = document.createElement('button');
-    homeBtn.id = 'sp-home';
-    homeBtn.textContent = '메인화면';
-    homeBtn.onclick = goStart;
-    btns.insertBefore(homeBtn, retryBtn || null);
-  }
 }
 
 // ═══════════════════════════════════════
@@ -2853,19 +2845,11 @@ function endBossBattle(clear, reason) {
   renderUnitBestBadges();
   showToast(clear ? (best.isNew ? '보스전 신기록!' : '보스 클리어!') : '보스전 종료', clear ? 'ok' : 'ng');
   showScorePopup(bossCorrect, bossTotal, {
-    nextText: '메뉴로',
+    nextText: '메인화면',
     onNextClick: goStart
   });
   const retryBtn = document.getElementById('sp-retry');
   if (retryBtn) retryBtn.onclick = () => startBossBattle(bossUnit);
-  const btns = document.getElementById('sp-btns');
-  if (btns && !document.getElementById('sp-home')) {
-    const homeBtn = document.createElement('button');
-    homeBtn.id = 'sp-home';
-    homeBtn.textContent = '메인화면';
-    homeBtn.onclick = goStart;
-    btns.insertBefore(homeBtn, retryBtn || null);
-  }
 }
 
 // ═══════════════════════════════════════
@@ -3502,18 +3486,20 @@ function triggerGameOver(clear, reason) {
 
     if (quizTotal > 0) {
       showScorePopup(quizCorrect, quizTotal, {
-        nextText: hasNextStage ? `${currentStage + 1}단계로` : '메뉴로',
+        nextText: hasNextStage ? `${currentStage + 1}단계로` : '메인화면',
         onNextClick: hasNextStage ? startNextStage : goStart
       });
       const retryBtn = document.getElementById('sp-retry');
       if (retryBtn) retryBtn.onclick = restartGame;
-      const btns = document.getElementById('sp-btns');
-      if (btns && !document.getElementById('sp-home')) {
-        const homeBtn = document.createElement('button');
-        homeBtn.id = 'sp-home';
-        homeBtn.textContent = '메인화면';
-        homeBtn.onclick = goStart;
-        btns.insertBefore(homeBtn, retryBtn || null);
+      if (hasNextStage) {
+        const btns = document.getElementById('sp-btns');
+        if (btns && !document.getElementById('sp-home')) {
+          const homeBtn = document.createElement('button');
+          homeBtn.id = 'sp-home';
+          homeBtn.textContent = '메인화면';
+          homeBtn.onclick = goStart;
+          btns.insertBefore(homeBtn, retryBtn || null);
+        }
       }
     }
   }, 600);

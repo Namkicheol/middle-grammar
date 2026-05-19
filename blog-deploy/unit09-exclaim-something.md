@@ -81,13 +81,13 @@ answer-checker / teacher-review 양쪽 점검 후 수정 사항 반영:
 
 ---
 
-## 블로그 본문 (기초)
-
 # [중1 영문법] 감탄문 What/How & something + 형용사 라이브워크시트 (42문제)
 
 **iframe**: https://namkicheol.github.io/middle-grammar/exclaim-something-basic/
 
 ---
+
+## 블로그 본문 (기초)
 
 ### 본문 시작
 
@@ -188,15 +188,14 @@ What a brilliant idea!              ← a + brilliant
 **태그**: 중1영어, 중1영문법, 감탄문, What감탄문, How감탄문, something형용사, anythingnothing, 부정대명사어순, 영문법워크시트, 중학영어
 
 ---
----
-
-## 블로그 본문 (심화)
 
 # [중1 영문법 심화] 감탄문 What/How & something + 형용사 라이브워크시트 (25문제)
 
 **iframe**: https://namkicheol.github.io/middle-grammar/exclaim-something-hard/
 
 ---
+
+## 블로그 본문 (심화)
 
 ### 본문 시작
 

@@ -77,13 +77,13 @@ answer-checker / teacher-review 양쪽 점검 후 수정 사항 반영:
 
 ---
 
-## 블로그 본문 (기초)
-
 # [중1 영문법] make + 목적어 + 형용사 & 접속사 that 라이브워크시트 (42문제)
 
 **iframe**: https://namkicheol.github.io/middle-grammar/make-that-basic/
 
 ---
+
+## 블로그 본문 (기초)
 
 ### 본문 시작
 
@@ -195,15 +195,14 @@ believe, think, know, hope, say 같은 동사는 <span style="color:#3182ce;">**
 **태그**: 중1영어, 중1영문법, make형용사, 사역동사make, 접속사that, 명사절that, that절, 영문법워크시트, 중학영어, 영문법문제
 
 ---
----
-
-## 블로그 본문 (심화)
 
 # [중1 영문법 심화] make + 목적어 + 형용사 & 접속사 that 라이브워크시트 (25문제)
 
 **iframe**: https://namkicheol.github.io/middle-grammar/make-that-hard/
 
 ---
+
+## 블로그 본문 (심화)
 
 ### 본문 시작
 

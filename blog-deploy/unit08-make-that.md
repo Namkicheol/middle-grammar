@@ -77,13 +77,19 @@ answer-checker / teacher-review 양쪽 점검 후 수정 사항 반영:
 
 ---
 
-## 블로그 본문 (티스토리 기초영문법 카테고리)
+## 블로그 본문 (기초)
+
+# [중1 영문법] make + 목적어 + 형용사 & 접속사 that 라이브워크시트 (42문제)
+
+**iframe**: https://namkicheol.github.io/middle-grammar/make-that-basic/
+
+---
 
 ### 본문 시작
 
 오늘은 중1 영어 7과의 두 가지 문법 포인트를 한 번에 정리해볼게. 바로 <span style="color:#3182ce;">**make + 목적어 + 형용사**</span>와 <span style="color:#3182ce;">**접속사 that**</span>이야. 둘 다 시험에 매번 나오는 단골인데, 형태를 헷갈리면 한 점도 못 건지거든.
 
-마지막에 라이브 워크시트로 42문제(기초) + 25문제(심화)를 바로 풀어볼 수 있어. 끝까지 읽으면 헷갈렸던 부분이 싹 정리될 거야.
+기초 워크시트 42문제를 바로 풀어볼 수 있게 글 마지막에 붙여뒀으니, 끝까지 읽고 한 번에 정리해보자.
 
 ---
 
@@ -91,7 +97,7 @@ answer-checker / teacher-review 양쪽 점검 후 수정 사항 반영:
 
 `The funny story made the kids happy.` (그 재미있는 이야기는 아이들을 행복하게 만들었다.)
 
-여기서 핵심은 <span style="color:#3182ce;">**make 뒤 목적어 다음에는 반드시 형용사**</span>가 온다는 거야. 부사 ❌, 명사 ❌.
+핵심은 <span style="color:#3182ce;">**make 뒤 목적어 다음에는 반드시 형용사**</span>가 온다는 거야. 부사 ❌, 명사 ❌.
 
 | 패턴 | 예문 | 의미 |
 |---|---|---|
@@ -147,50 +153,30 @@ Sarah hopes. + Her brother will visit her.
 
 첫 번째 문장의 동사(`hopes`) 뒤에 `that`을 두고, 두 번째 문장을 그대로 붙이면 끝이야.
 
-#### 헷갈리기 쉬운 함정 — that vs which / because
+#### 헷갈리기 쉬운 함정 — that vs which
 
 `Mia believes ___ her dog is smart.` 빈칸에 어떤 접속사가 들어갈까?
 
 ```
 ❌ Mia believes which her dog is smart.   (which = 관계대명사, 안 맞음)
-❌ Mia believes because her dog is smart. (because = 이유, 안 맞음)
 ✅ Mia believes that her dog is smart.    (that = 명사절 = 정답)
 ```
 
-believe, think, know, hope, say 같은 동사는 <span style="color:#3182ce;">**that**</span>만 짝꿍이야. <span style="color:#c53030;">**which나 because는 못 들어가**</span>.
+believe, think, know, hope, say 같은 동사는 <span style="color:#3182ce;">**that**</span>만 짝꿍이야. <span style="color:#c53030;">**which는 못 들어가**</span>.
 
-> 💡 <span style="color:#dd6b20;">**현직쌤 팁**</span>: that vs because 구분 꿀팁! "그가 ~라고 생각/말/믿었다" 처럼 **내용**을 전달하면 that, "~ 때문에" 처럼 **이유**를 말하면 because야.
+> 💡 <span style="color:#dd6b20;">**현직쌤 팁**</span>: "그가 ~라고 생각/말/믿었다" 처럼 **내용**을 전달하면 that이야. that은 우리말 "~라고/~라는 것을"로 해석돼.
 
 ---
 
-### 3. 자주 하는 실수 — 시험에 진짜 자주 나와
+### 3. 기초 워크시트 구성
 
-#### 실수 ① — make 뒤에 부사를 씀
+| 탭 | 내용 | 문제 수 |
+|---|---|---|
+| 📌 make + 형용사 | 선택형(형용사·부사·명사 구별) + 빈칸(보어 형용사 직접 쓰기) | 20문제 |
+| 📌 접속사 that | 적절한 접속사 고르기 + that 빈칸 + 두 문장 합치기 | 12문제 |
+| 🔀 단어 배열 | make 패턴과 that절 혼합 영작 | 10문제 |
 
-```
-❌ The good news made my parents happily.
-✅ The good news made my parents happy.
-```
-
-#### 실수 ② — that 자리에 which를 씀
-
-```
-❌ I think which he is kind.
-✅ I think that he is kind.
-```
-
-#### 실수 ③ — make의 시제·수일치 헷갈림
-
-```
-❌ The flowers makes the room beautiful.    (주어가 복수 → make)
-✅ The flowers make the room beautiful.
-
-❌ Yoga make Mia relaxed every morning.     (주어가 단수 → makes)
-✅ Yoga makes Mia relaxed every morning.
-
-❌ His goal make his team famous last year. (last year → 과거 made)
-✅ His goal made his team famous last year.
-```
+문제 풀면 바로 ✅/❌ 채점되고 해석까지 떠서 복습이 한 번에 돼.
 
 ---
 
@@ -202,31 +188,111 @@ believe, think, know, hope, say 같은 동사는 <span style="color:#3182ce;">**
 
 [새 탭에서 워크시트 열기 →](https://namkicheol.github.io/middle-grammar/make-that-basic/)
 
-**기초 워크시트 구성**
-- Point A: make + 목적어 + 형용사 (20문제)
-- Point B: 접속사 that (12문제)
-- 단어 배열 혼합 복습 (10문제)
-- 효과음 + 즉시 채점 + 한국어 해석 제공
+기초가 어느 정도 풀린다 싶으면 아래 심화로 바로 이어 가자!
 
 ---
 
-### 5. 심화로 점프! (25문제)
+**태그**: 중1영어, 중1영문법, make형용사, 사역동사make, 접속사that, 명사절that, that절, 영문법워크시트, 중학영어, 영문법문제
 
-기초가 끝났으면 <span style="color:#3182ce;">**심화 워크시트**</span>로 한 단계 더 가보자.
+---
+---
 
-심화는 단순 형태 식별을 넘어 <span style="color:#319795;">오류 수정</span>, <span style="color:#319795;">두 문장 합치기</span>, <span style="color:#319795;">우리말 영작</span>, <span style="color:#319795;">짧은 지문 빈칸 채우기</span>까지 다뤄. 시험 출제 빈도가 가장 높은 구간이야.
+## 블로그 본문 (심화)
+
+# [중1 영문법 심화] make + 목적어 + 형용사 & 접속사 that 라이브워크시트 (25문제)
+
+**iframe**: https://namkicheol.github.io/middle-grammar/make-that-hard/
+
+---
+
+### 본문 시작
+
+기초에서 <span style="color:#3182ce;">**make + 형용사**</span>와 <span style="color:#3182ce;">**접속사 that**</span> 기본 패턴을 잡았다면, 이제 심화로 넘어올 차례야.
+
+심화에서는 단순 형태 식별이 아니라 <span style="color:#319795;">오류 수정</span>, <span style="color:#319795;">두 문장 합치기</span>, <span style="color:#319795;">우리말 영작</span>, <span style="color:#319795;">짧은 지문 빈칸</span>까지 다뤄. 시험 출제 빈도가 가장 높은 구간이거든.
+
+---
+
+### 1. 심화에서 자주 틀리는 오류 패턴 4가지
+
+#### ① make 뒤에 부사를 씀
+
+```
+❌ The good news made my parents happily.
+✅ The good news made my parents happy.
+```
+
+목적어 뒤 빈칸은 **보어 자리**라 형용사. 부사로 채우면 무조건 오답이야.
+
+#### ② that 자리에 which·what을 씀
+
+```
+❌ I think which he is kind.
+❌ I think what he is kind.
+✅ I think that he is kind.
+```
+
+think, believe, know, hope, say 다음에 절을 연결할 땐 <span style="color:#3182ce;">**that**</span>만 가능해.
+
+#### ③ make의 시제·수일치 헷갈림
+
+```
+❌ The flowers makes the room beautiful.    → 주어 복수 → make
+❌ Yoga make Mia relaxed every morning.     → 주어 단수 → makes
+❌ His goal make his team famous last year. → last year → 과거 made
+```
+
+make는 일반동사라 <span style="color:#c53030;">**주어의 수와 시제에 맞춰 형태가 바뀐다**</span>는 점, 심화에서는 반드시 확인 들어와.
+
+#### ④ that vs because — 의미 구분
+
+```
+Mia couldn't sleep that night ___ she was so excited.
+✗ that  → "그녀가 너무 신났다는 것을 잠 못 잤다" (말이 안 됨)
+✓ because → "너무 신나서 잠 못 잤다" (이유 = 자연스러움)
+```
+
+<span style="color:#3182ce;">**내용 전달이면 that, 이유면 because**</span> — 의미를 먼저 따져봐야 해.
+
+> 💡 <span style="color:#dd6b20;">**현직쌤 팁**</span>: that과 because는 둘 다 동사 뒤에 절을 연결할 수 있어서 헷갈려. 우리말로 "~라고/~라는 것을"이 자연스러우면 that, "~ 때문에"가 자연스러우면 because라고 외워두자.
+
+---
+
+### 2. 짧은 지문에서 자주 나오는 함정
+
+심화 Part 2는 **짧은 지문 빈칸 채우기**로 구성돼 있어. 두 가지 패턴이 번갈아 나와.
+
+| 지문 | 핵심 함정 |
+|---|---|
+| Passage A — make + 형용사 | 보어 자리 형용사 vs 부사 + 사역동사 V원형(laugh, cry) 구분 |
+| Passage B — 접속사 that | hear/say/believe + that vs because (이유) 의미 구분 + every 뒤 단수 |
+
+특히 Passage A에서 `every visitor laugh` 같은 사역동사 V원형이 나오면, "every 뒤는 단수"라는 규칙까지 같이 체크해야 해.
+
+> 💡 <span style="color:#dd6b20;">**현직쌤 팁**</span>: 지문 빈칸은 앞뒤 단어를 같이 보고 결정해. `make + 목적어 + ___` 형태면 형용사부터 의심하고, 문맥상 "이유"가 자연스러우면 because를 골라.
+
+---
+
+### 3. 심화 워크시트 구성
+
+| 탭 | 유형 | 문제 수 |
+|---|---|---|
+| ⚡ 종합 훈련 | 문맥 파악 + 오류 수정 + 두 문장 합치기 + 우리말 영작 | 15문제 |
+| 📖 짧은 지문 | Passage A: make + 형용사 / V원형 · Passage B: that vs because | 10문제 |
+
+기초에서 익힌 두 패턴을 **실전 시험지 형식**으로 연습할 수 있게 짜놨어.
+
+---
+
+### 4. 라이브 워크시트로 바로 풀어보기 (심화 25문제)
 
 <iframe src="https://namkicheol.github.io/middle-grammar/make-that-hard/" width="100%" height="800" frameborder="0"></iframe>
 
 [심화 워크시트 새 탭으로 →](https://namkicheol.github.io/middle-grammar/make-that-hard/)
 
-**심화 워크시트 구성**
-- Part 1 종합 훈련 (15문제): 문맥 파악 + 오류 수정 + 문장 합치기 + 우리말 영작
-- Part 2 짧은 지문 (10문제): make + 형용사 지문 + that·because 지문
-
 ---
 
-### 6. 마무리
+### 5. 마무리
 
 오늘 정리한 두 가지를 다시 떠올려볼게.
 
@@ -235,6 +301,10 @@ believe, think, know, hope, say 같은 동사는 <span style="color:#3182ce;">**
 | make + 목적어 + 형용사 | <span style="color:#3182ce;">**부사 ❌ 형용사 ⭕**</span> · "~을 ...하게 만들다" |
 | 접속사 that | <span style="color:#3182ce;">**think/believe/know/hope/say + that + 절**</span> · "~라고/~라는 것을" |
 
-<span style="color:#c53030;">**잊지 마**</span>: make 뒤 형용사 자리에 부사 안 쓰기, that 자리에 which·because 안 쓰기 — 이 두 가지만 지켜도 시험에서 절반 이상 맞춰.
+<span style="color:#c53030;">**잊지 마**</span>: make 뒤 형용사 자리에 부사 안 쓰기, that 자리에 which·because 의미 구분하기 — 이 두 가지만 지켜도 시험에서 절반 이상 맞춰.
 
-다음 단원 7과는 ~ 8과로 이어지면서 감탄문(What/How)과 -thing + 형용사 어순까지 같이 다룰 예정이야. 거기서 만나자!
+다음은 8과 — **감탄문(What/How)**과 **-thing + 형용사 어순**이야. 거기서 만나자!
+
+---
+
+**태그**: 중1영어, 중1영문법심화, make형용사심화, 접속사that, 명사절that, 영문법오류수정, 영작연습, 두문장합치기, 중학영어심화, 영문법지문

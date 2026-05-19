@@ -81,13 +81,19 @@ answer-checker / teacher-review 양쪽 점검 후 수정 사항 반영:
 
 ---
 
-## 블로그 본문 (티스토리 기초영문법 카테고리)
+## 블로그 본문 (기초)
+
+# [중1 영문법] 감탄문 What/How & something + 형용사 라이브워크시트 (42문제)
+
+**iframe**: https://namkicheol.github.io/middle-grammar/exclaim-something-basic/
+
+---
 
 ### 본문 시작
 
 중1 영어 8과는 감정 표현이 풍부해지는 단원이야. 두 가지 핵심을 다루지: <span style="color:#3182ce;">**감탄문 What/How**</span>와 <span style="color:#3182ce;">**something + 형용사 어순**</span>. 둘 다 어순 규칙이 우리말과 달라서 처음에는 헷갈리지만, 패턴만 외우면 100점 보장이야.
 
-마지막에 라이브 워크시트로 기초 42문제 + 심화 25문제까지 바로 풀어볼 수 있어. 가자!
+기초 워크시트 42문제를 글 끝에 붙여뒀으니까 끝까지 읽고 바로 풀어보자.
 
 ---
 
@@ -115,16 +121,6 @@ How kind your father is!         ← 명사 없음, 형용사(kind)만 → How
 
 What an interesting story this is!  ← interesting이 모음 시작 → an
 What a brilliant idea!              ← a + brilliant
-```
-
-#### 자주 하는 실수 — What ↔ How 헷갈림
-
-```
-❌ How a lovely garden you have!   ← garden(명사) 있음 → What이 맞음
-✅ What a lovely garden you have!
-
-❌ What tall those trees are!      ← tall 뒤에 명사 없음, those trees는 주어 → How
-✅ How tall those trees are!
 ```
 
 <span style="color:#c53030;">**핵심 판단법**</span>: 감탄사 바로 뒤에 「형용사 + 명사」가 묶여 있으면 What, 「형용사」만 단독이면 How.
@@ -165,37 +161,15 @@ What a brilliant idea!              ← a + brilliant
 
 ---
 
-### 3. 자주 하는 실수 — 시험 단골
+### 3. 기초 워크시트 구성
 
-#### 실수 ① — What/How 혼동
+| 탭 | 내용 | 문제 수 |
+|---|---|---|
+| 📌 감탄문 What/How | What vs How 구분 + 빈칸 + 평서문 → 감탄문 어순 부분 채우기 | 20문제 |
+| 📌 -thing + 형용사 | 어순 식별 + 의문·부정문에서 anything 선택 + 우리말 영작 | 12문제 |
+| 🔀 단어 배열 | 감탄문 + -thing 어순 혼합 영작 | 10문제 |
 
-```
-❌ How a fast runner she is!
-✅ What a fast runner she is!     (명사 runner 있음 → What)
-
-❌ What hot today is!
-✅ How hot today is!              (명사 없음 → How)
-```
-
-#### 실수 ② — -thing 어순 뒤바뀜
-
-```
-❌ He didn't tell special anything.
-✅ He didn't tell anything special.
-
-❌ I bought new something today.
-✅ I bought something new today.
-```
-
-#### 실수 ③ — What 감탄문에서 a/an 빠뜨림
-
-```
-❌ What kind boy he is!          (단수 명사 boy 앞에 a 필요)
-✅ What a kind boy he is!
-
-❌ What an great chance!         (great는 자음 시작 → a)
-✅ What a great chance!
-```
+문제를 풀면 바로 ✅/❌ 채점되고 한국어 해석도 떠서, 헷갈렸던 부분은 그 자리에서 정리할 수 있어.
 
 ---
 
@@ -207,31 +181,121 @@ What a brilliant idea!              ← a + brilliant
 
 [새 탭에서 워크시트 열기 →](https://namkicheol.github.io/middle-grammar/exclaim-something-basic/)
 
-**기초 워크시트 구성**
-- Point A: 감탄문 What/How (20문제)
-- Point B: -thing + 형용사 (12문제)
-- 단어 배열 혼합 복습 (10문제)
-- 효과음 + 즉시 채점 + 한국어 해석 제공
+기초가 어느 정도 풀린다 싶으면 아래 심화로 이어 가자!
 
 ---
 
-### 5. 심화로 점프! (25문제)
+**태그**: 중1영어, 중1영문법, 감탄문, What감탄문, How감탄문, something형용사, anythingnothing, 부정대명사어순, 영문법워크시트, 중학영어
 
-기초가 끝났으면 <span style="color:#3182ce;">**심화 워크시트**</span>로 도전.
+---
+---
 
-심화는 단순 식별을 넘어 <span style="color:#319795;">오류 수정</span>, <span style="color:#319795;">평서문 → 감탄문 변환</span>, <span style="color:#319795;">우리말 영작</span>, <span style="color:#319795;">짧은 지문 빈칸 채우기</span>까지 다뤄. 단원 시험과 학교 수행평가에 자주 출제되는 유형이야.
+## 블로그 본문 (심화)
+
+# [중1 영문법 심화] 감탄문 What/How & something + 형용사 라이브워크시트 (25문제)
+
+**iframe**: https://namkicheol.github.io/middle-grammar/exclaim-something-hard/
+
+---
+
+### 본문 시작
+
+기초에서 <span style="color:#3182ce;">**감탄문 What/How**</span>와 <span style="color:#3182ce;">**-thing + 형용사 어순**</span> 기본 패턴을 잡았다면, 심화로 넘어올 차례야.
+
+심화에서는 단순 식별이 아니라 <span style="color:#319795;">오류 수정</span>, <span style="color:#319795;">평서문 → 감탄문 변환</span>, <span style="color:#319795;">우리말 영작</span>, <span style="color:#319795;">짧은 지문 빈칸</span>까지 다뤄. 학교 단원시험과 수행평가에 가장 자주 나오는 유형이거든.
+
+---
+
+### 1. 심화에서 자주 틀리는 오류 패턴 4가지
+
+#### ① What ↔ How 혼동
+
+```
+❌ How a lovely garden you have!     ← garden(명사) 있음 → What
+✅ What a lovely garden you have!
+
+❌ What tall those trees are!        ← tall만 단독 (those trees는 주어) → How
+✅ How tall those trees are!
+```
+
+감탄사 **바로 뒤**에 형용사+명사가 묶여 있는지, 형용사만 단독인지로 결정해. those trees가 뒤에 있더라도 그건 **주어**라 What 짝꿍 명사가 아니야.
+
+#### ② -thing 어순 뒤바뀜
+
+```
+❌ He didn't tell special anything.
+✅ He didn't tell anything special.
+
+❌ I bought new something today.
+✅ I bought something new today.
+```
+
+우리말 "특별한 어떤 것"을 그대로 따라가면 100% 오답. <span style="color:#3182ce;">**-thing은 형용사를 뒤로**</span>가 절대 규칙.
+
+#### ③ What 감탄문에서 a/an 빠뜨림 · 혼동
+
+```
+❌ What kind boy he is!         (단수 명사 boy → a 필요)
+✅ What a kind boy he is!
+
+❌ What an great chance!        (great는 자음 시작 → a)
+✅ What a great chance!
+
+✅ What lovely roses they are!  (복수 명사 roses → a/an 없음)
+```
+
+a/an은 <span style="color:#c53030;">**단수 명사일 때만**</span> 붙이고, 모음 발음으로 시작하는 형용사 앞에서는 an.
+
+#### ④ 평서문 → 감탄문 변환 시 어순 오류
+
+```
+The movie is very interesting.
+→ ❌ How a interesting movie this is!     (movie 있음 → What인데 How 사용)
+→ ✅ What an interesting movie this is!
+→ ✅ How interesting the movie is!
+```
+
+변환 시 <span style="color:#3182ce;">**명사를 살릴지(What), 형용사만 살릴지(How)**</span>를 먼저 결정해야 해. 둘 다 가능한 경우도 많은데, 학교 시험은 보통 둘 중 하나를 정답으로 지정하니까 지문이 What/How를 어떻게 유도하는지 잘 봐.
+
+> 💡 <span style="color:#dd6b20;">**현직쌤 팁**</span>: 명사를 강조하고 싶으면 What, 형용사 자체를 강조하고 싶으면 How야. 시험 지문에 "정말 ~한 ___(명사)였다" 같은 한국어가 나오면 What이 자연스러워.
+
+---
+
+### 2. 짧은 지문에서 자주 나오는 함정
+
+심화 Part 2는 **짧은 지문 빈칸 채우기**로 구성돼 있어. 두 가지 패턴이 번갈아 나와.
+
+| 지문 | 핵심 함정 |
+|---|---|
+| Passage A — 감탄문 (일기 형식) | 뒤에 「a/an + 형용사 + 명사」가 보이면 What, 형용사만 보이면 How. 따옴표 안 감탄문에서 a/an 누락 주의 |
+| Passage B — -thing + 형용사 | something/anything/nothing 뒤 형용사 어순 + 부정문에서 anything 선택 |
+
+특히 Passage A에서는 따옴표 안 대화체로 감탄문이 등장하기 때문에, 문장 부호와 a/an 위치를 같이 확인하는 습관이 필요해.
+
+> 💡 <span style="color:#dd6b20;">**현직쌤 팁**</span>: 지문에서 What 빈칸이 나오면 바로 뒤 두 단어를 봐. `a + 형용사`가 보이면 거의 100% What이야. How 빈칸 뒤엔 형용사만 단독.
+
+---
+
+### 3. 심화 워크시트 구성
+
+| 탭 | 유형 | 문제 수 |
+|---|---|---|
+| ⚡ 종합 훈련 | 문맥 파악 + 오류 수정 + 평서문 → 감탄문 변환 + 우리말 영작 | 15문제 |
+| 📖 짧은 지문 | Passage A: 감탄문 What/How (일기) · Passage B: -thing + 형용사 (스토리) | 10문제 |
+
+기초에서 익힌 두 패턴을 **실전 시험지 형식**으로 연습할 수 있게 짜놨어.
+
+---
+
+### 4. 라이브 워크시트로 바로 풀어보기 (심화 25문제)
 
 <iframe src="https://namkicheol.github.io/middle-grammar/exclaim-something-hard/" width="100%" height="800" frameborder="0"></iframe>
 
 [심화 워크시트 새 탭으로 →](https://namkicheol.github.io/middle-grammar/exclaim-something-hard/)
 
-**심화 워크시트 구성**
-- Part 1 종합 훈련 (15문제): 문맥 파악 + 오류 수정 + 평서문 → 감탄문 변환 + 우리말 영작
-- Part 2 짧은 지문 (10문제): 감탄문 일기 형식 지문 + -thing 어순 스토리 지문
-
 ---
 
-### 6. 마무리
+### 5. 마무리
 
 오늘 정리한 두 가지를 다시 떠올려볼게.
 
@@ -243,3 +307,7 @@ What a brilliant idea!              ← a + brilliant
 <span style="color:#c53030;">**잊지 마**</span>: -thing 단어 뒤에 형용사가 와야 하는 어순은 우리말과 반대라 무조건 외워두기. 감탄문은 명사가 있나 없나만 빠르게 판단하면 끝!
 
 이번 단원이 중1 영어 마지막 단원이야. 1과부터 8과까지 모두 라이브 워크시트로 풀어볼 수 있으니 복습 한 번 쭉 돌려봐. 다음은 중2 영어로 만나자!
+
+---
+
+**태그**: 중1영어, 중1영문법심화, 감탄문심화, What감탄문, How감탄문, something어순, anythingnothing, 영문법오류수정, 영작연습, 중학영어심화

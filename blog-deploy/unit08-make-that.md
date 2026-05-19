@@ -93,7 +93,7 @@ answer-checker / teacher-review 양쪽 점검 후 수정 사항 반영:
 
 ---
 
-### 1. make + 목적어 + 형용사 — "~을 ...하게 만들다"
+### 1. make + 목적어 + 형용사 — "…을 ...하게 만들다"
 
 `The funny story made the kids happy.` (그 재미있는 이야기는 아이들을 행복하게 만들었다.)
 
@@ -123,13 +123,13 @@ Her funny story made everyone laugh.
 (그녀의 재미있는 이야기는 모두를 웃게 만들었다.)
 ```
 
-이건 사역동사 용법으로, "~을 …하게 시키다"의 의미야. 동사원형(`laugh`)이라 to 부정사나 -ing 형태가 아닌 점에 주의해.
+이건 사역동사 용법으로, "…을 …하게 시키다"의 의미야. 동사원형(`laugh`)이라 to 부정사나 -ing 형태가 아닌 점에 주의해.
 
 > 💡 <span style="color:#dd6b20;">**현직쌤 팁**</span>: 객관식에서 "She made me ___"가 나오면, 99%는 형용사가 답이야. 동사원형은 보통 laugh, cry, smile 같은 감정 표현 동사가 같이 나올 때만 나와.
 
 ---
 
-### 2. 접속사 that — "~라는 것을, ~라고"
+### 2. 접속사 that — "…라는 것을, …라고"
 
 `I think that he is honest.` (나는 그가 정직하다고 생각한다.)
 
@@ -137,12 +137,12 @@ think, believe, know, hope, say, hear 같은 동사 뒤에 <span style="color:#3
 
 | 동사 | + that 절 | 의미 |
 |---|---|---|
-| think | I think **that** she is right. | ~라고 생각하다 |
-| believe | We believe **that** he is brave. | ~라고 믿다 |
-| know | She knows **that** I am tired. | ~라는 것을 알다 |
-| hope | They hope **that** it will rain. | ~라고 희망하다 |
-| say / said | He said **that** he was busy. | ~라고 말했다 |
-| hear / heard | I heard **that** you won. | ~라고 들었다 |
+| think | I think **that** she is right. | …라고 생각하다 |
+| believe | We believe **that** he is brave. | …라고 믿다 |
+| know | She knows **that** I am tired. | …라는 것을 알다 |
+| hope | They hope **that** it will rain. | …라고 희망하다 |
+| say / said | He said **that** he was busy. | …라고 말했다 |
+| hear / heard | I heard **that** you won. | …라고 들었다 |
 
 #### 두 문장 합치기
 
@@ -164,7 +164,7 @@ Sarah hopes. + Her brother will visit her.
 
 believe, think, know, hope, say 같은 동사는 <span style="color:#3182ce;">**that**</span>만 짝꿍이야. <span style="color:#c53030;">**which는 못 들어가**</span>.
 
-> 💡 <span style="color:#dd6b20;">**현직쌤 팁**</span>: "그가 ~라고 생각/말/믿었다" 처럼 **내용**을 전달하면 that이야. that은 우리말 "~라고/~라는 것을"로 해석돼.
+> 💡 <span style="color:#dd6b20;">**현직쌤 팁**</span>: "그가 …라고 생각/말/믿었다" 처럼 **내용**을 전달하면 that이야. that은 우리말 "…라고/…라는 것을"로 해석돼.
 
 ---
 
@@ -253,7 +253,7 @@ Mia couldn't sleep that night ___ she was so excited.
 
 <span style="color:#3182ce;">**내용 전달이면 that, 이유면 because**</span> — 의미를 먼저 따져봐야 해.
 
-> 💡 <span style="color:#dd6b20;">**현직쌤 팁**</span>: that과 because는 둘 다 동사 뒤에 절을 연결할 수 있어서 헷갈려. 우리말로 "~라고/~라는 것을"이 자연스러우면 that, "~ 때문에"가 자연스러우면 because라고 외워두자.
+> 💡 <span style="color:#dd6b20;">**현직쌤 팁**</span>: that과 because는 둘 다 동사 뒤에 절을 연결할 수 있어서 헷갈려. 우리말로 "…라고/…라는 것을"이 자연스러우면 that, "… 때문에"가 자연스러우면 because라고 외워두자.
 
 ---
 
@@ -297,8 +297,8 @@ Mia couldn't sleep that night ___ she was so excited.
 
 | 포인트 | 핵심 |
 |---|---|
-| make + 목적어 + 형용사 | <span style="color:#3182ce;">**부사 ❌ 형용사 ⭕**</span> · "~을 ...하게 만들다" |
-| 접속사 that | <span style="color:#3182ce;">**think/believe/know/hope/say + that + 절**</span> · "~라고/~라는 것을" |
+| make + 목적어 + 형용사 | <span style="color:#3182ce;">**부사 ❌ 형용사 ⭕**</span> · "…을 ...하게 만들다" |
+| 접속사 that | <span style="color:#3182ce;">**think/believe/know/hope/say + that + 절**</span> · "…라고/…라는 것을" |
 
 <span style="color:#c53030;">**잊지 마**</span>: make 뒤 형용사 자리에 부사 안 쓰기, that 자리에 which·because 의미 구분하기 — 이 두 가지만 지켜도 시험에서 절반 이상 맞춰.
 

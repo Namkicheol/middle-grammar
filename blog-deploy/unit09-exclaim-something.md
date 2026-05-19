@@ -38,7 +38,7 @@ https://namkicheol.github.io/middle-grammar/exclaim-something-basic/
 answer-checker / teacher-review 양쪽 점검 후 수정 사항 반영:
 - 단어 배열(c1~c10) 해설에 `📝 해석:` 한국어 번역 추가 (10개)
 - Point B `b6` 비문 오답 `a important thing` → `things important` (단원 내 어순 오류로 교체)
-- Point B `b9` something 연속 패턴 해소 → 부정 의문문 `Don't you want anything sweet ~?` (정답 anything sweet)으로 변경
+- Point B `b9` something 연속 패턴 해소 → 부정 의문문 `Don't you want anything sweet …?` (정답 anything sweet)으로 변경
 - 섹션 B 헤더 "-body/-one" 표기 제거 → 실제 문제와 일치하도록 "-thing + 형용사"로 정리
 
 ---
@@ -97,7 +97,7 @@ answer-checker / teacher-review 양쪽 점검 후 수정 사항 반영:
 
 ---
 
-### 1. 감탄문 What & How — "정말 ~하구나!"
+### 1. 감탄문 What & How — "정말 …하구나!"
 
 영어 감탄문은 두 가지 형태가 있어. 어떤 걸 쓸지는 <span style="color:#3182ce;">**뒤에 명사가 따라오는지 안 따라오는지**</span>로 결정해.
 
@@ -256,7 +256,7 @@ The movie is very interesting.
 
 변환 시 <span style="color:#3182ce;">**명사를 살릴지(What), 형용사만 살릴지(How)**</span>를 먼저 결정해야 해. 둘 다 가능한 경우도 많은데, 학교 시험은 보통 둘 중 하나를 정답으로 지정하니까 지문이 What/How를 어떻게 유도하는지 잘 봐.
 
-> 💡 <span style="color:#dd6b20;">**현직쌤 팁**</span>: 명사를 강조하고 싶으면 What, 형용사 자체를 강조하고 싶으면 How야. 시험 지문에 "정말 ~한 ___(명사)였다" 같은 한국어가 나오면 What이 자연스러워.
+> 💡 <span style="color:#dd6b20;">**현직쌤 팁**</span>: 명사를 강조하고 싶으면 What, 형용사 자체를 강조하고 싶으면 How야. 시험 지문에 "정말 …한 ___(명사)였다" 같은 한국어가 나오면 What이 자연스러워.
 
 ---
 

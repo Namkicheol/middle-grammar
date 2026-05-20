@@ -246,6 +246,13 @@ body{
 .boss-duel.hit .char-img,
 .boss-duel.hit-2 .char-img,
 .boss-duel.hit-3 .char-img{display:none !important;}
+/* Floating damage numbers over tokens */
+.dmg-float{position:absolute;top:18%;left:50%;transform:translateX(-50%);z-index:10;font-family:'Baloo 2','Noto Sans KR',sans-serif;font-weight:900;font-size:1.45rem;color:#fde68a;text-shadow:0 2px 4px rgba(0,0,0,.75),0 0 12px rgba(251,191,36,.6);pointer-events:none;letter-spacing:.02em;white-space:nowrap;animation:dmgFloat .9s cubic-bezier(.22,.8,.32,1) forwards;}
+.dmg-float.crit{font-size:1.85rem;color:#fff7ed;text-shadow:0 2px 6px rgba(0,0,0,.85),0 0 18px rgba(252,165,165,.9),0 0 26px rgba(239,68,68,.6);animation-duration:1.05s;}
+.dmg-float.ult{font-size:2.05rem;color:#a78bfa;text-shadow:0 2px 6px rgba(0,0,0,.9),0 0 22px rgba(168,139,250,.95),0 0 40px rgba(124,58,237,.7);animation-duration:1.15s;}
+.dmg-float.heal{color:#86efac;text-shadow:0 2px 4px rgba(0,0,0,.7),0 0 14px rgba(74,222,128,.65);}
+.dmg-float.player{color:#fca5a5;text-shadow:0 2px 4px rgba(0,0,0,.8),0 0 14px rgba(248,113,113,.65);}
+@keyframes dmgFloat{from{transform:translate(-50%, 0) scale(.6);opacity:0;}20%{transform:translate(-50%, -8px) scale(1.18);opacity:1;}55%{transform:translate(-50%, -32px) scale(1);opacity:1;}to{transform:translate(-50%, -64px) scale(.85);opacity:0;}}
 .boss-duel.canvas-mode .vs-badge{opacity:.16;filter:blur(.2px);}
 .fighter-token{position:absolute;z-index:2;bottom:11px;display:flex;flex-direction:column;align-items:center;gap:4px;transition:transform .18s ease,filter .18s ease;}
 .fighter-token::after{content:'';position:absolute;left:50%;bottom:20px;width:88px;height:16px;border-radius:50%;background:rgba(0,0,0,.28);filter:blur(2px);transform:translateX(-50%);z-index:-1;}
@@ -1537,6 +1544,65 @@ class BossFightScene extends Phaser.Scene {
     }
   }
 
+  spawnImpactBurst(x, y, level) {
+    // Particles spawned via tween + manual rendering in the ultFx layer
+    // We store them on this.bursts; the update loop will draw and decay them
+    if (!this._bursts) this._bursts = [];
+    const palette = level >= 3 ? [0xfef9c3, 0xfde68a, 0xa855f7]
+                  : level >= 2 ? [0xfffbeb, 0xfde68a, 0x7c3aed]
+                  : [0xfef3c7, 0xfbbf24, 0xf97316];
+    const count = 10 + level * 3;
+    for (let i = 0; i < count; i++) {
+      const angle = (Math.PI * 2 * i / count) + Math.random() * .3;
+      const speed = 60 + Math.random() * 80 + level * 18;
+      this._bursts.push({
+        x, y,
+        vx: Math.cos(angle) * speed,
+        vy: Math.sin(angle) * speed - 30,
+        size: 2.5 + Math.random() * 2.5 + level,
+        life: 0,
+        ttl: 380 + Math.random() * 220,
+        color: palette[Math.floor(Math.random() * palette.length)]
+      });
+    }
+    // Light flash at impact (handled in update via this.flashStart)
+    this._flashStart = this.time.now;
+    this._flashX = x; this._flashY = y;
+    this._flashLevel = level;
+    // Camera micro-shake
+    this.cameras.main.shake(80 + level * 30, .003 + level * .0012);
+  }
+
+  paintImpactBursts(time) {
+    const g = this.ultFx; // share ult layer (cleared each frame in paintUltimateCinematic)
+    if (!this._bursts || !this._bursts.length) return;
+    const surviving = [];
+    for (const b of this._bursts) {
+      const age = (time - (b._birth || (b._birth = time)));
+      if (age >= b.ttl) continue;
+      const t = age / b.ttl;
+      const x = b.x + b.vx * (age / 1000);
+      const y = b.y + b.vy * (age / 1000) + 200 * (age / 1000) ** 2; // gravity
+      g.fillStyle(b.color, (1 - t) * .9);
+      g.fillCircle(x, y, b.size * (1 - t * .4));
+      surviving.push(b);
+    }
+    this._bursts = surviving;
+    // Light flash decay
+    if (this._flashStart) {
+      const fAge = time - this._flashStart;
+      if (fAge < 180) {
+        const fa = 1 - (fAge / 180);
+        g.fillStyle(0xffffff, fa * (.35 + this._flashLevel * .1));
+        g.fillCircle(this._flashX, this._flashY, 40 + this._flashLevel * 14);
+        g.fillStyle(0xfde68a, fa * .55);
+        g.fillCircle(this._flashX, this._flashY, 22 + this._flashLevel * 10);
+      } else {
+        this._flashStart = 0;
+      }
+    }
+  }
+
   setAction(state, level) {
     this.action = state || '';
     this.level = level || bossLevel || 1;
@@ -1563,6 +1629,8 @@ class BossFightScene extends Phaser.Scene {
     this.paintActionFx(w, h, this.action, ease, time);
     // Ultimate cinematic FX overlay
     this.paintUltimateCinematic(w, h, time);
+    // Generic impact burst particles (from regular hits & counters)
+    this.paintImpactBursts(time);
   }
 
   paintHeroAura(w, h, time) {
@@ -2629,6 +2697,8 @@ function applyBossUnblockedAttack() {
   document.getElementById('boss-review').style.color = '#ef4444';
   setBossDuelState(counter.state, '시간초과', 'danger');
   playBossCounterFx(Math.min(counter.level + 1, 3));
+  floatDamage('player', dmg, 'player');
+  showImpactBurst('player', Math.min(counter.level + 1, 3));
   updateBossHUD();
   setBossPhase(BOSS_PHASE.RESOLVING);
   if (playerHp <= 0) {
@@ -2682,6 +2752,8 @@ function onParrySuccess() {
   showScoreFx(`패링 -${parryDmg}`, 'combo');
   setBossDuelState('hit-3', '패링', 'combo');
   playBossAttackFx(3);
+  floatDamage('boss', parryDmg, 'crit');
+  showImpactBurst('boss', 3);
   updateBossHUD();
   setBossPhase(BOSS_PHASE.RESOLVING);
   if (bossHp <= 0) {
@@ -2731,6 +2803,8 @@ function answerBossQuestion(chosen, q, optsEl) {
     showScoreFx(`${attack.label} -${damage}`, attack.level >= 2 ? 'combo' : 'pop');
     setBossDuelState(attack.state, attack.label, attack.level >= 2 ? 'combo' : '');
     playBossAttackFx(attack.level);
+    floatDamage('boss', damage, attack.level >= 3 ? 'crit' : '');
+    showImpactBurst('boss', attack.level);
   } else {
     bossStreak = 0;
     bossWrongStreak++;
@@ -2742,6 +2816,8 @@ function answerBossQuestion(chosen, q, optsEl) {
     document.getElementById('boss-review').style.color = '#ef4444';
     setBossDuelState(counter.state, counter.label, 'danger');
     playBossCounterFx(counter.level);
+    floatDamage('player', counter.damage, 'player');
+    showImpactBurst('player', counter.level);
   }
 
   updateBossHUD();
@@ -2842,6 +2918,8 @@ function castBossSkill() {
     bossPhaserScene.castUltimateCinematic(skill, bossLevel);
   }
   playUltimateFx(bossLevel);
+  floatDamage('boss', damage, 'ult');
+  showImpactBurst('boss', bossLevel);
   updateBossHUD();
   pendingAdvanceTimerId = setTimeout(() => {
     if (bossHp <= 0) {
@@ -3886,6 +3964,34 @@ function showScoreFx(text, type) {
   layer.appendChild(el);
   if (type === 'combo') playComboFx();
   setTimeout(() => el.remove(), 950);
+}
+
+// ── Floating damage number over the boss/player token ──
+function floatDamage(target, amount, kind) {
+  // target: 'boss' (default) or 'player'
+  const tokenSel = target === 'player' ? '.player-token' : '.boss-token';
+  const tok = document.querySelector(tokenSel);
+  if (!tok) return;
+  const el = document.createElement('div');
+  el.className = 'dmg-float' + (kind ? ' ' + kind : '');
+  el.textContent = (target === 'player' ? '-' : '-') + amount;
+  // Slight random horizontal offset so multiple stacks read well
+  const dx = (Math.random() - 0.5) * 20;
+  el.style.left = `calc(50% + ${dx}px)`;
+  tok.appendChild(el);
+  setTimeout(() => el.remove(), 950);
+}
+
+// ── Impact spark burst (Phaser FX layer) ──
+function showImpactBurst(side, level) {
+  // side: 'boss' (player hit boss) or 'player' (boss hit player)
+  if (!bossPhaserScene) return;
+  const sc = bossPhaserScene;
+  const w = sc.scale.width;
+  const h = sc.scale.height;
+  const x = side === 'boss' ? w * .74 : w * .27;
+  const y = h - 30 - 60;
+  sc.spawnImpactBurst(x, y, level);
 }
 
 // ── Audio ──

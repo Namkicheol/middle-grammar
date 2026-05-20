@@ -208,11 +208,44 @@ body{
 .boss-duel.hit-2.hero-form-3 .boss-token .char-img.form-3-hit,
 .boss-duel.hit-3.hero-form-3 .boss-token .char-img.form-3-hit { opacity: 1; }
 .boss-duel .fighter-svg { display: none; }
-.boss-duel .fighter-portrait { width: 140px; height: 170px; }
-.boss-duel .boss-portrait { width: 150px; height: 175px; }
-.boss-duel.hero-form-2 .boss-portrait { width: 165px; height: 192px; }
-.boss-duel.hero-form-3 .boss-portrait { width: 184px; height: 214px; }
-.boss-duel.hero-form-3 .player-portrait { width: 152px; height: 184px; }
+.boss-duel .fighter-portrait { width: 140px; height: 170px; --fw: 140px; }
+.boss-duel .boss-portrait { width: 150px; height: 175px; --fw: 150px; }
+.boss-duel.hero-form-2 .boss-portrait { width: 165px; height: 192px; --fw: 165px; }
+.boss-duel.hero-form-3 .boss-portrait { width: 184px; height: 214px; --fw: 184px; }
+.boss-duel.hero-form-3 .player-portrait { width: 152px; height: 184px; --fw: 152px; }
+/* ───── Sprite-sheet attack/hit animation (6-frame) ───── */
+.char-sheet{position:absolute;inset:0;width:100%;height:100%;background-repeat:no-repeat;background-size:calc(6 * var(--fw, 140px)) 100%;background-position:0 0;opacity:0;pointer-events:none;}
+@keyframes spriteSwing{from{background-position:0 0;}to{background-position:calc(-6 * var(--fw, 140px)) 0;}}
+/* Bind each form's sprite sheet image */
+.boss-duel.hero-form-1 .player-token .char-sheet.form-1-attack{background-image:url(./assets/chars/anim/hero-lv1-sheet.png);}
+.boss-duel.hero-form-2 .player-token .char-sheet.form-2-attack{background-image:url(./assets/chars/anim/hero-lv2-sheet.png);}
+.boss-duel.hero-form-3 .player-token .char-sheet.form-3-attack{background-image:url(./assets/chars/anim/hero-lv3-sheet.png);}
+.boss-duel.hero-form-1 .boss-token  .char-sheet.form-1-hit   {background-image:url(./assets/chars/anim/boss-lv1-sheet.png);}
+.boss-duel.hero-form-2 .boss-token  .char-sheet.form-2-hit   {background-image:url(./assets/chars/anim/boss-lv2-sheet.png);}
+.boss-duel.hero-form-3 .boss-token  .char-sheet.form-3-hit   {background-image:url(./assets/chars/anim/boss-lv3-sheet.png);}
+/* Activate sprite animation during attack states (hide static img during play) */
+.boss-duel.hit.hero-form-1 .player-token .char-sheet.form-1-attack,
+.boss-duel.hit-2.hero-form-1 .player-token .char-sheet.form-1-attack,
+.boss-duel.hit-3.hero-form-1 .player-token .char-sheet.form-1-attack,
+.boss-duel.hit.hero-form-2 .player-token .char-sheet.form-2-attack,
+.boss-duel.hit-2.hero-form-2 .player-token .char-sheet.form-2-attack,
+.boss-duel.hit-3.hero-form-2 .player-token .char-sheet.form-2-attack,
+.boss-duel.hit.hero-form-3 .player-token .char-sheet.form-3-attack,
+.boss-duel.hit-2.hero-form-3 .player-token .char-sheet.form-3-attack,
+.boss-duel.hit-3.hero-form-3 .player-token .char-sheet.form-3-attack,
+.boss-duel.hit.hero-form-1 .boss-token  .char-sheet.form-1-hit,
+.boss-duel.hit-2.hero-form-1 .boss-token  .char-sheet.form-1-hit,
+.boss-duel.hit-3.hero-form-1 .boss-token  .char-sheet.form-1-hit,
+.boss-duel.hit.hero-form-2 .boss-token  .char-sheet.form-2-hit,
+.boss-duel.hit-2.hero-form-2 .boss-token  .char-sheet.form-2-hit,
+.boss-duel.hit-3.hero-form-2 .boss-token  .char-sheet.form-2-hit,
+.boss-duel.hit.hero-form-3 .boss-token  .char-sheet.form-3-hit,
+.boss-duel.hit-2.hero-form-3 .boss-token  .char-sheet.form-3-hit,
+.boss-duel.hit-3.hero-form-3 .boss-token  .char-sheet.form-3-hit { opacity:1; animation:spriteSwing .54s steps(6) forwards; }
+/* When sprite sheet is playing, hide all static char imgs (sheet renders on top via DOM order) */
+.boss-duel.hit .char-img,
+.boss-duel.hit-2 .char-img,
+.boss-duel.hit-3 .char-img{display:none !important;}
 .boss-duel.canvas-mode .vs-badge{opacity:.16;filter:blur(.2px);}
 .fighter-token{position:absolute;z-index:2;bottom:11px;display:flex;flex-direction:column;align-items:center;gap:4px;transition:transform .18s ease,filter .18s ease;}
 .fighter-token::after{content:'';position:absolute;left:50%;bottom:20px;width:88px;height:16px;border-radius:50%;background:rgba(0,0,0,.28);filter:blur(2px);transform:translateX(-50%);z-index:-1;}
@@ -679,6 +712,9 @@ body{
             <img class="char-img form-1-attack" src="./assets/chars/hero-lv1-attack.png" alt="" loading="eager">
             <img class="char-img form-2-attack" src="./assets/chars/hero-lv2-attack.png" alt="" loading="eager">
             <img class="char-img form-3-attack" src="./assets/chars/hero-lv3-attack.png" alt="" loading="eager">
+            <div class="char-sheet form-1-attack" aria-hidden="true"></div>
+            <div class="char-sheet form-2-attack" aria-hidden="true"></div>
+            <div class="char-sheet form-3-attack" aria-hidden="true"></div>
             <svg class="fighter-svg hero-svg" viewBox="0 0 140 130" role="img">
               <defs>
                 <linearGradient id="heroCoat" x1="0" y1="0" x2="1" y2="1">
@@ -728,6 +764,9 @@ body{
             <img class="char-img form-1-hit" src="./assets/chars/boss-lv1-hit.png" alt="" loading="lazy" onerror="this.style.display='none'">
             <img class="char-img form-2-hit" src="./assets/chars/boss-lv2-hit.png" alt="" loading="lazy" onerror="this.style.display='none'">
             <img class="char-img form-3-hit" src="./assets/chars/boss-lv3-hit.png" alt="" loading="lazy" onerror="this.style.display='none'">
+            <div class="char-sheet form-1-hit" aria-hidden="true"></div>
+            <div class="char-sheet form-2-hit" aria-hidden="true"></div>
+            <div class="char-sheet form-3-hit" aria-hidden="true"></div>
             <svg class="fighter-svg boss-svg" viewBox="0 0 150 134" role="img">
               <defs>
                 <linearGradient id="bossBody" x1="0" y1="0" x2="1" y2="1">

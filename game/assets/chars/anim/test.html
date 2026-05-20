@@ -1,0 +1,40 @@
+<!doctype html><html><head><style>
+body{background:#0f172a;margin:0;display:flex;gap:24px;padding:24px;color:#fff;font-family:sans-serif;flex-wrap:wrap;}
+.box{display:flex;flex-direction:column;align-items:center;gap:8px;}
+:root{--fw:170px;--fh:212px;--frames:6;}
+.sprite{
+  width:var(--fw);height:var(--fh);
+  background-image:url(./hero-lv3-sheet.png);
+  background-size:calc(var(--fw) * var(--frames)) var(--fh);
+  background-repeat:no-repeat;
+  background-position:0 0;
+}
+.sprite.loop{animation:swing .9s steps(6) infinite;}
+.sprite.fast{animation:swing .42s steps(6) infinite;}
+.sprite.once{animation:swing .55s steps(6) forwards;}
+@keyframes swing{
+  from{background-position:0 0;}
+  to{background-position:calc(-1 * var(--fw) * var(--frames)) 0;}
+}
+.frame{}
+.frame[data-f="1"]{background-position:0 0;}
+.frame[data-f="2"]{background-position:calc(-1 * var(--fw)) 0;}
+.frame[data-f="3"]{background-position:calc(-2 * var(--fw)) 0;}
+.frame[data-f="4"]{background-position:calc(-3 * var(--fw)) 0;}
+.frame[data-f="5"]{background-position:calc(-4 * var(--fw)) 0;}
+.frame[data-f="6"]{background-position:calc(-5 * var(--fw)) 0;}
+button{padding:8px 14px;background:#3b82f6;color:#fff;border:0;border-radius:8px;cursor:pointer;}
+</style></head><body>
+<div class="box"><div class="sprite loop"></div><span>loop 0.9s</span></div>
+<div class="box"><div class="sprite fast"></div><span>fast 0.42s</span></div>
+<div class="box"><div class="sprite once" id="trigger"></div><span>once 0.55s</span><button onclick="t()">replay</button></div>
+<div class="box"><div class="sprite frame" data-f="1"></div><span>F1 idle</span></div>
+<div class="box"><div class="sprite frame" data-f="2"></div><span>F2 windup</span></div>
+<div class="box"><div class="sprite frame" data-f="3"></div><span>F3 swing</span></div>
+<div class="box"><div class="sprite frame" data-f="4"></div><span>F4 impact</span></div>
+<div class="box"><div class="sprite frame" data-f="5"></div><span>F5 follow</span></div>
+<div class="box"><div class="sprite frame" data-f="6"></div><span>F6 recover</span></div>
+<script>
+function t(){const e=document.getElementById('trigger');e.classList.remove('once');void e.offsetWidth;e.classList.add('once');}
+</script>
+</body></html>

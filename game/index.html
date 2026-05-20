@@ -540,8 +540,11 @@ body{
 @media(prefers-reduced-motion:reduce){.action-fx{display:none}.fighter-token,.fighter-portrait,.fighter-arm,.boss-duel::before{animation:none!important}}
 .boss-bars{display:grid;gap:10px;margin-bottom:14px;}
 .boss-bar-row{display:grid;grid-template-columns:62px 1fr 48px;align-items:center;gap:8px;font-size:.75rem;font-weight:900;color:#e0e7ff;}
-.boss-bar{height:13px;background:rgba(15,23,42,.6);border-radius:999px;overflow:hidden;box-shadow:inset 0 2px 5px rgba(0,0,0,.24);}
+.boss-bar{height:13px;background:rgba(15,23,42,.6);border-radius:999px;overflow:hidden;box-shadow:inset 0 2px 5px rgba(0,0,0,.24);position:relative;}
 .boss-bar span{display:block;height:100%;width:100%;border-radius:999px;transition:width .28s ease;}
+.boss-bar::after{content:'';position:absolute;inset:0;border-radius:999px;background:rgba(255,255,255,.85);opacity:0;pointer-events:none;}
+.boss-bar.flash::after{animation:hpFlash .42s ease-out;}
+@keyframes hpFlash{from{opacity:.85;}50%{opacity:.7;}to{opacity:0;}}
 #boss-hp-fill{background:linear-gradient(90deg,#f97316,#ef4444,#be123c);}
 #player-hp-fill{background:linear-gradient(90deg,#22c55e,#0ea5e9);}
 .skill-panel{display:grid;grid-template-columns:1fr auto;align-items:center;gap:10px;margin:-2px 0 14px;background:rgba(15,23,42,.42);border:1px solid rgba(255,255,255,.14);border-radius:16px;padding:10px;}
@@ -3966,8 +3969,23 @@ function showScoreFx(text, type) {
   setTimeout(() => el.remove(), 950);
 }
 
+// ── Trigger HP bar flash on damage ──
+function flashHpBar(target) {
+  const sel = target === 'player' ? '#player-hp-fill' : '#boss-hp-fill';
+  const fill = document.querySelector(sel);
+  if (!fill) return;
+  const bar = fill.parentElement;
+  if (!bar) return;
+  bar.classList.remove('flash');
+  void bar.offsetWidth;
+  bar.classList.add('flash');
+  setTimeout(() => bar.classList.remove('flash'), 420);
+}
+
 // ── Floating damage number over the boss/player token ──
 function floatDamage(target, amount, kind) {
+  // Side-effect: also flash the corresponding HP bar
+  flashHpBar(target);
   // target: 'boss' (default) or 'player'
   const tokenSel = target === 'player' ? '.player-token' : '.boss-token';
   const tok = document.querySelector(tokenSel);

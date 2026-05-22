@@ -2968,12 +2968,16 @@ function castBossSkill() {
   pendingAdvanceTimerId = setTimeout(() => {
     if (bossHp <= 0) {
       advanceBossLevel();
-    } else {
-      setBossPhase(BOSS_PHASE.WAITING);
-      // Restart telegraph if applicable since the question is still on screen
-      if (getHeroForm().hasTelegraph && getBossForm().telegraphSec > 0 && !bossLocked) {
-        startTelegraph();
-      }
+      return;
+    }
+    // Exit ULTIMATE phase first so nextBossQuestion() doesn't no-op
+    setBossPhase(BOSS_PHASE.WAITING);
+    if (bossLocked) {
+      // Ultimate cast during RESOLVING (after answering) — load next question
+      nextBossQuestion();
+    } else if (getHeroForm().hasTelegraph && getBossForm().telegraphSec > 0) {
+      // Question is still on screen — restart telegraph
+      startTelegraph();
     }
   }, skill.duration || 1200);
   return true;

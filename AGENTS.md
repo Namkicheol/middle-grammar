@@ -45,7 +45,10 @@ Codex의 1차 진입 문서다. Claude Code는 `CLAUDE.md`를 사용한다. 두 
 | `score-popup.js` | 점수 결과 팝업 |
 | `worksheet-sentence-guide.md` | 예문 출처·문장 변형 규칙 |
 | `answer-checker-guide.md` | 정답 처리·검증 규칙 |
-| `Ne교과서 md파일/` | NE능률 중1·중2 교과서·기본AB·심화·어법드릴 md |
+| `refs/NE-md변환/` | NE능률 중1·중2 교과서·기본AB·심화·어법드릴 md |
+| `refs/NE-중1-교과서/` | NE능률 중1 원본 PDF·hwp + 문법연습문제·어법드릴 |
+| `refs/NE-중2-교과서/` | NE능률 중2 원본 PDF + 문법연습문제 |
+| `refs/미래엔-활동지/` | 미래엔(최) 본문 활동지·직소 자료 |
 | `blog-deploy/` | 티스토리 발행용 markdown |
 | `blog-images/YYYY-MM-DD/` | 블로그 본문·썸네일 이미지 |
 | `<topic>-basic/index.html` | 중1 기초 워크시트 |
@@ -73,18 +76,18 @@ Codex의 1차 진입 문서다. Claude Code는 `CLAUDE.md`를 사용한다. 두 
 중1 자료:
 
 ```text
-Ne교과서 md파일/2022me_중1_L{1~8}_교과서.md
-Ne교과서 md파일/2022me_중1_L{1~8}_문법연습문제_기본AB.md
-Ne교과서 md파일/2022me_중1_L{1~8}_문법연습문제_심화.md
-Ne교과서 md파일/2022me_중1_L{1~8}_어법드릴문제.md
+refs/NE-md변환/2022me_중1_L{1~8}_교과서.md
+refs/NE-md변환/2022me_중1_L{1~8}_문법연습문제_기본AB.md
+refs/NE-md변환/2022me_중1_L{1~8}_문법연습문제_심화.md
+refs/NE-md변환/2022me_중1_L{1~8}_어법드릴문제.md
 ```
 
 중2 자료:
 
 ```text
-Ne교과서 md파일/(22개정) 중학교 영어 2 교과서 전단원 PDF.md
-Ne교과서 md파일/2022me_중2_L{1~8}_문법연습문제_기본AB.md
-Ne교과서 md파일/2022me_중2_L{1~8}_문법연습문제_심화.md
+refs/NE-md변환/(22개정) 중학교 영어 2 교과서 전단원 PDF.md
+refs/NE-md변환/2022me_중2_L{1~8}_문법연습문제_기본AB.md
+refs/NE-md변환/2022me_중2_L{1~8}_문법연습문제_심화.md
 ```
 
 중2 통합 파일 줄 범위:

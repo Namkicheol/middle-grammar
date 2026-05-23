@@ -111,9 +111,7 @@ canvas#c{position:absolute;inset:0;width:100%;height:100%;}
 @keyframes sfxPulse{0%,100%{opacity:1}50%{opacity:.65}}
 
 /* ── DROP ITEMS ── */
-.drop-item{position:absolute;font-size:2rem;cursor:pointer;z-index:22;pointer-events:all;filter:drop-shadow(0 4px 10px rgba(0,0,0,.8));}
-@keyframes dropFloat{0%,100%{transform:translateY(0) scale(1)}50%{transform:translateY(-10px) scale(1.08)}}
-.drop-item{animation:dropFloat 1.4s ease-in-out infinite;}
+.drop-item{position:absolute;font-size:2.2rem;cursor:pointer;z-index:22;pointer-events:all;filter:drop-shadow(0 4px 14px rgba(255,255,255,.35));user-select:none;}
 
 /* ── QUESTION POPUP ── */
 #qpop{position:absolute;left:50%;bottom:12px;width:min(480px,96%);transform:translateX(-50%) translateY(20px) scale(.92);opacity:0;pointer-events:none;z-index:30;transition:transform .28s cubic-bezier(.34,1.56,.64,1),opacity .22s;}
@@ -483,10 +481,14 @@ const BOSS_ASSETS = [
 //  GAME CONFIG
 // ═══════════════════════════════════════════════════════════
 const ATTACK_TYPES = [
-  { id:'jab',     label:'⚡ 잽!',      time:5,   damage:12, chance:.50, color:'#f97316' },
-  { id:'hook',    label:'💥 훅!',      time:7,   damage:20, chance:.30, color:'#ef4444' },
-  { id:'special', label:'☄️ 필살기!', time:3.5, damage:30, chance:.20, color:'#a855f7' },
+  { id:'jab',     label:'⚡ 잽!',      time:8,   damage:12, chance:.50, color:'#f97316' },
+  { id:'hook',    label:'💥 훅!',      time:9,   damage:20, chance:.30, color:'#ef4444' },
+  { id:'special', label:'☄️ 필살기!', time:5,   damage:30, chance:.20, color:'#a855f7' },
 ];
+// 페이즈별 타이머 배율 (Phase0=1.0, Phase1=0.78, Phase2=0.58)
+const PHASE_TIME_SCALE = [1.0, 0.78, 0.58];
+// 페이즈별 보스 공격 딜레이 범위 [min, max] ms
+const PHASE_ATTACK_DELAY = [[4500, 7000], [3200, 5000], [2000, 3500]];
 const STATUS_FX = {
   BURN:   { icon:'🔥', label:'화염', color:'#ef4444', dur:18000, desc:'오답 2배 피해' },
   FREEZE: { icon:'🧊', label:'빙결', color:'#60a5fa', dur:14000, desc:'제한시간 절반' },
@@ -535,6 +537,9 @@ const G = {
     if (rafId) cancelAnimationFrame(rafId);
     rafId = requestAnimationFrame(loop);
     scheduleBossAttack();
+    // 시작 시 드롭 2개 즉시 스폰
+    setTimeout(() => spawnDrop(), 800);
+    setTimeout(() => spawnDrop(), 2200);
     scheduleDropSpawn();
   },
   retry() {
@@ -667,7 +672,8 @@ function castSkill() {
 // ═══════════════════════════════════════════════════════════
 function scheduleBossAttack() {
   if (bossTimer) clearTimeout(bossTimer);
-  const delay = 2500 + Math.random() * 2500;
+  const [mn, mx] = PHASE_ATTACK_DELAY[GS ? GS.bossPhase : 0] || PHASE_ATTACK_DELAY[0];
+  const delay = mn + Math.random() * (mx - mn);
   bossTimer = setTimeout(startAttack, delay);
 }
 
@@ -722,7 +728,7 @@ function showQuestion() {
   const q = GS.questions[GS.qIdx++];
   GS.currentQ = q;
 
-  let timeLimit = GS.attackType.time;
+  let timeLimit = GS.attackType.time * (PHASE_TIME_SCALE[GS.bossPhase] || 1);
   if (GS.statusFx.FREEZE) timeLimit *= 0.5;
 
   let opts = [...q.opts];
@@ -899,33 +905,68 @@ function updateStatusRow() {
   ).join('');
 }
 
+const MAX_DROPS = 2;
+
 function scheduleDropSpawn() {
   if (dropTimer) clearTimeout(dropTimer);
-  dropTimer = setTimeout(spawnDrop, 7000 + Math.random() * 9000);
+  dropTimer = setTimeout(spawnDropIfNeeded, 3500 + Math.random() * 3000);
+}
+
+function spawnDropIfNeeded() {
+  if (!GS || GS.phase === 10) { scheduleDropSpawn(); return; }
+  if (GS.drops.length < MAX_DROPS) spawnDrop();
+  scheduleDropSpawn();
+}
+
+function randDropPos() {
+  return { x: CW * (.15 + Math.random() * .7), y: CH * (.38 + Math.random() * .22) };
+}
+
+function animateDrop(el) {
+  if (!el.isConnected) return;
+  const pos = randDropPos();
+  const dur = 2.2 + Math.random() * 2;
+  gsap.to(el, {
+    left: pos.x, top: pos.y, duration: dur,
+    ease: 'sine.inOut',
+    onComplete() { animateDrop(el); }
+  });
 }
 
 function spawnDrop() {
-  if (!GS || GS.phase === 10) { scheduleDropSpawn(); return; }
+  if (!GS || GS.phase === 10) return;
   const keys = Object.keys(DROP_TYPES);
   const key = keys[Math.floor(Math.random() * keys.length)];
-  const d = { id: GS.dropId++, key, icon: DROP_TYPES[key].icon,
-    x: CW * (.2 + Math.random() * .6), y: CH * (.42 + Math.random() * .18) };
-  GS.drops.push(d);
+  const id = GS.dropId++;
+  const pos = randDropPos();
+  GS.drops.push({ id, key, icon: DROP_TYPES[key].icon });
   const el = document.createElement('div');
-  el.className = 'drop-item'; el.textContent = d.icon;
-  el.style.left = d.x + 'px'; el.style.top = d.y + 'px';
-  el.style.animationDelay = (Math.random() * .6) + 's';
-  el.dataset.id = d.id;
-  el.onclick = () => grabDrop(d.id, el);
-  el.ontouchstart = (e) => { e.preventDefault(); grabDrop(d.id, el); };
+  el.className = 'drop-item'; el.textContent = DROP_TYPES[key].icon;
+  el.style.left = pos.x + 'px'; el.style.top = pos.y + 'px';
+  el.style.opacity = '0'; el.style.transform = 'scale(.4)';
+  el.dataset.id = id;
+  el.onclick = () => grabDrop(id, el);
+  el.ontouchstart = (e) => { e.preventDefault(); grabDrop(id, el); };
   document.getElementById('drops-layer').appendChild(el);
-  scheduleDropSpawn();
-  setTimeout(() => { GS.drops = GS.drops.filter(dr=>dr.id!==d.id); el.remove(); }, 6000);
+  // Appear animation
+  gsap.to(el, { opacity: 1, scale: 1, duration: .4, ease: 'back.out(1.7)',
+    onComplete() { animateDrop(el); }
+  });
+  // Auto-expire after 12s
+  setTimeout(() => {
+    if (!el.isConnected) return;
+    gsap.to(el, { opacity: 0, scale: .3, duration: .3, onComplete() {
+      GS && (GS.drops = GS.drops.filter(d => d.id !== id));
+      el.remove();
+    }});
+  }, 12000);
 }
 
 function grabDrop(id, el) {
   const d = GS.drops.find(dr=>dr.id===id); if (!d) return;
-  GS.drops = GS.drops.filter(dr=>dr.id!==id); el.remove();
+  GS.drops = GS.drops.filter(dr=>dr.id!==id);
+  gsap.killTweensOf(el);
+  gsap.to(el, { scale: 1.6, opacity: 0, y: -30, duration: .3, onComplete: () => el.remove() });
   const dt = DROP_TYPES[d.key];
   if (dt.action==='heal') { GS.heroHP=Math.min(100,GS.heroHP+dt.value); updateHUD(); showFloating('❤️ +'+dt.value+'HP!','#22c55e'); }
   else if (dt.action==='shield') { GS.hasShield=true; showFloating('🛡️ 보호막!','#60a5fa'); }

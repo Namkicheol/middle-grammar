@@ -49,20 +49,27 @@ canvas#c{position:absolute;inset:0;width:100%;height:100%;}
 #boss-img.idle{animation:bossFloat 2.6s ease-in-out infinite;}
 
 /* Attack */
-@keyframes heroAttack{0%{transform:translateX(0) scale(1)}30%{transform:translateX(30px) scale(1.12)}70%{transform:translateX(20px) scale(1.08)}100%{transform:translateX(0) scale(1)}}
-#hero-img.attack{animation:heroAttack .5s ease-out forwards;}
+@keyframes heroAttack{0%{transform:translateX(0) scale(1)}22%{transform:translateX(8px) scale(.94)}45%{transform:translateX(36px) scale(1.16)}72%{transform:translateX(22px) scale(1.1)}100%{transform:translateX(0) scale(1)}}
+#hero-img.attack{animation:heroAttack .85s ease-out forwards;}
 
 /* Hurt */
-@keyframes heroHurt{0%,100%{transform:translateX(0);filter:drop-shadow(0 8px 24px rgba(14,165,233,.5))}25%,75%{transform:translateX(-14px);filter:drop-shadow(0 8px 24px rgba(239,68,68,.9)) brightness(1.4)}}
-#hero-img.hurt{animation:heroHurt .45s ease-out forwards;}
+@keyframes heroHurt{0%{transform:translateX(0);filter:drop-shadow(0 8px 24px rgba(14,165,233,.5))}20%{transform:translateX(-20px);filter:drop-shadow(0 8px 24px rgba(239,68,68,.9)) brightness(1.8)}50%{transform:translateX(-8px);filter:brightness(1.5)}75%{transform:translateX(-16px);filter:drop-shadow(0 8px 24px rgba(239,68,68,.7)) brightness(1.4)}100%{transform:translateX(0);filter:drop-shadow(0 8px 24px rgba(14,165,233,.5))}}
+#hero-img.hurt{animation:heroHurt .7s ease-out forwards;}
 
 /* Boss hurt */
-@keyframes bossHurt{0%,100%{transform:translateX(0)}30%{transform:translateX(22px)}70%{transform:translateX(14px)}}
-#boss-img.hit{animation:bossHurt .45s ease-out forwards;filter:drop-shadow(0 8px 28px rgba(239,68,68,.95)) brightness(1.5)!important;}
+@keyframes bossHurt{0%{transform:translateX(0) scale(1);filter:drop-shadow(0 8px 28px rgba(239,68,68,.6)) brightness(1)}18%{transform:translateX(36px) scale(.92);filter:drop-shadow(0 0 48px #fff) brightness(2.5)}42%{transform:translateX(20px) scale(1.04);filter:drop-shadow(0 8px 28px rgba(239,68,68,.95)) brightness(1.7)}65%{transform:translateX(14px) scale(.98)}100%{transform:translateX(0) scale(1);filter:drop-shadow(0 8px 28px rgba(239,68,68,.6)) brightness(1)}}
+#boss-img.hit{animation:bossHurt .75s ease-out forwards;}
 
 /* Boss windup shake */
-@keyframes bossCharge{0%,100%{transform:translateX(0) scale(1)}50%{transform:translateX(-6px) scale(1.06)}}
-#boss-img.windup{animation:bossCharge .4s ease-in-out infinite;}
+@keyframes bossCharge{0%,100%{transform:translateX(0) scale(1);filter:brightness(1)}35%{transform:translateX(-9px) scale(1.08);filter:brightness(1.3) drop-shadow(0 0 20px rgba(239,68,68,.8))}70%{transform:translateX(-5px) scale(1.04);filter:brightness(1.15)}}
+#boss-img.windup{animation:bossCharge .65s ease-in-out infinite;}
+
+/* Correct / wrong screen edge flash */
+@keyframes edgeFlash{0%{opacity:0}12%{opacity:1}100%{opacity:0}}
+#ok-flash,#ng-flash{position:fixed;inset:0;pointer-events:none;z-index:65;opacity:0;}
+#ok-flash{background:radial-gradient(ellipse at center,transparent 35%,rgba(34,197,94,.4) 100%);}
+#ng-flash{background:radial-gradient(ellipse at center,transparent 35%,rgba(239,68,68,.45) 100%);}
+#ok-flash.go,#ng-flash.go{animation:edgeFlash .65s ease-out forwards;}
 
 /* Phase transform flash */
 @keyframes phaseFlash{0%{opacity:0}10%{opacity:1}100%{opacity:0}}
@@ -139,8 +146,8 @@ canvas#c{position:absolute;inset:0;width:100%;height:100%;}
 .qpop-fb.ng{color:#fca5a5;}
 
 /* ── DAMAGE FLOAT ── */
-@keyframes dmgFloat{0%{opacity:1;transform:translateY(0) scale(1)}100%{opacity:0;transform:translateY(-70px) scale(1.3)}}
-.dmg-float{position:fixed;pointer-events:none;font-weight:900;z-index:60;animation:dmgFloat .9s ease-out forwards;}
+@keyframes dmgFloat{0%{opacity:0;transform:translateY(0) scale(.6)}12%{opacity:1;transform:translateY(-10px) scale(1.25)}70%{opacity:1;transform:translateY(-50px) scale(1)}100%{opacity:0;transform:translateY(-90px) scale(.85)}}
+.dmg-float{position:fixed;pointer-events:none;font-weight:900;z-index:60;animation:dmgFloat 1.1s ease-out forwards;}
 
 /* ── PHASE CUTSCENE ── */
 #cut{position:fixed;inset:0;z-index:80;display:none;align-items:center;justify-content:center;background:rgba(0,0,0,.9);}
@@ -277,6 +284,9 @@ canvas#c{position:absolute;inset:0;width:100%;height:100%;}
 
   <!-- Phase flash overlay -->
   <div id="phase-flash"></div>
+  <!-- Correct/wrong edge flash -->
+  <div id="ok-flash"></div>
+  <div id="ng-flash"></div>
   <!-- Ultimate flash -->
   <div id="ult-flash"></div>
 
@@ -755,12 +765,12 @@ function heroAnim(type) {
     heroImg.src = h.atk;
     heroImg.className = 'attack';
     _heroTl = gsap.timeline()
-      .to(heroWrap, { left: '44%', duration: .28, ease: 'power3.out' })
-      .to(heroWrap, { left: '8%', duration: .35, ease: 'power2.in',
+      .to(heroWrap, { left: '44%', duration: .45, ease: 'power3.out' })
+      .to(heroWrap, { left: '8%', duration: .55, ease: 'power2.in',
           onComplete() { _heroTl = null; heroImg.src = h.idle; heroImg.className = 'idle'; } });
   } else if (type === 'hurt') {
     heroImg.className = 'hurt';
-    _heroTl = gsap.fromTo(heroWrap, { x: 0 }, { x: -18, duration: .08, yoyo: true, repeat: 3, ease: 'power1.inOut',
+    _heroTl = gsap.fromTo(heroWrap, { x: 0 }, { x: -24, duration: .12, yoyo: true, repeat: 4, ease: 'power1.inOut',
       onComplete() { _heroTl = null; heroImg.className = 'idle'; gsap.set(heroWrap, { x: 0 }); } });
   }
 }
@@ -771,16 +781,16 @@ function bossAnim(type) {
   bossImg.className = '';
   if (type === 'windup') {
     bossImg.className = 'windup';
-    _bossTl = gsap.to(bossWrap, { right: '40%', duration: .5, ease: 'power2.inOut' });
+    _bossTl = gsap.to(bossWrap, { right: '38%', duration: .75, ease: 'power2.inOut' });
   } else if (type === 'hit') {
     bossImg.src = b.hit;
     bossImg.className = 'hit';
     _bossTl = gsap.timeline()
-      .to(bossWrap, { right: '8%', duration: .25, ease: 'power3.out' })
-      .fromTo(bossWrap, { x: 0 }, { x: 22, duration: .06, yoyo: true, repeat: 4, ease: 'power1.inOut' })
+      .to(bossWrap, { right: '8%', duration: .38, ease: 'power3.out' })
+      .fromTo(bossWrap, { x: 0 }, { x: 28, duration: .1, yoyo: true, repeat: 5, ease: 'power1.inOut' })
       .call(() => { _bossTl = null; bossImg.src = b.idle; bossImg.className = 'idle'; bossImg.style.filter = `drop-shadow(0 8px 28px ${b.glow})`; });
   } else {
-    _bossTl = gsap.to(bossWrap, { right: '8%', duration: .3, ease: 'power2.out',
+    _bossTl = gsap.to(bossWrap, { right: '8%', duration: .45, ease: 'power2.out',
       onComplete() { _bossTl = null; bossImg.src = b.idle; bossImg.className = 'idle'; } });
   }
 }
@@ -811,8 +821,8 @@ function castSkill() {
   // GSAP timeline: dash across screen, flash, return
   const ultFlash = document.getElementById('ult-flash');
   gsap.timeline()
-    .to(heroWrap, { left: '50%', duration: .2, ease: 'power4.out' })
-    .to(ultFlash,  { opacity: .7, duration: .12 })
+    .to(heroWrap, { left: '52%', duration: .38, ease: 'power4.out' })
+    .to(ultFlash,  { opacity: .85, duration: .18 })
     .call(() => {
       const dmg = Math.round((10 + GS.bossPhase * 5) * (GS.combo * .05 + .95));
       GS.bossHP = Math.max(0, GS.bossHP - dmg);
@@ -820,17 +830,17 @@ function castSkill() {
       bossAnim('hit');
       showDmgFloat('💥 -' + dmg, '#facc15', 'right');
       showFloating('⚡ 필살기!', '#facc15');
-      cameraShake(14 + GS.bossPhase * 4, .6);
-      // 대형 파티클 버스트 — 보스 위치 + 중앙
-      const pc = ['#facc15','#fb7185','#8b5cf6','#fff','#f97316'];
-      spawnBurst(CW*.75, CH*.38, pc, 24+GS.bossPhase*6, 1.6+GS.bossPhase*.3);
-      spawnBurst(CW*.5,  CH*.45, pc, 16, 1.2);
+      cameraShake(18 + GS.bossPhase * 5, .9);
+      const pc = ['#facc15','#fb7185','#8b5cf6','#fff','#f97316','#38bdf8'];
+      spawnBurst(CW*.75, CH*.38, pc, 36+GS.bossPhase*8, 2.0+GS.bossPhase*.4);
+      spawnBurst(CW*.5,  CH*.42, pc, 22, 1.5);
+      spawnBurst(CW*.55, CH*.55, ['#facc15','#fff'], 14, 1.2);
       playSfx('correct');
       checkBossPhase();
       updateHUD();
     })
-    .to(ultFlash,  { opacity: 0, duration: .4 })
-    .to(heroWrap,  { left: '8%', duration: .4, ease: 'back.out(1.5)', onComplete() { heroImg.src = h.idle; heroImg.className = 'idle'; } });
+    .to(ultFlash,  { opacity: 0, duration: .6 })
+    .to(heroWrap,  { left: '8%', duration: .55, ease: 'back.out(1.5)', onComplete() { heroImg.src = h.idle; heroImg.className = 'idle'; } });
 }
 
 // ═══════════════════════════════════════════════════════════
@@ -991,8 +1001,10 @@ function finishQuestion(isCorrect) {
     addSkillGauge(15);
     heroAnim('atk'); bossAnim('hit');
     showDmgFloat('-' + dmg, '#ef4444', 'right');
-    cameraShake(5 + GS.bossPhase * 2, .35);
-    spawnBurst(CW*.78, CH*.42, ['#fbbf24','#f97316','#ef4444','#fff'], 12+GS.bossPhase*4, 1+GS.bossPhase*.3);
+    cameraShake(10 + GS.bossPhase * 4, .5);
+    spawnBurst(CW*.78, CH*.42, ['#fbbf24','#f97316','#ef4444','#fff','#fb7185'], 22+GS.bossPhase*5, 1.4+GS.bossPhase*.3);
+    spawnBurst(CW*.72, CH*.38, ['#fff','#fbbf24'], 8, .8);
+    _flashEl('ok-flash');
     playSfx('correct');
     checkBossPhase();
   } else {
@@ -1003,8 +1015,9 @@ function finishQuestion(isCorrect) {
     GS.combo = 1;
     heroAnim('hurt');
     showDmgFloat('-' + dmg, '#f97316', 'left');
-    cameraShake(9, .5);
-    spawnBurst(CW*.22, CH*.42, ['#ef4444','#f97316','#dc2626'], 10, .9);
+    cameraShake(12, .65);
+    spawnBurst(CW*.22, CH*.42, ['#ef4444','#f97316','#dc2626','#fff'], 16, 1.1);
+    _flashEl('ng-flash');
     playSfx('wrong');
     if (GS.heroHP <= 0) { setTimeout(gameOver, 350); return; }
   }
@@ -1208,19 +1221,25 @@ function updateHUD() {
 function showDmgFloat(text, color, side) {
   const el = document.createElement('div');
   el.className = 'dmg-float';
-  el.style.cssText = `color:${color};font-size:1.5rem;left:${side==='right'?'62%':'20%'};top:40%;text-shadow:0 2px 8px rgba(0,0,0,.8);`;
+  el.style.cssText = `color:${color};font-size:2.2rem;left:${side==='right'?'60%':'16%'};top:38%;text-shadow:0 3px 12px rgba(0,0,0,.9),0 0 20px ${color};`;
   el.textContent = text;
   document.body.appendChild(el);
-  setTimeout(() => el.remove(), 900);
+  setTimeout(() => el.remove(), 1100);
+}
+
+function _flashEl(id) {
+  const el = document.getElementById(id);
+  if (!el) return;
+  el.className = ''; void el.offsetWidth; el.className = 'go';
 }
 
 function showFloating(text, color) {
   const el = document.createElement('div');
   el.className = 'dmg-float';
-  el.style.cssText = `color:${color};font-size:1.1rem;left:50%;transform:translateX(-50%);top:35%;text-shadow:0 2px 6px rgba(0,0,0,.8);white-space:nowrap;`;
+  el.style.cssText = `color:${color};font-size:1.6rem;font-weight:900;left:50%;transform:translateX(-50%);top:32%;text-shadow:0 3px 12px rgba(0,0,0,.9),0 0 18px ${color};white-space:nowrap;`;
   el.textContent = text;
   document.body.appendChild(el);
-  setTimeout(() => el.remove(), 900);
+  setTimeout(() => el.remove(), 1100);
 }
 
 let _sfxAC = null;

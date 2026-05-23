@@ -99,14 +99,14 @@ canvas#c{position:absolute;inset:0;width:100%;height:100%;}
 .hp-num{font-size:.7rem;font-weight:900;color:rgba(255,255,255,.8);min-width:26px;}
 
 /* ── BOSS TELEGRAPH ── */
-#tel{position:absolute;left:12px;right:12px;top:90px;z-index:20;display:none;}
+#tel{position:absolute;left:12px;right:12px;top:122px;z-index:20;display:none;}
 .tel-inner{background:rgba(0,0,0,.7);border-radius:8px;padding:4px 10px;backdrop-filter:blur(4px);}
 .tel-label{display:none;}
 .tel-track{height:8px;background:rgba(255,255,255,.08);border-radius:999px;overflow:hidden;}
 .tel-fill{height:100%;width:0%;border-radius:999px;box-shadow:0 0 10px currentColor;}
 
 /* ── STATUS EFFECTS ── */
-#status-row{position:absolute;left:12px;top:92px;z-index:15;display:flex;gap:6px;pointer-events:none;}
+#status-row{position:absolute;left:12px;top:122px;z-index:15;display:flex;gap:6px;pointer-events:none;}
 .sfx-badge{background:rgba(0,0,0,.75);border-radius:8px;padding:4px 8px;font-size:.75rem;font-weight:900;border:1px solid rgba(255,255,255,.2);animation:sfxPulse 2s infinite;}
 @keyframes sfxPulse{0%,100%{opacity:1}50%{opacity:.65}}
 
@@ -176,6 +176,18 @@ canvas#c{position:absolute;inset:0;width:100%;height:100%;}
 .wl-eng{color:#e2e8f0;font-weight:700;}
 .wl-ans{color:#86efac;font-size:.72rem;margin-top:2px;}
 .wl-wrong{color:#fca5a5;font-size:.72rem;}
+
+/* ── VICTORY CUTSCENE ── */
+#victory-cut{position:fixed;inset:0;z-index:85;display:none;align-items:center;justify-content:center;background:rgba(0,0,0,.93);}
+#victory-cut.show{display:flex;}
+@keyframes victoryIn{from{transform:scale(.4) translateY(40px);opacity:0}to{transform:scale(1) translateY(0);opacity:1}}
+@keyframes victoryPulse{0%,100%{text-shadow:0 0 20px rgba(250,204,21,.8),0 0 40px rgba(250,204,21,.4)}50%{text-shadow:0 0 60px rgba(250,204,21,1),0 0 120px rgba(250,204,21,.6)}}
+@keyframes victoryHeroIn{from{transform:scale(.3) rotate(-12deg);opacity:0}to{transform:scale(1) rotate(0);opacity:1}}
+.vc-card{text-align:center;color:#fff;animation:victoryIn .7s cubic-bezier(.34,1.56,.64,1);}
+.vc-title{font-size:3.8rem;font-weight:900;color:#fde68a;letter-spacing:.08em;margin-bottom:14px;animation:victoryPulse 1.2s ease-in-out infinite;}
+.vc-hero{height:clamp(160px,28vw,220px);width:auto;filter:drop-shadow(0 0 48px rgba(250,204,21,.9));animation:victoryHeroIn .8s cubic-bezier(.34,1.56,.64,1);}
+.vc-name{font-size:1.5rem;font-weight:900;color:#fff;margin-top:14px;text-shadow:0 0 24px rgba(139,92,246,.9);}
+.vc-sub{font-size:.9rem;color:#a78bfa;margin-top:6px;}
 </style>
 </head>
 <body>
@@ -267,6 +279,16 @@ canvas#c{position:absolute;inset:0;width:100%;height:100%;}
   <div id="phase-flash"></div>
   <!-- Ultimate flash -->
   <div id="ult-flash"></div>
+
+  <!-- Victory cutscene -->
+  <div id="victory-cut">
+    <div class="vc-card">
+      <div class="vc-title">VICTORY!</div>
+      <img class="vc-hero" id="vc-hero-img" src="../game/assets/chars/hero-lv1.png" alt="hero">
+      <div class="vc-name">보스 격파!</div>
+      <div class="vc-sub" id="vc-sub"></div>
+    </div>
+  </div>
 
   <!-- Phase cutscene -->
   <div id="cut">
@@ -586,9 +608,9 @@ const STATUS_FX = {
   SHOCK:  { icon:'⚡', label:'감전', color:'#fbbf24', dur:12000, desc:'보기 계속 섞임' },
 };
 const DROP_TYPES = {
-  HEART:  { icon:'❤️', action:'heal',   value:20 },
+  HEART:  { icon:'❤️', action:'heal',   value:10 },
   SHIELD: { icon:'🛡️', action:'shield', value:1 },
-  POWER:  { icon:'⚔️', action:'power',  value:3 },
+  POWER:  { icon:'⚔️', action:'power',  value:2 },
 };
 
 // ═══════════════════════════════════════════════════════════
@@ -628,17 +650,16 @@ const G = {
     if (rafId) cancelAnimationFrame(rafId);
     rafId = requestAnimationFrame(loop);
     scheduleBossAttack();
-    // 시작 시 드롭 2개 즉시 스폰
-    setTimeout(() => spawnDrop(), 800);
-    setTimeout(() => spawnDrop(), 2200);
     scheduleDropSpawn();
   },
   retry() {
     document.getElementById('result').classList.remove('show');
+    document.getElementById('victory-cut').classList.remove('show');
     if (this._qs) this.start(this._qs, this._label);
   },
   goHome() {
     document.getElementById('result').classList.remove('show');
+    document.getElementById('victory-cut').classList.remove('show');
     document.getElementById('game').style.display = 'none';
     document.getElementById('sel').style.display = 'flex';
     BGM.stop();
@@ -793,7 +814,7 @@ function castSkill() {
     .to(heroWrap, { left: '50%', duration: .2, ease: 'power4.out' })
     .to(ultFlash,  { opacity: .7, duration: .12 })
     .call(() => {
-      const dmg = Math.round((40 + GS.bossPhase * 20) * (GS.combo * .1 + .9));
+      const dmg = Math.round((22 + GS.bossPhase * 9) * (GS.combo * .08 + .92));
       GS.bossHP = Math.max(0, GS.bossHP - dmg);
       GS.score += dmg * 3;
       bossAnim('hit');
@@ -959,8 +980,8 @@ function timeExpired(correct) {
 function finishQuestion(isCorrect) {
   document.getElementById('qpop').classList.remove('show');
   if (isCorrect) {
-    let dmg = 15 + GS.bossPhase * 6;
-    if (GS.hasPower) { dmg *= 3; GS.hasPower = false; }
+    let dmg = 8 + GS.bossPhase * 3;
+    if (GS.hasPower) { dmg *= 2; GS.hasPower = false; }
     dmg = Math.round(dmg * (GS.combo * .08 + .92));
     GS.bossHP = Math.max(0, GS.bossHP - dmg);
     GS.combo = Math.min(GS.combo + 1, 12);
@@ -1046,17 +1067,17 @@ function updateStatusRow() {
   const row = document.getElementById('status-row');
   const hudH = document.getElementById('hud').offsetHeight;
   const telShowing = document.getElementById('tel').style.display !== 'none';
-  row.style.top = (hudH + (telShowing ? 58 : 6)) + 'px';
+  row.style.top = (hudH + (telShowing ? 86 : 6)) + 'px';
   row.innerHTML = Object.entries(GS.statusFx).map(([k,fx]) =>
     `<div class="sfx-badge" style="border-color:${fx.color};color:${fx.color}">${fx.icon}${fx.label}</div>`
   ).join('');
 }
 
-const MAX_DROPS = 2;
+const MAX_DROPS = 1;
 
 function scheduleDropSpawn() {
   if (dropTimer) clearTimeout(dropTimer);
-  dropTimer = setTimeout(spawnDropIfNeeded, 3500 + Math.random() * 3000);
+  dropTimer = setTimeout(spawnDropIfNeeded, 9000 + Math.random() * 6000);
 }
 
 function spawnDropIfNeeded() {
@@ -1125,7 +1146,26 @@ function grabDrop(id, el) {
 // ═══════════════════════════════════════════════════════════
 //  WIN / LOSE
 // ═══════════════════════════════════════════════════════════
-function gameWin() { GS.phase=10; cancelTimers(); showResult(true); }
+function gameWin() {
+  GS.phase = 10;
+  cancelTimers();
+  BGM.stop();
+  // Victory flash
+  const fl = document.getElementById('phase-flash');
+  fl.className = ''; void fl.offsetWidth; fl.className = 'go';
+  // Show victory cutscene
+  const h = HERO_ASSETS[GS.bossPhase];
+  document.getElementById('vc-hero-img').src = h.idle;
+  document.getElementById('vc-sub').textContent = (G._label || '') + ' 보스를 완전히 물리쳤다!';
+  setTimeout(() => {
+    document.getElementById('victory-cut').classList.add('show');
+    playSfx('win');
+  }, 250);
+  setTimeout(() => {
+    document.getElementById('victory-cut').classList.remove('show');
+    showResult(true);
+  }, 3500);
+}
 function gameOver() { GS.phase=10; cancelTimers(); showResult(false); }
 
 function showResult(win) {
@@ -1148,7 +1188,7 @@ function showResult(win) {
   } else { wl.style.display='none'; }
   document.getElementById('result').classList.add('show');
   BGM.stop();
-  setTimeout(() => playSfx(win ? 'win' : 'lose'), 200);
+  if (!win) setTimeout(() => playSfx('lose'), 200);
 }
 
 // ═══════════════════════════════════════════════════════════

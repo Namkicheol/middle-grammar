@@ -3210,6 +3210,13 @@ let manualPause = false;
 let pauseStartedTs = 0;
 let pausedTotalMs = 0;
 
+// Special game elements
+let skull = { x: 0, y: 0, dx: 2.2, visible: false };
+let tripleItem = { x: 0, y: 0, visible: false };
+let tripleShotActive = false;
+let sideBubbles = [];
+let shotsFired = 0;
+
 // Timer state
 let timeLimitSec = 300;        // 5 min default; 0 = unlimited
 let gameStartTs = 0;
@@ -3281,6 +3288,22 @@ function initGrid() {
       grid[r][c] = availColors[Math.floor(Math.random() * availColors.length)];
     }
   }
+  // Place 1-2 angel bubbles in rows 1-3
+  const angelCount = 1 + Math.floor(Math.random() * 2);
+  const usedCells = new Set();
+  for (let i = 0; i < angelCount; i++) {
+    for (let attempt = 0; attempt < 20; attempt++) {
+      const r = 1 + Math.floor(Math.random() * Math.min(3, cfg.initRows - 1));
+      const cols = r % 2 === 0 ? MAX_COLS : MAX_COLS - 1;
+      const c = Math.floor(Math.random() * cols);
+      const key = r + ':' + c;
+      if (!usedCells.has(key) && grid[r][c]) {
+        grid[r][c] = '__angel__';
+        usedCells.add(key);
+        break;
+      }
+    }
+  }
 }
 
 function stageConfig() {
@@ -3328,6 +3351,12 @@ function startGame(unitKey, stage) {
   fallingBubbles = []; popAnimations = [];
   jiggleAnimations.clear();
   shooterBubble = null;
+  skull.visible = false;
+  tripleItem.visible = false;
+  tripleShotActive = false;
+  sideBubbles = [];
+  shotsFired = 0;
+  stopBubbleBgm();
 
   document.getElementById('start-screen').style.display = 'none';
   document.getElementById('game-screen').style.display = 'flex';
@@ -3353,6 +3382,7 @@ function startGame(unitKey, stage) {
   updateTimerHUD();
   cancelAnimationFrame(rafId);
   rafId = requestAnimationFrame(loop);
+  setTimeout(() => startBubbleBgm(), 400);
   setTimeout(() => triggerQuizModal(), 300);
 }
 
@@ -3386,7 +3416,7 @@ function randomActiveColor() {
   const active = new Set();
   for (let r = 0; r < ROWS; r++)
     for (let c = 0; c < COLS; c++)
-      if (grid[r][c]) active.add(grid[r][c]);
+      if (grid[r][c] && grid[r][c] !== '__angel__') active.add(grid[r][c]);
   // 슈터는 스테이지 팔레트 전체에서 균등하게 추첨한다.
   // 단, 그리드에 한 가지 색만 남아 있는 막판에는 그 색만 발사해야 클리어가 가능하므로 active로 좁힌다.
   const pool = active.size === 1 ? [...active] : palette;
@@ -3435,7 +3465,21 @@ function drawGrid() {
     for (let c = 0; c < cols; c++) {
       if (!grid[r][c]) continue;
       const wobble = jiggleOffset(r, c);
-      drawBubbleAt(ctx, cellX(r,c) + wobble.x, cellY(r) + wobble.y, R-1, grid[r][c]);
+      const gx = cellX(r,c) + wobble.x, gy = cellY(r) + wobble.y;
+      if (grid[r][c] === '__angel__') {
+        // Gold-glowing white bubble with halo
+        ctx.save();
+        ctx.shadowColor = '#ffd700';
+        ctx.shadowBlur = 12;
+        drawBubbleAt(ctx, gx, gy, R-1, '#fffde7');
+        ctx.restore();
+        ctx.font = `${Math.round(R * 1.1)}px serif`;
+        ctx.textAlign = 'center';
+        ctx.textBaseline = 'middle';
+        ctx.fillText('😇', gx, gy);
+      } else {
+        drawBubbleAt(ctx, gx, gy, R-1, grid[r][c]);
+      }
     }
   }
 }
@@ -3550,12 +3594,34 @@ function loop(ts) {
   drawPopAnimations();
   drawFalling();
 
+  // Move and draw special elements
+  if (!gamePaused) {
+    if (skull.visible) {
+      skull.x += skull.dx;
+      if (skull.x < R + 10) { skull.x = R + 10; skull.dx = Math.abs(skull.dx); }
+      if (skull.x > CW - R - 10) { skull.x = CW - R - 10; skull.dx = -Math.abs(skull.dx); }
+    }
+    if (tripleItem.visible) {
+      tripleItem.y += 0.7;
+      if (tripleItem.y > SHOOTER_Y - R * 2) tripleItem.visible = false;
+    }
+  }
+  drawSkull();
+  drawTripleItem();
+
   if (!gamePaused) {
     if (shooterBubble && shooterBubble.moving) {
       moveBubble();
     }
+    for (let i = sideBubbles.length - 1; i >= 0; i--) {
+      if (sideBubbles[i].moving) moveSideBubble(i);
+    }
   }
   drawShooter();
+  // Draw side bubbles
+  for (const sb of sideBubbles) {
+    if (sb.moving) drawBubbleAt(ctx, sb.x, sb.y, R-2, sb.color);
+  }
 }
 
 function autoDescend() {
@@ -3616,9 +3682,31 @@ function moveBubble() {
   if (b.x < R) { b.x = R; b.dx = Math.abs(b.dx); }
   if (b.x > CW - R) { b.x = CW-R; b.dx = -Math.abs(b.dx); }
 
+  // Check skull collision
+  if (skull.visible) {
+    const sdx = b.x - skull.x, sdy = b.y - skull.y;
+    if (sdx*sdx + sdy*sdy < (R*2.2)*(R*2.2)) {
+      skull.visible = false;
+      autoDescend();
+      showToast('💀 위험! 줄이 추가됩니다!', 'ng');
+      playDescent();
+    }
+  }
+
+  // Check tripleItem collection
+  if (tripleItem.visible) {
+    const tdx = b.x - tripleItem.x, tdy = b.y - tripleItem.y;
+    if (tdx*tdx + tdy*tdy < (R*2.5)*(R*2.5)) {
+      tripleItem.visible = false;
+      tripleShotActive = true;
+      showToast('🔫 트리플 샷 발동!', 'ok');
+      playEarn();
+    }
+  }
+
   // Ceiling snap
   if (b.y <= R + CELL_H * 0) {
-    snapBubble(b);
+    snapBubble(b, true);
     return;
   }
 
@@ -3629,34 +3717,95 @@ function moveBubble() {
       const gx = cellX(r,c), gy = cellY(r);
       const dx = b.x - gx, dy = b.y - gy;
       if (dx*dx + dy*dy < (R*2-2)*(R*2-2)) {
-        snapBubble(b);
+        snapBubble(b, true);
         return;
       }
     }
   }
 }
 
-function snapBubble(b) {
+function moveSideBubble(idx) {
+  const b = sideBubbles[idx];
+  if (!b || !b.moving) return;
+  b.x += b.dx * SPEED;
+  b.y += b.dy * SPEED;
+
+  if (b.x < R) { b.x = R; b.dx = Math.abs(b.dx); }
+  if (b.x > CW - R) { b.x = CW-R; b.dx = -Math.abs(b.dx); }
+
+  if (b.y <= R) {
+    snapBubble(b, false);
+    sideBubbles.splice(idx, 1);
+    return;
+  }
+
+  for (let r = 0; r < ROWS; r++) {
+    for (let c = 0; c < COLS; c++) {
+      if (!grid[r][c]) continue;
+      const gx = cellX(r,c), gy = cellY(r);
+      const dx = b.x - gx, dy = b.y - gy;
+      if (dx*dx + dy*dy < (R*2-2)*(R*2-2)) {
+        snapBubble(b, false);
+        sideBubbles.splice(idx, 1);
+        return;
+      }
+    }
+  }
+}
+
+function snapBubble(b, isMain) {
   const [sr, sc] = findSnapCell(b.x, b.y);
   if (sr < 0) {
-    // Couldn't find snap cell — refund shot
-    canShoot = true;
-    shooterBubble = newShooterBubble();
+    if (isMain) {
+      canShoot = true;
+      shooterBubble = newShooterBubble();
+    }
     return;
   }
 
   grid[sr][sc] = b.color;
   jiggleAround(sr, sc);
-  shooterBubble = null;
+  if (isMain) { shooterBubble = null; }
   playSnap();
+
+  // Angel interaction — pop all bubbles of this color
+  const angelNeighbors = neighbors(sr, sc).filter(([nr, nc]) => grid[nr][nc] === '__angel__');
+  if (angelNeighbors.length > 0) {
+    const angelPops = [];
+    for (let r = 0; r < ROWS; r++) {
+      for (let c = 0; c < COLS; c++) {
+        if (grid[r][c] === b.color) {
+          popAnimations.push({ x: cellX(r,c), y: cellY(r), color: grid[r][c], progress: 0 });
+          grid[r][c] = null;
+          angelPops.push([r, c]);
+        }
+      }
+    }
+    for (const [ar, ac] of angelNeighbors) {
+      popAnimations.push({ x: cellX(ar,ac), y: cellY(ar), color: '#fffde7', progress: 0 });
+      grid[ar][ac] = null;
+    }
+    const angelScore = angelPops.length * 25;
+    gameScore += angelScore;
+    updateHUD();
+    playPop();
+    showScoreFx(`😇 천사 +${angelScore}`, 'combo');
+    showToast(`😇 같은 색 ${angelPops.length}개 제거! +${angelScore}점`, 'ok');
+    if (isMain) {
+      let anyBubble = false;
+      for (let r=0;r<ROWS;r++) for(let c=0;c<COLS;c++) if(grid[r][c]) anyBubble=true;
+      if (!anyBubble) { gameScore += 500; setTimeout(() => triggerGameOver(true, 'clear'), 700); return; }
+      setTimeout(() => triggerQuizModal(), 600);
+    }
+    return;
+  }
 
   const cluster = findCluster(sr, sc, b.color);
   if (cluster.length >= 3) {
     popCluster(cluster, sr, sc);
-  } else {
+  } else if (isMain) {
     checkGameOver();
     if (!gameOver) {
-      // No pop → show next quiz immediately
       setTimeout(() => triggerQuizModal(), 250);
     }
   }
@@ -3780,6 +3929,7 @@ function triggerGameOver(clear, reason) {
   gamePaused = true;
   manualPause = false;
   cancelAnimationFrame(rafId);
+  stopBubbleBgm();
   document.getElementById('quiz-overlay').classList.remove('show');
   document.getElementById('pause-overlay').classList.remove('show');
 
@@ -3890,6 +4040,27 @@ function handleShoot(clientX, clientY) {
   shooterBubble.dy = Math.sin(shootAngle);
   canShoot = false;
   playShoot();
+
+  // Triple shot side bubbles
+  if (tripleShotActive) {
+    tripleShotActive = false;
+    const spread = Math.PI / 14; // ~13°
+    for (const offset of [-spread, spread]) {
+      const a = shootAngle + offset;
+      sideBubbles.push({
+        x: CW/2, y: SHOOTER_Y,
+        color: shooterBubble.color,
+        dx: Math.cos(a), dy: Math.sin(a),
+        moving: true, isMain: false
+      });
+    }
+  }
+
+  shotsFired++;
+  // Skull spawns every 12 shots
+  if (shotsFired % 12 === 0 && !skull.visible) spawnSkull();
+  // TripleItem spawns every 10 shots (offset 5)
+  if (shotsFired % 10 === 5 && !tripleItem.visible) spawnTripleItem();
 }
 
 canvas.addEventListener('mousemove', e => handleAim(e.clientX, e.clientY));
@@ -4067,6 +4238,53 @@ function showImpactBurst(side, level) {
 
 // ── Audio ──
 let audioCtx;
+// ── Special element helpers ──
+function spawnSkull() {
+  const fromLeft = Math.random() < 0.5;
+  skull.x = fromLeft ? R + 10 : CW - R - 10;
+  skull.y = SHOOTER_Y * 0.38 + Math.random() * (SHOOTER_Y * 0.22);
+  skull.dx = fromLeft ? 2.2 : -2.2;
+  skull.visible = true;
+}
+
+function spawnTripleItem() {
+  tripleItem.x = R * 3 + Math.random() * (CW - R * 6);
+  tripleItem.y = CELL_H * 2;
+  tripleItem.visible = true;
+}
+
+function drawSkull() {
+  if (!skull.visible) return;
+  ctx.save();
+  ctx.font = `${Math.round(R * 1.6)}px serif`;
+  ctx.textAlign = 'center';
+  ctx.textBaseline = 'middle';
+  ctx.shadowColor = '#ff4444';
+  ctx.shadowBlur = 14;
+  ctx.fillText('💀', skull.x, skull.y);
+  ctx.restore();
+}
+
+function drawTripleItem() {
+  if (!tripleItem.visible) return;
+  ctx.save();
+  ctx.font = `${Math.round(R * 1.4)}px serif`;
+  ctx.textAlign = 'center';
+  ctx.textBaseline = 'middle';
+  ctx.shadowColor = '#00eaff';
+  ctx.shadowBlur = 16;
+  ctx.fillText('🔫', tripleItem.x, tripleItem.y);
+  // Pulsing ring
+  const pulse = 0.7 + 0.3 * Math.sin(Date.now() / 200);
+  ctx.strokeStyle = `rgba(0,234,255,${pulse})`;
+  ctx.lineWidth = 2;
+  ctx.beginPath();
+  ctx.arc(tripleItem.x, tripleItem.y, R * 1.5, 0, Math.PI * 2);
+  ctx.stroke();
+  ctx.restore();
+}
+
+// ── Bubble BGM ──
 let bossBgmTimer = null;
 let bossBgmBeat = 0;
 function getAudioCtx() {
@@ -4122,6 +4340,31 @@ function stopBossBgm() {
   if (bossBgmTimer) clearInterval(bossBgmTimer);
   bossBgmTimer = null;
 }
+
+let bubbleBgmTimer2 = null;
+let bubbleBgmBeat2 = 0;
+function startBubbleBgm() {
+  if (bubbleBgmTimer2) return;
+  bubbleBgmBeat2 = 0;
+  const melody = [523, 659, 784, 880, 784, 659, 523, 440, 523, 659, 784, 1047, 880, 784, 659, 784];
+  const bass   = [131, 196, 196, 220, 196, 196, 131, 196, 147, 196, 196, 220,  196, 220, 196, 220];
+  const tick = () => {
+    if (gameOver || document.getElementById('game-screen').style.display === 'none') {
+      stopBubbleBgm(); return;
+    }
+    const b = bubbleBgmBeat2++;
+    playTone(bass[b % bass.length], 0.20, 0.032, 'sawtooth');
+    if (b % 2 === 0) playTone(melody[b % melody.length], 0.13, 0.025, 'triangle');
+    if (b % 8 === 3) playTone(melody[(b+4) % melody.length] * 1.5, 0.08, 0.018, 'sine');
+  };
+  tick();
+  bubbleBgmTimer2 = setInterval(tick, 300);
+}
+function stopBubbleBgm() {
+  if (bubbleBgmTimer2) clearInterval(bubbleBgmTimer2);
+  bubbleBgmTimer2 = null;
+}
+
 function playBossStartFx() {
   playTone(196, 0.12, 0.12, 'sawtooth');
   playTone(392, 0.12, 0.1, 'triangle', 0.1);

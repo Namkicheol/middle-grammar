@@ -628,8 +628,13 @@ const bossImg = document.getElementById('boss-img');
 const heroWrap = document.getElementById('hero-wrap');
 const bossWrap = document.getElementById('boss-wrap');
 
+let _heroTl = null, _bossTl = null;
+
 function setCharSprites(phase) {
   const h = HERO_ASSETS[phase], b = BOSS_ASSETS[phase];
+  // 진행 중인 타임라인 전체 킬 (killTweensOf는 .call() 콜백 킬 안 함)
+  if (_heroTl) { _heroTl.kill(); _heroTl = null; }
+  if (_bossTl) { _bossTl.kill(); _bossTl = null; }
   gsap.killTweensOf(heroWrap); gsap.killTweensOf(bossWrap);
   heroImg.src = h.idle; heroImg.className = 'idle';
   bossImg.src = b.idle; bossImg.className = 'idle';
@@ -641,36 +646,40 @@ function setCharSprites(phase) {
 }
 
 function heroAnim(type) {
+  if (_heroTl) { _heroTl.kill(); _heroTl = null; }
   const h = HERO_ASSETS[GS.bossPhase];
   heroImg.className = '';
   if (type === 'atk') {
     heroImg.src = h.atk;
     heroImg.className = 'attack';
-    gsap.timeline()
+    _heroTl = gsap.timeline()
       .to(heroWrap, { left: '44%', duration: .28, ease: 'power3.out' })
-      .to(heroWrap, { left: '8%', duration: .35, ease: 'power2.in', onComplete() { heroImg.src = h.idle; heroImg.className = 'idle'; } });
+      .to(heroWrap, { left: '8%', duration: .35, ease: 'power2.in',
+          onComplete() { _heroTl = null; heroImg.src = h.idle; heroImg.className = 'idle'; } });
   } else if (type === 'hurt') {
     heroImg.className = 'hurt';
-    gsap.fromTo(heroWrap, { x: 0 }, { x: -18, duration: .08, yoyo: true, repeat: 3, ease: 'power1.inOut', onComplete() { heroImg.className = 'idle'; gsap.set(heroWrap, { x: 0 }); } });
+    _heroTl = gsap.fromTo(heroWrap, { x: 0 }, { x: -18, duration: .08, yoyo: true, repeat: 3, ease: 'power1.inOut',
+      onComplete() { _heroTl = null; heroImg.className = 'idle'; gsap.set(heroWrap, { x: 0 }); } });
   }
 }
 
 function bossAnim(type) {
+  if (_bossTl) { _bossTl.kill(); _bossTl = null; }
   const b = BOSS_ASSETS[GS.bossPhase];
   bossImg.className = '';
   if (type === 'windup') {
     bossImg.className = 'windup';
-    gsap.to(bossWrap, { right: '40%', duration: .5, ease: 'power2.inOut' });
+    _bossTl = gsap.to(bossWrap, { right: '40%', duration: .5, ease: 'power2.inOut' });
   } else if (type === 'hit') {
     bossImg.src = b.hit;
     bossImg.className = 'hit';
-    gsap.timeline()
+    _bossTl = gsap.timeline()
       .to(bossWrap, { right: '8%', duration: .25, ease: 'power3.out' })
       .fromTo(bossWrap, { x: 0 }, { x: 22, duration: .06, yoyo: true, repeat: 4, ease: 'power1.inOut' })
-      .call(() => { bossImg.src = b.idle; bossImg.className = 'idle'; bossImg.style.filter = `drop-shadow(0 8px 28px ${b.glow})`; });
+      .call(() => { _bossTl = null; bossImg.src = b.idle; bossImg.className = 'idle'; bossImg.style.filter = `drop-shadow(0 8px 28px ${b.glow})`; });
   } else {
-    gsap.to(bossWrap, { right: '8%', duration: .3, ease: 'power2.out' });
-    bossImg.src = b.idle; bossImg.className = 'idle';
+    _bossTl = gsap.to(bossWrap, { right: '8%', duration: .3, ease: 'power2.out',
+      onComplete() { _bossTl = null; bossImg.src = b.idle; bossImg.className = 'idle'; } });
   }
 }
 

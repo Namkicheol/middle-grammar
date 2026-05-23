@@ -307,81 +307,162 @@ canvas#c{position:absolute;inset:0;width:100%;height:100%;}
 <script src="../game/questions.js"></script>
 <script src="../sounds.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/tone/14.8.49/Tone.js"></script>
 <script>
 // ═══════════════════════════════════════════════════════════
-//  BGM — 절차적 루프 배경음악
+//  BGM — Tone.js 페이즈별 전투 음악
 // ═══════════════════════════════════════════════════════════
 const BGM = (() => {
-  let _ac=null, _mg=null, _playing=false, _lt=null, _phase=0;
-  const BPM=138, B=60/BPM;
-  // A minor pentatonic (A4=440,C5=523,D5=587,E5=659,G5=784,A5=880)
-  const MEL=[
-    [659,.5],[784,.5],[880,1],[784,1],[659,1],   // bar1 4b
-    [587,1],[659,1],[784,2],                      // bar2 4b
-    [880,.5],[784,.5],[659,1],[587,1],[659,1],    // bar3 4b
-    [440,2],[523,2],                              // bar4 4b
-    [659,.5],[587,.5],[523,1],[587,.5],[659,.5],[784,1], // bar5 4b
-    [880,.5],[784,.5],[659,1],[587,2],            // bar6 4b
-    [523,.5],[659,.5],[784,1],[659,.5],[523,.5],[440,1], // bar7 4b
-    [523,4],                                     // bar8 4b
+  let _ready=false, _playing=false, _phase=0;
+  let _lead, _pad, _bass, _kick, _snare, _hat, _master;
+  let _melSeq, _bassSeq, _kickSeq, _hatSeq;
+
+  // Phase 0 (120 BPM) — 학생 : 차분한 전투
+  // Phase 1 (148 BPM) — 마법사 : 긴박감
+  // Phase 2 (168 BPM) — 마왕 : 극한 전투
+  const PHASES = [
+    {
+      bpm: 120,
+      mel:  ['E4','G4','A4',null,'G4','E4','D4',null,
+             'E4','C4','D4',null,'C4',null,null,null],
+      bass: ['A2',null,'E3',null,'A2',null,'G2',null,
+             'A2',null,'E3',null,'D2',null,'E2',null],
+      pad:  [['A3','C4','E4'],null,null,null,null,null,null,null,
+             ['G3','B3','D4'],null,null,null,null,null,null,null],
+    },
+    {
+      bpm: 148,
+      mel:  ['A4','C5','E5',null,'C5','A4','G4',null,
+             'A4','E4','G4',null,'A4',null,'G4',null],
+      bass: ['A2',null,'A2','E3','A2',null,'G2',null,
+             'A2',null,'A2','E3','F2',null,'E2',null],
+      pad:  [['A3','E4'],null,null,null,['G3','D4'],null,null,null,
+             ['A3','E4'],null,null,null,['F3','C4'],null,null,null],
+    },
+    {
+      bpm: 168,
+      mel:  ['E5','G5','A5',null,'G5','E5','D5','E5',
+             'C5',null,'D5','E5','G5',null,'E5',null],
+      bass: ['A1',null,'E2','A1','G1',null,'E1',null,
+             'A1',null,'A1','E2','D2',null,'A1',null],
+      pad:  [['A3','E4','A4'],null,null,null,['G3','D4','G4'],null,null,null,
+             ['A3','E4','A4'],null,null,null,['F3','C4','F4'],null,null,null],
+    },
   ];
-  const BAS=[
-    [220,1],[330,1],[220,1],[330,1],[220,1],[330,1],[247,1],[330,1], // b1-2
-    [220,1],[330,1],[220,1],[330,1],[196,2],[220,2],                  // b3-4
-    [220,1],[330,1],[220,1],[330,1],[220,1],[330,1],[247,1],[330,1], // b5-6
-    [165,1],[220,1],[165,1],[220,1],[220,4],                          // b7-8
-  ];
-  function tone(f,st,dur,vol,type='square'){
-    const o=_ac.createOscillator(), g=_ac.createGain();
-    o.connect(g); g.connect(_mg);
-    o.type=type; o.frequency.value=f;
-    g.gain.setValueAtTime(0,st);
-    g.gain.linearRampToValueAtTime(vol,st+.012);
-    g.gain.setValueAtTime(vol,st+dur*.72);
-    g.gain.exponentialRampToValueAtTime(.001,st+dur*.96);
-    o.start(st); o.stop(st+dur);
+
+  function build() {
+    if (_ready) return;
+    _ready = true;
+
+    _master = new Tone.Gain(0.78).toDestination();
+    const comp = new Tone.Compressor({ threshold:-18, ratio:4 }).connect(_master);
+    const rev  = new Tone.Reverb({ decay:1.5, wet:0.18 }).connect(comp);
+
+    // Lead synth (saw + filter)
+    _lead = new Tone.PolySynth(Tone.Synth, {
+      oscillator: { type:'sawtooth' },
+      envelope:   { attack:.02, decay:.12, sustain:.6, release:.28 },
+    });
+    const leadFilter = new Tone.Filter(2400,'lowpass').connect(rev);
+    _lead.connect(leadFilter);
+    _lead.volume.value = -9;
+
+    // Pad (warm chords)
+    _pad = new Tone.PolySynth(Tone.Synth, {
+      oscillator: { type:'triangle' },
+      envelope:   { attack:.35, decay:.4, sustain:.5, release:.8 },
+    }).connect(rev);
+    _pad.volume.value = -18;
+
+    // Bass
+    _bass = new Tone.Synth({
+      oscillator: { type:'square' },
+      envelope:   { attack:.01, decay:.18, sustain:.55, release:.2 },
+    });
+    const bassFilter = new Tone.Filter(600,'lowpass').connect(comp);
+    _bass.connect(bassFilter);
+    _bass.volume.value = -7;
+
+    // Kick
+    _kick = new Tone.MembraneSynth({ pitchDecay:.06, octaves:6,
+      envelope:{ attack:.001, decay:.32, sustain:0, release:.15 }
+    }).connect(comp);
+    _kick.volume.value = -3;
+
+    // Snare (noise + tone)
+    _snare = new Tone.NoiseSynth({ noise:{type:'white'},
+      envelope:{ attack:.001, decay:.14, sustain:0, release:.05 }
+    }).connect(comp);
+    _snare.volume.value = -10;
+
+    // Hi-hat
+    _hat = new Tone.MetalSynth({ frequency:400, envelope:{attack:.001,decay:.04,release:.01},
+      resonance:8000, modulationIndex:32, octaves:1.5 }).connect(comp);
+    _hat.volume.value = -18;
+
+    const p = PHASES[_phase];
+    Tone.getTransport().bpm.value = p.bpm;
+    Tone.getTransport().loop = true;
+    Tone.getTransport().loopEnd = '2m';
+
+    _melSeq  = new Tone.Sequence((t,n)=>{ if(n) _lead.triggerAttackRelease(n,'8n',t); }, p.mel,  '16n').start(0);
+    _bassSeq = new Tone.Sequence((t,n)=>{ if(n) _bass.triggerAttackRelease(n,'8n',t); }, p.bass, '16n').start(0);
+    new Tone.Sequence((t,n)=>{ if(n) _pad.triggerAttackRelease(n,'4n',t); }, p.pad, '16n').start(0);
+
+    // Kick: beat 1 and 3 (every 8 16th notes)
+    _kickSeq = new Tone.Sequence((t,i)=>{
+      if(i===0||i===8) _kick.triggerAttackRelease('C1','16n',t);
+    }, [...Array(16).keys()], '16n').start(0);
+
+    // Snare: beat 2 and 4
+    new Tone.Sequence((t,i)=>{
+      if(i===4||i===12) _snare.triggerAttackRelease('8n',t);
+    }, [...Array(16).keys()], '16n').start(0);
+
+    // Hi-hat: 8th notes, offbeat quieter
+    _hatSeq = new Tone.Sequence((t,i)=>{
+      _hat.volume.value = i%2===0 ? -18 : -22;
+      _hat.triggerAttackRelease('16n',t);
+    }, [...Array(16).keys()], '16n').start(0);
   }
-  function loop(st){
-    let t=st, bt=st;
-    for(const[f,beats] of MEL){ tone(f,t,beats*B*.87,.12+_phase*.025,'square'); t+=beats*B; }
-    for(const[f,beats] of BAS){ tone(f,bt,beats*B*.82,.14+_phase*.02,'triangle'); bt+=beats*B; }
-    const bars=8, bpb=4;
-    for(let i=0;i<bars*bpb;i++){
-      const tt=st+i*B, beat=i%bpb;
-      if(beat===0||beat===2) tone(70,tt,B*.35,.2+_phase*.04,'sine');
-      if(beat===1||beat===3){
-        const sn=_ac.createOscillator(), sg=_ac.createGain();
-        sn.connect(sg); sg.connect(_mg); sn.type='sawtooth'; sn.frequency.value=180;
-        sg.gain.setValueAtTime(.07+_phase*.015,tt); sg.gain.exponentialRampToValueAtTime(.001,tt+.07);
-        sn.start(tt); sn.stop(tt+.08);
-      }
-    }
-    const dur=t-st;
-    if(_playing) _lt=setTimeout(()=>{ if(_playing) loop(_ac.currentTime+.12); },(dur-.25)*1000);
-  }
+
   return {
-    start(phase=0){
-      if(_playing) return;
-      _phase=phase;
-      try{
-        if(!_ac) _ac=new(window.AudioContext||window.webkitAudioContext)();
-        _mg=_ac.createGain(); _mg.gain.value=.32; _mg.connect(_ac.destination);
-        _playing=true; loop(_ac.currentTime+.15);
-      }catch(e){}
+    async start(phase=0) {
+      if (_playing) return;
+      _phase = phase;
+      _playing = true;
+      try {
+        await Tone.start();
+        build();
+        const p = PHASES[phase];
+        Tone.getTransport().bpm.value = p.bpm;
+        if (_melSeq)  _melSeq.events  = p.mel;
+        if (_bassSeq) _bassSeq.events = p.bass;
+        if (Tone.getTransport().state !== 'started') Tone.getTransport().start('+0.05');
+      } catch(e) { console.warn('BGM error:', e); }
     },
-    stop(){
-      _playing=false;
-      if(_lt) clearTimeout(_lt);
-      if(_mg && _ac) {
-        try {
-          _mg.gain.linearRampToValueAtTime(0, _ac.currentTime + .08);
-          const old = _mg; _mg = null;
-          setTimeout(() => { try { old.disconnect(); } catch(e){} }, 200);
-        } catch(e){}
-      }
+    stop() {
+      _playing = false;
+      try {
+        if (_master) _master.gain.rampTo(0, 0.12);
+        setTimeout(() => {
+          try { Tone.getTransport().stop(); if (_master) _master.gain.rampTo(0.78, 0); } catch(e){}
+        }, 180);
+      } catch(e){}
     },
-    setPhase(p){ _phase=p; if(_mg) _mg.gain.value=.32+p*.07; },
-    get isPlaying(){ return _playing; }
+    setPhase(p) {
+      if (_phase === p || !_ready) return;
+      _phase = p;
+      const track = PHASES[p];
+      try {
+        Tone.getTransport().bpm.rampTo(track.bpm, 1.2);
+        if (_melSeq)  _melSeq.events  = track.mel;
+        if (_bassSeq) _bassSeq.events = track.bass;
+        if (_lead) _lead.volume.rampTo(-9 + p*1.5, 0.5);
+        if (_kick) _kick.volume.rampTo(-3 + p*1.5, 0.5);
+      } catch(e){}
+    },
+    get isPlaying() { return _playing; }
   };
 })();
 

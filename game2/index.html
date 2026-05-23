@@ -814,7 +814,7 @@ function castSkill() {
     .to(heroWrap, { left: '50%', duration: .2, ease: 'power4.out' })
     .to(ultFlash,  { opacity: .7, duration: .12 })
     .call(() => {
-      const dmg = Math.round((22 + GS.bossPhase * 9) * (GS.combo * .08 + .92));
+      const dmg = Math.round((10 + GS.bossPhase * 5) * (GS.combo * .05 + .95));
       GS.bossHP = Math.max(0, GS.bossHP - dmg);
       GS.score += dmg * 3;
       bossAnim('hit');
@@ -980,15 +980,15 @@ function timeExpired(correct) {
 function finishQuestion(isCorrect) {
   document.getElementById('qpop').classList.remove('show');
   if (isCorrect) {
-    let dmg = 8 + GS.bossPhase * 3;
-    if (GS.hasPower) { dmg *= 2; GS.hasPower = false; }
-    dmg = Math.round(dmg * (GS.combo * .08 + .92));
+    let dmg = 6 + GS.bossPhase * 2;
+    if (GS.hasPower) { dmg = Math.round(dmg * 1.6); GS.hasPower = false; }
+    dmg = Math.round(dmg * (GS.combo * .05 + .95));
     GS.bossHP = Math.max(0, GS.bossHP - dmg);
     GS.combo = Math.min(GS.combo + 1, 12);
     GS.maxCombo = Math.max(GS.maxCombo, GS.combo);
     GS.score += dmg * GS.combo;
     GS.correct++;
-    addSkillGauge(25);
+    addSkillGauge(15);
     heroAnim('atk'); bossAnim('hit');
     showDmgFloat('-' + dmg, '#ef4444', 'right');
     cameraShake(5 + GS.bossPhase * 2, .35);
@@ -1028,6 +1028,7 @@ function checkBossPhase() {
 function triggerPhaseChange(newPhase) {
   GS.bossPhase = newPhase;
   GS.phase = 10;
+  GS.combo = 1;
   BGM.setPhase(newPhase);
   cancelTimers();
   const b = BOSS_ASSETS[newPhase];

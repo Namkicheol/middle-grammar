@@ -530,6 +530,7 @@ let combo = 0;
 let bestCombo = 0;
 let hp = 3;
 let correctCount = 0;
+let whackWrongItems = [];
 let answered = false;
 let qStart = 0;
 let qTimerRaf = 0;
@@ -617,7 +618,7 @@ function pickQuestionPool(key) {
 function startGame() {
   questionPool = pickQuestionPool(unitKey);
   if (!questionPool.length) { alert('문제를 불러올 수 없어요.'); return; }
-  qIdx = 0; score = 0; combo = 0; bestCombo = 0; hp = MAX_HP; correctCount = 0;
+  qIdx = 0; score = 0; combo = 0; bestCombo = 0; hp = MAX_HP; correctCount = 0; whackWrongItems = [];
   endBoost();
   clearTimeout(bombTimer); clearTimeout(heartTimer);
   document.getElementById('screen-start').classList.add('hide');
@@ -629,10 +630,12 @@ function startGame() {
   // 특수 아이템 스폰 사이클 시작
   scheduleBomb();
   scheduleHeart();
+  setTimeout(startWhackBgm, 350);
 }
 
 function endGame() {
   gameRunning = false;
+  stopWhackBgm();
   cancelAnimationFrame(qTimerRaf);
   clearTimeout(spawnTimer);
   clearTimeout(qTimeoutTimer);
@@ -663,8 +666,8 @@ function endGame() {
     retryBtn.textContent = '다시 도전';
   }
   document.getElementById('screen-end').classList.remove('hide');
-  if (!isGameOver && typeof window.showScorePopup === 'function') {
-    window.showScorePopup(correctCount, questionPool.length, { title });
+  if (typeof window.showScorePopup === 'function') {
+    window.showScorePopup(correctCount, questionPool.length, { title, wrongItems: whackWrongItems });
   }
 }
 
@@ -718,6 +721,8 @@ function onQTimeout() {
   loseHp();
   spawnStrike('시간초과', 'ng');
   playWhackMiss();
+  const curQ = questionPool[qIdx];
+  if (curQ) whackWrongItems.push({ question: (curQ.kor ? curQ.kor + ' / ' : '') + curQ.eng, my: '(시간초과)', right: currentAns });
   if (hp <= 0) { triggerGameOver(); return; }
   setTimeout(advance, 700);
 }
@@ -914,6 +919,8 @@ function handleHit(e, mole, slotIdx, word) {
     mole.classList.add('miss');
     spawnStrike('빗나감!', 'ng');
     playWhackMiss();
+    const curQ = questionPool[qIdx];
+    if (curQ) whackWrongItems.push({ question: (curQ.kor ? curQ.kor + ' / ' : '') + curQ.eng, my: word || '(없음)', right: currentAns });
     setTimeout(() => submergeMole(mole), 380);
     updateHud();
     if (hp <= 0) { answered = true; triggerGameOver(); }
@@ -1081,6 +1088,31 @@ function playGameOver() {
   _tone(c, 466.16, 'triangle', t + 0.22, 0.18, 0.22); // Bb4
   _tone(c, 369.99, 'triangle', t + 0.40, 0.22, 0.24); // F#4
   _tone(c, 311.13, 'triangle', t + 0.62, 0.40, 0.26); // Eb4
+}
+
+// ── BGM ─────────────────────────────────────────────────────
+let _whackBgmTimer = null;
+let _whackBgmBeat = 0;
+function startWhackBgm() {
+  if (_whackBgmTimer) return;
+  _whackBgmBeat = 0;
+  const bass   = [196, 220, 196, 196, 175, 196, 175, 196];
+  const melody = [784, 880, 784, 698, 784, 880, 988, 880];
+  const tick = () => {
+    if (!gameRunning) { stopWhackBgm(); return; }
+    const c = whackAC(); if (!c) return;
+    const t = c.currentTime;
+    const b = _whackBgmBeat++;
+    _tone(c, bass[b % bass.length], 'sawtooth', t, 0.20, 0.048);
+    if (b % 2 === 0) _tone(c, melody[b % melody.length], 'triangle', t + 0.02, 0.14, 0.038);
+    if (b % 4 === 3) _tone(c, melody[(b+2) % melody.length] * 1.5, 'sine', t + 0.05, 0.09, 0.026);
+  };
+  tick();
+  _whackBgmTimer = setInterval(tick, 280);
+}
+function stopWhackBgm() {
+  if (_whackBgmTimer) clearInterval(_whackBgmTimer);
+  _whackBgmTimer = null;
 }
 
 function spawnSmash(mole, type) {

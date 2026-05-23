@@ -1130,6 +1130,7 @@ cleanupZeroScoreRecords();
   });
   document.querySelectorAll('.mode-btn').forEach(btn => {
     btn.addEventListener('click', () => {
+      if (btn.dataset.mode === 'boss') { location.href = '../game2/'; return; }
       document.querySelectorAll('.mode-btn').forEach(b => b.classList.remove('on'));
       btn.classList.add('on');
       selectedMode = btn.dataset.mode || 'bubble';
@@ -1140,8 +1141,9 @@ cleanupZeroScoreRecords();
 })();
 
 function startSelectedGame(unitKey) {
-  if (selectedMode === 'boss') startBossBattle(unitKey);
-  else if (selectedMode === 'speed') startSpeedQuiz(unitKey);
+  if (selectedMode === 'boss') {
+    location.href = '../game2/';
+  } else if (selectedMode === 'speed') startSpeedQuiz(unitKey);
   else if (selectedMode === 'whack') location.href = '../whack-grammar/?unit=' + encodeURIComponent(unitKey);
   else startGame(unitKey);
 }
@@ -3211,6 +3213,7 @@ let pauseStartedTs = 0;
 let pausedTotalMs = 0;
 
 // Special game elements
+let bubbleWrongItems = [];
 let skull = { x: 0, y: 0, dx: 2.2, visible: false };
 let tripleItem = { x: 0, y: 0, visible: false };
 let tripleShotActive = false;
@@ -3356,6 +3359,7 @@ function startGame(unitKey, stage) {
   tripleShotActive = false;
   sideBubbles = [];
   shotsFired = 0;
+  bubbleWrongItems = [];
   stopBubbleBgm();
 
   document.getElementById('start-screen').style.display = 'none';
@@ -3952,7 +3956,8 @@ function triggerGameOver(clear, reason) {
     if (quizTotal > 0) {
       showScorePopup(quizCorrect, quizTotal, {
         nextText: hasNextStage ? `${currentStage + 1}단계로` : '메인화면',
-        onNextClick: hasNextStage ? startNextStage : goStart
+        onNextClick: hasNextStage ? startNextStage : goStart,
+        wrongItems: bubbleWrongItems
       });
       const retryBtn = document.getElementById('sp-retry');
       if (retryBtn) retryBtn.onclick = restartGame;
@@ -4147,6 +4152,7 @@ function answerQuiz(chosen, q, optsEl) {
     bonusEl.textContent = `❌ ${makeReviewText(q)}`;
     bonusEl.style.color = '#ef4444';
     showToast('틀렸어요! 정답을 확인하세요', 'ng');
+    bubbleWrongItems.push({ question: (q.kor ? q.kor + ' / ' : '') + q.eng, my: chosen, right: q.ans });
   }
   updateHUD();
 
@@ -4349,13 +4355,12 @@ function startBubbleBgm() {
   const melody = [523, 659, 784, 880, 784, 659, 523, 440, 523, 659, 784, 1047, 880, 784, 659, 784];
   const bass   = [131, 196, 196, 220, 196, 196, 131, 196, 147, 196, 196, 220,  196, 220, 196, 220];
   const tick = () => {
-    if (gameOver || document.getElementById('game-screen').style.display === 'none') {
-      stopBubbleBgm(); return;
-    }
+    const gs = document.getElementById('game-screen');
+    if (gameOver || !gs || gs.style.display === 'none') { stopBubbleBgm(); return; }
     const b = bubbleBgmBeat2++;
-    playTone(bass[b % bass.length], 0.20, 0.032, 'sawtooth');
-    if (b % 2 === 0) playTone(melody[b % melody.length], 0.13, 0.025, 'triangle');
-    if (b % 8 === 3) playTone(melody[(b+4) % melody.length] * 1.5, 0.08, 0.018, 'sine');
+    playTone(bass[b % bass.length], 0.22, 0.055, 'sawtooth');
+    if (b % 2 === 0) playTone(melody[b % melody.length], 0.14, 0.042, 'triangle');
+    if (b % 8 === 3) playTone(melody[(b+4) % melody.length] * 1.5, 0.09, 0.032, 'sine');
   };
   tick();
   bubbleBgmTimer2 = setInterval(tick, 300);

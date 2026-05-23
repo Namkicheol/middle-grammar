@@ -1194,6 +1194,7 @@ let speedBestStreak = 0;
 let speedStartTs = 0;
 let speedLocked = false;
 let speedFinished = false;
+let speedWrongItems = [];
 
 function clearSpeedTimer() {
   if (speedTimerId) clearInterval(speedTimerId);
@@ -1215,6 +1216,7 @@ function startSpeedQuiz(unitKey) {
   speedTotal = 0;
   speedStreak = 0;
   speedBestStreak = 0;
+  speedWrongItems = [];
   speedStartTs = Date.now();
   speedLocked = false;
   speedFinished = false;
@@ -1315,6 +1317,7 @@ function answerSpeedQuiz(chosen, q, optsEl) {
     speedScore = Math.max(0, speedScore - 20);
     document.getElementById('speed-review').textContent = makeReviewText(q);
     document.getElementById('speed-review').style.color = '#ef4444';
+    speedWrongItems.push({ question: q.kor + ' / ' + q.eng, my: chosen, right: q.ans });
     playSnap();
   }
 
@@ -1341,7 +1344,8 @@ function endSpeedQuiz(reason) {
   showToast(best.isNew ? '스피드 퀴즈 신기록!' : title, best.isNew ? 'ok' : '');
   showScorePopup(speedCorrect, speedTotal, {
     nextText: '메인화면',
-    onNextClick: goStart
+    onNextClick: goStart,
+    wrongItems: speedWrongItems
   });
   const retryBtn = document.getElementById('sp-retry');
   if (retryBtn) retryBtn.onclick = () => startSpeedQuiz(speedUnit);
@@ -1368,6 +1372,7 @@ let bossStartTs = 0;
 let bossLocked = false;
 let bossFinished = false;
 let bossWrongStreak = 0;
+let bossWrongItems = [];
 let bossLevel = 1;
 let bossClears = 0;
 let skillGauge = 0;
@@ -2586,6 +2591,7 @@ function startBossBattle(unitKey) {
   bossTotal = 0;
   bossStreak = 0;
   bossBestStreak = 0;
+  bossWrongItems = [];
   bossMaxHp = bossHpForLevel(bossPool, bossLevel);
   bossHp = bossMaxHp;
   playerMaxHp = 5;
@@ -2858,6 +2864,7 @@ function answerBossQuestion(chosen, q, optsEl) {
     bossScore = Math.max(0, bossScore - (25 + counter.level * 15));
     document.getElementById('boss-review').textContent = `${counter.name}! ` + makeReviewText(q);
     document.getElementById('boss-review').style.color = '#ef4444';
+    bossWrongItems.push({ question: q.kor + ' / ' + q.eng, my: chosen, right: q.ans });
     setBossDuelState(counter.state, counter.label, 'danger');
     playBossCounterFx(counter.level);
     floatDamage('player', counter.damage, 'player');
@@ -3153,7 +3160,8 @@ function endBossBattle(clear, reason) {
   showToast(clear ? (best.isNew ? '보스전 신기록!' : '보스 클리어!') : '보스전 종료', clear ? 'ok' : 'ng');
   showScorePopup(bossCorrect, bossTotal, {
     nextText: '메인화면',
-    onNextClick: goStart
+    onNextClick: goStart,
+    wrongItems: bossWrongItems
   });
   const retryBtn = document.getElementById('sp-retry');
   if (retryBtn) retryBtn.onclick = () => startBossBattle(bossUnit);

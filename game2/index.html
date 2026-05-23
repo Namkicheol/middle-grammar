@@ -100,10 +100,10 @@ canvas#c{position:absolute;inset:0;width:100%;height:100%;}
 
 /* ── BOSS TELEGRAPH ── */
 #tel{position:absolute;left:12px;right:12px;top:90px;z-index:20;display:none;}
-.tel-inner{background:rgba(0,0,0,.82);border:1.5px solid rgba(251,191,36,.5);border-radius:14px;padding:7px 12px;backdrop-filter:blur(6px);}
-.tel-label{font-size:.75rem;font-weight:900;color:#fde68a;margin-bottom:5px;text-align:center;letter-spacing:.04em;}
-.tel-track{height:10px;background:rgba(255,255,255,.1);border-radius:999px;overflow:hidden;}
-.tel-fill{height:100%;width:0%;background:linear-gradient(90deg,#fbbf24,#f97316,#ef4444);border-radius:999px;box-shadow:0 0 8px rgba(251,191,36,.6);}
+.tel-inner{background:rgba(0,0,0,.7);border-radius:8px;padding:4px 10px;backdrop-filter:blur(4px);}
+.tel-label{display:none;}
+.tel-track{height:8px;background:rgba(255,255,255,.08);border-radius:999px;overflow:hidden;}
+.tel-fill{height:100%;width:0%;border-radius:999px;box-shadow:0 0 10px currentColor;}
 
 /* ── STATUS EFFECTS ── */
 #status-row{position:absolute;left:12px;top:92px;z-index:15;display:flex;gap:6px;pointer-events:none;}
@@ -120,7 +120,7 @@ canvas#c{position:absolute;inset:0;width:100%;height:100%;}
 #qpop.show{transform:translateX(-50%) translateY(0) scale(1);opacity:1;pointer-events:all;}
 .qpop-inner{background:linear-gradient(170deg,#1a0533,#0f0824);border:2px solid #7c3aed;padding:14px 14px 20px;border-radius:22px;box-shadow:0 8px 40px rgba(0,0,0,.85),0 0 0 1px rgba(124,58,237,.3);}
 .qpop-top{display:flex;align-items:center;justify-content:space-between;margin-bottom:6px;}
-.qpop-atk-label{font-size:.72rem;font-weight:900;color:#f97316;letter-spacing:.05em;}
+.qpop-atk-label{display:none;}
 .qpop-timer{font-size:.95rem;font-weight:900;color:#fde68a;font-variant-numeric:tabular-nums;}
 .qpop-timer.warn{color:#f97316;}
 .qpop-timer.crit{color:#ef4444;animation:blink .45s infinite;}
@@ -311,6 +311,88 @@ canvas#c{position:absolute;inset:0;width:100%;height:100%;}
 <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
 <script>
 // ═══════════════════════════════════════════════════════════
+//  BGM — 절차적 루프 배경음악
+// ═══════════════════════════════════════════════════════════
+const BGM = (() => {
+  let _ac=null, _mg=null, _playing=false, _lt=null, _phase=0;
+  const BPM=138, B=60/BPM;
+  // A minor pentatonic (A4=440,C5=523,D5=587,E5=659,G5=784,A5=880)
+  const MEL=[
+    [659,.5],[784,.5],[880,1],[784,1],[659,1],   // bar1 4b
+    [587,1],[659,1],[784,2],                      // bar2 4b
+    [880,.5],[784,.5],[659,1],[587,1],[659,1],    // bar3 4b
+    [440,2],[523,2],                              // bar4 4b
+    [659,.5],[587,.5],[523,1],[587,.5],[659,.5],[784,1], // bar5 4b
+    [880,.5],[784,.5],[659,1],[587,2],            // bar6 4b
+    [523,.5],[659,.5],[784,1],[659,.5],[523,.5],[440,1], // bar7 4b
+    [523,4],                                     // bar8 4b
+  ];
+  const BAS=[
+    [220,1],[330,1],[220,1],[330,1],[220,1],[330,1],[247,1],[330,1], // b1-2
+    [220,1],[330,1],[220,1],[330,1],[196,2],[220,2],                  // b3-4
+    [220,1],[330,1],[220,1],[330,1],[220,1],[330,1],[247,1],[330,1], // b5-6
+    [165,1],[220,1],[165,1],[220,1],[220,4],                          // b7-8
+  ];
+  function tone(f,st,dur,vol,type='square'){
+    const o=_ac.createOscillator(), g=_ac.createGain();
+    o.connect(g); g.connect(_mg);
+    o.type=type; o.frequency.value=f;
+    g.gain.setValueAtTime(0,st);
+    g.gain.linearRampToValueAtTime(vol,st+.012);
+    g.gain.setValueAtTime(vol,st+dur*.72);
+    g.gain.exponentialRampToValueAtTime(.001,st+dur*.96);
+    o.start(st); o.stop(st+dur);
+  }
+  function loop(st){
+    let t=st, bt=st;
+    for(const[f,beats] of MEL){ tone(f,t,beats*B*.87,.12+_phase*.025,'square'); t+=beats*B; }
+    for(const[f,beats] of BAS){ tone(f,bt,beats*B*.82,.14+_phase*.02,'triangle'); bt+=beats*B; }
+    const bars=8, bpb=4;
+    for(let i=0;i<bars*bpb;i++){
+      const tt=st+i*B, beat=i%bpb;
+      if(beat===0||beat===2) tone(70,tt,B*.35,.2+_phase*.04,'sine');
+      if(beat===1||beat===3){
+        const sn=_ac.createOscillator(), sg=_ac.createGain();
+        sn.connect(sg); sg.connect(_mg); sn.type='sawtooth'; sn.frequency.value=180;
+        sg.gain.setValueAtTime(.07+_phase*.015,tt); sg.gain.exponentialRampToValueAtTime(.001,tt+.07);
+        sn.start(tt); sn.stop(tt+.08);
+      }
+    }
+    const dur=t-st;
+    if(_playing) _lt=setTimeout(()=>{ if(_playing) loop(_ac.currentTime+.12); },(dur-.25)*1000);
+  }
+  return {
+    start(phase=0){
+      if(_playing) return;
+      _phase=phase;
+      try{
+        if(!_ac) _ac=new(window.AudioContext||window.webkitAudioContext)();
+        _mg=_ac.createGain(); _mg.gain.value=.32; _mg.connect(_ac.destination);
+        _playing=true; loop(_ac.currentTime+.15);
+      }catch(e){}
+    },
+    stop(){ _playing=false; if(_lt) clearTimeout(_lt); },
+    setPhase(p){ _phase=p; if(_mg) _mg.gain.value=.32+p*.07; },
+    get isPlaying(){ return _playing; }
+  };
+})();
+
+// ═══════════════════════════════════════════════════════════
+//  CAMERA SHAKE
+// ═══════════════════════════════════════════════════════════
+function cameraShake(intensity=6, dur=0.4) {
+  const el = document.getElementById('game');
+  gsap.killTweensOf(el);
+  gsap.fromTo(el,
+    { x:0, y:0 },
+    { x: intensity, y: intensity*.6, duration: dur*.1,
+      yoyo:true, repeat: Math.floor(dur/.1), ease:'none',
+      onComplete(){ gsap.set(el,{x:0,y:0}); }
+    }
+  );
+}
+
+// ═══════════════════════════════════════════════════════════
 //  CANVAS BACKGROUND
 // ═══════════════════════════════════════════════════════════
 const canvas = document.getElementById('c');
@@ -447,6 +529,7 @@ const G = {
     GS = initGS(qs);
     document.getElementById('sel').style.display = 'none';
     document.getElementById('game').style.display = 'block';
+    BGM.start(0);
     setCharSprites(0);
     updateHUD();
     if (rafId) cancelAnimationFrame(rafId);
@@ -462,6 +545,7 @@ const G = {
     document.getElementById('result').classList.remove('show');
     document.getElementById('game').style.display = 'none';
     document.getElementById('sel').style.display = 'flex';
+    BGM.stop();
     cancelTimers();
     if (rafId) { cancelAnimationFrame(rafId); rafId = null; }
   },
@@ -491,11 +575,12 @@ const bossWrap = document.getElementById('boss-wrap');
 
 function setCharSprites(phase) {
   const h = HERO_ASSETS[phase], b = BOSS_ASSETS[phase];
+  gsap.killTweensOf(heroWrap); gsap.killTweensOf(bossWrap);
   heroImg.src = h.idle; heroImg.className = 'idle';
   bossImg.src = b.idle; bossImg.className = 'idle';
   bossImg.style.filter = `drop-shadow(0 8px 28px ${b.glow})`;
-  gsap.set(heroWrap, { left: '8%', clearProps: 'x' });
-  gsap.set(bossWrap, { right: '8%', clearProps: 'x' });
+  gsap.set(heroWrap, { left: '8%', clearProps: 'x,right' });
+  gsap.set(bossWrap, { right: '8%', clearProps: 'x,left' });
   document.getElementById('hero-name').textContent = h.name;
   document.getElementById('boss-name').textContent = b.name;
 }
@@ -609,8 +694,9 @@ function startAttack() {
   bossAnim('windup');
   const tel = document.getElementById('tel');
   tel.style.display = 'block';
-  document.getElementById('tel-label').textContent = chosen.label;
-  document.getElementById('tel-label').style.color = chosen.color;
+  const telFillEl = document.getElementById('tel-fill');
+  telFillEl.style.background = chosen.color;
+  telFillEl.style.boxShadow = `0 0 10px ${chosen.color}`;
 
   const DUR = 1600 + GS.bossPhase * 250;
   let elapsed = 0;
@@ -730,9 +816,10 @@ function finishQuestion(isCorrect) {
     GS.maxCombo = Math.max(GS.maxCombo, GS.combo);
     GS.score += dmg * GS.combo;
     GS.correct++;
-    addSkillGauge(22);
+    addSkillGauge(25);
     heroAnim('atk'); bossAnim('hit');
     showDmgFloat('-' + dmg, '#ef4444', 'right');
+    cameraShake(5 + GS.bossPhase * 2, .35);
     playSfx('correct');
     checkBossPhase();
   } else {
@@ -743,6 +830,7 @@ function finishQuestion(isCorrect) {
     GS.combo = 1;
     heroAnim('hurt');
     showDmgFloat('-' + dmg, '#f97316', 'left');
+    cameraShake(9, .5);
     playSfx('wrong');
     if (GS.heroHP <= 0) { setTimeout(gameOver, 350); return; }
   }
@@ -766,6 +854,7 @@ function checkBossPhase() {
 function triggerPhaseChange(newPhase) {
   GS.bossPhase = newPhase;
   GS.phase = 10;
+  BGM.setPhase(newPhase);
   cancelTimers();
   const b = BOSS_ASSETS[newPhase];
   const h = HERO_ASSETS[newPhase];
@@ -841,6 +930,7 @@ function grabDrop(id, el) {
   if (dt.action==='heal') { GS.heroHP=Math.min(100,GS.heroHP+dt.value); updateHUD(); showFloating('❤️ +'+dt.value+'HP!','#22c55e'); }
   else if (dt.action==='shield') { GS.hasShield=true; showFloating('🛡️ 보호막!','#60a5fa'); }
   else if (dt.action==='power') { GS.hasPower=true; showFloating('⚔️ 강타 준비!','#f97316'); }
+  addSkillGauge(10);
   playSfx('correct');
 }
 
@@ -869,6 +959,7 @@ function showResult(win) {
     ).join('');
   } else { wl.style.display='none'; }
   document.getElementById('result').classList.add('show');
+  BGM.stop();
   setTimeout(() => playSfx(win ? 'win' : 'lose'), 200);
 }
 

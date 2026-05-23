@@ -15,7 +15,9 @@ body{background:#000;overflow:hidden;font-family:'Baloo 2','Noto Sans KR',sans-s
 .sel-head{width:100%;max-width:560px;padding:28px 20px 0;text-align:center;}
 .sel-title{font-size:1.9rem;font-weight:900;color:#fff;text-shadow:0 0 24px rgba(124,58,237,.8);}
 .sel-sub{font-size:.85rem;color:#a78bfa;margin-top:4px;}
-.sel-boss-row{display:flex;justify-content:center;gap:24px;margin:22px 0 10px;font-size:3.2rem;}
+.sel-boss-row{display:flex;justify-content:center;gap:14px;margin:18px 0 10px;align-items:flex-end;}
+.sel-boss-row img{height:80px;width:auto;filter:drop-shadow(0 4px 16px rgba(124,58,237,.6));transition:.2s;}
+.sel-boss-row img:hover{transform:scale(1.08);}
 .sel-units{width:100%;max-width:560px;display:grid;grid-template-columns:1fr 1fr;gap:12px;padding:10px 20px 40px;}
 .unit-card{background:rgba(255,255,255,.06);border:1.5px solid rgba(255,255,255,.12);border-radius:18px;padding:16px;cursor:pointer;transition:all .16s;color:#fff;}
 .unit-card:hover,.unit-card:active{background:rgba(124,58,237,.22);border-color:#7c3aed;transform:translateY(-2px);}
@@ -24,108 +26,146 @@ body{background:#000;overflow:hidden;font-family:'Baloo 2','Noto Sans KR',sans-s
 .unit-card .uc-cnt{font-size:.7rem;color:#94a3b8;margin-top:6px;}
 .all-card{grid-column:1/-1;background:linear-gradient(135deg,#4c1d95,#7c3aed,#1d4ed8);border:none;border-radius:18px;padding:18px;text-align:center;cursor:pointer;color:#fff;font-weight:900;font-size:1.05rem;box-shadow:0 12px 28px rgba(124,58,237,.4);transition:all .16s;}
 .all-card:hover{transform:translateY(-2px);box-shadow:0 18px 36px rgba(124,58,237,.5);}
-.back-link{text-align:center;margin-top:0;padding-bottom:10px;}
+.back-link{text-align:center;padding-bottom:14px;}
 .back-link a{color:#94a3b8;font-size:.82rem;text-decoration:none;}
 
 /* ── GAME SCREEN ── */
 #game{position:fixed;inset:0;display:none;}
-canvas#c{position:absolute;inset:0;width:100%;height:100%;image-rendering:pixelated;}
+canvas#c{position:absolute;inset:0;width:100%;height:100%;}
+
+/* ── ARENA (character stage) ── */
+#arena{position:absolute;left:0;right:0;bottom:0;height:72%;pointer-events:none;}
+
+/* ── CHARACTERS ── */
+#hero-wrap{position:absolute;left:8%;bottom:26%;transform-origin:bottom center;transition:transform .15s;}
+#boss-wrap{position:absolute;right:8%;bottom:26%;transform-origin:bottom center;transition:transform .15s;}
+#hero-img{height:clamp(140px,22vw,240px);width:auto;filter:drop-shadow(0 8px 24px rgba(14,165,233,.5));transform-origin:bottom center;}
+#boss-img{height:clamp(140px,22vw,240px);width:auto;filter:drop-shadow(0 8px 24px rgba(239,68,68,.5));transform-origin:bottom center;}
+
+/* Idle float animation */
+@keyframes heroFloat{0%,100%{transform:translateY(0)}50%{transform:translateY(-10px)}}
+@keyframes bossFloat{0%,100%{transform:translateY(0)}50%{transform:translateY(-8px)}}
+#hero-img.idle{animation:heroFloat 2.2s ease-in-out infinite;}
+#boss-img.idle{animation:bossFloat 2.6s ease-in-out infinite;}
+
+/* Attack */
+@keyframes heroAttack{0%{transform:translateX(0) scale(1)}30%{transform:translateX(30px) scale(1.12)}70%{transform:translateX(20px) scale(1.08)}100%{transform:translateX(0) scale(1)}}
+#hero-img.attack{animation:heroAttack .5s ease-out forwards;}
+
+/* Hurt */
+@keyframes heroHurt{0%,100%{transform:translateX(0);filter:drop-shadow(0 8px 24px rgba(14,165,233,.5))}25%,75%{transform:translateX(-14px);filter:drop-shadow(0 8px 24px rgba(239,68,68,.9)) brightness(1.4)}}
+#hero-img.hurt{animation:heroHurt .45s ease-out forwards;}
+
+/* Boss hurt */
+@keyframes bossHurt{0%,100%{transform:translateX(0)}30%{transform:translateX(22px)}70%{transform:translateX(14px)}}
+#boss-img.hit{animation:bossHurt .45s ease-out forwards;filter:drop-shadow(0 8px 28px rgba(239,68,68,.95)) brightness(1.5)!important;}
+
+/* Boss windup shake */
+@keyframes bossCharge{0%,100%{transform:translateX(0) scale(1)}50%{transform:translateX(-6px) scale(1.06)}}
+#boss-img.windup{animation:bossCharge .4s ease-in-out infinite;}
+
+/* Phase transform flash */
+@keyframes phaseFlash{0%{opacity:0}10%{opacity:1}100%{opacity:0}}
+#phase-flash{position:fixed;inset:0;background:#fff;pointer-events:none;z-index:70;opacity:0;}
+#phase-flash.go{animation:phaseFlash .8s ease-out forwards;}
 
 /* ── HUD ── */
-#hud{position:absolute;top:0;left:0;right:0;display:flex;flex-direction:column;pointer-events:none;z-index:10;}
-.hud-row{display:flex;align-items:center;gap:8px;padding:8px 12px 4px;}
-.hp-block{display:flex;align-items:center;gap:6px;flex:1;}
-.hp-name{font-size:.75rem;font-weight:900;color:#fff;white-space:nowrap;text-shadow:0 2px 4px rgba(0,0,0,.8);}
-.hp-bar-wrap{flex:1;height:12px;background:rgba(0,0,0,.6);border-radius:999px;border:1.5px solid rgba(255,255,255,.2);overflow:hidden;}
-.hp-fill{height:100%;border-radius:999px;transition:width .25s ease;}
-#hero-hp-fill{background:linear-gradient(90deg,#22c55e,#4ade80);}
-#boss-hp-fill{background:linear-gradient(90deg,#ef4444,#f97316);}
-.hud-info{display:flex;align-items:center;gap:10px;padding:0 12px 6px;justify-content:space-between;}
-.combo-badge{background:rgba(251,191,36,.18);border:1px solid rgba(251,191,36,.4);border-radius:20px;padding:3px 10px;font-size:.8rem;font-weight:900;color:#fde68a;}
-.stage-badge{background:rgba(139,92,246,.2);border:1px solid rgba(139,92,246,.4);border-radius:20px;padding:3px 10px;font-size:.8rem;font-weight:900;color:#c4b5fd;}
+#hud{position:absolute;top:0;left:0;right:0;z-index:10;pointer-events:none;padding:8px 12px 4px;background:linear-gradient(180deg,rgba(0,0,0,.75) 0%,transparent 100%);}
+.hud-bars{display:flex;align-items:center;gap:10px;margin-bottom:6px;}
+.hp-side{flex:1;display:flex;align-items:center;gap:6px;}
+.hp-side.right{flex-direction:row-reverse;}
+.hp-name{font-size:.75rem;font-weight:900;color:#fff;white-space:nowrap;text-shadow:0 1px 4px rgba(0,0,0,.9);}
+.hp-bar-wrap{flex:1;height:13px;background:rgba(0,0,0,.6);border-radius:999px;border:1.5px solid rgba(255,255,255,.18);overflow:hidden;position:relative;}
+.hp-fill{height:100%;border-radius:999px;transition:width .3s ease;}
+#hero-hp-fill{background:linear-gradient(90deg,#22c55e,#4ade80);box-shadow:0 0 8px rgba(34,197,94,.6);}
+#boss-hp-fill{background:linear-gradient(90deg,#ef4444,#f97316);box-shadow:0 0 8px rgba(239,68,68,.6);}
+.vs-badge{font-size:.72rem;font-weight:900;color:#fff;background:rgba(255,255,255,.14);border:1px solid rgba(255,255,255,.25);border-radius:999px;padding:3px 8px;white-space:nowrap;}
+.hud-info{display:flex;align-items:center;justify-content:space-between;gap:8px;}
+.combo-badge{background:rgba(251,191,36,.18);border:1px solid rgba(251,191,36,.35);border-radius:20px;padding:3px 12px;font-size:.8rem;font-weight:900;color:#fde68a;}
+.stage-badge{background:rgba(139,92,246,.2);border:1px solid rgba(139,92,246,.35);border-radius:20px;padding:3px 12px;font-size:.8rem;font-weight:900;color:#c4b5fd;}
 .score-badge{font-size:.8rem;font-weight:900;color:#93c5fd;}
+.hp-num{font-size:.7rem;font-weight:900;color:rgba(255,255,255,.8);min-width:26px;}
 
 /* ── BOSS TELEGRAPH ── */
-#tel{position:absolute;left:10px;right:10px;z-index:20;pointer-events:none;display:none;}
-.tel-bar-wrap{background:rgba(0,0,0,.75);border:1.5px solid rgba(252,165,165,.5);border-radius:12px;padding:6px 10px;backdrop-filter:blur(4px);}
-.tel-label{font-size:.72rem;font-weight:900;color:#fde68a;margin-bottom:4px;text-align:center;}
-.tel-track{height:10px;background:rgba(0,0,0,.5);border-radius:999px;overflow:hidden;}
-.tel-fill{height:100%;width:0%;background:linear-gradient(90deg,#fbbf24,#f97316,#ef4444);border-radius:999px;transition:width .1s linear;}
+#tel{position:absolute;left:12px;right:12px;top:90px;z-index:20;display:none;}
+.tel-inner{background:rgba(0,0,0,.82);border:1.5px solid rgba(251,191,36,.5);border-radius:14px;padding:7px 12px;backdrop-filter:blur(6px);}
+.tel-label{font-size:.75rem;font-weight:900;color:#fde68a;margin-bottom:5px;text-align:center;letter-spacing:.04em;}
+.tel-track{height:10px;background:rgba(255,255,255,.1);border-radius:999px;overflow:hidden;}
+.tel-fill{height:100%;width:0%;background:linear-gradient(90deg,#fbbf24,#f97316,#ef4444);border-radius:999px;box-shadow:0 0 8px rgba(251,191,36,.6);}
+
+/* ── STATUS EFFECTS ── */
+#status-row{position:absolute;left:12px;top:92px;z-index:15;display:flex;gap:6px;pointer-events:none;}
+.sfx-badge{background:rgba(0,0,0,.75);border-radius:8px;padding:4px 8px;font-size:.75rem;font-weight:900;border:1px solid rgba(255,255,255,.2);animation:sfxPulse 2s infinite;}
+@keyframes sfxPulse{0%,100%{opacity:1}50%{opacity:.65}}
+
+/* ── DROP ITEMS ── */
+.drop-item{position:absolute;font-size:2rem;cursor:pointer;z-index:22;pointer-events:all;filter:drop-shadow(0 4px 10px rgba(0,0,0,.8));}
+@keyframes dropFloat{0%,100%{transform:translateY(0) scale(1)}50%{transform:translateY(-10px) scale(1.08)}}
+.drop-item{animation:dropFloat 1.4s ease-in-out infinite;}
 
 /* ── QUESTION POPUP ── */
-#qpop{position:absolute;left:0;right:0;bottom:0;z-index:30;transform:translateY(100%);transition:transform .28s cubic-bezier(.22,1,.36,1);}
+#qpop{position:absolute;left:0;right:0;bottom:0;z-index:30;transform:translateY(100%);transition:transform .3s cubic-bezier(.22,1,.36,1);}
 #qpop.show{transform:translateY(0);}
-.qpop-inner{background:linear-gradient(170deg,#1e1b4b,#0f172a);border-top:2px solid #7c3aed;padding:14px 14px 20px;border-radius:20px 20px 0 0;box-shadow:0 -8px 32px rgba(0,0,0,.6);}
-.qpop-meta{display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;}
-.qpop-attack-label{font-size:.7rem;font-weight:900;color:#f97316;letter-spacing:.05em;}
-.qpop-timer{font-size:.9rem;font-weight:900;color:#fde68a;font-variant-numeric:tabular-nums;}
+.qpop-inner{background:linear-gradient(170deg,#1a0533,#0f0824);border-top:2px solid #7c3aed;padding:14px 14px 20px;border-radius:22px 22px 0 0;box-shadow:0 -12px 40px rgba(0,0,0,.7);}
+.qpop-top{display:flex;align-items:center;justify-content:space-between;margin-bottom:6px;}
+.qpop-atk-label{font-size:.72rem;font-weight:900;color:#f97316;letter-spacing:.05em;}
+.qpop-timer{font-size:.95rem;font-weight:900;color:#fde68a;font-variant-numeric:tabular-nums;}
 .qpop-timer.warn{color:#f97316;}
-.qpop-timer.crit{color:#ef4444;animation:blink .5s infinite;}
-@keyframes blink{0%,100%{opacity:1}50%{opacity:.4}}
-.qpop-timer-bar{height:5px;background:rgba(255,255,255,.1);border-radius:999px;margin-bottom:10px;overflow:hidden;}
-.qpop-timer-fill{height:100%;background:#fbbf24;border-radius:999px;transition:width .1s linear;}
-.qpop-eng{font-size:1.05rem;font-weight:900;color:#fff;line-height:1.5;margin-bottom:6px;}
-.qpop-kor{font-size:.82rem;color:#a78bfa;margin-bottom:12px;line-height:1.4;}
-.qpop-opts{display:grid;grid-template-columns:1fr 1fr;gap:8px;}
-.qopt{padding:11px 8px;border-radius:12px;border:1.5px solid rgba(255,255,255,.15);background:rgba(255,255,255,.07);color:#fff;font-family:inherit;font-size:.92rem;font-weight:800;cursor:pointer;transition:all .12s;-webkit-tap-highlight-color:transparent;}
+.qpop-timer.crit{color:#ef4444;animation:blink .45s infinite;}
+@keyframes blink{0%,100%{opacity:1}50%{opacity:.35}}
+.timer-bar{height:5px;background:rgba(255,255,255,.1);border-radius:999px;margin-bottom:10px;overflow:hidden;}
+.timer-fill{height:100%;background:#fbbf24;border-radius:999px;transition:width .1s linear;}
+.qpop-eng{font-size:1.08rem;font-weight:900;color:#fff;line-height:1.55;margin-bottom:5px;}
+.qpop-kor{font-size:.82rem;color:#c4b5fd;margin-bottom:12px;line-height:1.4;}
+.qpop-opts{display:grid;grid-template-columns:1fr 1fr;gap:9px;}
+.qopt{padding:12px 8px;border-radius:14px;border:1.5px solid rgba(255,255,255,.15);background:rgba(255,255,255,.07);color:#fff;font-family:inherit;font-size:.95rem;font-weight:800;cursor:pointer;transition:all .12s;-webkit-tap-highlight-color:transparent;}
+.qopt:active{transform:scale(.97);}
 .qopt:disabled{cursor:default;}
 .qopt.ok{background:#14532d!important;border-color:#22c55e!important;color:#86efac!important;}
 .qopt.ng{background:#450a0a!important;border-color:#ef4444!important;color:#fca5a5!important;}
 .qopt.reveal{background:#14532d!important;border-color:#22c55e!important;color:#86efac!important;}
-.qpop-feedback{min-height:28px;font-size:.82rem;font-weight:800;text-align:center;margin-top:8px;}
-.qpop-feedback.ok{color:#86efac;}
-.qpop-feedback.ng{color:#fca5a5;}
+.qpop-fb{min-height:26px;font-size:.84rem;font-weight:800;text-align:center;margin-top:8px;}
+.qpop-fb.ok{color:#86efac;}
+.qpop-fb.ng{color:#fca5a5;}
 
-/* ── STATUS EFFECTS ── */
-#status-row{position:absolute;left:12px;z-index:15;display:flex;gap:6px;pointer-events:none;}
-.sfx-badge{background:rgba(0,0,0,.75);border-radius:8px;padding:4px 8px;font-size:.75rem;font-weight:900;border:1px solid rgba(255,255,255,.2);animation:sfxPulse 2s infinite;}
-@keyframes sfxPulse{0%,100%{opacity:1}50%{opacity:.7}}
-
-/* ── DROP ITEMS ── */
-.drop-item{position:absolute;font-size:1.5rem;cursor:pointer;z-index:20;animation:float 1.2s ease-in-out infinite alternate;pointer-events:all;text-shadow:0 2px 8px rgba(0,0,0,.6);}
-@keyframes float{from{transform:translateY(0)}to{transform:translateY(-8px)}}
+/* ── DAMAGE FLOAT ── */
+@keyframes dmgFloat{0%{opacity:1;transform:translateY(0) scale(1)}100%{opacity:0;transform:translateY(-70px) scale(1.3)}}
+.dmg-float{position:fixed;pointer-events:none;font-weight:900;z-index:60;animation:dmgFloat .9s ease-out forwards;}
 
 /* ── PHASE CUTSCENE ── */
-#cut{position:fixed;inset:0;z-index:80;display:none;align-items:center;justify-content:center;background:rgba(0,0,0,.88);}
+#cut{position:fixed;inset:0;z-index:80;display:none;align-items:center;justify-content:center;background:rgba(0,0,0,.9);}
 #cut.show{display:flex;}
-.cut-card{text-align:center;color:#fff;animation:cutIn .6s ease-out;}
-@keyframes cutIn{from{transform:scale(.7);opacity:0}to{transform:scale(1);opacity:1}}
-.cut-phase{font-size:.85rem;font-weight:900;color:#fbbf24;letter-spacing:.3em;margin-bottom:12px;}
-.cut-icon{font-size:5rem;margin-bottom:12px;animation:cutSpin .8s ease-out;}
-@keyframes cutSpin{from{transform:rotate(-20deg) scale(.5)}to{transform:rotate(0) scale(1)}}
-.cut-name{font-size:2.2rem;font-weight:900;color:#fff;text-shadow:0 0 24px rgba(139,92,246,.8);}
+.cut-card{text-align:center;color:#fff;}
+@keyframes cutIn{from{transform:scale(.6) translateY(30px);opacity:0}to{transform:scale(1) translateY(0);opacity:1}}
+.cut-card{animation:cutIn .55s cubic-bezier(.34,1.56,.64,1);}
+.cut-phase{font-size:.82rem;font-weight:900;color:#fbbf24;letter-spacing:.35em;margin-bottom:14px;}
+.cut-chars{display:flex;justify-content:center;align-items:flex-end;gap:32px;margin-bottom:16px;}
+.cut-chars img{height:160px;width:auto;filter:drop-shadow(0 0 28px rgba(124,58,237,.9));}
+@keyframes cutCharIn{from{transform:scale(.4) rotate(-8deg);opacity:0}to{transform:scale(1) rotate(0);opacity:1}}
+.cut-chars img{animation:cutCharIn .7s cubic-bezier(.34,1.56,.64,1);}
+.cut-name{font-size:2rem;font-weight:900;color:#fff;text-shadow:0 0 28px rgba(139,92,246,.8);}
 .cut-sub{font-size:.9rem;color:#a78bfa;margin-top:6px;}
 
-/* ── WIN / LOSE ── */
-#result{position:fixed;inset:0;z-index:90;display:none;align-items:center;justify-content:center;background:rgba(0,0,0,.85);}
+/* ── RESULT ── */
+#result{position:fixed;inset:0;z-index:90;display:none;align-items:center;justify-content:center;background:rgba(0,0,0,.88);}
 #result.show{display:flex;}
-.result-card{text-align:center;color:#fff;padding:32px 40px;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.14);border-radius:28px;backdrop-filter:blur(12px);}
-.result-icon{font-size:4.5rem;margin-bottom:10px;}
-.result-title{font-size:2.2rem;font-weight:900;margin-bottom:6px;}
-.result-sub{font-size:.9rem;color:#94a3b8;margin-bottom:20px;}
-.result-stats{display:flex;gap:18px;justify-content:center;margin-bottom:24px;}
-.result-stat{text-align:center;}
+.result-card{text-align:center;color:#fff;padding:28px 36px;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.14);border-radius:28px;backdrop-filter:blur(12px);max-width:480px;width:92%;max-height:85vh;overflow-y:auto;}
+.result-icon{font-size:4rem;margin-bottom:8px;}
+.result-title{font-size:2rem;font-weight:900;margin-bottom:4px;}
+.result-sub{font-size:.88rem;color:#94a3b8;margin-bottom:18px;}
+.result-stats{display:flex;gap:20px;justify-content:center;margin-bottom:20px;}
 .result-stat b{display:block;font-size:1.6rem;font-weight:900;color:#fde68a;}
-.result-stat span{font-size:.72rem;color:#94a3b8;}
+.result-stat span{font-size:.7rem;color:#94a3b8;}
 .result-btns{display:flex;gap:10px;justify-content:center;}
 .result-btns button{border:none;border-radius:14px;font-family:inherit;font-size:.95rem;font-weight:900;padding:12px 24px;cursor:pointer;transition:all .14s;}
 .btn-retry{background:#7c3aed;color:#fff;}
 .btn-home{background:rgba(255,255,255,.12);color:#fff;}
-.btn-retry:hover{background:#6d28d9;}
-.btn-home:hover{background:rgba(255,255,255,.2);}
-
-/* ── WRONG ANSWER LOG ── */
-.wrong-log-section{margin-top:20px;text-align:left;max-height:180px;overflow-y:auto;border-top:1px solid rgba(255,255,255,.1);padding-top:14px;}
+.wrong-log{margin-top:18px;text-align:left;border-top:1px solid rgba(255,255,255,.1);padding-top:14px;}
 .wrong-log-title{font-size:.8rem;font-weight:900;color:#f87171;margin-bottom:8px;text-align:center;}
-.wrong-log-item{background:rgba(239,68,68,.08);border:1px solid rgba(239,68,68,.2);border-radius:10px;padding:8px 10px;margin-bottom:6px;font-size:.78rem;line-height:1.5;}
-.wrong-log-item .wl-eng{color:#e2e8f0;font-weight:700;}
-.wrong-log-item .wl-ans{color:#86efac;font-size:.72rem;}
-.wrong-log-item .wl-wrong{color:#fca5a5;font-size:.72rem;}
-
-@media(min-width:600px){
-  .qpop-opts{grid-template-columns:1fr 1fr;}
-  .qpop-eng{font-size:1.15rem;}
-}
+.wrong-log-item{background:rgba(239,68,68,.07);border:1px solid rgba(239,68,68,.18);border-radius:10px;padding:8px 10px;margin-bottom:6px;font-size:.78rem;line-height:1.55;}
+.wl-eng{color:#e2e8f0;font-weight:700;}
+.wl-ans{color:#86efac;font-size:.72rem;margin-top:2px;}
+.wl-wrong{color:#fca5a5;font-size:.72rem;}
 </style>
 </head>
 <body>
@@ -135,7 +175,12 @@ canvas#c{position:absolute;inset:0;width:100%;height:100%;image-rendering:pixela
   <div class="sel-head">
     <div class="sel-title">⚔️ 문법 보스전</div>
     <div class="sel-sub">Fighter Edition — 단원을 골라 보스에 도전하세요</div>
-    <div class="sel-boss-row">👹 🧙 🐲</div>
+    <div class="sel-boss-row">
+      <img src="../game/assets/chars/hero-lv1.png" alt="hero">
+      <img src="../game/assets/chars/boss-lv1.png" alt="boss1" style="height:88px">
+      <img src="../game/assets/chars/boss-lv2.png" alt="boss2" style="height:88px">
+      <img src="../game/assets/chars/boss-lv3.png" alt="boss3" style="height:96px">
+    </div>
   </div>
   <div class="sel-units" id="unit-list"></div>
   <div class="back-link"><a href="../index.html">← 메인 허브</a></div>
@@ -145,20 +190,28 @@ canvas#c{position:absolute;inset:0;width:100%;height:100%;image-rendering:pixela
 <div id="game">
   <canvas id="c"></canvas>
 
+  <!-- Characters -->
+  <div id="arena">
+    <div id="hero-wrap"><img id="hero-img" src="../game/assets/chars/hero-lv1.png" class="idle" alt="hero"></div>
+    <div id="boss-wrap"><img id="boss-img" src="../game/assets/chars/boss-lv1.png" class="idle" alt="boss"></div>
+  </div>
+
+  <!-- Drop items container -->
+  <div id="drops-layer" style="position:absolute;inset:0;pointer-events:none;z-index:22;"></div>
+
   <!-- HUD -->
   <div id="hud">
-    <div class="hud-row">
-      <div class="hp-block">
+    <div class="hud-bars">
+      <div class="hp-side">
         <div class="hp-name" id="hero-name">🧑 학생</div>
         <div class="hp-bar-wrap"><div class="hp-fill" id="hero-hp-fill" style="width:100%"></div></div>
-        <div style="font-size:.75rem;font-weight:900;color:#fff;min-width:32px;text-align:right;" id="hero-hp-num">100</div>
+        <div class="hp-num" id="hero-hp-num">100</div>
       </div>
-    </div>
-    <div class="hud-row" style="flex-direction:row-reverse;">
-      <div class="hp-block" style="flex-direction:row-reverse;">
-        <div class="hp-name" id="boss-name">👹 문법괴물</div>
+      <div class="vs-badge">VS</div>
+      <div class="hp-side right">
+        <div class="hp-name" id="boss-name">👹 고블린</div>
         <div class="hp-bar-wrap"><div class="hp-fill" id="boss-hp-fill" style="width:100%"></div></div>
-        <div style="font-size:.75rem;font-weight:900;color:#fff;min-width:32px;text-align:left;" id="boss-hp-num">100</div>
+        <div class="hp-num" id="boss-hp-num">100</div>
       </div>
     </div>
     <div class="hud-info">
@@ -168,12 +221,12 @@ canvas#c{position:absolute;inset:0;width:100%;height:100%;image-rendering:pixela
     </div>
   </div>
 
-  <!-- Status effects row (positioned dynamically) -->
+  <!-- Status effects -->
   <div id="status-row"></div>
 
   <!-- Telegraph -->
   <div id="tel">
-    <div class="tel-bar-wrap">
+    <div class="tel-inner">
       <div class="tel-label" id="tel-label">⚡ 공격 준비 중...</div>
       <div class="tel-track"><div class="tel-fill" id="tel-fill"></div></div>
     </div>
@@ -182,46 +235,52 @@ canvas#c{position:absolute;inset:0;width:100%;height:100%;image-rendering:pixela
   <!-- Question popup -->
   <div id="qpop">
     <div class="qpop-inner">
-      <div class="qpop-meta">
-        <div class="qpop-attack-label" id="qpop-atk-label">⚡ 일반 공격</div>
+      <div class="qpop-top">
+        <div class="qpop-atk-label" id="qpop-atk-label">⚡ 일반 공격</div>
         <div class="qpop-timer" id="qpop-timer">5.0</div>
       </div>
-      <div class="qpop-timer-bar"><div class="qpop-timer-fill" id="qpop-timer-fill" style="width:100%"></div></div>
+      <div class="timer-bar"><div class="timer-fill" id="timer-fill" style="width:100%"></div></div>
       <div class="qpop-eng" id="qpop-eng"></div>
       <div class="qpop-kor" id="qpop-kor"></div>
       <div class="qpop-opts" id="qpop-opts"></div>
-      <div class="qpop-feedback" id="qpop-fb"></div>
+      <div class="qpop-fb" id="qpop-fb"></div>
     </div>
   </div>
+
+  <!-- Phase flash overlay -->
+  <div id="phase-flash"></div>
 
   <!-- Phase cutscene -->
   <div id="cut">
     <div class="cut-card">
       <div class="cut-phase" id="cut-phase">PHASE 2</div>
-      <div class="cut-icon" id="cut-icon">🧙</div>
+      <div class="cut-chars">
+        <img id="cut-hero-img" src="../game/assets/chars/hero-lv1.png" alt="hero">
+        <img id="cut-boss-img" src="../game/assets/chars/boss-lv2.png" alt="boss">
+      </div>
       <div class="cut-name" id="cut-name">문법 마법사</div>
       <div class="cut-sub" id="cut-sub">각성 완료...</div>
     </div>
   </div>
 
-  <!-- Result screen -->
+  <!-- Result -->
   <div id="result">
-    <div class="result-card" id="result-card">
+    <div class="result-card">
       <div class="result-icon" id="result-icon">🏆</div>
       <div class="result-title" id="result-title">승리!</div>
-      <div class="result-sub" id="result-sub">문법 보스를 물리쳤다!</div>
+      <div class="result-sub" id="result-sub">보스를 물리쳤다!</div>
       <div class="result-stats">
         <div class="result-stat"><b id="r-score">0</b><span>점수</span></div>
         <div class="result-stat"><b id="r-correct">0</b><span>정답</span></div>
-        <div class="result-stat"><b id="r-combo">0</b><span>최대콤보</span></div>
+        <div class="result-stat"><b id="r-combo">x1</b><span>최대콤보</span></div>
       </div>
-      <div class="wrong-log-section" id="wrong-log-section" style="display:none;">
-        <div class="wrong-log-title">📋 틀린 문제</div>
-        <div id="wrong-log-list"></div>
-      </div>
-      <div class="result-btns" style="margin-top:16px;">
+      <div class="result-btns">
         <button class="btn-retry" onclick="G.retry()">다시 도전</button>
         <button class="btn-home" onclick="G.goHome()">단원 선택</button>
+      </div>
+      <div class="wrong-log" id="wrong-log" style="display:none;">
+        <div class="wrong-log-title">📋 틀린 문제</div>
+        <div id="wrong-log-list"></div>
       </div>
     </div>
   </div>
@@ -231,388 +290,151 @@ canvas#c{position:absolute;inset:0;width:100%;height:100%;image-rendering:pixela
 <script src="../sounds.js"></script>
 <script>
 // ═══════════════════════════════════════════════════════════
-//  PIXEL ART SPRITE ENGINE
-// ═══════════════════════════════════════════════════════════
-const PX = 5; // pixels per dot
-
-function buildSprite(rows, pal) {
-  const h = rows.length, w = rows[0].length;
-  const offscreen = document.createElement('canvas');
-  offscreen.width = w * PX; offscreen.height = h * PX;
-  const ctx = offscreen.getContext('2d');
-  for (let r = 0; r < h; r++) {
-    for (let c = 0; c < w; c++) {
-      const ch = rows[r][c];
-      if (ch === '.' || !pal[ch]) continue;
-      ctx.fillStyle = pal[ch];
-      ctx.fillRect(c * PX, r * PX, PX, PX);
-    }
-  }
-  return offscreen;
-}
-
-// ─── HERO SPRITES ───────────────────────────────────────────
-const HP = {
-  h:'#3d2817', // hair dark
-  H:'#6b3a1f', // hair mid
-  s:'#f5c896', // skin
-  S:'#e8a870', // skin shadow
-  b:'#1d4ed8', // blue uniform
-  B:'#1e40af', // blue dark
-  w:'#e2e8f0', // white shirt
-  p:'#1e293b', // dark pants
-  P:'#0f172a', // pants darker
-  x:'#111827', // shoes
-  y:'#fde68a', // yellow (pencil tip)
-  Y:'#fbbf24', // yellow mid
-  a:'#f97316', // accent orange (scarf)
-};
-const HERO_IDLE = buildSprite([
-  '..hhhHHhh...',
-  '.hHHHHHHHh..',
-  '.hHsssssSh..',
-  '.hHsssssSh..',
-  '..ssssssss..',
-  '..wbbbbbw...',
-  '.wbBBBBBbw..',
-  'wbBBBBBBBbw.',
-  '.wbbbbbbbw..',
-  '..sBbbbBs...',
-  '..ppppppp...',
-  '..pp...pp...',
-  '.ppp...ppp..',
-  '.xp.....px..',
-  'xxx.....xxx.',
-], HP);
-const HERO_ATK = buildSprite([
-  '..hhhHHhh...',
-  '.hHHHHHHHh..',
-  '.hHsssssSh..',
-  '.hHsssssSh..',
-  '..ssssssss..',
-  '..wbbbbbw...',
-  '.wbBBBBBbw..',
-  'wbBBBBBBBbwsy',
-  '.wbbbbbbbwsy.',
-  '..sBbbbBs...',
-  '..ppppppp...',
-  '..pp...pp...',
-  '.ppp...ppp..',
-  '.xp.....px..',
-  'xxx.....xxx.',
-], {...HP, y:'#fde68a'});
-const HERO_HURT = buildSprite([
-  '..hhhHHhh...',
-  '.hHHHHHHHh..',
-  '.hHSSSSSsh..',
-  '.hHSSSSSsh..',
-  '..ssssssss..',
-  '..wbbbbbw...',
-  '.wbBBBBBbw..',
-  'wbBBBBBBBbw.',
-  '.wbbbbbbbw..',
-  '..sBbbbBs...',
-  '..ppppppp...',
-  '..pp...pp...',
-  '.ppp...ppp..',
-  '.xp.....px..',
-  'xxx.....xxx.',
-], {...HP, s:'#f87171', S:'#ef4444'});
-
-// ─── BOSS SPRITES (3 phases) ─────────────────────────────────
-const B1P = {
-  r:'#dc2626', R:'#991b1b',  // red body
-  g:'#16a34a', G:'#15803d',  // green skin
-  s:'#fca5a5', // eye/tooth
-  y:'#fde68a', // yellow spikes
-  k:'#0f172a', // black
-  o:'#f97316', // orange
-};
-const BOSS1_IDLE = buildSprite([
-  '....yyyy....',
-  '..yyrrrryy..',
-  '.yrRRRRRRry.',
-  '.rRGGGGGGRr.',
-  '.rRGssGssGr.',
-  '.rRGGGGGGGr.',
-  '..rRsssssRr.',
-  '..RRRRRRRR..',
-  '.RRRrRRrRRR.',
-  'RRRrrRRrrRRR',
-  '.RrRRRRRRrR.',
-  '..RRRRRRRR..',
-  '...RR...RR..',
-  '..kRR...RRk.',
-  '.kkk.....kkk',
-], B1P);
-const BOSS1_WINDUP = buildSprite([
-  '....yyyy....',
-  '..yyrrrryy..',
-  '.yrRRRRRRry.',
-  '.rRGGGGGGRr.',
-  '.rRGssGssGr.',
-  '.rRGGGGGGGr.',
-  '..rRsssssRr.',
-  '..RRRRRRRR..',
-  'RRRRrRRrRRRR',
-  'RRRRrRRrRRRR',
-  '.RrRRRRRRrR.',
-  '..RRRRRRRR..',
-  '...RR...RR..',
-  '..kRR...RRk.',
-  '.kkk.....kkk',
-], B1P);
-
-const B2P = {
-  p:'#7c3aed', P:'#5b21b6',  // purple body
-  g:'#ddd6fe', G:'#c4b5fd',  // pale skin
-  s:'#fde68a', // stars
-  y:'#fbbf24', Y:'#f59e0b',  // gold
-  k:'#0f172a',
-  b:'#1d4ed8', // blue robe
-};
-const BOSS2_IDLE = buildSprite([
-  '...ssssss...',
-  '..spppppps..',
-  '.spPPPPPPps.',
-  '.pPGGGGGGPp.',
-  '.pPGyyGyyGp.',
-  '.pPGGGGGGGp.',
-  '..pPGGGGGPp.',
-  '.bpPPPPPPpb.',
-  'bbpppppppppbb',
-  'bbbbbpppbbbb.',
-  '.bbbbbpbbbb..',
-  '..bYbbbYb...',
-  '...YYY.YYY..',
-  '..kYY...YYk.',
-  '.kkk.....kkk',
-], B2P);
-const BOSS2_WINDUP = buildSprite([
-  '...ssssss...',
-  '..spppppps..',
-  '.spPPPPPPps.',
-  '.pPGGGGGGPp.',
-  '.pPGyyGyyGp.',
-  '.pPGGGGGGGp.',
-  '..pPGGGGGPp.',
-  'sspPPPPPPpss',
-  'bbbpppppppbb.',
-  'bbbbbpppbbbb.',
-  '.bbbbbpbbbb..',
-  '..bYbbbYb...',
-  '...YYY.YYY..',
-  '..kYY...YYk.',
-  '.kkk.....kkk',
-], B2P);
-
-const B3P = {
-  k:'#0f172a', K:'#111827',  // black body
-  p:'#6d28d9', P:'#4c1d95',  // deep purple
-  r:'#ef4444', R:'#dc2626',  // red eyes/horns
-  g:'#d1d5db',               // grey scales
-  y:'#fde68a', Y:'#f59e0b',
-  w:'#7c3aed',               // glow purple
-};
-const BOSS3_IDLE = buildSprite([
-  '.RR..yyyy..RR.',
-  'RRRRyyyyyyyRRR',
-  'RkKKKKKKKKKkR.',
-  '.kKPPPPPPPKk..',
-  '.kKPRRKRRPKk..',
-  '.kKPPPPPPPKk..',
-  '..kPwwwwwPk...',
-  '.kkKPPPPPKkk..',
-  'gkkKKPPKKKkkg.',
-  'gkkkKKKKKKkkg.',
-  'gkkPKKKKKPkkg.',
-  '.gkKKKKKKKkg..',
-  '..gKK...KKg...',
-  '.kgKK...KKgk..',
-  'kkk.......kkk.',
-], B3P);
-const BOSS3_WINDUP = buildSprite([
-  '.RR..yyyy..RR.',
-  'RRRRyyyyyyyRRR',
-  'RkKKKKKKKKKkR.',
-  '.kKPPPPPPPKk..',
-  '.kKPRRKRRPKk..',
-  '.kKPPPPPPPKk..',
-  'wwkPwwwwwPkww.',
-  'wwkKPPPPPKkww.',
-  'gkkKKPPKKKkkg.',
-  'gkkkKKKKKKkkg.',
-  'gkkPKKKKKPkkg.',
-  '.gkKKKKKKKkg..',
-  '..gKK...KKg...',
-  '.kgKK...KKgk..',
-  'kkk.......kkk.',
-], B3P);
-
-const BOSS_SPRITES = [
-  { idle: BOSS1_IDLE, windup: BOSS1_WINDUP, name: '👹 문법괴물', label: '문법 고블린', icon: '👹' },
-  { idle: BOSS2_IDLE, windup: BOSS2_WINDUP, name: '🧙 마법 학자', label: '문법 마법사', icon: '🧙' },
-  { idle: BOSS3_IDLE, windup: BOSS3_WINDUP, name: '🐲 문법 마왕', label: '대마왕 각성', icon: '🐲' },
-];
-const HERO_SPRITES = [
-  { idle: HERO_IDLE, atk: HERO_ATK, hurt: HERO_HURT, name: '🧑 학생', label: '학생' },
-  { idle: HERO_IDLE, atk: HERO_ATK, hurt: HERO_HURT, name: '🧙 마법사', label: '마법사' },
-  { idle: HERO_IDLE, atk: HERO_ATK, hurt: HERO_HURT, name: '⚔️ 영웅', label: '각성 영웅' },
-];
-
-// ═══════════════════════════════════════════════════════════
-//  CANVAS & BACKGROUND DRAWING
+//  CANVAS BACKGROUND
 // ═══════════════════════════════════════════════════════════
 const canvas = document.getElementById('c');
 const ctx = canvas.getContext('2d');
+let CW = 0, CH = 0;
+function resize() { CW = canvas.width = window.innerWidth; CH = canvas.height = window.innerHeight; }
+window.addEventListener('resize', resize); resize();
 
-let CW = 0, CH = 0; // canvas size (CSS pixels = internal, no scale)
-function resize() {
-  CW = canvas.width = window.innerWidth;
-  CH = canvas.height = window.innerHeight;
-}
-window.addEventListener('resize', resize);
-resize();
+const STARS = Array.from({length:80}, () => ({
+  x: Math.random(), y: Math.random(),
+  r: Math.random() * 1.8 + .4,
+  blink: Math.random() * Math.PI * 2
+}));
 
-// Background layers by phase
-function drawBG(phase) {
-  // Sky gradient
-  const skies = [
-    ['#0a0a1a','#1a0a2e','#2a0a4a'],
-    ['#0a0a2a','#1a0a3e','#3a0a5a'],
-    ['#050505','#100010','#1a001a'],
-  ];
-  const [c1,c2,c3] = skies[phase] || skies[0];
+const BG_THEMES = [
+  { sky: ['#0a0515','#150a30','#200a40'], ground: ['#1a0a3a','#0a0020'], glow: '#7c3aed', line: '#5b21b6' },
+  { sky: ['#0a0515','#1e0a35','#2e0a50'], ground: ['#2a0a4a','#150030'], glow: '#9333ea', line: '#7c3aed' },
+  { sky: ['#050005','#100010','#180018'], ground: ['#0f0010','#050005'], glow: '#dc2626', line: '#7f1d1d' },
+];
+
+function drawBG(phase, ts) {
+  const t = BG_THEMES[phase] || BG_THEMES[0];
   const g = ctx.createLinearGradient(0,0,0,CH);
-  g.addColorStop(0,c1); g.addColorStop(.5,c2); g.addColorStop(1,c3);
+  g.addColorStop(0,t.sky[0]); g.addColorStop(.5,t.sky[1]); g.addColorStop(1,t.sky[2]);
   ctx.fillStyle = g; ctx.fillRect(0,0,CW,CH);
 
   // Stars
-  ctx.fillStyle = 'rgba(255,255,255,.6)';
-  const starPositions = [.05,.12,.18,.25,.31,.38,.45,.52,.58,.65,.72,.79,.85,.91,.97];
-  starPositions.forEach((xr,i) => {
-    const yr = [.04,.09,.06,.13,.07,.11,.05,.15,.08,.12,.06,.14,.09,.07,.11][i];
-    const sz = [1.5,1,2,1,1.5,1,2,1.5,1,2,1,1.5,1,2,1][i];
-    ctx.fillRect(xr*CW-sz/2, yr*CH-sz/2, sz, sz);
+  STARS.forEach(s => {
+    const alpha = .4 + Math.sin(ts/1200 + s.blink) * .35;
+    ctx.fillStyle = `rgba(255,255,255,${alpha.toFixed(2)})`;
+    ctx.beginPath(); ctx.arc(s.x*CW, s.y*CH*.7, s.r, 0, Math.PI*2); ctx.fill();
   });
 
-  // Ground platform
-  const groundY = CH * 0.72;
-  const gc = ctx.createLinearGradient(0,groundY,0,CH);
-  const platformColors = [
-    ['#1a0a3a','#0a0020'],
-    ['#3a0a5a','#1a003a'],
-    ['#050005','#000000'],
-  ];
-  const [pc1,pc2] = platformColors[phase] || platformColors[0];
-  gc.addColorStop(0,pc1); gc.addColorStop(1,pc2);
-  ctx.fillStyle = gc; ctx.fillRect(0, groundY, CW, CH - groundY);
+  // Ground
+  const gY = CH * .72;
+  const gg = ctx.createLinearGradient(0,gY,0,CH);
+  gg.addColorStop(0,t.ground[0]); gg.addColorStop(1,t.ground[1]);
+  ctx.fillStyle = gg; ctx.fillRect(0,gY,CW,CH-gY);
 
-  // Platform top edge glow
-  const glowColors = ['#7c3aed','#9333ea','#ef4444'];
-  ctx.fillStyle = glowColors[phase] || glowColors[0];
-  ctx.globalAlpha = 0.4;
-  ctx.fillRect(0, groundY, CW, 3);
+  // Glow line
+  ctx.fillStyle = t.glow; ctx.globalAlpha = .5;
+  ctx.fillRect(0, gY, CW, 3);
   ctx.globalAlpha = 1;
 
-  // Floor tiles
-  ctx.fillStyle = 'rgba(255,255,255,.04)';
-  for (let x = 0; x < CW; x += 60) {
-    ctx.fillRect(x, groundY + 3, 1, CH - groundY);
+  // Tile grid
+  ctx.strokeStyle = 'rgba(255,255,255,.04)'; ctx.lineWidth = 1;
+  for (let x=0; x<CW; x+=60) { ctx.beginPath(); ctx.moveTo(x,gY); ctx.lineTo(x,CH); ctx.stroke(); }
+
+  // Phase-specific effects
+  if (phase >= 1) {
+    // Floating orbs background
+    for (let i=0;i<3;i++) {
+      const ox = CW*(0.2+i*.3) + Math.sin(ts/2000+i)*30;
+      const oy = CH*(0.3+i*.1) + Math.cos(ts/1500+i)*20;
+      const gr = ctx.createRadialGradient(ox,oy,0,ox,oy,60);
+      gr.addColorStop(0,`rgba(124,58,237,${phase===2?.08:.05})`);
+      gr.addColorStop(1,'transparent');
+      ctx.fillStyle = gr; ctx.fillRect(ox-60,oy-60,120,120);
+    }
+  }
+  if (phase >= 2) {
+    // Red crack lines
+    ctx.strokeStyle = 'rgba(239,68,68,.15)'; ctx.lineWidth = 2;
+    for (let i=0;i<4;i++) {
+      ctx.beginPath();
+      ctx.moveTo(CW*(0.1+i*.25), gY);
+      ctx.lineTo(CW*(0.05+i*.25)+Math.sin(ts/500+i)*10, gY-80);
+      ctx.stroke();
+    }
   }
 }
 
-function drawSprite(img, x, y, scale = 1, flipX = false) {
-  const w = img.width * scale, h = img.height * scale;
-  ctx.save();
-  if (flipX) {
-    ctx.translate(x + w, y);
-    ctx.scale(-1, 1);
-    ctx.drawImage(img, 0, 0, w, h);
-  } else {
-    ctx.drawImage(img, x, y, w, h);
-  }
-  ctx.restore();
-}
+// ═══════════════════════════════════════════════════════════
+//  ASSET PATHS
+// ═══════════════════════════════════════════════════════════
+const HERO_ASSETS = [
+  { idle:'../game/assets/chars/hero-lv1.png', atk:'../game/assets/chars/hero-lv1-attack.png', name:'🧑 학생' },
+  { idle:'../game/assets/chars/hero-lv2.png', atk:'../game/assets/chars/hero-lv2-attack.png', name:'🧙 마법사' },
+  { idle:'../game/assets/chars/hero-lv3.png', atk:'../game/assets/chars/hero-lv3-attack.png', name:'⚔️ 영웅' },
+];
+const BOSS_ASSETS = [
+  { idle:'../game/assets/chars/boss-lv1.png', hit:'../game/assets/chars/boss-lv1-hit.png', name:'👹 문법 고블린', cutName:'문법 고블린', cutSub:'1단계 보스 등장!', glow:'rgba(239,68,68,.5)' },
+  { idle:'../game/assets/chars/boss-lv2.png', hit:'../game/assets/chars/boss-lv2-hit.png', name:'🧙 문법 마법사', cutName:'문법 마법사', cutSub:'2단계 각성! 마법이 폭주한다!', glow:'rgba(139,92,246,.6)' },
+  { idle:'../game/assets/chars/boss-lv3.png', hit:'../game/assets/chars/boss-lv3-hit.png', name:'🐲 문법 마왕', cutName:'문법 대마왕', cutSub:'최종 형태 해방! 전력을 다해라!', glow:'rgba(220,38,38,.7)' },
+];
+
+// ═══════════════════════════════════════════════════════════
+//  GAME CONFIG
+// ═══════════════════════════════════════════════════════════
+const ATTACK_TYPES = [
+  { id:'jab',     label:'⚡ 잽!',      time:5,   damage:12, chance:.50, color:'#f97316' },
+  { id:'hook',    label:'💥 훅!',      time:7,   damage:20, chance:.30, color:'#ef4444' },
+  { id:'special', label:'☄️ 필살기!', time:3.5, damage:30, chance:.20, color:'#a855f7' },
+];
+const STATUS_FX = {
+  BURN:   { icon:'🔥', label:'화염', color:'#ef4444', dur:18000, desc:'오답 2배 피해' },
+  FREEZE: { icon:'🧊', label:'빙결', color:'#60a5fa', dur:14000, desc:'제한시간 절반' },
+  SHOCK:  { icon:'⚡', label:'감전', color:'#fbbf24', dur:12000, desc:'보기 계속 섞임' },
+};
+const DROP_TYPES = {
+  HEART:  { icon:'❤️', action:'heal',   value:20 },
+  SHIELD: { icon:'🛡️', action:'shield', value:1 },
+  POWER:  { icon:'⚔️', action:'power',  value:3 },
+};
 
 // ═══════════════════════════════════════════════════════════
 //  GAME STATE
 // ═══════════════════════════════════════════════════════════
-const ATTACK_TYPES = [
-  { id:'jab',   label:'⚡ 잽!',        time:4.5, damage:12, chance:.50, color:'#f97316' },
-  { id:'hook',  label:'💥 훅!',        time:6.5, damage:18, chance:.30, color:'#ef4444' },
-  { id:'special',label:'☄️ 필살기!',  time:3.0, damage:28, chance:.20, color:'#7c3aed' },
-];
-const STATUS_FX = {
-  BURN:   { icon:'🔥', label:'화염', desc:'오답 시 2배 피해', color:'#ef4444', dur:20000 },
-  FREEZE: { icon:'🧊', label:'빙결', desc:'제한시간 50% 감소', color:'#60a5fa', dur:15000 },
-  SHOCK:  { icon:'⚡', label:'감전', desc:'보기 순서 계속 바뀜', color:'#fbbf24', dur:12000 },
-};
-const DROP_TYPES = {
-  HEART:  { icon:'❤️', label:'회복',    action:'heal',    value:20 },
-  SHIELD: { icon:'🛡️', label:'보호막',  action:'shield',  value:1  },
-  POWER:  { icon:'⚔️', label:'강타',    action:'power',   value:3  },
-};
-
-let GS = null; // game state
-let rafId = null;
-let bossTimer = null;
-let qTimer = null;
-let dropTimer = null;
-let telInterval = null;
+let GS = null;
 let wrongLog = [];
+let rafId = null, bossTimer = null, qTimer = null, dropTimer = null, telIv = null;
 
-function initGS(questions) {
+function initGS(qs) {
   wrongLog = [];
   return {
-    phase: 0,           // 0=idle, 1=telegraph, 2=question, 3=anim, 4=end
+    phase: 0, bossPhase: 0,
     heroHP: 100, bossHP: 100,
     combo: 1, maxCombo: 1, score: 0, correct: 0,
-    bossPhase: 0,       // 0,1,2 (phase 1,2,3)
-    heroPhase: 0,
-    statusFx: {},       // active status effects
-    hasShield: false,
-    hasPower: false,
-    questions: shuffle([...questions]),
-    qIdx: 0,
-    currentQ: null,
-    attackType: null,
-    heroAnim: 'idle',   // idle|atk|hurt
-    heroAnimEnd: 0,
-    bossAnim: 'idle',   // idle|windup
-    drops: [],          // active drop items
-    dropId: 0,
+    statusFx: {}, hasShield: false, hasPower: false,
+    questions: shuffle([...qs]), qIdx: 0,
+    currentQ: null, attackType: null, drops: [], dropId: 0,
   };
 }
 
 // ═══════════════════════════════════════════════════════════
-//  GAME MAIN OBJECT
+//  GAME CONTROLLER
 // ═══════════════════════════════════════════════════════════
 const G = {
-  selUnit: null,
-  selLabel: '',
-
-  start(questions, label) {
-    this.selUnit = questions;
-    this.selLabel = label;
-    GS = initGS(questions);
+  _qs: null, _label: '',
+  start(qs, label) {
+    this._qs = qs; this._label = label;
+    GS = initGS(qs);
     document.getElementById('sel').style.display = 'none';
     document.getElementById('game').style.display = 'block';
-    document.getElementById('stage-badge').textContent = 'PHASE 1';
-    document.getElementById('boss-name').textContent = BOSS_SPRITES[0].name;
-    document.getElementById('hero-name').textContent = HERO_SPRITES[0].name;
+    setCharSprites(0);
+    updateHUD();
     if (rafId) cancelAnimationFrame(rafId);
     rafId = requestAnimationFrame(loop);
     scheduleBossAttack();
     scheduleDropSpawn();
-    updateHUD();
   },
-
   retry() {
     document.getElementById('result').classList.remove('show');
-    if (this.selUnit) this.start(this.selUnit, this.selLabel);
+    if (this._qs) this.start(this._qs, this._label);
   },
-
   goHome() {
     document.getElementById('result').classList.remove('show');
     document.getElementById('game').style.display = 'none';
@@ -623,76 +445,59 @@ const G = {
 };
 
 // ═══════════════════════════════════════════════════════════
-//  GAME LOOP
+//  RENDER LOOP
 // ═══════════════════════════════════════════════════════════
-let lastTs = 0;
 function loop(ts) {
   rafId = requestAnimationFrame(loop);
-  const dt = ts - lastTs; lastTs = ts;
-  update(ts, dt);
-  render(ts);
+  drawBG(GS ? GS.bossPhase : 0, ts);
+  // Expire status effects
+  if (GS) {
+    Object.keys(GS.statusFx).forEach(k => {
+      if (ts > GS.statusFx[k].expires) { delete GS.statusFx[k]; updateStatusRow(); }
+    });
+  }
 }
 
-function update(ts, dt) {
-  if (!GS) return;
-  // Hero animation timeout
-  if (GS.heroAnim !== 'idle' && ts > GS.heroAnimEnd) {
-    GS.heroAnim = 'idle';
-  }
-  // Status effects expiry
-  Object.keys(GS.statusFx).forEach(k => {
-    if (ts > GS.statusFx[k].expires) {
-      delete GS.statusFx[k];
-      updateStatusRow();
-    }
-  });
+// ═══════════════════════════════════════════════════════════
+//  CHARACTER SPRITES (DOM img)
+// ═══════════════════════════════════════════════════════════
+const heroImg = document.getElementById('hero-img');
+const bossImg = document.getElementById('boss-img');
+
+function setCharSprites(phase) {
+  const h = HERO_ASSETS[phase], b = BOSS_ASSETS[phase];
+  heroImg.src = h.idle; heroImg.className = 'idle';
+  bossImg.src = b.idle; bossImg.className = 'idle';
+  bossImg.style.filter = `drop-shadow(0 8px 28px ${b.glow})`;
+  document.getElementById('hero-name').textContent = h.name;
+  document.getElementById('boss-name').textContent = b.name;
 }
 
-function render(ts) {
-  if (!GS) return;
-  ctx.clearRect(0,0,CW,CH);
-  drawBG(GS.bossPhase);
-
-  const groundY = CH * 0.72;
-  const sprScale = Math.min(CW / 480, CH / 270) * 1.8;
-
-  // ── Boss sprite ──
-  const bossImg = GS.bossAnim === 'windup'
-    ? BOSS_SPRITES[GS.bossPhase].windup
-    : BOSS_SPRITES[GS.bossPhase].idle;
-  const bossW = bossImg.width * sprScale;
-  const bossH = bossImg.height * sprScale;
-  const bossX = CW * 0.62;
-  const bossY = groundY - bossH - 4;
-  // Idle bob
-  const bob = Math.sin(ts / 500) * 4;
-  drawSprite(bossImg, bossX, bossY + bob, sprScale, true);
-
-  // ── Hero sprite ──
-  let heroImg;
-  if (GS.heroAnim === 'atk') heroImg = HERO_SPRITES[GS.heroPhase].atk;
-  else if (GS.heroAnim === 'hurt') heroImg = HERO_SPRITES[GS.heroPhase].hurt;
-  else heroImg = HERO_SPRITES[GS.heroPhase].idle;
-  const heroW = heroImg.width * sprScale;
-  const heroH = heroImg.height * sprScale;
-  const heroX = CW * 0.18 - heroW / 2;
-  const heroY = groundY - heroH;
-  const heroBob = Math.sin(ts / 600 + 1) * 2;
-  drawSprite(heroImg, heroX, heroY + heroBob, sprScale);
-
-  // ── Drop items ──
-  GS.drops.forEach(d => {
-    ctx.font = `${Math.round(30 * sprScale * 0.6)}px serif`;
-    ctx.textAlign = 'center';
-    const fy = d.y + Math.sin(ts / 400 + d.id) * 8;
-    ctx.fillText(d.icon, d.x, fy);
-  });
-
-  // ── Hit flash ──
-  if (GS.heroAnim === 'hurt') {
-    ctx.fillStyle = 'rgba(239,68,68,.12)';
-    ctx.fillRect(0,0,CW,CH);
+function heroAnim(type) {
+  const h = HERO_ASSETS[GS.bossPhase];
+  heroImg.className = '';
+  if (type === 'atk') {
+    heroImg.src = h.atk;
+    void heroImg.offsetWidth;
+    heroImg.className = 'attack';
+    setTimeout(() => { heroImg.src = h.idle; heroImg.className = 'idle'; }, 520);
+  } else if (type === 'hurt') {
+    void heroImg.offsetWidth;
+    heroImg.className = 'hurt';
+    setTimeout(() => { heroImg.className = 'idle'; }, 480);
   }
+}
+
+function bossAnim(type) {
+  const b = BOSS_ASSETS[GS.bossPhase];
+  bossImg.className = '';
+  void bossImg.offsetWidth;
+  if (type === 'windup') { bossImg.className = 'windup'; }
+  else if (type === 'hit') {
+    bossImg.src = b.hit;
+    bossImg.className = 'hit';
+    setTimeout(() => { bossImg.src = b.idle; bossImg.className = 'idle'; bossImg.style.filter = `drop-shadow(0 8px 28px ${b.glow})`; }, 480);
+  } else { bossImg.src = b.idle; bossImg.className = 'idle'; }
 }
 
 // ═══════════════════════════════════════════════════════════
@@ -700,7 +505,7 @@ function render(ts) {
 // ═══════════════════════════════════════════════════════════
 function scheduleBossAttack() {
   if (bossTimer) clearTimeout(bossTimer);
-  const delay = 3000 + Math.random() * 3000;
+  const delay = 2500 + Math.random() * 2500;
   bossTimer = setTimeout(startAttack, delay);
 }
 
@@ -708,41 +513,37 @@ function startAttack() {
   if (!GS || GS.phase !== 0) return;
   GS.phase = 1;
 
-  // Pick attack type based on boss phase
+  // Pick attack type
   const roll = Math.random();
   let cum = 0, chosen = ATTACK_TYPES[0];
-  const phaseBoost = GS.bossPhase * 0.1; // harder as phase advances
   for (const at of ATTACK_TYPES) {
-    cum += at.chance + (at.id === 'special' ? phaseBoost : 0);
+    cum += at.chance + (at.id === 'special' ? GS.bossPhase * .08 : 0);
     if (roll < cum) { chosen = at; break; }
   }
   GS.attackType = chosen;
 
-  // Occasionally add status effect from boss
-  if (Math.random() < 0.25 + GS.bossPhase * 0.1) {
-    const sfxKeys = Object.keys(STATUS_FX);
-    const sfxKey = sfxKeys[Math.floor(Math.random() * sfxKeys.length)];
-    applyStatusFx(sfxKey);
+  // Maybe apply status effect
+  if (Math.random() < 0.2 + GS.bossPhase * 0.1) {
+    const keys = Object.keys(STATUS_FX);
+    applyStatusFx(keys[Math.floor(Math.random() * keys.length)]);
   }
 
-  // Update telegraph
-  GS.bossAnim = 'windup';
+  // Telegraph
+  bossAnim('windup');
   const tel = document.getElementById('tel');
-  const telLabel = document.getElementById('tel-label');
-  const telFill = document.getElementById('tel-fill');
   tel.style.display = 'block';
-  tel.style.top = (window.innerHeight * 0.62 - 50) + 'px';
-  telLabel.textContent = chosen.label;
-  telLabel.style.color = chosen.color;
+  document.getElementById('tel-label').textContent = chosen.label;
+  document.getElementById('tel-label').style.color = chosen.color;
 
-  const TELEGRAPH_DUR = 1800 + GS.bossPhase * 300;
+  const DUR = 1600 + GS.bossPhase * 250;
   let elapsed = 0;
-  telInterval = setInterval(() => {
+  telIv = setInterval(() => {
     elapsed += 50;
-    telFill.style.width = Math.min(100, (elapsed / TELEGRAPH_DUR * 100)) + '%';
-    if (elapsed >= TELEGRAPH_DUR) {
-      clearInterval(telInterval); telInterval = null;
+    document.getElementById('tel-fill').style.width = Math.min(100, elapsed / DUR * 100) + '%';
+    if (elapsed >= DUR) {
+      clearInterval(telIv); telIv = null;
       tel.style.display = 'none';
+      bossAnim('idle');
       showQuestion();
     }
   }, 50);
@@ -754,157 +555,122 @@ function startAttack() {
 function showQuestion() {
   if (!GS) return;
   GS.phase = 2;
-
-  // Pick question
-  if (GS.qIdx >= GS.questions.length) {
-    GS.questions = shuffle([...GS.questions]);
-    GS.qIdx = 0;
-  }
+  if (GS.qIdx >= GS.questions.length) { GS.questions = shuffle([...GS.questions]); GS.qIdx = 0; }
   const q = GS.questions[GS.qIdx++];
   GS.currentQ = q;
 
   let timeLimit = GS.attackType.time;
   if (GS.statusFx.FREEZE) timeLimit *= 0.5;
 
-  // Build options (possibly shuffle if SHOCK)
   let opts = [...q.opts];
   if (GS.statusFx.SHOCK) opts = shuffle(opts);
-  const ans = q.ans;
 
-  // Render question
   document.getElementById('qpop-atk-label').textContent = GS.attackType.label;
   document.getElementById('qpop-atk-label').style.color = GS.attackType.color;
   document.getElementById('qpop-eng').textContent = q.eng;
   document.getElementById('qpop-kor').textContent = q.kor;
   document.getElementById('qpop-fb').textContent = '';
-  document.getElementById('qpop-fb').className = 'qpop-feedback';
-  const timerEl = document.getElementById('qpop-timer');
-  const timerFill = document.getElementById('qpop-timer-fill');
+  document.getElementById('qpop-fb').className = 'qpop-fb';
 
-  // Option buttons
+  // Render options
   const optsEl = document.getElementById('qpop-opts');
   optsEl.innerHTML = '';
   opts.forEach(opt => {
     const btn = document.createElement('button');
     btn.className = 'qopt';
     btn.textContent = opt;
-    btn.onclick = () => handleAnswer(opt, ans, opts, btn);
+    btn.onclick = () => handleAnswer(opt, q.ans, btn);
     optsEl.appendChild(btn);
   });
 
-  // SHOCK: reshuffle options every second
-  let shockTimer = null;
+  // SHOCK: reshuffle every 1.2s
+  let shockIv = null;
   if (GS.statusFx.SHOCK) {
-    shockTimer = setInterval(() => {
-      if (GS.phase !== 2) { clearInterval(shockTimer); return; }
-      const shuffled = shuffle(opts);
-      const btns = optsEl.querySelectorAll('.qopt:not([disabled])');
-      btns.forEach((b, i) => { b.textContent = shuffled[i]; });
-    }, 1000);
+    shockIv = setInterval(() => {
+      if (GS.phase !== 2) { clearInterval(shockIv); return; }
+      const sh = shuffle([...opts]);
+      optsEl.querySelectorAll('.qopt:not([disabled])').forEach((b,i) => b.textContent = sh[i]);
+    }, 1200);
   }
 
   // Timer
   const start = performance.now();
-  let timerDone = false;
+  const timerEl = document.getElementById('qpop-timer');
+  const fillEl = document.getElementById('timer-fill');
   function tickTimer() {
-    if (GS.phase !== 2 || timerDone) return;
-    const elapsed = (performance.now() - start) / 1000;
-    const remaining = Math.max(0, timeLimit - elapsed);
-    const pct = (remaining / timeLimit) * 100;
-    timerEl.textContent = remaining.toFixed(1);
-    timerFill.style.width = pct + '%';
-    timerEl.className = 'qpop-timer' + (remaining < 1.5 ? ' crit' : remaining < 3 ? ' warn' : '');
-    timerFill.style.background = pct > 50 ? '#fbbf24' : pct > 25 ? '#f97316' : '#ef4444';
-    if (remaining > 0) {
-      qTimer = requestAnimationFrame(tickTimer);
-    } else {
-      timerDone = true;
-      clearInterval(shockTimer);
-      timeExpired(ans, opts);
-    }
+    if (GS.phase !== 2) return;
+    const rem = Math.max(0, timeLimit - (performance.now() - start) / 1000);
+    timerEl.textContent = rem.toFixed(1);
+    fillEl.style.width = (rem / timeLimit * 100) + '%';
+    fillEl.style.background = rem > timeLimit*.5 ? '#fbbf24' : rem > timeLimit*.25 ? '#f97316' : '#ef4444';
+    timerEl.className = 'qpop-timer' + (rem < 1.5 ? ' crit' : rem < 3 ? ' warn' : '');
+    if (rem > 0) { qTimer = requestAnimationFrame(tickTimer); }
+    else { clearInterval(shockIv); timeExpired(q.ans); }
   }
   qTimer = requestAnimationFrame(tickTimer);
-
-  // Show popup
   document.getElementById('qpop').classList.add('show');
 }
 
-function handleAnswer(chosen, correct, opts, clickedBtn) {
+function handleAnswer(chosen, correct, clickedBtn) {
   if (GS.phase !== 2) return;
   cancelAnimationFrame(qTimer); qTimer = null;
   GS.phase = 3;
-
   const isCorrect = chosen === correct;
-  const allBtns = document.querySelectorAll('.qopt');
-  allBtns.forEach(b => {
+  document.querySelectorAll('.qopt').forEach(b => {
     b.disabled = true;
-    if (b.textContent === correct) b.classList.add('reveal');
+    if (b.textContent === correct) b.classList.add(isCorrect ? 'ok' : 'reveal');
   });
-  if (!isCorrect) clickedBtn.classList.add('ng');
-
-  const fb = document.getElementById('qpop-fb');
-  if (isCorrect) {
-    fb.textContent = '✅ 정답! 공격!';
-    fb.className = 'qpop-feedback ok';
-    setTimeout(() => finishQuestion(true, correct), 700);
-  } else {
-    fb.textContent = '❌ 오답! 피격!';
-    fb.className = 'qpop-feedback ng';
-    // Log wrong answer
+  if (!isCorrect) {
+    clickedBtn.classList.add('ng');
     wrongLog.push({ eng: GS.currentQ.eng, ans: correct, wrong: chosen });
-    setTimeout(() => finishQuestion(false, correct), 900);
   }
+  const fb = document.getElementById('qpop-fb');
+  fb.textContent = isCorrect ? '✅ 정답! 공격!' : '❌ 오답! 피격!';
+  fb.className = 'qpop-fb ' + (isCorrect ? 'ok' : 'ng');
+  setTimeout(() => finishQuestion(isCorrect), isCorrect ? 650 : 950);
 }
 
-function timeExpired(correct, opts) {
+function timeExpired(correct) {
   if (GS.phase !== 2) return;
+  cancelAnimationFrame(qTimer); qTimer = null;
   GS.phase = 3;
-  const allBtns = document.querySelectorAll('.qopt');
-  allBtns.forEach(b => { b.disabled = true; if (b.textContent === correct) b.classList.add('reveal'); });
+  document.querySelectorAll('.qopt').forEach(b => { b.disabled = true; if (b.textContent === correct) b.classList.add('reveal'); });
   const fb = document.getElementById('qpop-fb');
   fb.textContent = '⏰ 시간 초과! 피격!';
-  fb.className = 'qpop-feedback ng';
+  fb.className = 'qpop-fb ng';
   wrongLog.push({ eng: GS.currentQ.eng, ans: correct, wrong: '(시간초과)' });
-  setTimeout(() => finishQuestion(false, correct), 900);
+  setTimeout(() => finishQuestion(false), 950);
 }
 
-function finishQuestion(isCorrect, correct) {
+function finishQuestion(isCorrect) {
   document.getElementById('qpop').classList.remove('show');
-  GS.bossAnim = 'idle';
-
   if (isCorrect) {
-    // Hero attacks boss
-    GS.heroAnim = 'atk';
-    GS.heroAnimEnd = performance.now() + 600;
-    let dmg = 15 + GS.bossPhase * 5;
+    let dmg = 15 + GS.bossPhase * 6;
     if (GS.hasPower) { dmg *= 3; GS.hasPower = false; }
-    dmg = Math.round(dmg * (GS.combo * 0.1 + 0.9));
+    dmg = Math.round(dmg * (GS.combo * .08 + .92));
     GS.bossHP = Math.max(0, GS.bossHP - dmg);
-    GS.combo = Math.min(GS.combo + 1, 10);
+    GS.combo = Math.min(GS.combo + 1, 12);
     GS.maxCombo = Math.max(GS.maxCombo, GS.combo);
     GS.score += dmg * GS.combo;
     GS.correct++;
+    heroAnim('atk'); bossAnim('hit');
+    showDmgFloat('-' + dmg, '#ef4444', 'right');
     playSfx('correct');
     checkBossPhase();
   } else {
-    // Hero takes damage
-    GS.heroAnim = 'hurt';
-    GS.heroAnimEnd = performance.now() + 500;
     let dmg = GS.attackType.damage;
     if (GS.statusFx.BURN) dmg *= 2;
     if (GS.hasShield) { dmg = 0; GS.hasShield = false; showFloating('🛡️ 보호막!', '#60a5fa'); }
     GS.heroHP = Math.max(0, GS.heroHP - dmg);
     GS.combo = 1;
+    heroAnim('hurt');
+    showDmgFloat('-' + dmg, '#f97316', 'left');
     playSfx('wrong');
-    if (GS.heroHP <= 0) {
-      setTimeout(gameOver, 400);
-      return;
-    }
+    if (GS.heroHP <= 0) { setTimeout(gameOver, 350); return; }
   }
-
   updateHUD();
   GS.phase = 0;
-  setTimeout(scheduleBossAttack, 500);
+  setTimeout(scheduleBossAttack, 600);
 }
 
 // ═══════════════════════════════════════════════════════════
@@ -912,40 +678,38 @@ function finishQuestion(isCorrect, correct) {
 // ═══════════════════════════════════════════════════════════
 function checkBossPhase() {
   const hp = GS.bossHP;
-  const newPhase = hp <= 0 ? 3 : hp <= 33 ? 2 : hp <= 67 ? 1 : 0;
-  if (newPhase > GS.bossPhase) {
-    if (newPhase >= 3) { gameWin(); return; }
-    triggerPhaseChange(newPhase);
+  const target = hp <= 0 ? 3 : hp <= 33 ? 2 : hp <= 66 ? 1 : 0;
+  if (target > GS.bossPhase) {
+    if (target >= 3) { gameWin(); return; }
+    triggerPhaseChange(target);
   }
 }
 
 function triggerPhaseChange(newPhase) {
   GS.bossPhase = newPhase;
-  GS.heroPhase = newPhase;
-  GS.phase = 10; // locked during cutscene
+  GS.phase = 10;
   cancelTimers();
-
-  const phaseData = [
-    null,
-    { phase:'PHASE 2', icon:'🧙', name:'문법 마법사', sub:'분노의 각성... 마법 폭풍이 몰아친다!' },
-    { phase:'PHASE 3', icon:'🐲', name:'문법 대마왕', sub:'최종 형태 해방! 모든 힘을 쏟아낸다!' },
-  ];
-  const d = phaseData[newPhase];
-  document.getElementById('cut-phase').textContent = d.phase;
-  document.getElementById('cut-icon').textContent = d.icon;
-  document.getElementById('cut-name').textContent = d.name;
-  document.getElementById('cut-sub').textContent = d.sub;
-  document.getElementById('cut').classList.add('show');
-  document.getElementById('stage-badge').textContent = d.phase;
-  document.getElementById('boss-name').textContent = BOSS_SPRITES[newPhase].name;
-  document.getElementById('hero-name').textContent = HERO_SPRITES[newPhase].name;
-
+  const b = BOSS_ASSETS[newPhase];
+  const h = HERO_ASSETS[newPhase];
+  document.getElementById('cut-phase').textContent = `PHASE ${newPhase + 1}`;
+  document.getElementById('cut-hero-img').src = h.idle;
+  document.getElementById('cut-boss-img').src = b.idle;
+  document.getElementById('cut-name').textContent = b.cutName;
+  document.getElementById('cut-sub').textContent = b.cutSub;
+  // Flash
+  const fl = document.getElementById('phase-flash');
+  fl.className = ''; void fl.offsetWidth; fl.className = 'go';
+  setTimeout(() => {
+    document.getElementById('cut').classList.add('show');
+    setCharSprites(newPhase);
+    document.getElementById('stage-badge').textContent = `PHASE ${newPhase + 1}`;
+  }, 200);
   setTimeout(() => {
     document.getElementById('cut').classList.remove('show');
     GS.phase = 0;
     scheduleBossAttack();
     scheduleDropSpawn();
-  }, 2400);
+  }, 2800);
 }
 
 // ═══════════════════════════════════════════════════════════
@@ -953,18 +717,16 @@ function triggerPhaseChange(newPhase) {
 // ═══════════════════════════════════════════════════════════
 function applyStatusFx(key) {
   const fx = STATUS_FX[key];
-  GS.statusFx[key] = {
-    ...fx,
-    expires: performance.now() + fx.dur,
-  };
+  GS.statusFx[key] = { ...fx, expires: performance.now() + fx.dur };
   updateStatusRow();
-  showFloating(fx.icon + ' ' + fx.label, fx.color);
+  showFloating(fx.icon + ' ' + fx.label + '!', fx.color);
 }
 
 function updateStatusRow() {
   const row = document.getElementById('status-row');
   const hudH = document.getElementById('hud').offsetHeight;
-  row.style.top = (hudH + 6) + 'px';
+  const telShowing = document.getElementById('tel').style.display !== 'none';
+  row.style.top = (hudH + (telShowing ? 58 : 6)) + 'px';
   row.innerHTML = Object.entries(GS.statusFx).map(([k,fx]) =>
     `<div class="sfx-badge" style="border-color:${fx.color};color:${fx.color}">${fx.icon}${fx.label}</div>`
   ).join('');
@@ -972,119 +734,67 @@ function updateStatusRow() {
 
 function scheduleDropSpawn() {
   if (dropTimer) clearTimeout(dropTimer);
-  const delay = 8000 + Math.random() * 10000;
-  dropTimer = setTimeout(spawnDrop, delay);
+  dropTimer = setTimeout(spawnDrop, 7000 + Math.random() * 9000);
 }
 
 function spawnDrop() {
   if (!GS || GS.phase === 10) { scheduleDropSpawn(); return; }
   const keys = Object.keys(DROP_TYPES);
   const key = keys[Math.floor(Math.random() * keys.length)];
-  const d = DROP_TYPES[key];
-  const drop = {
-    id: GS.dropId++,
-    key, icon: d.icon, label: d.label,
-    x: CW * (0.25 + Math.random() * 0.5),
-    y: CH * (0.5 + Math.random() * 0.15),
-  };
-  GS.drops.push(drop);
+  const d = { id: GS.dropId++, key, icon: DROP_TYPES[key].icon,
+    x: CW * (.2 + Math.random() * .6), y: CH * (.42 + Math.random() * .18) };
+  GS.drops.push(d);
+  const el = document.createElement('div');
+  el.className = 'drop-item'; el.textContent = d.icon;
+  el.style.left = d.x + 'px'; el.style.top = d.y + 'px';
+  el.style.animationDelay = (Math.random() * .6) + 's';
+  el.dataset.id = d.id;
+  el.onclick = () => grabDrop(d.id, el);
+  el.ontouchstart = (e) => { e.preventDefault(); grabDrop(d.id, el); };
+  document.getElementById('drops-layer').appendChild(el);
   scheduleDropSpawn();
-  // Remove if not grabbed after 6s
-  setTimeout(() => {
-    GS.drops = GS.drops.filter(dr => dr.id !== drop.id);
-  }, 6000);
+  setTimeout(() => { GS.drops = GS.drops.filter(dr=>dr.id!==d.id); el.remove(); }, 6000);
 }
 
-function grabDrop(dropId) {
-  const drop = GS.drops.find(d => d.id === dropId);
-  if (!drop) return;
-  GS.drops = GS.drops.filter(d => d.id !== dropId);
-  const dt = DROP_TYPES[drop.key];
-  if (dt.action === 'heal') {
-    GS.heroHP = Math.min(100, GS.heroHP + dt.value);
-    updateHUD();
-    showFloating('❤️ +' + dt.value + ' 회복!', '#22c55e');
-  } else if (dt.action === 'shield') {
-    GS.hasShield = true;
-    showFloating('🛡️ 보호막!', '#60a5fa');
-  } else if (dt.action === 'power') {
-    GS.hasPower = true;
-    showFloating('⚔️ 강타!', '#f97316');
-  }
+function grabDrop(id, el) {
+  const d = GS.drops.find(dr=>dr.id===id); if (!d) return;
+  GS.drops = GS.drops.filter(dr=>dr.id!==id); el.remove();
+  const dt = DROP_TYPES[d.key];
+  if (dt.action==='heal') { GS.heroHP=Math.min(100,GS.heroHP+dt.value); updateHUD(); showFloating('❤️ +'+dt.value+'HP!','#22c55e'); }
+  else if (dt.action==='shield') { GS.hasShield=true; showFloating('🛡️ 보호막!','#60a5fa'); }
+  else if (dt.action==='power') { GS.hasPower=true; showFloating('⚔️ 강타 준비!','#f97316'); }
   playSfx('correct');
 }
-
-// Click detection on canvas for drops
-canvas.addEventListener('click', e => {
-  if (!GS) return;
-  const rect = canvas.getBoundingClientRect();
-  const mx = (e.clientX - rect.left), my = (e.clientY - rect.top);
-  const sprScale = Math.min(CW / 480, CH / 270) * 1.8;
-  const hitR = 25 * sprScale * 0.6;
-  const hit = GS.drops.find(d => {
-    return Math.abs(d.x - mx) < hitR && Math.abs(d.y - my) < hitR;
-  });
-  if (hit) grabDrop(hit.id);
-});
-canvas.addEventListener('touchstart', e => {
-  if (!GS) return;
-  const rect = canvas.getBoundingClientRect();
-  const t = e.changedTouches[0];
-  const mx = t.clientX - rect.left, my = t.clientY - rect.top;
-  const sprScale = Math.min(CW / 480, CH / 270) * 1.8;
-  const hitR = 35 * sprScale * 0.6;
-  const hit = GS.drops.find(d => {
-    return Math.abs(d.x - mx) < hitR && Math.abs(d.y - my) < hitR;
-  });
-  if (hit) { grabDrop(hit.id); e.preventDefault(); }
-}, { passive: false });
 
 // ═══════════════════════════════════════════════════════════
 //  WIN / LOSE
 // ═══════════════════════════════════════════════════════════
-function gameWin() {
-  GS.phase = 10;
-  cancelTimers();
-  showResult(true);
-}
-
-function gameOver() {
-  GS.phase = 10;
-  cancelTimers();
-  showResult(false);
-}
+function gameWin() { GS.phase=10; cancelTimers(); showResult(true); }
+function gameOver() { GS.phase=10; cancelTimers(); showResult(false); }
 
 function showResult(win) {
   document.getElementById('result-icon').textContent = win ? '🏆' : '💀';
   document.getElementById('result-title').textContent = win ? '승리!' : '패배...';
   document.getElementById('result-sub').textContent = win
-    ? `${GS.selLabel || ''} 보스를 물리쳤다!`
-    : '다시 도전해보자!';
+    ? `${G._label || ''} 보스를 물리쳤다!` : '다시 도전해보자!';
   document.getElementById('r-score').textContent = GS.score;
   document.getElementById('r-correct').textContent = GS.correct;
   document.getElementById('r-combo').textContent = 'x' + GS.maxCombo;
-
-  // Wrong answer log
-  const wls = document.getElementById('wrong-log-section');
+  const wl = document.getElementById('wrong-log');
   const wll = document.getElementById('wrong-log-list');
-  if (wrongLog.length > 0) {
-    wls.style.display = 'block';
+  if (wrongLog.length) {
+    wl.style.display='block';
     wll.innerHTML = wrongLog.map(w =>
-      `<div class="wrong-log-item">
-        <div class="wl-eng">${w.eng}</div>
-        <div class="wl-ans">✅ 정답: <strong>${w.ans}</strong></div>
-        <div class="wl-wrong">❌ 내 답: ${w.wrong}</div>
-      </div>`
+      `<div class="wrong-log-item"><div class="wl-eng">${w.eng}</div>
+       <div class="wl-ans">✅ 정답: <strong>${w.ans}</strong></div>
+       <div class="wl-wrong">❌ 내 답: ${w.wrong}</div></div>`
     ).join('');
-  } else {
-    wls.style.display = 'none';
-  }
-
+  } else { wl.style.display='none'; }
   document.getElementById('result').classList.add('show');
 }
 
 // ═══════════════════════════════════════════════════════════
-//  HUD UPDATES
+//  HUD & FX
 // ═══════════════════════════════════════════════════════════
 function updateHUD() {
   if (!GS) return;
@@ -1096,83 +806,68 @@ function updateHUD() {
   document.getElementById('score-badge').textContent = GS.score + '점';
 }
 
-// ═══════════════════════════════════════════════════════════
-//  FLOATING TEXT FEEDBACK
-// ═══════════════════════════════════════════════════════════
-function showFloating(text, color) {
+function showDmgFloat(text, color, side) {
   const el = document.createElement('div');
-  el.style.cssText = `position:fixed;left:50%;top:${window.innerHeight*0.4}px;transform:translateX(-50%);
-    color:${color};font-size:1.2rem;font-weight:900;text-shadow:0 2px 8px rgba(0,0,0,.8);
-    pointer-events:none;z-index:50;animation:floatUp .9s ease-out forwards;white-space:nowrap;`;
+  el.className = 'dmg-float';
+  el.style.cssText = `color:${color};font-size:1.5rem;left:${side==='right'?'62%':'20%'};top:40%;text-shadow:0 2px 8px rgba(0,0,0,.8);`;
   el.textContent = text;
   document.body.appendChild(el);
-  const style = document.createElement('style');
-  style.textContent = '@keyframes floatUp{0%{opacity:1;transform:translateX(-50%) translateY(0)}100%{opacity:0;transform:translateX(-50%) translateY(-60px)}}';
-  document.head.appendChild(style);
-  setTimeout(() => { el.remove(); style.remove(); }, 900);
+  setTimeout(() => el.remove(), 900);
 }
 
-// ═══════════════════════════════════════════════════════════
-//  SOUND
-// ═══════════════════════════════════════════════════════════
+function showFloating(text, color) {
+  const el = document.createElement('div');
+  el.className = 'dmg-float';
+  el.style.cssText = `color:${color};font-size:1.1rem;left:50%;transform:translateX(-50%);top:35%;text-shadow:0 2px 6px rgba(0,0,0,.8);white-space:nowrap;`;
+  el.textContent = text;
+  document.body.appendChild(el);
+  setTimeout(() => el.remove(), 900);
+}
+
 function playSfx(type) {
   try {
-    if (typeof playCorrect === 'function' && type === 'correct') playCorrect();
-    else if (typeof playWrong === 'function' && type === 'wrong') playWrong();
-  } catch(e) {}
+    if (type==='correct' && typeof playCorrect==='function') playCorrect();
+    else if (type==='wrong' && typeof playWrong==='function') playWrong();
+  } catch(e){}
 }
 
 // ═══════════════════════════════════════════════════════════
 //  UTILITIES
 // ═══════════════════════════════════════════════════════════
-function shuffle(arr) {
-  for (let i = arr.length - 1; i > 0; i--) {
-    const j = Math.floor(Math.random() * (i + 1));
-    [arr[i], arr[j]] = [arr[j], arr[i]];
-  }
-  return arr;
+function shuffle(a) {
+  for (let i=a.length-1;i>0;i--) { const j=Math.floor(Math.random()*(i+1)); [a[i],a[j]]=[a[j],a[i]]; }
+  return a;
 }
 
 function cancelTimers() {
-  if (bossTimer) { clearTimeout(bossTimer); bossTimer = null; }
-  if (qTimer) { cancelAnimationFrame(qTimer); qTimer = null; }
-  if (dropTimer) { clearTimeout(dropTimer); dropTimer = null; }
-  if (telInterval) { clearInterval(telInterval); telInterval = null; }
-  document.getElementById('tel').style.display = 'none';
+  if (bossTimer) { clearTimeout(bossTimer); bossTimer=null; }
+  if (qTimer) { cancelAnimationFrame(qTimer); qTimer=null; }
+  if (dropTimer) { clearTimeout(dropTimer); dropTimer=null; }
+  if (telIv) { clearInterval(telIv); telIv=null; }
+  document.getElementById('tel').style.display='none';
   document.getElementById('qpop').classList.remove('show');
 }
 
 // ═══════════════════════════════════════════════════════════
-//  UNIT SELECT SCREEN BUILDER
+//  SELECT SCREEN
 // ═══════════════════════════════════════════════════════════
-function buildSelectScreen() {
+function buildSelect() {
   if (typeof GAME_QUESTIONS === 'undefined') return;
-  const container = document.getElementById('unit-list');
-  container.innerHTML = '';
-
-  // All units card
-  const allCard = document.createElement('div');
-  allCard.className = 'all-card';
-  allCard.innerHTML = '⚔️ 전체 단원 보스전<br><small style="font-weight:700;opacity:.8">모든 문제로 최강 보스 도전</small>';
-  allCard.onclick = () => {
-    const allQ = Object.values(GAME_QUESTIONS).flatMap(u => u.questions);
-    G.start(allQ, '전체 단원');
-  };
-  container.appendChild(allCard);
-
-  Object.entries(GAME_QUESTIONS).forEach(([key, unit]) => {
+  const c = document.getElementById('unit-list');
+  const allBtn = document.createElement('div');
+  allBtn.className = 'all-card';
+  allBtn.innerHTML = '⚔️ 전체 단원 보스전<br><small style="font-weight:700;opacity:.8">모든 문제로 최강 보스 도전</small>';
+  allBtn.onclick = () => G.start(Object.values(GAME_QUESTIONS).flatMap(u=>u.questions), '전체 단원');
+  c.appendChild(allBtn);
+  Object.entries(GAME_QUESTIONS).forEach(([k,u]) => {
     const card = document.createElement('div');
     card.className = 'unit-card';
-    card.innerHTML = `
-      <div class="uc-lbl">${key.toUpperCase()}</div>
-      <h3>${unit.label}</h3>
-      <div class="uc-cnt">문제 ${unit.questions.length}개</div>`;
-    card.onclick = () => G.start(unit.questions, unit.label);
-    container.appendChild(card);
+    card.innerHTML = `<div class="uc-lbl">${k.toUpperCase()}</div><h3>${u.label}</h3><div class="uc-cnt">문제 ${u.questions.length}개</div>`;
+    card.onclick = () => G.start(u.questions, u.label);
+    c.appendChild(card);
   });
 }
-
-buildSelectScreen();
+buildSelect();
 </script>
 </body>
 </html>

@@ -557,11 +557,51 @@ const G = {
 };
 
 // ═══════════════════════════════════════════════════════════
+//  PARTICLE SYSTEM
+// ═══════════════════════════════════════════════════════════
+let _bursts = [];
+
+function spawnBurst(cx, cy, colors, count=14, power=1) {
+  const now = performance.now();
+  for (let i=0; i<count; i++) {
+    const angle = (Math.PI*2*i/count) + Math.random()*.5;
+    const spd = (55 + Math.random()*90) * power;
+    _bursts.push({
+      x:cx, y:cy,
+      vx: Math.cos(angle)*spd, vy: Math.sin(angle)*spd - 35*power,
+      r: 3 + Math.random()*3*power,
+      color: colors[Math.floor(Math.random()*colors.length)],
+      birth: now, ttl: 350 + Math.random()*250
+    });
+  }
+}
+
+function paintBursts(now) {
+  const alive = [];
+  for (const b of _bursts) {
+    const age = now - b.birth;
+    if (age >= b.ttl) continue;
+    const t = age / b.ttl;
+    const x = b.x + b.vx*(age/1000);
+    const y = b.y + b.vy*(age/1000) + 180*(age/1000)**2;
+    ctx.globalAlpha = (1-t)*0.85;
+    ctx.fillStyle = b.color;
+    ctx.beginPath();
+    ctx.arc(x, y, b.r*(1-t*.5), 0, Math.PI*2);
+    ctx.fill();
+    alive.push(b);
+  }
+  ctx.globalAlpha = 1;
+  _bursts = alive;
+}
+
+// ═══════════════════════════════════════════════════════════
 //  RENDER LOOP
 // ═══════════════════════════════════════════════════════════
 function loop(ts) {
   rafId = requestAnimationFrame(loop);
   drawBG(GS ? GS.bossPhase : 0, ts);
+  paintBursts(ts);
   // Expire status effects
   if (GS) {
     Object.keys(GS.statusFx).forEach(k => {
@@ -659,6 +699,11 @@ function castSkill() {
       bossAnim('hit');
       showDmgFloat('💥 -' + dmg, '#facc15', 'right');
       showFloating('⚡ 필살기!', '#facc15');
+      cameraShake(14 + GS.bossPhase * 4, .6);
+      // 대형 파티클 버스트 — 보스 위치 + 중앙
+      const pc = ['#facc15','#fb7185','#8b5cf6','#fff','#f97316'];
+      spawnBurst(CW*.75, CH*.38, pc, 24+GS.bossPhase*6, 1.6+GS.bossPhase*.3);
+      spawnBurst(CW*.5,  CH*.45, pc, 16, 1.2);
       playSfx('correct');
       checkBossPhase();
       updateHUD();
@@ -826,6 +871,7 @@ function finishQuestion(isCorrect) {
     heroAnim('atk'); bossAnim('hit');
     showDmgFloat('-' + dmg, '#ef4444', 'right');
     cameraShake(5 + GS.bossPhase * 2, .35);
+    spawnBurst(CW*.78, CH*.42, ['#fbbf24','#f97316','#ef4444','#fff'], 12+GS.bossPhase*4, 1+GS.bossPhase*.3);
     playSfx('correct');
     checkBossPhase();
   } else {
@@ -837,6 +883,7 @@ function finishQuestion(isCorrect) {
     heroAnim('hurt');
     showDmgFloat('-' + dmg, '#f97316', 'left');
     cameraShake(9, .5);
+    spawnBurst(CW*.22, CH*.42, ['#ef4444','#f97316','#dc2626'], 10, .9);
     playSfx('wrong');
     if (GS.heroHP <= 0) { setTimeout(gameOver, 350); return; }
   }

@@ -37,8 +37,8 @@ canvas#c{position:absolute;inset:0;width:100%;height:100%;}
 #arena{position:absolute;left:0;right:0;bottom:0;height:72%;pointer-events:none;}
 
 /* ── CHARACTERS ── */
-#hero-wrap{position:absolute;left:8%;bottom:26%;transform-origin:bottom center;transition:transform .15s;}
-#boss-wrap{position:absolute;right:8%;bottom:26%;transform-origin:bottom center;transition:transform .15s;}
+#hero-wrap{position:absolute;left:8%;bottom:26%;transform-origin:bottom center;transition:left .35s cubic-bezier(.22,1,.36,1), transform .15s;}
+#boss-wrap{position:absolute;right:8%;bottom:26%;transform-origin:bottom center;transition:right .35s cubic-bezier(.22,1,.36,1), transform .15s;}
 #hero-img{height:clamp(140px,22vw,240px);width:auto;filter:drop-shadow(0 8px 24px rgba(14,165,233,.5));transform-origin:bottom center;}
 #boss-img{height:clamp(140px,22vw,240px);width:auto;filter:drop-shadow(0 8px 24px rgba(239,68,68,.5));transform-origin:bottom center;}
 
@@ -80,10 +80,22 @@ canvas#c{position:absolute;inset:0;width:100%;height:100%;}
 #hero-hp-fill{background:linear-gradient(90deg,#22c55e,#4ade80);box-shadow:0 0 8px rgba(34,197,94,.6);}
 #boss-hp-fill{background:linear-gradient(90deg,#ef4444,#f97316);box-shadow:0 0 8px rgba(239,68,68,.6);}
 .vs-badge{font-size:.72rem;font-weight:900;color:#fff;background:rgba(255,255,255,.14);border:1px solid rgba(255,255,255,.25);border-radius:999px;padding:3px 8px;white-space:nowrap;}
-.hud-info{display:flex;align-items:center;justify-content:space-between;gap:8px;}
+.hud-info{display:flex;align-items:center;justify-content:space-between;gap:8px;pointer-events:all;}
 .combo-badge{background:rgba(251,191,36,.18);border:1px solid rgba(251,191,36,.35);border-radius:20px;padding:3px 12px;font-size:.8rem;font-weight:900;color:#fde68a;}
 .stage-badge{background:rgba(139,92,246,.2);border:1px solid rgba(139,92,246,.35);border-radius:20px;padding:3px 12px;font-size:.8rem;font-weight:900;color:#c4b5fd;}
 .score-badge{font-size:.8rem;font-weight:900;color:#93c5fd;}
+/* Skill gauge */
+.skill-row{display:flex;align-items:center;gap:7px;margin-top:5px;pointer-events:all;}
+.skill-track{flex:1;height:8px;background:rgba(255,255,255,.1);border-radius:999px;overflow:hidden;}
+.skill-fill-bar{height:100%;width:0%;border-radius:999px;background:linear-gradient(90deg,#22d3ee,#a78bfa,#facc15);transition:width .3s ease;}
+.skill-btn2{border:none;font-family:inherit;font-size:.72rem;font-weight:900;border-radius:999px;padding:5px 12px;cursor:pointer;background:rgba(255,255,255,.12);color:#64748b;pointer-events:all;white-space:nowrap;}
+.skill-btn2.ready{background:linear-gradient(135deg,#facc15,#fb7185,#8b5cf6);color:#fff;animation:pulse .8s infinite;}
+@keyframes pulse{0%,100%{filter:drop-shadow(0 0 6px rgba(250,204,21,.5))}50%{filter:drop-shadow(0 0 16px rgba(250,204,21,.9))}}
+.skill-btn2:disabled{pointer-events:none;}
+/* Ultimate flash */
+#ult-flash{position:fixed;inset:0;pointer-events:none;z-index:75;background:linear-gradient(135deg,#facc15,#fb7185,#8b5cf6);opacity:0;}
+#hud-back{background:rgba(0,0,0,.5);border:1px solid rgba(255,255,255,.22);color:#94a3b8;font-family:inherit;font-size:.7rem;font-weight:900;border-radius:999px;padding:4px 10px;cursor:pointer;pointer-events:all;}
+#hud-back:active{color:#fff;border-color:rgba(255,255,255,.5);}
 .hp-num{font-size:.7rem;font-weight:900;color:rgba(255,255,255,.8);min-width:26px;}
 
 /* ── BOSS TELEGRAPH ── */
@@ -104,9 +116,9 @@ canvas#c{position:absolute;inset:0;width:100%;height:100%;}
 .drop-item{animation:dropFloat 1.4s ease-in-out infinite;}
 
 /* ── QUESTION POPUP ── */
-#qpop{position:absolute;left:0;right:0;bottom:0;z-index:30;transform:translateY(100%);transition:transform .3s cubic-bezier(.22,1,.36,1);}
-#qpop.show{transform:translateY(0);}
-.qpop-inner{background:linear-gradient(170deg,#1a0533,#0f0824);border-top:2px solid #7c3aed;padding:14px 14px 20px;border-radius:22px 22px 0 0;box-shadow:0 -12px 40px rgba(0,0,0,.7);}
+#qpop{position:absolute;left:50%;bottom:12px;width:min(480px,96%);transform:translateX(-50%) translateY(20px) scale(.92);opacity:0;pointer-events:none;z-index:30;transition:transform .28s cubic-bezier(.34,1.56,.64,1),opacity .22s;}
+#qpop.show{transform:translateX(-50%) translateY(0) scale(1);opacity:1;pointer-events:all;}
+.qpop-inner{background:linear-gradient(170deg,#1a0533,#0f0824);border:2px solid #7c3aed;padding:14px 14px 20px;border-radius:22px;box-shadow:0 8px 40px rgba(0,0,0,.85),0 0 0 1px rgba(124,58,237,.3);}
 .qpop-top{display:flex;align-items:center;justify-content:space-between;margin-bottom:6px;}
 .qpop-atk-label{font-size:.72rem;font-weight:900;color:#f97316;letter-spacing:.05em;}
 .qpop-timer{font-size:.95rem;font-weight:900;color:#fde68a;font-variant-numeric:tabular-nums;}
@@ -215,9 +227,15 @@ canvas#c{position:absolute;inset:0;width:100%;height:100%;}
       </div>
     </div>
     <div class="hud-info">
+      <button id="hud-back" onclick="G.goHome()">← 목록</button>
       <div class="combo-badge" id="combo-badge">COMBO ×1</div>
       <div class="stage-badge" id="stage-badge">PHASE 1</div>
       <div class="score-badge" id="score-badge">0점</div>
+    </div>
+    <div class="skill-row">
+      <span style="font-size:.68rem;font-weight:900;color:#a78bfa;white-space:nowrap;">⚡ 필살기</span>
+      <div class="skill-track"><div class="skill-fill-bar" id="skill-fill-bar"></div></div>
+      <button class="skill-btn2" id="skill-btn2" onclick="castSkill()" disabled>준비중</button>
     </div>
   </div>
 
@@ -249,6 +267,8 @@ canvas#c{position:absolute;inset:0;width:100%;height:100%;}
 
   <!-- Phase flash overlay -->
   <div id="phase-flash"></div>
+  <!-- Ultimate flash -->
+  <div id="ult-flash"></div>
 
   <!-- Phase cutscene -->
   <div id="cut">
@@ -288,6 +308,7 @@ canvas#c{position:absolute;inset:0;width:100%;height:100%;}
 
 <script src="../game/questions.js"></script>
 <script src="../sounds.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
 <script>
 // ═══════════════════════════════════════════════════════════
 //  CANVAS BACKGROUND
@@ -404,6 +425,8 @@ let rafId = null, bossTimer = null, qTimer = null, dropTimer = null, telIv = nul
 
 function initGS(qs) {
   wrongLog = [];
+  skillGauge = 0;
+  addSkillGauge(0);
   return {
     phase: 0, bossPhase: 0,
     heroHP: 100, bossHP: 100,
@@ -463,12 +486,16 @@ function loop(ts) {
 // ═══════════════════════════════════════════════════════════
 const heroImg = document.getElementById('hero-img');
 const bossImg = document.getElementById('boss-img');
+const heroWrap = document.getElementById('hero-wrap');
+const bossWrap = document.getElementById('boss-wrap');
 
 function setCharSprites(phase) {
   const h = HERO_ASSETS[phase], b = BOSS_ASSETS[phase];
   heroImg.src = h.idle; heroImg.className = 'idle';
   bossImg.src = b.idle; bossImg.className = 'idle';
   bossImg.style.filter = `drop-shadow(0 8px 28px ${b.glow})`;
+  gsap.set(heroWrap, { left: '8%', clearProps: 'x' });
+  gsap.set(bossWrap, { right: '8%', clearProps: 'x' });
   document.getElementById('hero-name').textContent = h.name;
   document.getElementById('boss-name').textContent = b.name;
 }
@@ -478,26 +505,76 @@ function heroAnim(type) {
   heroImg.className = '';
   if (type === 'atk') {
     heroImg.src = h.atk;
-    void heroImg.offsetWidth;
     heroImg.className = 'attack';
-    setTimeout(() => { heroImg.src = h.idle; heroImg.className = 'idle'; }, 520);
+    gsap.timeline()
+      .to(heroWrap, { left: '44%', duration: .28, ease: 'power3.out' })
+      .to(heroWrap, { left: '8%', duration: .35, ease: 'power2.in', onComplete() { heroImg.src = h.idle; heroImg.className = 'idle'; } });
   } else if (type === 'hurt') {
-    void heroImg.offsetWidth;
     heroImg.className = 'hurt';
-    setTimeout(() => { heroImg.className = 'idle'; }, 480);
+    gsap.fromTo(heroWrap, { x: 0 }, { x: -18, duration: .08, yoyo: true, repeat: 3, ease: 'power1.inOut', onComplete() { heroImg.className = 'idle'; gsap.set(heroWrap, { x: 0 }); } });
   }
 }
 
 function bossAnim(type) {
   const b = BOSS_ASSETS[GS.bossPhase];
   bossImg.className = '';
-  void bossImg.offsetWidth;
-  if (type === 'windup') { bossImg.className = 'windup'; }
-  else if (type === 'hit') {
+  if (type === 'windup') {
+    bossImg.className = 'windup';
+    gsap.to(bossWrap, { right: '40%', duration: .5, ease: 'power2.inOut' });
+  } else if (type === 'hit') {
     bossImg.src = b.hit;
     bossImg.className = 'hit';
-    setTimeout(() => { bossImg.src = b.idle; bossImg.className = 'idle'; bossImg.style.filter = `drop-shadow(0 8px 28px ${b.glow})`; }, 480);
-  } else { bossImg.src = b.idle; bossImg.className = 'idle'; }
+    gsap.timeline()
+      .to(bossWrap, { right: '8%', duration: .25, ease: 'power3.out' })
+      .fromTo(bossWrap, { x: 0 }, { x: 22, duration: .06, yoyo: true, repeat: 4, ease: 'power1.inOut' })
+      .call(() => { bossImg.src = b.idle; bossImg.className = 'idle'; bossImg.style.filter = `drop-shadow(0 8px 28px ${b.glow})`; });
+  } else {
+    gsap.to(bossWrap, { right: '8%', duration: .3, ease: 'power2.out' });
+    bossImg.src = b.idle; bossImg.className = 'idle';
+  }
+}
+
+// ─── SKILL SYSTEM ───────────────────────────────────────────
+const SKILL_MAX = 100;
+let skillGauge = 0;
+
+function addSkillGauge(v) {
+  if (!GS || GS.phase === 10) return;
+  skillGauge = Math.min(SKILL_MAX, skillGauge + v);
+  const pct = (skillGauge / SKILL_MAX) * 100;
+  document.getElementById('skill-fill-bar').style.width = pct + '%';
+  const btn = document.getElementById('skill-btn2');
+  const ready = skillGauge >= SKILL_MAX;
+  btn.disabled = !ready;
+  btn.textContent = ready ? '발동!' : Math.round(pct) + '%';
+  btn.className = 'skill-btn2' + (ready ? ' ready' : '');
+}
+
+function castSkill() {
+  if (!GS || skillGauge < SKILL_MAX || GS.phase === 10) return;
+  skillGauge = 0;
+  addSkillGauge(0);
+  const h = HERO_ASSETS[GS.bossPhase];
+  heroImg.src = h.atk; heroImg.className = '';
+
+  // GSAP timeline: dash across screen, flash, return
+  const ultFlash = document.getElementById('ult-flash');
+  gsap.timeline()
+    .to(heroWrap, { left: '50%', duration: .2, ease: 'power4.out' })
+    .to(ultFlash,  { opacity: .7, duration: .12 })
+    .call(() => {
+      const dmg = Math.round((40 + GS.bossPhase * 20) * (GS.combo * .1 + .9));
+      GS.bossHP = Math.max(0, GS.bossHP - dmg);
+      GS.score += dmg * 3;
+      bossAnim('hit');
+      showDmgFloat('💥 -' + dmg, '#facc15', 'right');
+      showFloating('⚡ 필살기!', '#facc15');
+      playSfx('correct');
+      checkBossPhase();
+      updateHUD();
+    })
+    .to(ultFlash,  { opacity: 0, duration: .4 })
+    .to(heroWrap,  { left: '8%', duration: .4, ease: 'back.out(1.5)', onComplete() { heroImg.src = h.idle; heroImg.className = 'idle'; } });
 }
 
 // ═══════════════════════════════════════════════════════════
@@ -653,6 +730,7 @@ function finishQuestion(isCorrect) {
     GS.maxCombo = Math.max(GS.maxCombo, GS.combo);
     GS.score += dmg * GS.combo;
     GS.correct++;
+    addSkillGauge(22);
     heroAnim('atk'); bossAnim('hit');
     showDmgFloat('-' + dmg, '#ef4444', 'right');
     playSfx('correct');
@@ -791,6 +869,7 @@ function showResult(win) {
     ).join('');
   } else { wl.style.display='none'; }
   document.getElementById('result').classList.add('show');
+  setTimeout(() => playSfx(win ? 'win' : 'lose'), 200);
 }
 
 // ═══════════════════════════════════════════════════════════
@@ -824,10 +903,48 @@ function showFloating(text, color) {
   setTimeout(() => el.remove(), 900);
 }
 
+let _sfxAC = null;
+function _ac() { if (!_sfxAC) _sfxAC = new (window.AudioContext||window.webkitAudioContext)(); return _sfxAC; }
 function playSfx(type) {
   try {
-    if (type==='correct' && typeof playCorrect==='function') playCorrect();
-    else if (type==='wrong' && typeof playWrong==='function') playWrong();
+    const ac = _ac();
+    if (type === 'correct') {
+      [[660,.08],[880,.12],[1100,.12]].forEach(([f,t],i) => {
+        const o=ac.createOscillator(), g=ac.createGain();
+        o.connect(g); g.connect(ac.destination);
+        o.type='sine'; o.frequency.value=f;
+        const s=ac.currentTime+i*.08;
+        g.gain.setValueAtTime(0,s); g.gain.linearRampToValueAtTime(.25,s+.02);
+        g.gain.exponentialRampToValueAtTime(.001,s+t+.06);
+        o.start(s); o.stop(s+t+.08);
+      });
+    } else if (type === 'wrong') {
+      const o=ac.createOscillator(), g=ac.createGain();
+      o.connect(g); g.connect(ac.destination);
+      o.type='sawtooth'; o.frequency.setValueAtTime(280,ac.currentTime);
+      o.frequency.exponentialRampToValueAtTime(120,ac.currentTime+.3);
+      g.gain.setValueAtTime(.3,ac.currentTime);
+      g.gain.exponentialRampToValueAtTime(.001,ac.currentTime+.35);
+      o.start(); o.stop(ac.currentTime+.36);
+    } else if (type === 'win') {
+      [[523,.1],[659,.1],[784,.1],[1047,.3]].forEach(([f,t],i) => {
+        const o=ac.createOscillator(), g=ac.createGain();
+        o.connect(g); g.connect(ac.destination);
+        o.type='triangle'; o.frequency.value=f;
+        const s=ac.currentTime+i*.12;
+        g.gain.setValueAtTime(.3,s); g.gain.exponentialRampToValueAtTime(.001,s+t+.1);
+        o.start(s); o.stop(s+t+.15);
+      });
+    } else if (type === 'lose') {
+      [[400,.1],[300,.1],[200,.4]].forEach(([f,t],i) => {
+        const o=ac.createOscillator(), g=ac.createGain();
+        o.connect(g); g.connect(ac.destination);
+        o.type='sawtooth'; o.frequency.value=f;
+        const s=ac.currentTime+i*.15;
+        g.gain.setValueAtTime(.25,s); g.gain.exponentialRampToValueAtTime(.001,s+t+.1);
+        o.start(s); o.stop(s+t+.15);
+      });
+    }
   } catch(e){}
 }
 

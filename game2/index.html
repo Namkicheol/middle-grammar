@@ -369,7 +369,17 @@ const BGM = (() => {
         _playing=true; loop(_ac.currentTime+.15);
       }catch(e){}
     },
-    stop(){ _playing=false; if(_lt) clearTimeout(_lt); },
+    stop(){
+      _playing=false;
+      if(_lt) clearTimeout(_lt);
+      if(_mg && _ac) {
+        try {
+          _mg.gain.linearRampToValueAtTime(0, _ac.currentTime + .08);
+          const old = _mg; _mg = null;
+          setTimeout(() => { try { old.disconnect(); } catch(e){} }, 200);
+        } catch(e){}
+      }
+    },
     setPhase(p){ _phase=p; if(_mg) _mg.gain.value=.32+p*.07; },
     get isPlaying(){ return _playing; }
   };

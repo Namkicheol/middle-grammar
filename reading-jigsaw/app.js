@@ -1,11 +1,12 @@
 // app.js — Jigsaw Studio 메인 컨트롤러
 
-import { parse } from './engine/parser.js';
-import { autoSplit, insertBoundary, removeBoundary } from './engine/split.js';
-import { extract, pickForPiece } from './engine/vocab.js';
-import { detectAll } from './engine/grammar.js';
-import { suggest as suggestBlanks } from './engine/blanks.js';
-import { renderPaper } from './ui/preview.js';
+import { parse } from './engine/parser.js?v=20250524';
+import { enrichWithAI } from './engine/ai.js?v=20250524';
+import { autoSplit, insertBoundary, removeBoundary } from './engine/split.js?v=20250524';
+import { extract, pickForPiece } from './engine/vocab.js?v=20250524';
+import { detectAll } from './engine/grammar.js?v=20250524';
+import { suggest as suggestBlanks } from './engine/blanks.js?v=20250524';
+import { renderPaper } from './ui/preview.js?v=20250524';
 
 const STORAGE_KEY = 'jigsaw-studio:v1';
 const SAMPLE_URL = 'assets/samples/donga-l4.txt';
@@ -25,7 +26,9 @@ const state = {
   grammarMap: new Map(),  // sid → hits[]
   blanks: new Map(),      // sid → [{text,start,end}]
   selectedPiece: 0,
-  loadedSample: false
+  loadedSample: false,
+  apiKey: localStorage.getItem('jigsaw-api-key') || '',
+  aiLoading: false
 };
 
 // ───── Routing ─────
@@ -121,7 +124,7 @@ function viewUpload() {
       <div class="upload-actions">
         <button class="btn" id="load-sample">샘플 불러오기 <span style="font-family:var(--font-mono);font-size:.66rem;color:var(--ink-mute);margin-left:6px;">동아윤 L4</span></button>
         <div style="flex:1"></div>
-        <button class="btn btn-primary" id="go-clean">정제로 진행 →</button>
+        <button class="btn btn-primary" id="go-clean">분할로 진행 →</button>
       </div>
     </div>
   `;
@@ -135,6 +138,7 @@ function viewSplit() {
         <div class="edit-step-tag">Step 2 · Section split</div>
         <h1 class="edit-title">본문을 조각으로 <em>나누기</em></h1>
       </div>
+      ${state.aiLoading ? `<div class="ai-loading">Claude AI가 단어 뜻·질문·문법 포인트를 생성 중...</div>` : ''}
       <div class="edit-meta">
         <div class="edit-meta-item"><span>sentences</span><b>${state.sentences.filter(s=>!s.isHeading).length}</b></div>
         <div class="edit-meta-item"><span>pieces</span><b>${state.pieces.length}</b></div>
@@ -231,6 +235,19 @@ function viewBlanks() {
 
 function renderBlanksPiece(p, idx) {
   const rangeSentences = state.sentences.slice(p.range[0], p.range[1]).filter(s => !s.isHeading);
+  const vocabList = state.vocabByPiece[idx] || [];
+  const vocabHtml = vocabList.length ? `
+    <div class="vocab-edit">
+      <div class="vocab-edit-label">단어장 — 뜻 입력</div>
+      ${vocabList.map((v, vi) => `
+        <div class="vocab-edit-row">
+          <span class="vocab-edit-word">${escapeHtml(v.word)}</span>
+          <input class="vocab-edit-meaning" data-piece="${idx}" data-vocab="${vi}"
+                 placeholder="한국어 뜻" value="${escapeAttr(v.meaning || '')}">
+        </div>
+      `).join('')}
+    </div>
+  ` : '';
   return `
     <section class="piece">
       <div class="piece-bar">
@@ -239,6 +256,7 @@ function renderBlanksPiece(p, idx) {
           <div class="piece-heading">${escapeHtml(p.heading || '제목 없음')}</div>
         </div>
       </div>
+      ${vocabHtml}
       ${rangeSentences.map(s => `
         <div class="sent" data-sid="${s.id}">
           <div class="sent-num">${s.id + 1}</div>
@@ -320,8 +338,16 @@ function viewPreview() {
   `;
 }
 
-// ─── Step 6: Export ───
+// ─── Step 5: Export ───
 function viewExport() {
+  const pieceChecks = state.pieces.map((p, i) => `
+    <label style="display:inline-flex;align-items:center;gap:5px;font-family:var(--font-mono);font-size:.76rem;cursor:pointer;margin-right:10px;">
+      <input type="checkbox" class="print-piece-check" data-idx="${i}" checked
+             style="accent-color:var(--terracotta);width:14px;height:14px;">
+      <span style="font-weight:700;">${p.label}</span>
+    </label>
+  `).join('');
+
   return `
     <div class="edit-head">
       <div>
@@ -330,21 +356,26 @@ function viewExport() {
       </div>
     </div>
 
+    <div style="padding:12px 16px;background:var(--paper-warm);border:1px solid var(--paper-edge);border-radius:8px;margin-bottom:18px;">
+      <div style="font-family:var(--font-mono);font-size:.66rem;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--ink-3);margin-bottom:8px;">포함할 조각 선택</div>
+      <div>${pieceChecks}</div>
+    </div>
+
     <div class="export-grid">
       <button class="export-card" id="x-html-student">
         <div class="x-emoji">📄</div>
         <h3>학생용 HTML</h3>
-        <p>모든 조각 · 빈칸 · 인쇄용 단일 파일</p>
+        <p>선택한 조각 · 빈칸 · 인쇄용 단일 파일</p>
       </button>
       <button class="export-card" id="x-html-teacher">
         <div class="x-emoji">📕</div>
         <h3>교사용 HTML</h3>
-        <p>정답 + 해설 포함 단일 파일</p>
+        <p>선택한 조각 · 정답 + 해설 포함</p>
       </button>
       <button class="export-card" id="x-print">
         <div class="x-emoji">🖨️</div>
-        <h3>인쇄 미리보기</h3>
-        <p>브라우저 인쇄 다이얼로그 열기</p>
+        <h3>인쇄</h3>
+        <p>선택한 조각 전체 인쇄</p>
       </button>
     </div>
 
@@ -407,7 +438,7 @@ document.addEventListener('click', e => {
   if (t.id === 'back-preview') return go(4);
   if (t.id === 'x-html-student') return exportHTML('student');
   if (t.id === 'x-html-teacher') return exportHTML('teacher');
-  if (t.id === 'x-print') return window.print();
+  if (t.id === 'x-print') return printSelected();
 
   // 별점 변경
   if (t.dataset.setStars) {
@@ -477,8 +508,58 @@ document.addEventListener('input', e => {
   if (e.target.id === 'm-title') state.meta.title = e.target.value;
   if (e.target.id === 'm-lesson') state.meta.lesson = e.target.value;
   if (e.target.id === 'm-textbook') state.meta.textbook = e.target.value;
+  if (e.target.classList.contains('vocab-edit-meaning')) {
+    const pi = +e.target.dataset.piece;
+    const vi = +e.target.dataset.vocab;
+    if (state.vocabByPiece[pi]?.[vi]) {
+      state.vocabByPiece[pi][vi].meaning = e.target.value;
+      renderPrev();
+    }
+  }
   persist();
 });
+
+function applyAIResult(result) {
+  for (const pd of (result.pieces || [])) {
+    const idx = state.pieces.findIndex(p => p.label === pd.label);
+    if (idx < 0) continue;
+
+    // 단어 뜻
+    const vocabMeanings = pd.vocab || {};
+    const vocabList = state.vocabByPiece[idx] || [];
+    for (const v of vocabList) {
+      const meaning = vocabMeanings[v.word] || vocabMeanings[v.word.toLowerCase()];
+      if (meaning) v.meaning = meaning;
+    }
+
+    // 질문
+    if (pd.question) state.pieces[idx].aiQuestion = pd.question;
+
+    // 문법
+    if (pd.grammar_match && pd.grammar_explain) {
+      const piece = state.pieces[idx];
+      const rangeSentences = state.sentences.slice(piece.range[0], piece.range[1]);
+      for (const s of rangeSentences) {
+        if (s.isHeading) continue;
+        if (s.en.includes(pd.grammar_match)) {
+          const existing = state.grammarMap.get(s.id) || [];
+          const aiHit = { match: pd.grammar_match, label: 'AI', explain: pd.grammar_explain };
+          state.grammarMap.set(s.id, [aiHit, ...existing.filter(h => h.label !== 'AI')]);
+          break;
+        }
+      }
+    }
+  }
+}
+
+function showAIError(msg) {
+  const edit = $('.edit');
+  const banner = document.createElement('div');
+  banner.style.cssText = 'padding:10px 16px;background:var(--terracotta-soft);border:1px solid var(--terracotta);border-radius:6px;font-family:var(--font-mono);font-size:.76rem;color:var(--terracotta);margin-bottom:12px;';
+  banner.textContent = `AI 보완 실패: ${msg}`;
+  edit.prepend(banner);
+  setTimeout(() => banner.remove(), 5000);
+}
 
 function rebuildVocab() {
   state.vocabByPiece = {};
@@ -487,13 +568,30 @@ function rebuildVocab() {
   }
 }
 
-function submitSource() {
+async function submitSource() {
   if (!state.source.trim()) {
     alert('본문을 먼저 붙여넣어 주세요. "샘플 불러오기"로 동아윤 L4 본문을 써볼 수도 있어요.');
     return;
   }
   pipeline();
-  go(2); // Step 2 = Split
+  go(2);
+
+  if (state.apiKey) {
+    state.aiLoading = true;
+    renderEdit();
+    try {
+      const result = await enrichWithAI(state, state.apiKey);
+      applyAIResult(result);
+    } catch (e) {
+      console.error('AI 보완 실패:', e);
+      showAIError(e.message);
+    } finally {
+      state.aiLoading = false;
+      renderEdit();
+      renderPrev();
+      persist();
+    }
+  }
 }
 
 async function loadSample() {
@@ -514,9 +612,31 @@ async function loadSample() {
 }
 
 // ───── Export ─────
+function getSelectedPieceIdxs() {
+  const checks = [...document.querySelectorAll('.print-piece-check')];
+  if (!checks.length) return state.pieces.map((_, i) => i); // 체크박스 없으면 전체
+  return checks.filter(c => c.checked).map(c => +c.dataset.idx);
+}
+
 function exportHTML(mode) {
-  const html = buildStandaloneHTML(mode);
+  const idxs = getSelectedPieceIdxs();
+  const html = buildStandaloneHTML(mode, idxs);
   download(`${safeName()}-${mode === 'student' ? 'Ss' : 'T'}.html`, html, 'text/html');
+}
+
+function printSelected() {
+  const idxs = getSelectedPieceIdxs();
+  const pages = idxs.map(i => renderPaper(state, i, 'student')).join('\n<div class="page-break"></div>\n');
+  const win = window.open('', '_blank');
+  win.document.write(`<!doctype html><html lang="ko"><head><meta charset="utf-8"><title>인쇄</title>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,600;0,9..144,800;1,9..144,500;1,9..144,700&family=JetBrains+Mono:wght@600&family=Noto+Serif+KR:wght@400;500;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css">
+<style>${EXPORT_CSS}
+body{padding:16px;}@media print{body{padding:0;}}</style>
+</head><body>${pages}</body></html>`);
+  win.document.close();
+  win.focus();
+  setTimeout(() => { win.print(); win.close(); }, 600);
 }
 
 function exportMD() {
@@ -540,8 +660,9 @@ function download(name, content, type) {
   setTimeout(() => URL.revokeObjectURL(url), 1500);
 }
 
-function buildStandaloneHTML(mode) {
-  const pages = state.pieces.map((_, i) => renderPaper(state, i, mode)).join('\n<div class="page-break"></div>\n');
+function buildStandaloneHTML(mode, idxs) {
+  const indices = idxs ?? state.pieces.map((_, i) => i);
+  const pages = indices.map(i => renderPaper(state, i, mode)).join('\n<div class="page-break"></div>\n');
   return `<!doctype html><html lang="ko"><head><meta charset="utf-8">
 <title>${escapeHtml(state.meta.title || '직소 학습지')} · ${mode === 'student' ? '학생용' : '교사용'}</title>
 <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,600;0,9..144,800;1,9..144,500;1,9..144,700&family=JetBrains+Mono:wght@600&family=Noto+Serif+KR:wght@400;500;700&display=swap" rel="stylesheet">
@@ -610,7 +731,7 @@ body{margin:0;background:var(--paper);font-family:'Noto Serif KR','Fraunces',ser
 .q-card .answer-line{display:block;margin-top:6px;border-bottom:1px solid var(--ink-mute);height:1.4em;}
 .grammar-card{background:rgba(29,45,140,.045);border:1px solid rgba(29,45,140,.3);border-radius:4px;padding:12px 14px;margin-bottom:8px;}
 .grammar-card .sentence{font-family:'Fraunces';font-size:.96rem;font-weight:600;margin-bottom:6px;}
-.grammar-card .ask{font-style:italic;font-size:.78rem;color:#0f1d6b;}
+.grammar-card .ask{font-style:italic;font-size:.78rem;color:#0f1d6b;}.grammar-card .ask.answer{color:#c0392b;font-weight:600;font-style:normal;}
 .grammar-card .answer-line{display:block;margin-top:5px;border-bottom:1px solid var(--ink-mute);height:1.4em;}
 .page-break{page-break-after:always;}
 @media print{ body{background:#fff;padding:0;} .paper{box-shadow:none;border:none;page-break-after:always;} }

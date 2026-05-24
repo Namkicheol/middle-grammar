@@ -1,7 +1,7 @@
 // ui/preview.js — 종이 학습지(조각 1장) 렌더러
 
-import { applyBlanks, applyBlanksTeacher } from '../engine/blanks.js';
-import { toConsonants } from '../engine/hangul.js';
+import { applyBlanks, applyBlanksTeacher } from '../engine/blanks.js?v=20250524';
+import { toConsonants } from '../engine/hangul.js?v=20250524';
 
 // state.pieces[idx]를 학습지 HTML로
 export function renderPaper(state, pieceIdx, mode = 'student') {
@@ -99,10 +99,9 @@ function pickNote(state, sentence) {
 }
 
 function renderQuestion(piece, bodies, isStudent) {
-  // 가장 긴 문장을 기준으로 wh-question을 자동 생성 (단순 휴리스틱)
   if (!bodies.length) return '';
   const target = bodies.slice().sort((a, b) => b.en.length - a.en.length)[0];
-  const question = makeQuestion(target.en, piece.heading);
+  const question = piece.aiQuestion || makeQuestion(target.en, piece.heading);
   return `
 <section class="paper-step">
   <div class="paper-step-label">
@@ -142,7 +141,7 @@ function renderGrammar(points, isStudent) {
       <div class="ask">밑줄 친 부분의 해석과 문법적 특징을 적어보세요.</div>
       ${isStudent
         ? '<span class="answer-line"></span><span class="answer-line"></span>'
-        : `<div class="ask" style="color:var(--moss);margin-top:6px;">정답: ${escapeHtml(p.explain)}</div>`}
+        : `<div class="ask answer">정답: ${escapeHtml(p.explain)}</div>`}
     </div>
   `).join('')}
 </section>`;

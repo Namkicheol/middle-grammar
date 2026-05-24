@@ -383,11 +383,6 @@ function viewExport() {
         <h3>인쇄 미리보기</h3>
         <p>브라우저 인쇄 다이얼로그 열기</p>
       </button>
-      <button class="export-card" id="x-md">
-        <div class="x-emoji">📝</div>
-        <h3>마크다운</h3>
-        <p>티스토리 / HWP 붙여넣기용</p>
-      </button>
     </div>
 
     <div class="step-actions">

@@ -1,6 +1,6 @@
 // app.js — Jigsaw Studio 메인 컨트롤러
 
-import { parse, stats } from './engine/parser.js';
+import { parse } from './engine/parser.js';
 import { autoSplit, insertBoundary, removeBoundary } from './engine/split.js';
 import { extract, pickForPiece } from './engine/vocab.js';
 import { detectAll } from './engine/grammar.js';
@@ -38,7 +38,7 @@ function go(step) {
     el.classList.toggle('active', i + 1 === step);
     el.classList.toggle('done', i + 1 < step);
   });
-  $('.rail-foot .ratio').textContent = `${step} / 6`;
+  $('.rail-foot .ratio').textContent = `${step} / 5`;
   renderEdit();
   renderPrev();
   persist();
@@ -49,11 +49,10 @@ function renderEdit() {
   const editEl = $('.edit');
   switch (state.step) {
     case 1: return editEl.innerHTML = viewUpload();
-    case 2: return editEl.innerHTML = viewClean();
-    case 3: return editEl.innerHTML = viewSplit();
-    case 4: return editEl.innerHTML = viewBlanks();
-    case 5: return editEl.innerHTML = viewPreview();
-    case 6: return editEl.innerHTML = viewExport();
+    case 2: return editEl.innerHTML = viewSplit();
+    case 3: return editEl.innerHTML = viewBlanks();
+    case 4: return editEl.innerHTML = viewPreview();
+    case 5: return editEl.innerHTML = viewExport();
   }
 }
 
@@ -128,48 +127,12 @@ function viewUpload() {
   `;
 }
 
-// ─── Step 2: Clean (검토) ───
-function viewClean() {
-  const st = stats(state.sentences);
-  return `
-    <div class="edit-head">
-      <div>
-        <div class="edit-step-tag">Step 2 · Refine</div>
-        <h1 class="edit-title">문장 분할 <em>확인</em></h1>
-      </div>
-      <div class="edit-meta">
-        <div class="edit-meta-item"><span>sentences</span><b>${st.bodies}</b></div>
-        <div class="edit-meta-item"><span>headings</span><b>${st.headings}</b></div>
-        <div class="edit-meta-item"><span>avg ・ words</span><b>${st.avgWords}</b></div>
-      </div>
-    </div>
-
-    <div class="clean-list">
-      ${state.sentences.map(s => `
-        <div class="sent ${s.isHeading ? 'heading' : ''}">
-          <div class="sent-num">${s.isHeading ? '·' : (s.id + 1)}</div>
-          <div>
-            <div class="sent-en">${escapeHtml(s.en)}</div>
-            ${s.ko ? `<div class="sent-ko">${escapeHtml(s.ko)}</div>` : ''}
-          </div>
-        </div>
-      `).join('')}
-    </div>
-
-    <div class="step-actions">
-      <button class="btn" id="back-upload">← 다시 입력</button>
-      <div style="flex:1"></div>
-      <button class="btn btn-primary" id="go-split">조각 분할 →</button>
-    </div>
-  `;
-}
-
-// ─── Step 3: Split ───
+// ─── Step 2: Split ───
 function viewSplit() {
   return `
     <div class="edit-head">
       <div>
-        <div class="edit-step-tag">Step 3 · Section split</div>
+        <div class="edit-step-tag">Step 2 · Section split</div>
         <h1 class="edit-title">본문을 조각으로 <em>나누기</em></h1>
       </div>
       <div class="edit-meta">
@@ -188,7 +151,7 @@ function viewSplit() {
     }).join('')}
 
     <div class="step-actions">
-      <button class="btn" id="back-clean">← 정제</button>
+      <button class="btn" id="back-upload">← 다시 입력</button>
       <div style="flex:1"></div>
       <button class="btn btn-primary" id="go-blanks">빈칸·문법 →</button>
     </div>
@@ -243,7 +206,7 @@ function viewBlanks() {
   return `
     <div class="edit-head">
       <div>
-        <div class="edit-step-tag">Step 4 · Blanks · Grammar</div>
+        <div class="edit-step-tag">Step 3 · Blanks · Grammar</div>
         <h1 class="edit-title">빈칸과 문법 포인트 <em>표시</em></h1>
       </div>
       <div class="edit-meta">
@@ -327,7 +290,7 @@ function viewPreview() {
   return `
     <div class="edit-head">
       <div>
-        <div class="edit-step-tag">Step 5 · Preview</div>
+        <div class="edit-step-tag">Step 4 · Preview</div>
         <h1 class="edit-title">조각 미리보기 <em>전체</em></h1>
       </div>
       <div class="edit-meta">
@@ -362,7 +325,7 @@ function viewExport() {
   return `
     <div class="edit-head">
       <div>
-        <div class="edit-step-tag">Step 6 · Export</div>
+        <div class="edit-step-tag">Step 5 · Export</div>
         <h1 class="edit-title">결과 <em>저장</em></h1>
       </div>
     </div>
@@ -431,24 +394,20 @@ document.addEventListener('click', e => {
   if (t.id === 'go-clean') return submitSource();
   // Step 2
   if (t.id === 'back-upload') return go(1);
-  if (t.id === 'go-split') return go(3);
+  if (t.id === 'go-blanks') return go(3);
   // Step 3
-  if (t.id === 'back-clean') return go(2);
-  if (t.id === 'go-blanks') return go(4);
+  if (t.id === 'back-split') return go(2);
+  if (t.id === 'go-preview') return go(4);
   // Step 4
-  if (t.id === 'back-split') return go(3);
-  if (t.id === 'go-preview') return go(5);
-  // Step 5
   const ptab = t.closest('.ptab');
   if (ptab) { state.selectedPiece = +ptab.dataset.select; renderEdit(); renderPrev(); return; }
-  if (t.id === 'back-blanks') return go(4);
-  if (t.id === 'go-export') return go(6);
-  // Step 6
-  if (t.id === 'back-preview') return go(5);
+  if (t.id === 'back-blanks') return go(3);
+  if (t.id === 'go-export') return go(5);
+  // Step 5
+  if (t.id === 'back-preview') return go(4);
   if (t.id === 'x-html-student') return exportHTML('student');
   if (t.id === 'x-html-teacher') return exportHTML('teacher');
   if (t.id === 'x-print') return window.print();
-  if (t.id === 'x-md') return exportMD();
 
   // 별점 변경
   if (t.dataset.setStars) {
@@ -492,7 +451,7 @@ document.addEventListener('click', e => {
 // 텍스트 클릭으로 빈칸 추가 (간단 버전: 단어 더블클릭)
 document.addEventListener('dblclick', e => {
   const sent = e.target.closest('.sent[data-sid]');
-  if (!sent || state.step !== 4) return;
+  if (!sent || state.step !== 3) return;
   const enEl = sent.querySelector('.sent-en');
   if (!enEl) return;
   const sel = window.getSelection();
@@ -534,7 +493,7 @@ function submitSource() {
     return;
   }
   pipeline();
-  go(2);
+  go(2); // Step 2 = Split
 }
 
 async function loadSample() {

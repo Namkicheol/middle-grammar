@@ -288,12 +288,11 @@ body::before{
   <nav class="rail" aria-label="단계">
     <span class="rail-line"></span>
     <button class="step active"><span class="step-dot">1</span><span class="step-label">자료</span></button>
-    <button class="step"><span class="step-dot">2</span><span class="step-label">정제</span></button>
-    <button class="step"><span class="step-dot">3</span><span class="step-label">분할</span></button>
-    <button class="step"><span class="step-dot">4</span><span class="step-label">빈칸<br>문법</span></button>
-    <button class="step"><span class="step-dot">5</span><span class="step-label">미리<br>보기</span></button>
-    <button class="step"><span class="step-dot">6</span><span class="step-label">내보<br>내기</span></button>
-    <div class="rail-foot">progress<span class="ratio">1 / 6</span></div>
+    <button class="step"><span class="step-dot">2</span><span class="step-label">분할</span></button>
+    <button class="step"><span class="step-dot">3</span><span class="step-label">빈칸<br>문법</span></button>
+    <button class="step"><span class="step-dot">4</span><span class="step-label">미리<br>보기</span></button>
+    <button class="step"><span class="step-dot">5</span><span class="step-label">내보<br>내기</span></button>
+    <div class="rail-foot">progress<span class="ratio">1 / 5</span></div>
   </nav>
 
   <main class="edit"></main>
@@ -302,7 +301,7 @@ body::before{
   <footer class="foot">
     <div class="foot-hint">
       <span><kbd>⌘S</kbd> 저장</span>
-      <span><kbd>1</kbd>~<kbd>6</kbd> 단계 이동</span>
+      <span><kbd>1</kbd>~<kbd>5</kbd> 단계 이동</span>
       <span><kbd>더블클릭</kbd> 단어 → 빈칸</span>
     </div>
     <div class="foot-right">
@@ -326,7 +325,7 @@ document.getElementById('reset-btn').addEventListener('click', () => {
 document.addEventListener('keydown', e => {
   if ((e.metaKey || e.ctrlKey) && e.key === 's') { e.preventDefault(); /* persist on input handles it */ return; }
   if (e.target.matches('input, textarea')) return;
-  if (/^[1-6]$/.test(e.key)) {
+  if (/^[1-5]$/.test(e.key)) {
     document.querySelectorAll('.step')[+e.key - 1]?.click();
   }
 });

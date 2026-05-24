@@ -139,8 +139,9 @@ canvas#c{position:absolute;inset:0;width:100%;height:100%;}
 .qopt:active{transform:scale(.97);}
 .qopt:disabled{cursor:default;}
 .qopt.ok{background:#14532d!important;border-color:#22c55e!important;color:#86efac!important;}
-.qopt.ng{background:#450a0a!important;border-color:#ef4444!important;color:#fca5a5!important;}
 .qopt.reveal{background:#14532d!important;border-color:#22c55e!important;color:#86efac!important;}
+.qopt.ng{background:#450a0a!important;border-color:#ef4444!important;color:#fca5a5!important;}
+.qopt.ng.reveal{background:#450a0a!important;border-color:#ef4444!important;color:#fca5a5!important;}
 .qpop-fb{min-height:26px;font-size:.84rem;font-weight:800;text-align:center;margin-top:8px;}
 .qpop-fb.ok{color:#86efac;}
 .qpop-fb.ng{color:#fca5a5;}
@@ -924,7 +925,7 @@ function showQuestion() {
     const btn = document.createElement('button');
     btn.className = 'qopt';
     btn.textContent = opt;
-    btn.onclick = () => handleAnswer(opt, q.ans, btn);
+    btn.onclick = () => handleAnswer(btn.textContent, q.ans, btn);
     optsEl.appendChild(btn);
   });
 

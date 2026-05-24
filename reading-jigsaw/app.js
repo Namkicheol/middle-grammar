@@ -1,12 +1,12 @@
 // app.js — Jigsaw Studio 메인 컨트롤러
 
-import { parse } from './engine/parser.js?v=20250525b';
-import { enrichWithAI } from './engine/ai.js?v=20250525b';
-import { autoSplit, insertBoundary, removeBoundary } from './engine/split.js?v=20250525b';
-import { extract, pickForPiece } from './engine/vocab.js?v=20250525b';
-import { detectAll } from './engine/grammar.js?v=20250525b';
-import { suggest as suggestBlanks } from './engine/blanks.js?v=20250525b';
-import { renderPaper } from './ui/preview.js?v=20250525b';
+import { parse } from './engine/parser.js?v=20250525c';
+import { enrichWithAI } from './engine/ai.js?v=20250525c';
+import { autoSplit, insertBoundary, removeBoundary } from './engine/split.js?v=20250525c';
+import { extract, pickForPiece } from './engine/vocab.js?v=20250525c';
+import { detectAll } from './engine/grammar.js?v=20250525c';
+import { suggest as suggestBlanks } from './engine/blanks.js?v=20250525c';
+import { renderPaper } from './ui/preview.js?v=20250525c';
 
 const STORAGE_KEY = 'jigsaw-studio:v1';
 const SAMPLE_URL = 'assets/samples/donga-l4.txt';
@@ -378,17 +378,22 @@ function viewExport() {
       <button class="export-card" id="x-html-student">
         <div class="x-emoji">📄</div>
         <h3>학생용 HTML</h3>
-        <p>선택한 조각 · 빈칸 · 인쇄용 단일 파일</p>
+        <p>선택한 조각 · 빈칸 · 단일 파일</p>
       </button>
       <button class="export-card" id="x-html-teacher">
         <div class="x-emoji">📕</div>
         <h3>교사용 HTML</h3>
         <p>선택한 조각 · 정답 + 해설 포함</p>
       </button>
-      <button class="export-card" id="x-print">
+      <button class="export-card" id="x-print-student">
         <div class="x-emoji">🖨️</div>
-        <h3>인쇄</h3>
-        <p>선택한 조각 전체 인쇄</p>
+        <h3>학생용 인쇄</h3>
+        <p>선택한 조각 · 빈칸</p>
+      </button>
+      <button class="export-card" id="x-print-teacher">
+        <div class="x-emoji">📋</div>
+        <h3>교사용 인쇄</h3>
+        <p>선택한 조각 · 정답 포함</p>
       </button>
     </div>
 
@@ -454,7 +459,8 @@ document.addEventListener('click', e => {
   if (t.id === 'back-preview') return go(4);
   if (t.id === 'x-html-student') return exportHTML('student');
   if (t.id === 'x-html-teacher') return exportHTML('teacher');
-  if (t.id === 'x-print') return printSelected();
+  if (t.id === 'x-print-student') return printSelected('student');
+  if (t.id === 'x-print-teacher') return printSelected('teacher');
 
   // 별점 변경
   if (t.dataset.setStars) {
@@ -686,9 +692,9 @@ function exportHTML(mode) {
   download(`${safeName()}-${mode === 'student' ? 'Ss' : 'T'}.html`, html, 'text/html');
 }
 
-function printSelected() {
+function printSelected(mode = 'student') {
   const idxs = getSelectedPieceIdxs();
-  const pages = idxs.map(i => renderPaper(state, i, 'student')).join('\n<div class="page-break"></div>\n');
+  const pages = idxs.map(i => renderPaper(state, i, mode)).join('\n<div class="page-break"></div>\n');
   const win = window.open('', '_blank');
   win.document.write(`<!doctype html><html lang="ko"><head><meta charset="utf-8"><title>인쇄</title>
 <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,600;0,9..144,800;1,9..144,500;1,9..144,700&family=JetBrains+Mono:wght@600&family=Noto+Serif+KR:wght@400;500;700&display=swap" rel="stylesheet">
@@ -714,12 +720,12 @@ function safeName() {
 }
 
 function download(name, content, type) {
-  const blob = new Blob([content], { type: 'application/octet-stream' });
-  const url = URL.createObjectURL(blob);
   const a = document.createElement('a');
-  a.href = url; a.download = name;
-  document.body.appendChild(a); a.click();
-  setTimeout(() => { a.remove(); URL.revokeObjectURL(url); }, 2000);
+  a.href = 'data:text/html;charset=utf-8,' + encodeURIComponent(content);
+  a.download = name;
+  document.body.appendChild(a);
+  a.click();
+  setTimeout(() => a.remove(), 500);
 }
 
 function buildStandaloneHTML(mode, idxs) {

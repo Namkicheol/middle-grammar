@@ -324,7 +324,7 @@ document.getElementById('reset-btn').addEventListener('click', () => {
 // 키 단축키
 document.addEventListener('keydown', e => {
   if ((e.metaKey || e.ctrlKey) && e.key === 's') { e.preventDefault(); /* persist on input handles it */ return; }
-  if (e.target.matches('input, textarea')) return;
+  if (e.target?.matches?.('input, textarea')) return;
   if (/^[1-5]$/.test(e.key)) {
     document.querySelectorAll('.step')[+e.key - 1]?.click();
   }

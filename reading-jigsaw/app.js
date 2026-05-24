@@ -179,7 +179,13 @@ function viewSplit() {
       </div>
     </div>
 
-    ${state.pieces.map((p, idx) => renderPieceEditor(p, idx)).join('<div class="divider"><span class="insert" data-insert="' + 0 + '">조각 경계 삽입</span></div>')}
+    ${state.pieces.map((p, idx) => {
+      const editor = renderPieceEditor(p, idx);
+      const sep = idx < state.pieces.length - 1
+        ? `<div class="divider"><span>${p.label} / ${state.pieces[idx+1].label} 경계</span></div>`
+        : '';
+      return editor + sep;
+    }).join('')}
 
     <div class="step-actions">
       <button class="btn" id="back-clean">← 정제</button>
@@ -208,7 +214,7 @@ function renderPieceEditor(p, idx) {
         </div>
       </div>
 
-      ${rangeSentences.map(s => `
+      ${rangeSentences.map((s, i) => `
         <div class="sent ${s.isHeading ? 'heading' : ''}" data-sid="${s.id}">
           <div class="sent-num">${s.isHeading ? '·' : (s.id + 1)}</div>
           <div>
@@ -216,6 +222,9 @@ function renderPieceEditor(p, idx) {
             ${s.ko ? `<div class="sent-ko">${escapeHtml(s.ko)}</div>` : ''}
           </div>
         </div>
+        ${i < rangeSentences.length - 1
+          ? `<div class="cut-line"><button class="cut-btn" data-split="${s.id + 1}">✂ 여기서 나누기</button></div>`
+          : ''}
       `).join('')}
     </section>
   `;
@@ -457,6 +466,14 @@ document.addEventListener('click', e => {
   if (t.dataset.merge !== undefined) {
     const idx = +t.dataset.merge;
     state.pieces = removeBoundary(state.pieces, state.sentences, idx);
+    rebuildVocab();
+    renderEdit(); renderPrev(); persist();
+    return;
+  }
+  // 나누기
+  if (t.dataset.split !== undefined) {
+    const atIdx = +t.dataset.split;
+    state.pieces = insertBoundary(state.pieces, state.sentences, atIdx);
     rebuildVocab();
     renderEdit(); renderPrev(); persist();
     return;

@@ -145,6 +145,12 @@ body::before{
 .divider .insert:hover{border-color:var(--terracotta);color:var(--terracotta);}
 .divider .insert::before{content:'+';font-family:var(--font-display);font-style:italic;font-size:1rem;font-weight:700;line-height:.8;}
 
+.cut-line{display:flex;align-items:center;gap:0;margin:2px 0;padding:0 16px;}
+.cut-line::before,.cut-line::after{content:'';flex:1;height:1px;background:repeating-linear-gradient(90deg,var(--ink-mute) 0 3px,transparent 3px 7px);}
+.cut-btn{font-family:var(--font-mono);font-size:.6rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--terracotta);background:var(--terracotta-soft);border:1px dashed var(--terracotta);border-radius:4px;padding:2px 9px;cursor:pointer;margin:0 8px;white-space:nowrap;opacity:0;transition:opacity .12s;}
+.piece:hover .cut-btn,.cut-btn:focus{opacity:1;}
+.cut-btn:hover{background:var(--terracotta);color:var(--paper);border-style:solid;}
+
 /* Step 5 — Tabs */
 .piece-tabs{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:10px;}
 .ptab{display:flex;align-items:center;gap:10px;background:var(--paper);border:1px solid var(--ink-4);border-radius:9px;padding:10px 14px;cursor:pointer;font-family:var(--font-body);transition:all .15s;}

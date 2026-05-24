@@ -1,12 +1,12 @@
 // app.js — Jigsaw Studio 메인 컨트롤러
 
-import { parse } from './engine/parser.js?v=20250525';
-import { enrichWithAI } from './engine/ai.js?v=20250525';
-import { autoSplit, insertBoundary, removeBoundary } from './engine/split.js?v=20250525';
-import { extract, pickForPiece } from './engine/vocab.js?v=20250525';
-import { detectAll } from './engine/grammar.js?v=20250525';
-import { suggest as suggestBlanks } from './engine/blanks.js?v=20250525';
-import { renderPaper } from './ui/preview.js?v=20250525';
+import { parse } from './engine/parser.js?v=20250525b';
+import { enrichWithAI } from './engine/ai.js?v=20250525b';
+import { autoSplit, insertBoundary, removeBoundary } from './engine/split.js?v=20250525b';
+import { extract, pickForPiece } from './engine/vocab.js?v=20250525b';
+import { detectAll } from './engine/grammar.js?v=20250525b';
+import { suggest as suggestBlanks } from './engine/blanks.js?v=20250525b';
+import { renderPaper } from './ui/preview.js?v=20250525b';
 
 const STORAGE_KEY = 'jigsaw-studio:v1';
 const SAMPLE_URL = 'assets/samples/donga-l4.txt';
@@ -714,12 +714,12 @@ function safeName() {
 }
 
 function download(name, content, type) {
-  const blob = new Blob([content], { type });
+  const blob = new Blob([content], { type: 'application/octet-stream' });
   const url = URL.createObjectURL(blob);
   const a = document.createElement('a');
   a.href = url; a.download = name;
-  document.body.appendChild(a); a.click(); a.remove();
-  setTimeout(() => URL.revokeObjectURL(url), 1500);
+  document.body.appendChild(a); a.click();
+  setTimeout(() => { a.remove(); URL.revokeObjectURL(url); }, 2000);
 }
 
 function buildStandaloneHTML(mode, idxs) {

@@ -210,7 +210,7 @@ function renderPieceEditor(p, idx) {
           ${[1,2,3].map(n => `<span class="${n<=p.stars?'':'empty'}" data-set-stars="${idx}:${n}">★</span>`).join('')}
         </div>
         <div class="piece-actions">
-          ${idx > 0 ? `<span class="pa" title="앞 조각과 합치기" data-merge="${idx-1}">⤚</span>` : ''}
+          ${idx > 0 ? `<span class="pa" data-merge="${idx-1}">⤚ 앞 조각과 합치기</span>` : ''}
         </div>
       </div>
 

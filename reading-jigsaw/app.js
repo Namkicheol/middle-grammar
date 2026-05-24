@@ -1,12 +1,12 @@
 // app.js — Jigsaw Studio 메인 컨트롤러
 
-import { parse } from './engine/parser.js?v=20250524';
-import { enrichWithAI } from './engine/ai.js?v=20250524';
-import { autoSplit, insertBoundary, removeBoundary } from './engine/split.js?v=20250524';
-import { extract, pickForPiece } from './engine/vocab.js?v=20250524';
-import { detectAll } from './engine/grammar.js?v=20250524';
-import { suggest as suggestBlanks } from './engine/blanks.js?v=20250524';
-import { renderPaper } from './ui/preview.js?v=20250524';
+import { parse } from './engine/parser.js?v=20250525';
+import { enrichWithAI } from './engine/ai.js?v=20250525';
+import { autoSplit, insertBoundary, removeBoundary } from './engine/split.js?v=20250525';
+import { extract, pickForPiece } from './engine/vocab.js?v=20250525';
+import { detectAll } from './engine/grammar.js?v=20250525';
+import { suggest as suggestBlanks } from './engine/blanks.js?v=20250525';
+import { renderPaper } from './ui/preview.js?v=20250525';
 
 const STORAGE_KEY = 'jigsaw-studio:v1';
 const SAMPLE_URL = 'assets/samples/donga-l4.txt';
@@ -225,6 +225,19 @@ function viewBlanks() {
 
     ${state.pieces.map((p, idx) => renderBlanksPiece(p, idx)).join('')}
 
+    <div class="claude-panel">
+      <div class="claude-panel-head">
+        <span class="claude-panel-title">Claude 보완</span>
+        <span class="claude-panel-desc">단어 뜻 · 질문 · 문법 설명을 Claude Code에서 받아 붙여넣기</span>
+      </div>
+      <div class="claude-panel-row">
+        <button class="btn" id="copy-claude-prompt">📋 Claude에게 보내기</button>
+        <span class="claude-copy-msg" id="claude-copy-msg" style="display:none;font-size:.76rem;color:var(--moss);font-family:var(--font-mono);">복사됨! Claude Code에 붙여넣으세요.</span>
+      </div>
+      <textarea id="ai-json-input" class="ai-json-area" placeholder='Claude 응답 JSON을 여기에 붙여넣기 → {"pieces":[...]}'></textarea>
+      <button class="btn btn-primary" id="apply-ai-json">적용</button>
+    </div>
+
     <div class="step-actions">
       <button class="btn" id="back-split">← 분할</button>
       <div style="flex:1"></div>
@@ -434,6 +447,9 @@ document.addEventListener('click', e => {
   if (ptab) { state.selectedPiece = +ptab.dataset.select; renderEdit(); renderPrev(); return; }
   if (t.id === 'back-blanks') return go(3);
   if (t.id === 'go-export') return go(5);
+  // Step 3 — Claude panel
+  if (t.id === 'copy-claude-prompt') return copyClaudePrompt();
+  if (t.id === 'apply-ai-json') return applyAIJson();
   // Step 5
   if (t.id === 'back-preview') return go(4);
   if (t.id === 'x-html-student') return exportHTML('student');
@@ -518,6 +534,52 @@ document.addEventListener('input', e => {
   }
   persist();
 });
+
+function buildClaudePrompt() {
+  const piecesPayload = state.pieces.map((p, idx) => ({
+    label: p.label,
+    sentences: state.sentences
+      .slice(p.range[0], p.range[1])
+      .filter(s => !s.isHeading && s.en)
+      .map(s => s.en),
+    vocab: (state.vocabByPiece[idx] || []).map(v => v.word)
+  }));
+  return `중학교 영어 직소 학습지 보조 생성입니다.
+아래 조각별 영어 본문을 보고 JSON만 출력하세요 (설명 없이).
+
+각 조각에 대해:
+1. vocab: 제시된 단어의 한국어 뜻 (중학생 수준, 짧게)
+2. question: 본문 내용 기반 영어 comprehension question 1개
+3. grammar_match: 해당 조각에서 문법적으로 중요한 어구 (원문 그대로)
+4. grammar_explain: 그 어구의 한국어 문법 설명 (1~2문장)
+
+조각 데이터:
+${JSON.stringify(piecesPayload, null, 2)}
+
+출력 형식 (JSON만, 다른 텍스트 없이):
+{"pieces":[{"label":"A","vocab":{"word":"뜻"},"question":"...?","grammar_match":"...","grammar_explain":"..."}]}`;
+}
+
+function copyClaudePrompt() {
+  const prompt = buildClaudePrompt();
+  navigator.clipboard.writeText(prompt).then(() => {
+    const msg = document.getElementById('claude-copy-msg');
+    if (msg) { msg.style.display = 'inline'; setTimeout(() => msg.style.display = 'none', 3000); }
+  });
+}
+
+function applyAIJson() {
+  const ta = document.getElementById('ai-json-input');
+  if (!ta || !ta.value.trim()) return;
+  try {
+    const result = JSON.parse(ta.value.trim());
+    applyAIResult(result);
+    ta.value = '';
+    renderEdit(); renderPrev(); persist();
+  } catch (e) {
+    alert('JSON 파싱 오류: ' + e.message);
+  }
+}
 
 function applyAIResult(result) {
   for (const pd of (result.pieces || [])) {

@@ -1,7 +1,7 @@
 export default async function handler(req, res) {
   if (req.method !== 'POST') return res.status(405).end();
 
-  const key = process.env.DEEPSEEK_API_KEY;
+  const key = process.env.DEEPSEEK_API_KEY || process.env.deepseek;
   if (!key) return res.status(500).json({ error: 'API key not configured' });
 
   const { prompt } = req.body;

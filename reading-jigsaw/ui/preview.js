@@ -1,4 +1,4 @@
-// ui/preview.js — 종이 학습지(조각 1장) 렌더러
+// ui/preview.js — 종이 학습지(조각 1장) 렌더러  v=20250526s
 
 import { applyBlanks, applyBlanksTeacher } from '../engine/blanks.js?v=20250526a';
 import { toConsonants } from '../engine/hangul.js?v=20250526a';
@@ -9,7 +9,7 @@ export function renderPaper(state, pieceIdx, mode = 'student') {
   if (!p) return '';
 
   const rangeSentences = state.sentences.slice(p.range[0], p.range[1]);
-  const bodies = rangeSentences.filter(s => !s.isHeading && !s.koOnly);
+  const bodies = rangeSentences.filter(s => !s.isHeading && !s.koOnly && !s.deleted);
   const vocabForPiece = state.vocabByPiece?.[pieceIdx] || [];
   const grammarPoints = collectGrammar(state, p);
 
@@ -78,13 +78,14 @@ function renderVocab(vocab, isStudent, hangulHint) {
 function renderSlow(bodies, state, isStudent) {
   const rows = bodies.map(s => {
     const blanks = state.blanks?.get(s.id) || [];
-    const mode = state.studentMode || 'ko-blank'; // en-blank | ko-blank | full | off
+    const blankType = state.blankType || 'ko'; // 'en' | 'ko'
+    const showKo = state.showKo !== false;
 
     // English line
     let enHtml;
     if (!isStudent) {
       enHtml = `<div class="slow-en">${applyBlanksTeacher(s.en, blanks)}</div>`;
-    } else if (mode === 'en-blank') {
+    } else if (blankType === 'en') {
       enHtml = `<div class="slow-en">${applyBlanks(s.en, blanks)}</div>`;
     } else {
       enHtml = `<div class="slow-en">${escapeHtml(s.en)}</div>`;
@@ -94,9 +95,14 @@ function renderSlow(bodies, state, isStudent) {
     let koHtml = '';
     if (!isStudent) {
       koHtml = s.ko ? `<div class="slow-ko">${escapeHtml(s.ko)}</div>` : '';
-    } else if (mode === 'off' || mode === 'en-blank') {
-      koHtml = '';
-    } else if (mode === 'ko-blank') {
+    } else if (blankType === 'en') {
+      if (showKo) {
+        koHtml = s.ko
+          ? `<div class="slow-ko">${escapeHtml(s.ko)}</div>`
+          : '<div class="slow-ko">__________________________</div>';
+      }
+    } else {
+      // ko-blank mode: always show Korean with blanks
       if (!s.ko) {
         koHtml = '<div class="slow-ko">__________________________</div>';
       } else {
@@ -110,10 +116,6 @@ function renderSlow(bodies, state, isStudent) {
           koHtml = `<div class="slow-ko">${escapeHtml(s.ko)}</div>`;
         }
       }
-    } else { // 'full'
-      koHtml = s.ko
-        ? `<div class="slow-ko">${escapeHtml(s.ko)}</div>`
-        : '<div class="slow-ko">__________________________</div>';
     }
 
     const note = pickNote(state, s);

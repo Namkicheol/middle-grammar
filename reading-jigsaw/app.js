@@ -6,7 +6,7 @@ import { autoSplit, insertBoundary, removeBoundary } from './engine/split.js?v=2
 import { extract, pickForPiece } from './engine/vocab.js?v=20250526r';
 import { detectAll } from './engine/grammar.js?v=20250526a';
 import { suggest as suggestBlanks } from './engine/blanks.js?v=20250526a';
-import { renderPaper } from './ui/preview.js?v=20250526r';
+import { renderPaper } from './ui/preview.js?v=20250526s';
 
 const STORAGE_KEY = 'jigsaw-studio:v1';
 const SAMPLE_URL = 'assets/samples/donga-l4.txt';
@@ -16,7 +16,8 @@ const state = {
   step: 1,
   mode: 'student',       // student | teacher
   hangulHint: 'consonant', // off | consonant
-  studentMode: 'ko-blank', // en-blank | ko-blank | full | off
+  blankType: 'ko',       // 'en' | 'ko' — Step 3에서 선택
+  showKo: true,          // boolean — 학생용 한국어 번역 표시 여부
   styleBase: 'english2',
   meta: { title: '', lesson: '' },
   grammarSelected: {},    // "label-ci" → true/false
@@ -85,10 +86,8 @@ function renderPrev() {
         <button class="${state.mode === 'teacher' ? 'on' : ''}" data-mode="teacher">교사</button>
       </div>
       <div class="prev-toggle">
-        <button class="${state.studentMode === 'en-blank' ? 'on' : ''}" data-smode="en-blank">영어빈칸</button>
-        <button class="${state.studentMode === 'ko-blank' ? 'on' : ''}" data-smode="ko-blank">한글빈칸</button>
-        <button class="${state.studentMode === 'full' ? 'on' : ''}" data-smode="full">해석</button>
-        <button class="${state.studentMode === 'off' ? 'on' : ''}" data-smode="off">해석OFF</button>
+        <button class="${state.showKo ? 'on' : ''}" data-ko="on">해석</button>
+        <button class="${!state.showKo ? 'on' : ''}" data-ko="off">해석OFF</button>
       </div>
       <div class="prev-toggle">
         <button class="${state.hangulHint === 'consonant' ? 'on' : ''}" data-hint="consonant">초성</button>
@@ -126,8 +125,8 @@ function bindPrevToggles() {
   $$('.prev-toggle button[data-mode]').forEach(b => b.addEventListener('click', () => {
     state.mode = b.dataset.mode; renderPrev();
   }));
-  $$('.prev-toggle button[data-smode]').forEach(b => b.addEventListener('click', () => {
-    state.studentMode = b.dataset.smode; renderPrev();
+  $$('.prev-toggle button[data-ko]').forEach(b => b.addEventListener('click', () => {
+    state.showKo = b.dataset.ko === 'on'; renderPrev();
   }));
   $$('.prev-toggle button[data-hint]').forEach(b => b.addEventListener('click', () => {
     state.hangulHint = b.dataset.hint; renderPrev();
@@ -162,7 +161,11 @@ function viewUpload() {
       <textarea id="source-input" class="upload-input" placeholder="본문을 여기에 붙여넣으세요. 빈 줄로 문단을 구분하면 더 정확히 분할됩니다.&#10;&#10;Be a Smart Shopper!&#10;&#10;Do you think you are a smart shopper?&#10;...">${escapeHtml(state.source)}</textarea>
 
       <div class="upload-actions">
-        <button class="btn" id="load-sample">샘플 불러오기 <span style="font-family:var(--font-mono);font-size:.66rem;color:var(--ink-mute);margin-left:6px;">동아윤 L4</span></button>
+        <label class="btn" style="cursor:pointer;">
+          📂 파일 열기
+          <input type="file" id="file-input" accept=".txt,.pdf" style="display:none">
+        </label>
+        <button class="btn" id="load-sample">샘플 <span style="font-family:var(--font-mono);font-size:.66rem;color:var(--ink-mute);margin-left:4px;">동아윤 L4</span></button>
         <div style="flex:1"></div>
         <button class="btn btn-primary" id="go-clean">분할로 진행 →</button>
       </div>
@@ -221,15 +224,16 @@ function renderPieceEditor(p, idx) {
         </div>
       </div>
 
-      ${rangeSentences.map((s, i) => `
+      ${rangeSentences.filter(s => !s.deleted).map((s, i) => `
         <div class="sent ${s.isHeading ? 'heading' : ''}" data-sid="${s.id}">
           <div class="sent-num">${s.isHeading ? '·' : (s.id + 1)}</div>
-          <div>
+          <div style="flex:1">
             <div class="sent-en">${escapeHtml(s.en)}</div>
             ${s.ko ? `<div class="sent-ko">${escapeHtml(s.ko)}</div>` : ''}
           </div>
+          ${!s.isHeading ? `<button class="sent-del-btn" data-del-sid="${s.id}" title="문장 삭제">✕</button>` : ''}
         </div>
-        ${i < rangeSentences.length - 1
+        ${i < rangeSentences.filter(sx => !sx.deleted).length - 1
           ? `<div class="cut-line"><button class="cut-btn" data-split="${s.id + 1}">✂ 여기서 나누기</button></div>`
           : ''}
       `).join('')}
@@ -259,8 +263,16 @@ function viewBlanks() {
       </div>
     </div>
 
+    <div class="blank-type-bar">
+      <span class="blank-type-label">출제 유형 선택</span>
+      <div class="prev-toggle">
+        <button data-btype="en" class="${state.blankType === 'en' ? 'on' : ''}">영어 빈칸</button>
+        <button data-btype="ko" class="${state.blankType === 'ko' ? 'on' : ''}">한글 빈칸</button>
+      </div>
+    </div>
+
     <p style="font-family:var(--font-display);font-style:italic;color:var(--ink-3);font-size:.94rem;margin-bottom:18px;">
-      자동 추천이 들어 있습니다. 클릭으로 빈칸을 토글하세요. 문법 포인트(잉크블루)는 자동 탐지된 결과예요.
+      영어빈칸: 더블클릭으로 단어 선택 · 한글빈칸: 한국어 어절 더블클릭
     </p>
 
     ${state.pieces.map((p, idx) => renderBlanksPiece(p, idx)).join('')}
@@ -291,7 +303,7 @@ function viewBlanks() {
 }
 
 function renderBlanksPiece(p, idx) {
-  const rangeSentences = state.sentences.slice(p.range[0], p.range[1]).filter(s => !s.isHeading);
+  const rangeSentences = state.sentences.slice(p.range[0], p.range[1]).filter(s => !s.isHeading && !s.deleted);
   const vocabList = state.vocabByPiece[idx] || [];
   const vocabHtml = vocabList.length ? `
     <div class="vocab-edit">
@@ -427,25 +439,25 @@ function viewExport() {
     </div>
 
     <div class="export-grid">
-      <button class="export-card" id="x-html-student">
-        <div class="x-emoji">📄</div>
-        <h3>학생용 HTML</h3>
-        <p>선택한 조각 · 빈칸 · 단일 파일</p>
-      </button>
-      <button class="export-card" id="x-html-teacher">
-        <div class="x-emoji">📕</div>
-        <h3>교사용 HTML</h3>
-        <p>선택한 조각 · 정답 + 해설 포함</p>
-      </button>
       <button class="export-card" id="x-print-student">
         <div class="x-emoji">🖨️</div>
-        <h3>학생용 인쇄</h3>
-        <p>선택한 조각 · 빈칸</p>
+        <h3>학생용 PDF</h3>
+        <p>인쇄 → PDF로 저장</p>
       </button>
       <button class="export-card" id="x-print-teacher">
         <div class="x-emoji">📋</div>
-        <h3>교사용 인쇄</h3>
-        <p>선택한 조각 · 정답 포함</p>
+        <h3>교사용 PDF</h3>
+        <p>정답 포함 · 인쇄 → PDF</p>
+      </button>
+      <button class="export-card" id="x-doc-student">
+        <div class="x-emoji">📝</div>
+        <h3>학생용 DOCX</h3>
+        <p>편집 가능한 Word 문서</p>
+      </button>
+      <button class="export-card" id="x-doc-teacher">
+        <div class="x-emoji">📕</div>
+        <h3>교사용 DOCX</h3>
+        <p>정답 포함 · Word 편집용</p>
       </button>
     </div>
 
@@ -516,10 +528,34 @@ document.addEventListener('click', e => {
   if (t.id === 'apply-grammar-btn') return applyGrammarSelections();
   // Step 5
   if (t.id === 'back-preview') { state.selectedPiece = -1; return go(4); }
-  if (t.id === 'x-html-student') return exportHTML('student');
-  if (t.id === 'x-html-teacher') return exportHTML('teacher');
   if (t.id === 'x-print-student') return printSelected('student');
   if (t.id === 'x-print-teacher') return printSelected('teacher');
+  if (t.id === 'x-doc-student') return exportDoc('student');
+  if (t.id === 'x-doc-teacher') return exportDoc('teacher');
+
+  // 출제 유형 선택 (Step 3)
+  const btypeBtn = t.closest('[data-btype]');
+  if (btypeBtn) {
+    state.blankType = btypeBtn.dataset.btype;
+    renderEdit(); renderPrev(); persist();
+    return;
+  }
+
+  // 문장 삭제 (Step 2)
+  if (t.dataset.delSid !== undefined) {
+    const delSid = +t.dataset.delSid;
+    if (confirm('이 문장을 삭제할까요?')) {
+      state.sentences[delSid].deleted = true;
+      for (const p of state.pieces) {
+        const bodies = state.sentences.slice(p.range[0], p.range[1]).filter(s => !s.isHeading && !s.deleted);
+        p.sentenceCount = bodies.length;
+        p.wordCount = bodies.reduce((a, s) => a + s.en.split(/\s+/).length, 0);
+      }
+      rebuildVocab();
+      renderEdit(); renderPrev(); persist();
+    }
+    return;
+  }
 
   // 별점 변경
   if (t.dataset.setStars) {
@@ -598,8 +634,26 @@ document.addEventListener('dblclick', e => {
   }
 });
 
-// 문법 후보 체크박스 → 즉시 적용
+// 파일 입력 + 문법 후보 체크박스
 document.addEventListener('change', e => {
+  if (e.target.id === 'file-input') {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    e.target.value = '';
+    if (file.name.toLowerCase().endsWith('.pdf')) {
+      loadPDF(file);
+    } else {
+      const reader = new FileReader();
+      reader.onload = ev => {
+        state.source = ev.target.result;
+        const ta = document.getElementById('source-input');
+        if (ta) ta.value = state.source;
+        persist();
+      };
+      reader.readAsText(file, 'utf-8');
+    }
+    return;
+  }
   if (e.target.classList.contains('gc-check')) applyGrammarSelections();
 });
 
@@ -925,6 +979,44 @@ async function loadSample() {
   }
 }
 
+// ───── PDF 입력 ─────
+async function loadPDF(file) {
+  const statusMsg = '📄 PDF 불러오는 중...';
+  const ta = document.getElementById('source-input');
+  if (ta) ta.placeholder = statusMsg;
+  try {
+    if (!window.pdfjsLib) {
+      await new Promise((resolve, reject) => {
+        const script = document.createElement('script');
+        script.src = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js';
+        script.onload = () => {
+          window.pdfjsLib = window['pdfjs-dist/build/pdf'] || window.pdfjsLib;
+          resolve();
+        };
+        script.onerror = reject;
+        document.head.appendChild(script);
+      });
+      window.pdfjsLib.GlobalWorkerOptions.workerSrc =
+        'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
+    }
+    const arrayBuffer = await file.arrayBuffer();
+    const pdf = await window.pdfjsLib.getDocument({ data: arrayBuffer }).promise;
+    const lines = [];
+    for (let i = 1; i <= pdf.numPages; i++) {
+      const page = await pdf.getPage(i);
+      const content = await page.getTextContent();
+      const pageText = content.items.map(item => item.str).join(' ').trim();
+      if (pageText) lines.push(pageText);
+    }
+    state.source = lines.join('\n\n');
+    if (ta) { ta.value = state.source; ta.placeholder = ''; }
+    persist();
+  } catch (err) {
+    alert('PDF 로드 실패: ' + err.message);
+    if (ta) ta.placeholder = '본문을 여기에 붙여넣으세요.';
+  }
+}
+
 // ───── Export ─────
 function getSelectedPieceIdxs() {
   const checks = [...document.querySelectorAll('.print-piece-check')];
@@ -965,6 +1057,25 @@ body{padding:16px;}@media print{body{padding:0;}}</style>
     win.print();
     setTimeout(() => URL.revokeObjectURL(url), 3000);
   });
+}
+
+function exportDoc(mode) {
+  const idxs = getSelectedPieceIdxs();
+  const pages = idxs.map(i => renderPaper(state, i, mode))
+    .join('<div style="page-break-after:always;height:1px;"></div>');
+  const html = `<html xmlns:o="urn:schemas-microsoft-com:office:office"
+    xmlns:w="urn:schemas-microsoft-com:office:word"
+    xmlns="http://www.w3.org/TR/REC-html40">
+<head><meta charset="utf-8">
+<style>${EXPORT_CSS}</style>
+</head><body>${pages}</body></html>`;
+  const blob = new Blob(['﻿', html], { type: 'application/msword' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = `${safeName()}-${mode === 'student' ? 'Ss' : 'T'}.doc`;
+  document.body.appendChild(a); a.click();
+  setTimeout(() => { a.remove(); URL.revokeObjectURL(url); }, 2000);
 }
 
 function exportMD() {
@@ -1087,7 +1198,9 @@ function persist() {
       blanks: [...state.blanks.entries()],
       koBlanks: [...state.koBlanks.entries()].map(([sid, set]) => [sid, [...set]]),
       selectedPiece: state.selectedPiece,
-      grammarTarget: state.grammarTarget
+      grammarTarget: state.grammarTarget,
+      blankType: state.blankType,
+      showKo: state.showKo
     };
     localStorage.setItem(STORAGE_KEY, JSON.stringify(snap));
   } catch (e) { /* quota / private mode → skip */ }
@@ -1104,14 +1217,17 @@ function restore() {
     state.koBlanks = new Map((s.koBlanks || []).map(([sid, arr]) => [sid, new Set(arr)]));
     // 구버전 필드 정리
     if (state.meta) { delete state.meta.textbook; }
-    // showKoStudent → studentMode 마이그레이션
-    if (!state.studentMode) {
-      const old = state.showKoStudent;
-      state.studentMode = (old === false || old === 'off') ? 'off' : 'ko-blank';
+    // studentMode → blankType/showKo 마이그레이션
+    if (!state.blankType) {
+      const old = state.studentMode;
+      state.blankType = (old === 'en-blank') ? 'en' : 'ko';
+      state.showKo = (old !== 'off');
     }
+    if (state.showKo === undefined) state.showKo = true;
+    delete state.studentMode;
     delete state.showKoStudent;
-    // 구버전 vocab sids(Set→{}) 감지 시 재추출
-    if (state.sentences?.length && state.vocab?.some(c => c.sids && !Array.isArray(c.sids))) {
+    // 구버전 vocab sids(Set→{} or undefined) 감지 시 재추출
+    if (state.sentences?.length && state.vocab?.some(c => !Array.isArray(c.sids))) {
       state.vocab = extract(state.sentences);
       rebuildVocab();
     }

@@ -1,36 +1,36 @@
-// engine/ai.js — /api/enrich 프록시를 통한 DeepSeek 보완
+// engine/ai.js — /api/enrich 프록시를 통한 DeepSeek V4 Flash 보완
 
 export async function enrichWithAI(state) {
-  const { pieces, sentences, vocabByPiece, grammarTarget } = state;
+  const { sentences, grammarTarget } = state;
+  const numPieces = state.pieces.length || 4;
 
-  const piecesPayload = pieces.map((p, idx) => ({
-    label: p.label,
-    sentences: sentences
-      .slice(p.range[0], p.range[1])
-      .filter(s => !s.isHeading && s.en)
-      .map(s => s.en),
-    vocab: (vocabByPiece[idx] || []).map(v => v.word)
-  }));
+  const sentencesPayload = sentences
+    .map((s, i) => ({ i, t: s.isHeading ? 'h' : 'b', en: s.en }))
+    .filter(s => s.en);
 
   const targetNote = grammarTarget?.trim()
-    ? `\n타겟 문법: ${grammarTarget.trim()} — grammar_match와 grammar_explain에서 이 문법 포인트를 우선 다루세요.`
+    ? `\n타겟 문법: ${grammarTarget.trim()} — grammar_match/explain에서 이 문법 포인트 우선.`
     : '';
 
-  const prompt = `중학교 영어 직소 학습지 보조 생성입니다.
-아래 조각별 영어 본문을 보고 JSON만 출력하세요 (설명 없이).${targetNote}
+  const prompt = `중학교 영어 직소 학습지 보조 생성입니다.${targetNote}
+아래 전체 본문을 보고 JSON만 출력하세요 (설명 없이).
 
-각 조각에 대해:
-1. vocab: 제시된 단어의 한국어 뜻 (중학생 수준, 짧게)
-2. question: 본문 내용 기반 영어 comprehension question 1개
-3. answer: question에 대한 모범 답안 (영어, 완전한 문장 1~2개)
-4. grammar_match: 해당 조각에서 문법적으로 중요한 어구 (원문 그대로)
-5. grammar_explain: 그 어구의 한국어 문법 설명 (1~2문장)
+문장 목록 (i=인덱스, t: h=제목/b=본문):
+${JSON.stringify(sentencesPayload)}
 
-조각 데이터:
-${JSON.stringify(piecesPayload)}
+요청:
+1. split_at: 내용 흐름(heading 기준 우선)으로 ${numPieces}개 조각 나눌 시작 인덱스 배열
+   (길이=${numPieces}, 첫 항목=0, 반드시 오름차순)
+2. pieces: 각 조각 A~${String.fromCharCode(64 + numPieces)} 순:
+   - label: A/B/C/D
+   - vocab: 조각 내 단어 한국어 뜻 {"word":"뜻"} (중학생 수준)
+   - question: 영어 comprehension question 1개
+   - answer: 모범 답안 (영어 완전 문장)
+   - grammar_match: 문법적으로 중요한 어구 (원문 그대로)
+   - grammar_explain: 한국어 문법 설명 (1~2문장)
 
-출력 형식 (JSON만, 다른 텍스트 없이):
-{"pieces":[{"label":"A","vocab":{"word":"뜻"},"question":"...?","answer":"...","grammar_match":"...","grammar_explain":"..."}]}`;
+출력 형식 (JSON만):
+{"split_at":[0,5,10,15],"pieces":[{"label":"A","vocab":{"word":"뜻"},"question":"...?","answer":"...","grammar_match":"...","grammar_explain":"..."}]}`;
 
   const res = await fetch('/api/enrich', {
     method: 'POST',

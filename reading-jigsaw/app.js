@@ -354,22 +354,19 @@ function viewPreview() {
       </div>
     </div>
 
-    <div class="piece-tabs">
-      <button class="ptab ${state.selectedPiece === -1 ? 'on' : ''}" data-select="-1">
-        <span class="ptab-letter" style="font-size:.72rem;letter-spacing:.03em;">ALL</span>
-        <span class="ptab-meta">전체</span>
+    <div class="piece-select-grid">
+      <button class="pcard-all ${state.selectedPiece === -1 ? 'on' : ''}" data-select="-1">
+        전체 A~${state.pieces.length ? String.fromCharCode(64 + state.pieces.length) : 'D'} 한번에 보기
       </button>
-      ${state.pieces.map((p, i) => `
-        <button class="ptab ${i === state.selectedPiece ? 'on' : ''}" data-select="${i}">
-          <span class="ptab-letter">${p.label}</span>
-          <span class="ptab-stars">${'★'.repeat(p.stars)}${'☆'.repeat(3-p.stars)}</span>
-          <span class="ptab-meta">${p.sentenceCount} · ${p.wordCount}w</span>
-        </button>
-      `).join('')}
-    </div>
-
-    <div style="font-family:var(--font-display);font-style:italic;color:var(--ink-3);font-size:.94rem;margin:18px 0;">
-      탭으로 조각을 선택하거나 ALL로 전체를 확인하세요.
+      <div class="pcard-row">
+        ${state.pieces.map((p, i) => `
+          <button class="pcard ${i === state.selectedPiece ? 'on' : ''}" data-select="${i}">
+            <span class="pcard-letter">${p.label}</span>
+            <span class="pcard-heading">${escapeHtml((p.heading || '').slice(0, 24))}</span>
+            <span class="pcard-meta">${p.sentenceCount}문 · ${p.wordCount}w · ${'★'.repeat(p.stars)}${'☆'.repeat(3-p.stars)}</span>
+          </button>
+        `).join('')}
+      </div>
     </div>
 
     <div class="step-actions">
@@ -478,7 +475,7 @@ document.addEventListener('click', e => {
   if (t.id === 'back-split') return go(2);
   if (t.id === 'go-preview') { state.selectedPiece = -1; return go(4); }
   // Step 4
-  const ptab = t.closest('.ptab');
+  const ptab = t.closest('.ptab, .pcard, .pcard-all');
   if (ptab) { state.selectedPiece = +ptab.dataset.select; renderEdit(); renderPrev(); return; }
   if (t.id === 'back-blanks') return go(3);
   if (t.id === 'go-export') return go(5);
@@ -619,12 +616,12 @@ function applyAIJson() {
   }
 }
 
-async function runAIEnrich() {
+async function runAIEnrich(applySplit = false) {
   state.aiLoading = true;
   renderEdit();
   try {
     const result = await enrichWithAI(state);
-    applyAIResult(result);
+    applyAIResult(result, applySplit);
     renderEdit(); renderPrev(); persist();
   } catch (e) {
     showAIError(e.message);
@@ -634,7 +631,30 @@ async function runAIEnrich() {
   }
 }
 
-function applyAIResult(result) {
+function applyAISplit(splitAt) {
+  const n = state.sentences.length;
+  state.pieces = splitAt.map((start, i) => {
+    const end = splitAt[i + 1] !== undefined ? splitAt[i + 1] : n;
+    const rangeSentences = state.sentences.slice(start, end);
+    const heading = rangeSentences.find(s => s.isHeading)?.en || '';
+    const bodies = rangeSentences.filter(s => !s.isHeading && s.en);
+    return {
+      label: String.fromCharCode(65 + i),
+      range: [start, end],
+      heading,
+      sentenceCount: bodies.length,
+      wordCount: bodies.reduce((a, s) => a + s.en.split(/\s+/).length, 0),
+      stars: 2
+    };
+  });
+  rebuildVocab();
+}
+
+function applyAIResult(result, applySplit = false) {
+  if (applySplit && Array.isArray(result.split_at) && result.split_at.length >= 2) {
+    applyAISplit(result.split_at);
+  }
+
   for (const pd of (result.pieces || [])) {
     const idx = state.pieces.findIndex(p => p.label === pd.label);
     if (idx < 0) continue;
@@ -692,7 +712,7 @@ async function submitSource() {
   pipeline();
   go(2);
 
-  runAIEnrich();
+  runAIEnrich(true); // AI가 split_at도 함께 결정
 }
 
 async function loadSample() {

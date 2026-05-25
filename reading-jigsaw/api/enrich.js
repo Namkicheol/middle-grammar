@@ -15,7 +15,7 @@ export default async function handler(req, res) {
         'Authorization': `Bearer ${key}`
       },
       body: JSON.stringify({
-        model: 'deepseek-chat',
+        model: 'deepseek-v4-flash',
         messages: [{ role: 'user', content: prompt }],
         max_tokens: 2048,
         temperature: 0.3

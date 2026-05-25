@@ -46,7 +46,7 @@ ${JSON.stringify(sentencesPayload)}
 3. pieces: split_at 순서대로 A~${String.fromCharCode(64 + numPieces)}:
    - label: "A"/"B"/"C"/"D"
    - question: 조각 내용을 묻는 영어 질문 1개 (의문문)
-   - answer: question의 모범 답안 (영어 완전 문장)
+   - answer: 1문장 짧은 모범 답안 (주어+동사 포함, 15단어 이내)
 
 출력 형식 (JSON만):
 {"split_at":[0,5,12,20],"vocab_meanings":{"strategies":"전략들","influence":"영향을 미치다","smart":"똑똑한","shopper":"구매자"},"pieces":[{"label":"A","question":"What marketing strategies are introduced?","answer":"Hunger marketing and viral marketing are introduced."}]}`;

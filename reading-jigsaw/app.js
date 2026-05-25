@@ -1,12 +1,12 @@
 // app.js — Jigsaw Studio 메인 컨트롤러
 
-import { parse } from './engine/parser.js?v=20250525c';
-import { enrichWithAI } from './engine/ai.js?v=20250525c';
-import { autoSplit, insertBoundary, removeBoundary } from './engine/split.js?v=20250525c';
-import { extract, pickForPiece } from './engine/vocab.js?v=20250525c';
-import { detectAll } from './engine/grammar.js?v=20250525c';
-import { suggest as suggestBlanks } from './engine/blanks.js?v=20250525c';
-import { renderPaper } from './ui/preview.js?v=20250525c';
+import { parse } from './engine/parser.js?v=20250525d';
+import { enrichWithAI } from './engine/ai.js?v=20250525d';
+import { autoSplit, insertBoundary, removeBoundary } from './engine/split.js?v=20250525d';
+import { extract, pickForPiece } from './engine/vocab.js?v=20250525d';
+import { detectAll } from './engine/grammar.js?v=20250525d';
+import { suggest as suggestBlanks } from './engine/blanks.js?v=20250525d';
+import { renderPaper } from './ui/preview.js?v=20250525d';
 
 const STORAGE_KEY = 'jigsaw-studio:v1';
 const SAMPLE_URL = 'assets/samples/donga-l4.txt';
@@ -686,25 +686,33 @@ function getSelectedPieceIdxs() {
   return checks.filter(c => c.checked).map(c => +c.dataset.idx);
 }
 
-function exportHTML(mode) {
+async function exportHTML(mode) {
   const idxs = getSelectedPieceIdxs();
   const html = buildStandaloneHTML(mode, idxs);
-  download(`${safeName()}-${mode === 'student' ? 'Ss' : 'T'}.html`, html, 'text/html');
+  await download(`${safeName()}-${mode === 'student' ? 'Ss' : 'T'}.html`, html);
 }
 
 function printSelected(mode = 'student') {
   const idxs = getSelectedPieceIdxs();
   const pages = idxs.map(i => renderPaper(state, i, mode)).join('\n<div class="page-break"></div>\n');
-  const win = window.open('', '_blank');
-  win.document.write(`<!doctype html><html lang="ko"><head><meta charset="utf-8"><title>인쇄</title>
+  const html = `<!doctype html><html lang="ko"><head><meta charset="utf-8"><title>인쇄</title>
 <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,600;0,9..144,800;1,9..144,500;1,9..144,700&family=JetBrains+Mono:wght@600&family=Noto+Serif+KR:wght@400;500;700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css">
 <style>${EXPORT_CSS}
 body{padding:16px;}@media print{body{padding:0;}}</style>
-</head><body>${pages}</body></html>`);
-  win.document.close();
-  win.focus();
-  setTimeout(() => { win.print(); win.close(); }, 600);
+</head><body>${pages}</body></html>`;
+  const blob = new Blob([html], { type: 'text/html' });
+  const url = URL.createObjectURL(blob);
+  const win = window.open(url, '_blank');
+  if (!win) {
+    alert('팝업이 차단되었습니다. 주소창 오른쪽에서 팝업 허용 후 다시 시도하세요.');
+    URL.revokeObjectURL(url);
+    return;
+  }
+  win.addEventListener('load', () => {
+    win.print();
+    setTimeout(() => URL.revokeObjectURL(url), 3000);
+  });
 }
 
 function exportMD() {
@@ -719,13 +727,28 @@ function safeName() {
     .toLowerCase() || 'jigsaw';
 }
 
-function download(name, content, type) {
+async function download(name, content) {
+  const blob = new Blob([content], { type: 'text/html;charset=utf-8' });
+  if (window.showSaveFilePicker) {
+    try {
+      const fh = await window.showSaveFilePicker({
+        suggestedName: name,
+        types: [{ description: 'HTML 파일', accept: { 'text/html': ['.html'] } }]
+      });
+      const w = await fh.createWritable();
+      await w.write(blob);
+      await w.close();
+      return;
+    } catch (e) {
+      if (e.name === 'AbortError') return; // 사용자가 취소
+    }
+  }
+  // fallback: blob URL
+  const url = URL.createObjectURL(blob);
   const a = document.createElement('a');
-  a.href = 'data:text/html;charset=utf-8,' + encodeURIComponent(content);
-  a.download = name;
-  document.body.appendChild(a);
-  a.click();
-  setTimeout(() => a.remove(), 500);
+  a.href = url; a.download = name;
+  document.body.appendChild(a); a.click();
+  setTimeout(() => { a.remove(); URL.revokeObjectURL(url); }, 2000);
 }
 
 function buildStandaloneHTML(mode, idxs) {

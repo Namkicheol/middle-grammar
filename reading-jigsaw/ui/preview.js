@@ -159,11 +159,11 @@ function renderGrammar(points, isStudent) {
   </div>
   ${points.map(p => `
     <div class="grammar-card">
+      <div class="ask">Q. 본문 내용 중 아래의 밑줄 친 표현은 어떻게 해석하나요? 어떤 문법적 특징이 있나요?</div>
       <div class="sentence">${highlightMatch(p.sentence, p.match)}</div>
-      <div class="ask">밑줄 친 부분의 해석과 문법적 특징을 적어보세요.</div>
       ${isStudent
-        ? '<span class="answer-line"></span><span class="answer-line"></span>'
-        : `<div class="ask answer">정답: ${escapeHtml(p.explain)}</div>`}
+        ? '<span class="answer-line"></span><span class="answer-line"></span><span class="answer-line"></span>'
+        : `<div class="ask answer">A. ${escapeHtml(p.explain)}</div>`}
     </div>
   `).join('')}
 </section>`;

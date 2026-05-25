@@ -87,10 +87,14 @@ function renderSlow(bodies, state, isStudent) {
     <div class="slow-row">
       <div class="slow-en">${en}</div>
       ${(() => {
-        const showKo = !isStudent || state.showKoStudent;
-        if (s.ko && showKo) return `<div class="slow-ko">${escapeHtml(s.ko)}</div>`;
-        if (isStudent) return '<div class="slow-ko">__________________________</div>';
-        return '';
+        if (!isStudent) {
+          return s.ko ? `<div class="slow-ko">${escapeHtml(s.ko)}</div>` : '';
+        }
+        const koMode = state.showKoStudent; // full | cloze | off (or legacy true/false)
+        if (koMode === 'off' || koMode === false) return '<div class="slow-ko ko-blank">__________________________</div>';
+        if (koMode === 'cloze' && s.koCloze) return `<div class="slow-ko slow-ko-cloze">${escapeHtml(s.koCloze)}</div>`;
+        if (s.ko && (koMode === 'full' || koMode === true || koMode === 'cloze')) return `<div class="slow-ko">${escapeHtml(s.ko)}</div>`;
+        return '<div class="slow-ko ko-blank">__________________________</div>';
       })()}
       ${note ? `<div class="slow-note">${escapeHtml(note)}</div>` : ''}
     </div>`;

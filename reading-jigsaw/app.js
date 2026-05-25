@@ -1,12 +1,12 @@
 // app.js — Jigsaw Studio 메인 컨트롤러
 
 import { parse } from './engine/parser.js?v=20250526a';
-import { enrichWithAI, extractGrammarCandidates, translateSentences } from './engine/ai.js?v=20250526l';
+import { enrichWithAI, extractGrammarCandidates, translateSentences } from './engine/ai.js?v=20250526m';
 import { autoSplit, insertBoundary, removeBoundary } from './engine/split.js?v=20250526a';
-import { extract, pickForPiece } from './engine/vocab.js?v=20250526l';
+import { extract, pickForPiece } from './engine/vocab.js?v=20250526m';
 import { detectAll } from './engine/grammar.js?v=20250526a';
 import { suggest as suggestBlanks } from './engine/blanks.js?v=20250526a';
-import { renderPaper } from './ui/preview.js?v=20250526l';
+import { renderPaper } from './ui/preview.js?v=20250526m';
 
 const STORAGE_KEY = 'jigsaw-studio:v1';
 const SAMPLE_URL = 'assets/samples/donga-l4.txt';
@@ -16,7 +16,7 @@ const state = {
   step: 1,
   mode: 'student',       // student | teacher
   hangulHint: 'consonant', // off | consonant
-  showKoStudent: true,    // 학생용에 한국어 해석 표시
+  showKoStudent: 'cloze', // full | cloze | off
   styleBase: 'english2',
   meta: { title: '', lesson: '' },
   grammarSelected: {},    // "label-ci" → true/false
@@ -84,8 +84,9 @@ function renderPrev() {
         <button class="${state.mode === 'teacher' ? 'on' : ''}" data-mode="teacher">교사</button>
       </div>
       <div class="prev-toggle">
-        <button class="${state.showKoStudent ? 'on' : ''}" data-ko="on">해석</button>
-        <button class="${!state.showKoStudent ? 'on' : ''}" data-ko="off">해석OFF</button>
+        <button class="${state.showKoStudent === 'full' ? 'on' : ''}" data-ko="full">해석</button>
+        <button class="${state.showKoStudent === 'cloze' ? 'on' : ''}" data-ko="cloze">빈칸</button>
+        <button class="${state.showKoStudent === 'off' ? 'on' : ''}" data-ko="off">해석OFF</button>
       </div>
       <div class="prev-toggle">
         <button class="${state.hangulHint === 'consonant' ? 'on' : ''}" data-hint="consonant">초성</button>
@@ -124,7 +125,7 @@ function bindPrevToggles() {
     state.mode = b.dataset.mode; renderPrev();
   }));
   $$('.prev-toggle button[data-ko]').forEach(b => b.addEventListener('click', () => {
-    state.showKoStudent = b.dataset.ko === 'on'; renderPrev();
+    state.showKoStudent = b.dataset.ko; renderPrev();
   }));
   $$('.prev-toggle button[data-hint]').forEach(b => b.addEventListener('click', () => {
     state.hangulHint = b.dataset.hint; renderPrev();
@@ -689,9 +690,15 @@ async function runTranslate() {
   try {
     const result = await translateSentences(state);
     if (result && typeof result === 'object') {
-      for (const [idx, ko] of Object.entries(result)) {
+      for (const [idx, val] of Object.entries(result)) {
         const s = state.sentences[Number(idx)];
-        if (s && !s.ko && typeof ko === 'string') s.ko = ko;
+        if (!s || s.ko) continue;
+        if (typeof val === 'string') {
+          s.ko = val;
+        } else if (val && typeof val === 'object') {
+          s.ko = val.ko || '';
+          if (val.cloze) s.koCloze = val.cloze;
+        }
       }
       renderPrev(); persist();
     }
@@ -1008,6 +1015,7 @@ body{margin:0;background:var(--paper);font-family:'Noto Serif KR','Fraunces',ser
 .slow-en .b.fill{color:var(--terracotta);font-weight:600;}
 .slow-en u{text-decoration:underline;text-decoration-thickness:2px;text-decoration-color:var(--pen);text-underline-offset:3px;}
 .slow-ko{font-size:.84rem;color:var(--ink-3);font-style:italic;margin-top:4px;}
+.slow-ko-cloze{color:var(--ink-2);font-style:normal;font-weight:500;}
 .slow-note{margin-top:6px;font-family:'JetBrains Mono';font-size:.66rem;color:#0f1d6b;padding-left:14px;border-left:2px solid var(--pen);}
 .q-card{background:rgba(255,255,255,.45);border:1px solid var(--ink-mute);border-radius:4px;padding:12px 14px;font-size:.88rem;}
 .q-card .qm{font-weight:700;margin-right:6px;}

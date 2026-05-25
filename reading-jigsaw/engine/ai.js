@@ -63,11 +63,15 @@ export async function translateSentences(state) {
   if (!Object.keys(bodyMap).length) return {};
 
   const prompt = `아래 영어 문장들을 중학생 수준의 자연스러운 한국어로 번역하세요.
-JSON만 출력하세요 (키=인덱스, 값=한국어번역).
+각 문장마다 두 가지를 출력하세요:
+- ko: 자연스러운 전체 한국어 번역
+- cloze: 명사구·동사구 등 핵심 내용어 2~4개를 (   )로 교체한 빈칸 버전 (조사·접속사는 유지)
+
+JSON만 출력하세요 (키=인덱스).
 
 ${JSON.stringify(bodyMap)}
 
-출력 형식: {"1":"번역","2":"번역",...}`;
+출력 형식: {"1":{"ko":"전체 번역","cloze":"(   )가 있었지만 (   )은 없었다."},"2":{...}}`;
 
   return callAPI(prompt);
 }

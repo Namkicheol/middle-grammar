@@ -47,8 +47,8 @@ ${JSON.stringify(sentencesPayload)}
    (소제목 h 제외, 자연스러운 중학생 수준 번역, 예: {"1":"스마트 쇼퍼가 되어라!","2":"당신은 스마트 쇼퍼라고 생각합니까?"})
 4. pieces: split_at 순서대로 A~${String.fromCharCode(64 + numPieces)}:
    - label: "A"/"B"/"C"/"D"
-   - question: 조각 내용을 묻는 영어 질문 1개 (의문문)
-   - answer: 1문장 짧은 모범 답안 (주어+동사 포함, 15단어 이내)
+   - question: 조각에서 사실 1가지만 묻는 짧은 영어 질문 (10단어 이내, and/or로 두 가지 묻지 말 것)
+   - answer: 10단어 이내 짧은 1문장 (핵심 사실만, 설명 금지)
 
 출력 형식 (JSON만):
 {"split_at":[0,5,12,20],"vocab_meanings":{"strategies":"전략들","shopper":"구매자"},"sentence_ko":{"1":"스마트 쇼퍼가 되어라!","2":"당신은 스마트 쇼퍼라고 생각합니까?"},"pieces":[{"label":"A","question":"What strategies are introduced?","answer":"Hunger and viral marketing strategies are introduced."}]}`;

@@ -1,9 +1,6 @@
-// engine/ai.js — DeepSeek-V3으로 단어 뜻·질문·문법 보완
+// engine/ai.js — /api/enrich 프록시를 통한 DeepSeek-V3 보완
 
-const API_URL = 'https://api.deepseek.com/chat/completions';
-const MODEL = 'deepseek-chat';
-
-export async function enrichWithAI(state, apiKey) {
+export async function enrichWithAI(state) {
   const { pieces, sentences, vocabByPiece } = state;
 
   const piecesPayload = pieces.map((p, idx) => ({
@@ -30,14 +27,11 @@ ${JSON.stringify(piecesPayload)}
 출력 형식 (JSON만, 다른 텍스트 없이):
 {"pieces":[{"label":"A","vocab":{"word":"뜻"},"question":"...?","grammar_match":"...","grammar_explain":"..."}]}`;
 
-  const res = await fetch(API_URL, {
+  const res = await fetch('/api/enrich', {
     method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-      'Authorization': `Bearer ${apiKey}`
-    },
+    headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({
-      model: MODEL,
+      model: 'deepseek-chat',
       max_tokens: 2048,
       messages: [{ role: 'user', content: prompt }]
     })

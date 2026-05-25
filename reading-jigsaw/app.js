@@ -1,12 +1,12 @@
 // app.js — Jigsaw Studio 메인 컨트롤러
 
-import { parse } from './engine/parser.js?v=20250525f';
-import { enrichWithAI } from './engine/ai.js?v=20250525f';
-import { autoSplit, insertBoundary, removeBoundary } from './engine/split.js?v=20250525f';
-import { extract, pickForPiece } from './engine/vocab.js?v=20250525f';
-import { detectAll } from './engine/grammar.js?v=20250525f';
-import { suggest as suggestBlanks } from './engine/blanks.js?v=20250525f';
-import { renderPaper } from './ui/preview.js?v=20250525f';
+import { parse } from './engine/parser.js?v=20250525g';
+import { enrichWithAI } from './engine/ai.js?v=20250525g';
+import { autoSplit, insertBoundary, removeBoundary } from './engine/split.js?v=20250525g';
+import { extract, pickForPiece } from './engine/vocab.js?v=20250525g';
+import { detectAll } from './engine/grammar.js?v=20250525g';
+import { suggest as suggestBlanks } from './engine/blanks.js?v=20250525g';
+import { renderPaper } from './ui/preview.js?v=20250525g';
 
 const STORAGE_KEY = 'jigsaw-studio:v1';
 const SAMPLE_URL = 'assets/samples/donga-l4.txt';
@@ -231,7 +231,6 @@ function viewBlanks() {
         <span class="claude-panel-desc">단어 뜻 · 질문 · 문법 설명 자동 생성 (DeepSeek)</span>
       </div>
       <div class="claude-panel-row">
-        <input type="password" id="ai-api-key" class="ai-key-input" placeholder="DeepSeek API 키 입력" value="${escapeAttr(state.apiKey)}">
         <button class="btn btn-primary" id="run-ai">✨ AI 보완 실행</button>
       </div>
       <details class="manual-paste">
@@ -596,15 +595,10 @@ function applyAIJson() {
 }
 
 async function runAIEnrich() {
-  const keyInput = document.getElementById('ai-api-key');
-  const key = keyInput?.value.trim();
-  if (!key) { alert('DeepSeek API 키를 입력하세요.\nplatform.deepseek.com에서 발급받을 수 있습니다.'); return; }
-  state.apiKey = key;
-  localStorage.setItem('jigsaw-api-key', key);
   state.aiLoading = true;
   renderEdit();
   try {
-    const result = await enrichWithAI(state, key);
+    const result = await enrichWithAI(state);
     applyAIResult(result);
     renderEdit(); renderPrev(); persist();
   } catch (e) {
@@ -672,22 +666,7 @@ async function submitSource() {
   pipeline();
   go(2);
 
-  if (state.apiKey) {
-    state.aiLoading = true;
-    renderEdit();
-    try {
-      const result = await enrichWithAI(state, state.apiKey);
-      applyAIResult(result);
-    } catch (e) {
-      console.error('AI 보완 실패:', e);
-      showAIError(e.message);
-    } finally {
-      state.aiLoading = false;
-      renderEdit();
-      renderPrev();
-      persist();
-    }
-  }
+  runAIEnrich();
 }
 
 async function loadSample() {

@@ -1,12 +1,12 @@
 // app.js — Jigsaw Studio 메인 컨트롤러
 
 import { parse } from './engine/parser.js?v=20250526a';
-import { enrichWithAI, extractGrammarCandidates } from './engine/ai.js?v=20250526c';
+import { enrichWithAI, extractGrammarCandidates } from './engine/ai.js?v=20250526d';
 import { autoSplit, insertBoundary, removeBoundary } from './engine/split.js?v=20250526a';
 import { extract, pickForPiece } from './engine/vocab.js?v=20250526a';
 import { detectAll } from './engine/grammar.js?v=20250526a';
 import { suggest as suggestBlanks } from './engine/blanks.js?v=20250526a';
-import { renderPaper } from './ui/preview.js?v=20250526a';
+import { renderPaper } from './ui/preview.js?v=20250526d';
 
 const STORAGE_KEY = 'jigsaw-studio:v1';
 const SAMPLE_URL = 'assets/samples/donga-l4.txt';
@@ -555,6 +555,11 @@ document.addEventListener('dblclick', e => {
   }
 });
 
+// 문법 후보 체크박스 → 즉시 적용
+document.addEventListener('change', e => {
+  if (e.target.classList.contains('gc-check')) applyGrammarSelections();
+});
+
 // 입력 처리
 document.addEventListener('input', e => {
   if (e.target.id === 'source-input') state.source = e.target.value;
@@ -638,7 +643,6 @@ function renderGrammarCandidates() {
       `).join('')}
     </div>
     <div class="claude-panel-row" style="margin-top:10px;gap:8px;">
-      <button class="btn btn-primary" id="apply-grammar-btn">✓ 선택한 문법 적용</button>
       <button class="btn" id="run-ai">↺ 다시 추출</button>
     </div>`;
 }
@@ -668,6 +672,8 @@ async function runGrammarExtract() {
     const result = await extractGrammarCandidates(state);
     state.grammarCandidates = result;
     renderEdit();
+    applyGrammarSelections(); // 전체 체크된 상태로 즉시 적용
+    renderPrev(); persist();
   } catch (e) {
     showAIError(e.message);
   } finally {

@@ -134,7 +134,7 @@ body::before{
 .sent-num{font-family:var(--font-mono);font-size:.74rem;font-weight:700;color:var(--ink-4);padding-top:3px;text-align:right;}
 .sent-en{font-family:var(--font-en);font-size:1.05rem;line-height:1.6;color:var(--ink);font-weight:500;}
 .sent-en .blk{background:linear-gradient(transparent 62%,var(--terracotta-soft) 62%);padding:0 4px;border-bottom:1.6px solid var(--terracotta);font-weight:600;color:var(--terracotta);cursor:pointer;}
-.sent-en .gp{background:rgba(29,45,140,.08);padding:0 4px;border-bottom:1.6px solid var(--pen);color:var(--pen-deep);font-weight:600;cursor:pointer;}
+.sent-en .gp{background:rgba(168,67,28,.08);padding:0 4px;border-bottom:1.6px solid var(--terracotta);color:var(--terracotta);font-weight:700;cursor:pointer;}
 .sent-ko{grid-column:2;font-family:var(--font-paper);font-size:.92rem;line-height:1.65;color:var(--ink-3);margin-top:4px;}
 .sent.heading{background:var(--paper-warm);border-style:dashed;border-color:var(--terracotta);}
 .sent.heading .sent-en{font-family:var(--font-display);font-weight:700;font-size:1.18rem;font-style:italic;color:var(--terracotta);}
@@ -265,7 +265,8 @@ body::before{
 .gc-item{display:flex;align-items:flex-start;gap:8px;padding:6px 8px;border-radius:6px;cursor:pointer;transition:background .1s;}
 .gc-item:hover{background:rgba(0,0,0,.04);}
 .gc-item input[type=checkbox]{margin-top:2px;accent-color:var(--pen);flex-shrink:0;}
-.gc-match{font-family:var(--font-mono);font-size:.74rem;font-weight:600;color:var(--pen-deep);white-space:nowrap;}
+.gc-match{font-family:var(--font-mono);font-size:.74rem;font-weight:600;color:var(--terracotta);white-space:nowrap;}
+.grammar-hl{text-decoration:none;border-bottom:2px solid var(--terracotta);color:var(--terracotta);font-weight:700;background:rgba(168,67,28,.07);}
 .gc-explain{font-size:.78rem;color:var(--ink-3);line-height:1.4;}
 .ai-json-area{width:100%;box-sizing:border-box;min-height:70px;padding:8px 10px;font-family:var(--font-mono);font-size:.74rem;border:1px solid var(--ink-mute);border-radius:4px;background:var(--paper);color:var(--ink);resize:vertical;margin-bottom:8px;}
 .ai-key-input{flex:1;padding:7px 10px;font-family:var(--font-mono);font-size:.76rem;border:1px solid var(--ink-mute);border-radius:4px;background:var(--paper);color:var(--ink);}
@@ -381,7 +382,7 @@ document.addEventListener('keydown', e => {
   }
 });
 </script>
-<script type="module" src="app.js?v=20250526c"></script>
+<script type="module" src="app.js?v=20250526d"></script>
 
 </body>
 </html>

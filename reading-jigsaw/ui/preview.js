@@ -155,7 +155,7 @@ function highlightMatch(text, match) {
   if (!match) return escapeHtml(text);
   const idx = text.indexOf(match);
   if (idx < 0) return escapeHtml(text);
-  return escapeHtml(text.slice(0, idx)) + '<u>' + escapeHtml(match) + '</u>' + escapeHtml(text.slice(idx + match.length));
+  return escapeHtml(text.slice(0, idx)) + '<u class="grammar-hl">' + escapeHtml(match) + '</u>' + escapeHtml(text.slice(idx + match.length));
 }
 
 function collectGrammar(state, piece) {
@@ -173,7 +173,7 @@ function collectGrammar(state, piece) {
         label: hits[0].label,
         explain: hits[0].explain
       });
-      if (result.length >= 2) break;
+      if (result.length >= 3) break;
     }
   }
   return result;

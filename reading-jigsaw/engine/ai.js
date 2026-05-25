@@ -20,7 +20,7 @@ async function callAPI(prompt) {
 // Phase 1 — 분할 + 단어뜻 + 질문 (자동 실행)
 export async function enrichWithAI(state) {
   const { sentences } = state;
-  const numPieces = state.pieces.length || 4;
+  const numPieces = Math.min(state.pieces.length || 4, 4);
 
   const sentencesPayload = sentences
     .map((s, i) => ({ i, t: s.isHeading ? 'h' : 'b', en: s.en }))
@@ -41,9 +41,9 @@ ${JSON.stringify(vocabWords)}
 출력할 내용:
 1. split_at: i값 기준으로 ${numPieces}개 조각 나눌 시작 인덱스 배열
    (길이=${numPieces}, 첫값=0, 오름차순, 소제목 h의 i값 우선 사용)
-2. vocab_meanings: 단어 목록의 각 단어에 대한 한국어 뜻 객체
-   (중학생 수준, 짧게. 키는 단어 목록과 정확히 동일한 철자 사용)
-   예: {"strategies":"전략들","influence":"영향을 미치다","limited":"제한된"}
+2. vocab_meanings: 단어 목록의 모든 단어에 대한 한국어 뜻 객체
+   (목록의 모든 단어를 반드시 포함. 쉬운 단어도 생략 금지. 키는 단어 목록과 정확히 동일한 철자)
+   예: {"strategies":"전략들","influence":"영향을 미치다","limited":"제한된","smart":"똑똑한"}
 3. pieces: split_at 순서대로 A~${String.fromCharCode(64 + numPieces)}:
    - label: "A"/"B"/"C"/"D"
    - question: 조각 내용을 묻는 영어 질문 1개 (의문문)

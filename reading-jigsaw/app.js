@@ -1,7 +1,7 @@
 // app.js — Jigsaw Studio 메인 컨트롤러
 
 import { parse } from './engine/parser.js?v=20250526a';
-import { enrichWithAI, extractGrammarCandidates } from './engine/ai.js?v=20250526h';
+import { enrichWithAI, extractGrammarCandidates } from './engine/ai.js?v=20250526i';
 import { autoSplit, insertBoundary, removeBoundary } from './engine/split.js?v=20250526a';
 import { extract, pickForPiece } from './engine/vocab.js?v=20250526a';
 import { detectAll } from './engine/grammar.js?v=20250526a';
@@ -84,7 +84,11 @@ function renderPrev() {
       </div>
       <div class="prev-toggle">
         <button class="${state.showKoStudent ? 'on' : ''}" data-ko="on">해석</button>
-        <button class="${!state.showKoStudent ? 'on' : ''}" data-ko="off">빈칸</button>
+        <button class="${!state.showKoStudent ? 'on' : ''}" data-ko="off">해석OFF</button>
+      </div>
+      <div class="prev-toggle">
+        <button class="${state.hangulHint === 'consonant' ? 'on' : ''}" data-hint="consonant">초성</button>
+        <button class="${state.hangulHint === 'off' ? 'on' : ''}" data-hint="off">초성OFF</button>
       </div>
     </div>`;
 
@@ -98,12 +102,7 @@ function renderPrev() {
       </div>
       ${allPapers}
     `;
-    $$('.prev-toggle button[data-mode]').forEach(b => b.addEventListener('click', () => {
-      state.mode = b.dataset.mode; renderPrev();
-    }));
-    $$('.prev-toggle button[data-ko]').forEach(b => b.addEventListener('click', () => {
-      state.showKoStudent = b.dataset.ko === 'on'; renderPrev();
-    }));
+    bindPrevToggles();
     return;
   }
 
@@ -116,11 +115,18 @@ function renderPrev() {
     </div>
     ${renderPaper(state, idx, state.mode)}
   `;
+  bindPrevToggles();
+}
+
+function bindPrevToggles() {
   $$('.prev-toggle button[data-mode]').forEach(b => b.addEventListener('click', () => {
     state.mode = b.dataset.mode; renderPrev();
   }));
   $$('.prev-toggle button[data-ko]').forEach(b => b.addEventListener('click', () => {
     state.showKoStudent = b.dataset.ko === 'on'; renderPrev();
+  }));
+  $$('.prev-toggle button[data-hint]').forEach(b => b.addEventListener('click', () => {
+    state.hangulHint = b.dataset.hint; renderPrev();
   }));
 }
 

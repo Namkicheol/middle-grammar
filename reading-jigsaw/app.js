@@ -1,12 +1,12 @@
 // app.js — Jigsaw Studio 메인 컨트롤러
 
-import { parse } from './engine/parser.js?v=20250525e';
-import { enrichWithAI } from './engine/ai.js?v=20250525e';
-import { autoSplit, insertBoundary, removeBoundary } from './engine/split.js?v=20250525e';
-import { extract, pickForPiece } from './engine/vocab.js?v=20250525e';
-import { detectAll } from './engine/grammar.js?v=20250525e';
-import { suggest as suggestBlanks } from './engine/blanks.js?v=20250525e';
-import { renderPaper } from './ui/preview.js?v=20250525e';
+import { parse } from './engine/parser.js?v=20250525f';
+import { enrichWithAI } from './engine/ai.js?v=20250525f';
+import { autoSplit, insertBoundary, removeBoundary } from './engine/split.js?v=20250525f';
+import { extract, pickForPiece } from './engine/vocab.js?v=20250525f';
+import { detectAll } from './engine/grammar.js?v=20250525f';
+import { suggest as suggestBlanks } from './engine/blanks.js?v=20250525f';
+import { renderPaper } from './ui/preview.js?v=20250525f';
 
 const STORAGE_KEY = 'jigsaw-studio:v1';
 const SAMPLE_URL = 'assets/samples/donga-l4.txt';
@@ -138,7 +138,7 @@ function viewSplit() {
         <div class="edit-step-tag">Step 2 · Section split</div>
         <h1 class="edit-title">본문을 조각으로 <em>나누기</em></h1>
       </div>
-      ${state.aiLoading ? `<div class="ai-loading">Claude AI가 단어 뜻·질문·문법 포인트를 생성 중...</div>` : ''}
+      ${state.aiLoading ? `<div class="ai-loading">DeepSeek AI가 단어 뜻·질문·문법 포인트를 생성 중...</div>` : ''}
       <div class="edit-meta">
         <div class="edit-meta-item"><span>sentences</span><b>${state.sentences.filter(s=>!s.isHeading).length}</b></div>
         <div class="edit-meta-item"><span>pieces</span><b>${state.pieces.length}</b></div>
@@ -227,15 +227,22 @@ function viewBlanks() {
 
     <div class="claude-panel">
       <div class="claude-panel-head">
-        <span class="claude-panel-title">Claude 보완</span>
-        <span class="claude-panel-desc">단어 뜻 · 질문 · 문법 설명을 Claude Code에서 받아 붙여넣기</span>
+        <span class="claude-panel-title">AI 보완</span>
+        <span class="claude-panel-desc">단어 뜻 · 질문 · 문법 설명 자동 생성 (DeepSeek)</span>
       </div>
       <div class="claude-panel-row">
-        <button class="btn" id="copy-claude-prompt">📋 Claude에게 보내기</button>
-        <span class="claude-copy-msg" id="claude-copy-msg" style="display:none;font-size:.76rem;color:var(--moss);font-family:var(--font-mono);">복사됨! Claude Code에 붙여넣으세요.</span>
+        <input type="password" id="ai-api-key" class="ai-key-input" placeholder="DeepSeek API 키 입력" value="${escapeAttr(state.apiKey)}">
+        <button class="btn btn-primary" id="run-ai">✨ AI 보완 실행</button>
       </div>
-      <textarea id="ai-json-input" class="ai-json-area" placeholder='Claude 응답 JSON을 여기에 붙여넣기 → {"pieces":[...]}'></textarea>
-      <button class="btn btn-primary" id="apply-ai-json">적용</button>
+      <details class="manual-paste">
+        <summary>수동 붙여넣기 (API 없을 때)</summary>
+        <div class="claude-panel-row" style="margin-top:8px;">
+          <button class="btn" id="copy-claude-prompt">📋 프롬프트 복사</button>
+          <span class="claude-copy-msg" id="claude-copy-msg" style="display:none;font-size:.76rem;color:var(--moss);font-family:var(--font-mono);">복사됨!</span>
+        </div>
+        <textarea id="ai-json-input" class="ai-json-area" placeholder='JSON 붙여넣기 → {"pieces":[...]}'></textarea>
+        <button class="btn" id="apply-ai-json">적용</button>
+      </details>
     </div>
 
     <div class="step-actions">
@@ -455,6 +462,7 @@ document.addEventListener('click', e => {
   // Step 3 — Claude panel
   if (t.id === 'copy-claude-prompt') return copyClaudePrompt();
   if (t.id === 'apply-ai-json') return applyAIJson();
+  if (t.id === 'run-ai') return runAIEnrich();
   // Step 5
   if (t.id === 'back-preview') return go(4);
   if (t.id === 'x-html-student') return exportHTML('student');
@@ -584,6 +592,26 @@ function applyAIJson() {
     renderEdit(); renderPrev(); persist();
   } catch (e) {
     alert('JSON 파싱 오류: ' + e.message);
+  }
+}
+
+async function runAIEnrich() {
+  const keyInput = document.getElementById('ai-api-key');
+  const key = keyInput?.value.trim();
+  if (!key) { alert('DeepSeek API 키를 입력하세요.\nplatform.deepseek.com에서 발급받을 수 있습니다.'); return; }
+  state.apiKey = key;
+  localStorage.setItem('jigsaw-api-key', key);
+  state.aiLoading = true;
+  renderEdit();
+  try {
+    const result = await enrichWithAI(state, key);
+    applyAIResult(result);
+    renderEdit(); renderPrev(); persist();
+  } catch (e) {
+    showAIError(e.message);
+  } finally {
+    state.aiLoading = false;
+    renderEdit();
   }
 }
 

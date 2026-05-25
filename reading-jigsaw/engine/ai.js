@@ -1,7 +1,7 @@
-// engine/ai.js — Claude Haiku로 단어 뜻·질문·문법 보완
+// engine/ai.js — DeepSeek-V3으로 단어 뜻·질문·문법 보완
 
-const API_URL = 'https://api.anthropic.com/v1/messages';
-const MODEL = 'claude-haiku-4-5-20251001';
+const API_URL = 'https://api.deepseek.com/chat/completions';
+const MODEL = 'deepseek-chat';
 
 export async function enrichWithAI(state, apiKey) {
   const { pieces, sentences, vocabByPiece } = state;
@@ -34,9 +34,7 @@ ${JSON.stringify(piecesPayload)}
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
-      'x-api-key': apiKey,
-      'anthropic-version': '2023-06-01',
-      'anthropic-dangerous-direct-browser-access': 'true'
+      'Authorization': `Bearer ${apiKey}`
     },
     body: JSON.stringify({
       model: MODEL,
@@ -51,7 +49,7 @@ ${JSON.stringify(piecesPayload)}
   }
 
   const data = await res.json();
-  const text = data.content?.[0]?.text || '';
+  const text = data.choices?.[0]?.message?.content || '';
   const jsonMatch = text.match(/\{[\s\S]*\}/);
   if (!jsonMatch) throw new Error('AI 응답에서 JSON을 찾지 못했습니다.');
   return JSON.parse(jsonMatch[0]);

@@ -1,7 +1,7 @@
 // app.js — Jigsaw Studio 메인 컨트롤러
 
 import { parse } from './engine/parser.js?v=20250526a';
-import { enrichWithAI, extractGrammarCandidates } from './engine/ai.js?v=20250526a';
+import { enrichWithAI, extractGrammarCandidates } from './engine/ai.js?v=20250526b';
 import { autoSplit, insertBoundary, removeBoundary } from './engine/split.js?v=20250526a';
 import { extract, pickForPiece } from './engine/vocab.js?v=20250526a';
 import { detectAll } from './engine/grammar.js?v=20250526a';
@@ -734,17 +734,19 @@ function applyAIResult(result, applySplit = false) {
     applyAISplit(result.split_at);
   }
 
-  for (const pd of (result.pieces || [])) {
-    const idx = state.pieces.findIndex(p => p.label === pd.label);
-    if (idx < 0) continue;
-
-    // 단어 뜻 (vocab이 객체여야 함; 문자열이면 스킵)
-    const vocabMeanings = (pd.vocab && typeof pd.vocab === 'object') ? pd.vocab : {};
-    const vocabList = state.vocabByPiece[idx] || [];
+  // 단어 뜻: 최상위 vocab_meanings (정확한 키 매칭)
+  const vocabMeanings = (result.vocab_meanings && typeof result.vocab_meanings === 'object')
+    ? result.vocab_meanings : {};
+  for (const vocabList of Object.values(state.vocabByPiece)) {
     for (const v of vocabList) {
       const meaning = vocabMeanings[v.word] || vocabMeanings[v.word.toLowerCase()];
       if (meaning && typeof meaning === 'string') v.meaning = meaning;
     }
+  }
+
+  for (const pd of (result.pieces || [])) {
+    const idx = state.pieces.findIndex(p => p.label === pd.label);
+    if (idx < 0) continue;
 
     // 질문 + 모범 답안
     if (pd.question) state.pieces[idx].aiQuestion = pd.question;

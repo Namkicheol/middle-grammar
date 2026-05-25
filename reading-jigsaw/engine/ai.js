@@ -26,8 +26,10 @@ export async function enrichWithAI(state) {
     .map((s, i) => ({ i, t: s.isHeading ? 'h' : 'b', en: s.en }))
     .filter(s => s.en);
 
-  // 추출된 단어 원형 그대로 전달 → AI가 동일한 키로 뜻 반환
-  const vocabWords = (state.vocab || []).slice(0, 40).map(v => v.word);
+  // 추출된 단어를 빈 값 템플릿으로 전달 → AI가 값을 채워 반환 (누락 방지)
+  const vocabTemplate = Object.fromEntries(
+    (state.vocab || []).slice(0, 40).map(v => [v.word, ''])
+  );
 
   const prompt = `중학교 영어 직소 학습지 보조입니다.
 아래 전체 본문을 보고 JSON만 출력하세요 (다른 텍스트 없이).
@@ -35,22 +37,19 @@ export async function enrichWithAI(state) {
 문장 목록 (i=문장인덱스, t: h=소제목/b=본문):
 ${JSON.stringify(sentencesPayload)}
 
-단어 목록 (아래 단어들의 한국어 뜻을 vocab_meanings에 넣으세요):
-${JSON.stringify(vocabWords)}
-
 출력할 내용:
 1. split_at: i값 기준으로 ${numPieces}개 조각 나눌 시작 인덱스 배열
    (길이=${numPieces}, 첫값=0, 오름차순, 소제목 h의 i값 우선 사용)
-2. vocab_meanings: 단어 목록의 모든 단어에 대한 한국어 뜻 객체
-   (목록의 모든 단어를 반드시 포함. 쉬운 단어도 생략 금지. 키는 단어 목록과 정확히 동일한 철자)
-   예: {"strategies":"전략들","influence":"영향을 미치다","limited":"제한된","smart":"똑똑한"}
+2. vocab_meanings: 아래 JSON 템플릿의 빈 값("")을 한국어 뜻으로 채워서 반환하세요.
+   모든 키를 그대로 유지하고 값만 채우세요. 단 하나도 빠뜨리지 마세요.
+   템플릿: ${JSON.stringify(vocabTemplate)}
 3. pieces: split_at 순서대로 A~${String.fromCharCode(64 + numPieces)}:
    - label: "A"/"B"/"C"/"D"
    - question: 조각 내용을 묻는 영어 질문 1개 (의문문)
    - answer: question의 모범 답안 (영어 완전 문장)
 
 출력 형식 (JSON만):
-{"split_at":[0,5,12,20],"vocab_meanings":{"strategies":"전략들","influence":"영향을 미치다"},"pieces":[{"label":"A","question":"What marketing strategies are introduced?","answer":"Hunger marketing and viral marketing are introduced."}]}`;
+{"split_at":[0,5,12,20],"vocab_meanings":{"strategies":"전략들","influence":"영향을 미치다","smart":"똑똑한","shopper":"구매자"},"pieces":[{"label":"A","question":"What marketing strategies are introduced?","answer":"Hunger marketing and viral marketing are introduced."}]}`;
 
   return callAPI(prompt);
 }

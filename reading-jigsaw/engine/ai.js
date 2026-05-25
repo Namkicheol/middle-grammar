@@ -13,24 +13,27 @@ export async function enrichWithAI(state) {
     : '';
 
   const prompt = `중학교 영어 직소 학습지 보조 생성입니다.${targetNote}
-아래 전체 본문을 보고 JSON만 출력하세요 (설명 없이).
+아래 전체 본문을 보고 JSON만 출력하세요 (다른 텍스트 절대 없이, JSON만).
 
-문장 목록 (i=인덱스, t: h=제목/b=본문):
+문장 목록 (i=문장인덱스, t: h=소제목/b=본문):
 ${JSON.stringify(sentencesPayload)}
 
-요청:
-1. split_at: 내용 흐름(heading 기준 우선)으로 ${numPieces}개 조각 나눌 시작 인덱스 배열
-   (길이=${numPieces}, 첫 항목=0, 반드시 오름차순)
-2. pieces: 각 조각 A~${String.fromCharCode(64 + numPieces)} 순:
-   - label: A/B/C/D
-   - vocab: 조각 내 단어 한국어 뜻 {"word":"뜻"} (중학생 수준)
-   - question: 영어 comprehension question 1개
-   - answer: 모범 답안 (영어 완전 문장)
-   - grammar_match: 문법적으로 중요한 어구 (원문 그대로)
-   - grammar_explain: 한국어 문법 설명 (1~2문장)
+출력할 내용:
+1. split_at: i값 기준으로 본문을 ${numPieces}개 조각으로 나눌 각 시작 i값 배열
+   규칙: 길이=${numPieces}, 첫값=0, 오름차순, h(소제목) i값 우선 사용
+   예시: [0, 5, 12, 20]
+2. pieces: split_at 순서대로 A부터 ${String.fromCharCode(64 + numPieces)}까지:
+   - label: "A" / "B" / "C" / "D"
+   - vocab: 해당 조각 본문에 나오는 어려운 단어와 한국어 뜻을 {"영어단어":"한국어뜻"} 형태로
+     예시: {"strategy":"전략", "influence":"영향을 미치다", "limited":"제한된"}
+   - question: 해당 조각 내용을 묻는 영어 질문 1개 (의문문)
+   - answer: question의 모범 답안 (영어 완전 문장 1~2개)
+   - grammar_match: 해당 조각 본문에서 문법 포인트가 되는 어구를 원문 그대로 복사
+     예시: "which influence your decisions"
+   - grammar_explain: grammar_match의 한국어 문법 설명 (1~2문장)
 
-출력 형식 (JSON만):
-{"split_at":[0,5,10,15],"pieces":[{"label":"A","vocab":{"word":"뜻"},"question":"...?","answer":"...","grammar_match":"...","grammar_explain":"..."}]}`;
+출력 형식 (JSON만, 다른 텍스트 없이):
+{"split_at":[0,5,12,20],"pieces":[{"label":"A","vocab":{"strategy":"전략","influence":"영향을 미치다"},"question":"What marketing strategies are mentioned?","answer":"Hunger marketing and viral marketing are mentioned.","grammar_match":"which influence your decisions","grammar_explain":"관계대명사 which가 선행사 strategies를 수식하는 관계절입니다."}]}`;
 
   const res = await fetch('/api/enrich', {
     method: 'POST',

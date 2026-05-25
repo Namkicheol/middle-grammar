@@ -1,12 +1,12 @@
 // app.js — Jigsaw Studio 메인 컨트롤러
 
-import { parse } from './engine/parser.js?v=20250525h';
-import { enrichWithAI } from './engine/ai.js?v=20250525h';
-import { autoSplit, insertBoundary, removeBoundary } from './engine/split.js?v=20250525h';
-import { extract, pickForPiece } from './engine/vocab.js?v=20250525h';
-import { detectAll } from './engine/grammar.js?v=20250525h';
-import { suggest as suggestBlanks } from './engine/blanks.js?v=20250525h';
-import { renderPaper } from './ui/preview.js?v=20250525h';
+import { parse } from './engine/parser.js?v=20250526a';
+import { enrichWithAI } from './engine/ai.js?v=20250526a';
+import { autoSplit, insertBoundary, removeBoundary } from './engine/split.js?v=20250526a';
+import { extract, pickForPiece } from './engine/vocab.js?v=20250526a';
+import { detectAll } from './engine/grammar.js?v=20250526a';
+import { suggest as suggestBlanks } from './engine/blanks.js?v=20250526a';
+import { renderPaper } from './ui/preview.js?v=20250526a';
 
 const STORAGE_KEY = 'jigsaw-studio:v1';
 const SAMPLE_URL = 'assets/samples/donga-l4.txt';
@@ -28,7 +28,8 @@ const state = {
   selectedPiece: 0,
   loadedSample: false,
   apiKey: localStorage.getItem('jigsaw-api-key') || '',
-  aiLoading: false
+  aiLoading: false,
+  grammarTarget: ''
 };
 
 // ───── Routing ─────
@@ -72,15 +73,35 @@ function renderPrev() {
       </div>`;
     return;
   }
+  const modeToggleHtml = `
+    <div class="prev-toggle">
+      <button class="${state.mode === 'student' ? 'on' : ''}" data-mode="student">학생</button>
+      <button class="${state.mode === 'teacher' ? 'on' : ''}" data-mode="teacher">교사</button>
+    </div>`;
+
+  if (state.selectedPiece === -1) {
+    const allPapers = state.pieces.map((_, i) => renderPaper(state, i, state.mode))
+      .join('<hr style="border:none;border-top:1px dashed var(--paper-edge);margin:20px 0;">');
+    prevEl.innerHTML = `
+      <div class="prev-head">
+        <div class="prev-title"><b>전체 조각</b> 미리보기 <em>· ${state.mode === 'student' ? '학생용' : '교사용'}</em></div>
+        ${modeToggleHtml}
+      </div>
+      ${allPapers}
+    `;
+    $$('.prev-toggle button').forEach(b => b.addEventListener('click', () => {
+      state.mode = b.dataset.mode;
+      renderPrev();
+    }));
+    return;
+  }
+
   const idx = Math.min(state.selectedPiece, state.pieces.length - 1);
   const p = state.pieces[idx];
   prevEl.innerHTML = `
     <div class="prev-head">
       <div class="prev-title"><b>조각 ${p.label}</b> 미리보기 <em>· ${state.mode === 'student' ? '학생용' : '교사용'}</em></div>
-      <div class="prev-toggle">
-        <button class="${state.mode === 'student' ? 'on' : ''}" data-mode="student">학생</button>
-        <button class="${state.mode === 'teacher' ? 'on' : ''}" data-mode="teacher">교사</button>
-      </div>
+      ${modeToggleHtml}
     </div>
     ${renderPaper(state, idx, state.mode)}
   `;
@@ -230,18 +251,16 @@ function viewBlanks() {
         <span class="claude-panel-title">AI 보완</span>
         <span class="claude-panel-desc">단어 뜻 · 질문 · 문법 설명 자동 생성 (Gemini Flash)</span>
       </div>
-      <div class="claude-panel-row">
-        <button class="btn btn-primary" id="run-ai">✨ AI 보완 실행</button>
+      <div class="claude-panel-row" style="align-items:center;gap:10px;flex-wrap:wrap;">
+        <label style="font-family:var(--font-mono);font-size:.76rem;font-weight:700;color:var(--ink-3);white-space:nowrap;">타겟 문법</label>
+        <input id="grammar-target" class="vocab-edit-meaning" style="flex:1;min-width:160px;max-width:280px;"
+               placeholder="예: 관계대명사, 수동태, to부정사 …" value="${escapeAttr(state.grammarTarget || '')}">
       </div>
-      <details class="manual-paste">
-        <summary>수동 붙여넣기 (API 없을 때)</summary>
-        <div class="claude-panel-row" style="margin-top:8px;">
-          <button class="btn" id="copy-claude-prompt">📋 프롬프트 복사</button>
-          <span class="claude-copy-msg" id="claude-copy-msg" style="display:none;font-size:.76rem;color:var(--moss);font-family:var(--font-mono);">복사됨!</span>
-        </div>
-        <textarea id="ai-json-input" class="ai-json-area" placeholder='JSON 붙여넣기 → {"pieces":[...]}'></textarea>
-        <button class="btn" id="apply-ai-json">적용</button>
-      </details>
+      <div class="claude-panel-row">
+        ${state.aiLoading
+          ? `<span style="font-family:var(--font-mono);font-size:.8rem;color:var(--moss);">Gemini Flash가 처리 중...</span>`
+          : `<button class="btn btn-primary" id="run-ai">✨ AI 보완 실행</button>`}
+      </div>
     </div>
 
     <div class="step-actions">
@@ -336,6 +355,10 @@ function viewPreview() {
     </div>
 
     <div class="piece-tabs">
+      <button class="ptab ${state.selectedPiece === -1 ? 'on' : ''}" data-select="-1">
+        <span class="ptab-letter" style="font-size:.72rem;letter-spacing:.03em;">ALL</span>
+        <span class="ptab-meta">전체</span>
+      </button>
       ${state.pieces.map((p, i) => `
         <button class="ptab ${i === state.selectedPiece ? 'on' : ''}" data-select="${i}">
           <span class="ptab-letter">${p.label}</span>
@@ -346,7 +369,7 @@ function viewPreview() {
     </div>
 
     <div style="font-family:var(--font-display);font-style:italic;color:var(--ink-3);font-size:.94rem;margin:18px 0;">
-      탭으로 다른 조각을 선택하세요. 우측 종이가 즉시 갱신됩니다.
+      탭으로 조각을 선택하거나 ALL로 전체를 확인하세요.
     </div>
 
     <div class="step-actions">
@@ -439,6 +462,7 @@ document.addEventListener('click', e => {
   if (stepEl) {
     const idx = $$('.step').indexOf(stepEl);
     if (idx >= 0 && (idx === 0 || state.sentences.length)) {
+      if (idx === 3) state.selectedPiece = -1;
       e.preventDefault(); go(idx + 1);
     }
     return;
@@ -452,7 +476,7 @@ document.addEventListener('click', e => {
   if (t.id === 'go-blanks') return go(3);
   // Step 3
   if (t.id === 'back-split') return go(2);
-  if (t.id === 'go-preview') return go(4);
+  if (t.id === 'go-preview') { state.selectedPiece = -1; return go(4); }
   // Step 4
   const ptab = t.closest('.ptab');
   if (ptab) { state.selectedPiece = +ptab.dataset.select; renderEdit(); renderPrev(); return; }
@@ -463,7 +487,7 @@ document.addEventListener('click', e => {
   if (t.id === 'apply-ai-json') return applyAIJson();
   if (t.id === 'run-ai') return runAIEnrich();
   // Step 5
-  if (t.id === 'back-preview') return go(4);
+  if (t.id === 'back-preview') { state.selectedPiece = -1; return go(4); }
   if (t.id === 'x-html-student') return exportHTML('student');
   if (t.id === 'x-html-teacher') return exportHTML('teacher');
   if (t.id === 'x-print-student') return printSelected('student');
@@ -537,6 +561,7 @@ document.addEventListener('input', e => {
   if (e.target.id === 'm-title') state.meta.title = e.target.value;
   if (e.target.id === 'm-lesson') state.meta.lesson = e.target.value;
   if (e.target.id === 'm-textbook') state.meta.textbook = e.target.value;
+  if (e.target.id === 'grammar-target') { state.grammarTarget = e.target.value; persist(); return; }
   if (e.target.classList.contains('vocab-edit-meaning')) {
     const pi = +e.target.dataset.piece;
     const vi = +e.target.dataset.vocab;
@@ -622,8 +647,9 @@ function applyAIResult(result) {
       if (meaning) v.meaning = meaning;
     }
 
-    // 질문
+    // 질문 + 모범 답안
     if (pd.question) state.pieces[idx].aiQuestion = pd.question;
+    if (pd.answer) state.pieces[idx].aiAnswer = pd.answer;
 
     // 문법
     if (pd.grammar_match && pd.grammar_explain) {
@@ -840,7 +866,8 @@ function persist() {
       vocabByPiece: state.vocabByPiece,
       grammarMap: [...state.grammarMap.entries()],
       blanks: [...state.blanks.entries()],
-      selectedPiece: state.selectedPiece
+      selectedPiece: state.selectedPiece,
+      grammarTarget: state.grammarTarget
     };
     localStorage.setItem(STORAGE_KEY, JSON.stringify(snap));
   } catch (e) { /* quota / private mode → skip */ }

@@ -15,15 +15,16 @@ export default async function handler(req, res) {
         'Authorization': `Bearer ${key}`
       },
       body: JSON.stringify({
-        model: 'deepseek-v4-flash',
+        model: 'deepseek-chat',
         messages: [{ role: 'user', content: prompt }],
-        max_tokens: 2048,
+        max_tokens: 3000,
         temperature: 0.3
       })
     });
     const data = await upstream.json();
     if (!upstream.ok) throw new Error(data?.error?.message || `HTTP ${upstream.status}`);
-    const text = data.choices?.[0]?.message?.content || '';
+    const text = data.choices?.[0]?.message?.content;
+    if (!text) throw new Error(`빈 응답 (model=${data.model}, finish=${data.choices?.[0]?.finish_reason})`);
     res.status(200).json({ text });
   } catch (e) {
     res.status(502).json({ error: e.message });

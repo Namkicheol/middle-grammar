@@ -1,7 +1,7 @@
 // app.js — Jigsaw Studio 메인 컨트롤러
 
 import { parse } from './engine/parser.js?v=20250526a';
-import { enrichWithAI, extractGrammarCandidates } from './engine/ai.js?v=20250526b';
+import { enrichWithAI, extractGrammarCandidates } from './engine/ai.js?v=20250526c';
 import { autoSplit, insertBoundary, removeBoundary } from './engine/split.js?v=20250526a';
 import { extract, pickForPiece } from './engine/vocab.js?v=20250526a';
 import { detectAll } from './engine/grammar.js?v=20250526a';
@@ -81,7 +81,7 @@ function renderPrev() {
       <button class="${state.mode === 'teacher' ? 'on' : ''}" data-mode="teacher">교사</button>
     </div>`;
 
-  if (state.selectedPiece === -1) {
+  if (state.selectedPiece === -1 || state.step === 3) {
     const allPapers = state.pieces.map((_, i) => renderPaper(state, i, state.mode))
       .join('<hr style="border:none;border-top:1px dashed var(--paper-edge);margin:20px 0;">');
     prevEl.innerHTML = `
@@ -650,6 +650,8 @@ async function runAIEnrich(applySplit = false) {
     const result = await enrichWithAI(state);
     applyAIResult(result, applySplit);
     renderEdit(); renderPrev(); persist();
+    // Phase 2 자동 실행 (문법 후보 사전 추출)
+    runGrammarExtract();
   } catch (e) {
     showAIError(e.message);
   } finally {

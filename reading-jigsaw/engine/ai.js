@@ -102,9 +102,11 @@ ${JSON.stringify(piecesPayload)}
 - match: 해당 조각 본문 문장에서 원문 그대로 복사한 어구 (수식어 포함 자연스러운 단위)
   예: "which influence your decisions", "Learning about them", "will have to buy them"
 - explain: 중학생 눈높이 한국어 문법 설명 (1~2문장)
+- askTranslation: 해석이 까다롭거나 구조 이해에 번역이 중요한 경우 true, 단순 형태 문법은 false
+  예: 관계절·부정사구·분사구·수동태·간접의문문 → true / 단순 조동사·비교급 → false
 
 출력 형식 (JSON만):
-{"pieces":[{"label":"A","candidates":[{"match":"which influence your decisions","explain":"관계대명사 which가 선행사 strategies를 수식하는 관계절입니다."},{"match":"Learning about them","explain":"동명사(V-ing)가 문장의 주어로 사용된 형태입니다."}]}]}`;
+{"pieces":[{"label":"A","candidates":[{"match":"which influence your decisions","explain":"관계대명사 which가 선행사 strategies를 수식하는 관계절입니다.","askTranslation":true},{"match":"will have to","explain":"will have to는 '~해야 할 것이다'라는 미래 의무 표현입니다.","askTranslation":false}]}]}`;
 
   return callAPI(prompt);
 }

@@ -158,11 +158,13 @@ function renderGrammar(points, isStudent) {
   </div>
   ${points.map(p => `
     <div class="grammar-card">
-      <div class="ask">Q. 본문 내용 중 아래의 밑줄 친 표현은 어떻게 해석하나요? 어떤 문법적 특징이 있나요?</div>
+      <div class="ask">${p.askTranslation
+        ? 'Q. 본문 내용 중 아래의 밑줄 친 표현은 어떻게 해석하나요? 어떤 문법적 특징이 있나요?'
+        : 'Q. 아래 밑줄 친 표현의 문법적 특징은 무엇인가요?'}</div>
       <div class="sentence">${highlightMatch(p.sentence, p.match)}</div>
       ${isStudent
         ? '<span class="answer-line"></span><span class="answer-line"></span><span class="answer-line"></span>'
-        : `<div class="ask answer">A. ${escapeHtml(p.explain)}</div>`}
+        : `<div class="ask answer">${p.askTranslation && p.ko ? `<div class="answer-ko">해석: ${escapeHtml(p.ko)}</div>` : ''}A. ${escapeHtml(p.explain)}</div>`}
     </div>
   `).join('')}
 </section>`;
@@ -186,9 +188,11 @@ function collectGrammar(state, piece) {
       result.push({
         sid: s.id,
         sentence: s.en,
+        ko: s.ko || '',
         match: hits[0].match,
         label: hits[0].label,
-        explain: hits[0].explain
+        explain: hits[0].explain,
+        askTranslation: hits[0].askTranslation !== false
       });
       if (result.length >= 3) break;
     }

@@ -1,12 +1,12 @@
 // app.js — Jigsaw Studio 메인 컨트롤러
 
 import { parse } from './engine/parser.js?v=20250526a';
-import { enrichWithAI, extractGrammarCandidates, translateSentences } from './engine/ai.js?v=20250526o';
+import { enrichWithAI, extractGrammarCandidates, translateSentences } from './engine/ai.js?v=20250526p';
 import { autoSplit, insertBoundary, removeBoundary } from './engine/split.js?v=20250526a';
-import { extract, pickForPiece } from './engine/vocab.js?v=20250526o';
+import { extract, pickForPiece } from './engine/vocab.js?v=20250526p';
 import { detectAll } from './engine/grammar.js?v=20250526a';
 import { suggest as suggestBlanks } from './engine/blanks.js?v=20250526a';
-import { renderPaper } from './ui/preview.js?v=20250526o';
+import { renderPaper } from './ui/preview.js?v=20250526p';
 
 const STORAGE_KEY = 'jigsaw-studio:v1';
 const SAMPLE_URL = 'assets/samples/donga-l4.txt';
@@ -1023,6 +1023,7 @@ body{margin:0;background:var(--paper);font-family:'Noto Serif KR','Fraunces',ser
 .grammar-card{background:rgba(29,45,140,.03);border:1px solid rgba(29,45,140,.2);border-radius:4px;padding:12px 14px;margin-bottom:8px;}
 .grammar-card .sentence{font-family:'Fraunces';font-size:.96rem;font-weight:600;margin:8px 0 10px;padding:10px 14px;background:rgba(255,255,255,.7);border:1px solid #cbc1ad;border-radius:3px;text-align:center;}
 .grammar-card .ask{font-size:.8rem;color:#3d3830;font-style:normal;font-weight:500;}.grammar-card .ask.answer{color:#c0392b;font-weight:600;}
+.grammar-card .answer-ko{font-size:.8rem;color:#3d3830;font-weight:500;margin-bottom:4px;padding-bottom:4px;border-bottom:1px dotted #cbc1ad;}
 .grammar-card .answer-line{display:block;margin-top:5px;border-bottom:1px solid var(--ink-mute);height:1.4em;}
 .grammar-hl{border-bottom:2px solid #a8431c;color:#a8431c;font-weight:700;background:rgba(168,67,28,.07);text-decoration:none;}
 .page-break{page-break-after:always;}

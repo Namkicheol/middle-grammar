@@ -1,12 +1,12 @@
 // app.js — Jigsaw Studio 메인 컨트롤러
 
 import { parse } from './engine/parser.js?v=20250526a';
-import { enrichWithAI, extractGrammarCandidates, translateSentences } from './engine/ai.js?v=20250526n';
+import { enrichWithAI, extractGrammarCandidates, translateSentences } from './engine/ai.js?v=20250526o';
 import { autoSplit, insertBoundary, removeBoundary } from './engine/split.js?v=20250526a';
-import { extract, pickForPiece } from './engine/vocab.js?v=20250526n';
+import { extract, pickForPiece } from './engine/vocab.js?v=20250526o';
 import { detectAll } from './engine/grammar.js?v=20250526a';
 import { suggest as suggestBlanks } from './engine/blanks.js?v=20250526a';
-import { renderPaper } from './ui/preview.js?v=20250526n';
+import { renderPaper } from './ui/preview.js?v=20250526o';
 
 const STORAGE_KEY = 'jigsaw-studio:v1';
 const SAMPLE_URL = 'assets/samples/donga-l4.txt';
@@ -1058,6 +1058,9 @@ function restore() {
     Object.assign(state, s);
     state.grammarMap = new Map(s.grammarMap || []);
     state.blanks = new Map(s.blanks || []);
+    // 구버전 잔존 필드 정리
+    if (state.meta) { delete state.meta.textbook; }
+    if (typeof state.showKoStudent === 'boolean') state.showKoStudent = state.showKoStudent ? 'full' : 'off';
     return true;
   } catch (e) {
     return false;

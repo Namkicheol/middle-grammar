@@ -19,7 +19,6 @@ export function renderPaper(state, pieceIdx, mode = 'student') {
 
   const lesson = state.meta.lesson?.trim();
   const title = state.meta.title?.trim();
-  const textbook = state.meta.textbook?.trim();
   const headerTitle = [lesson, title].filter(Boolean).join(' · ') || '';
 
   return `
@@ -33,7 +32,7 @@ export function renderPaper(state, pieceIdx, mode = 'student') {
     <div class="paper-title">
       ${headerTitle ? `<b>${escapeHtml(headerTitle)}</b>` : ''}
       ${escapeHtml(p.heading || '')}
-      <div class="meta">${textbook ? escapeHtml(textbook) + ' · ' : ''}${stars}</div>
+      <div class="meta">${stars}</div>
     </div>
   </header>
 

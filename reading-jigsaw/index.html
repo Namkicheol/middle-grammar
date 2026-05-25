@@ -41,7 +41,7 @@ body::before{
 .studio{
   position:relative;z-index:1;
   display:grid;
-  grid-template-columns:88px 1fr 1.05fr;
+  grid-template-columns:88px minmax(0,1fr) minmax(0,1.05fr);
   grid-template-rows:72px 1fr 56px;
   grid-template-areas:"head head head" "rail edit prev" "foot foot foot";
   height:100vh;gap:0;
@@ -265,7 +265,7 @@ body::before{
 .gc-item{display:flex;align-items:flex-start;gap:8px;padding:6px 8px;border-radius:6px;cursor:pointer;transition:background .1s;}
 .gc-item:hover{background:rgba(0,0,0,.04);}
 .gc-item input[type=checkbox]{margin-top:2px;accent-color:var(--pen);flex-shrink:0;}
-.gc-match{font-family:var(--font-mono);font-size:.74rem;font-weight:600;color:var(--terracotta);white-space:nowrap;}
+.gc-match{font-family:var(--font-mono);font-size:.74rem;font-weight:600;color:var(--terracotta);word-break:break-word;}
 .grammar-hl{text-decoration:none;border-bottom:2px solid var(--terracotta);color:var(--terracotta);font-weight:700;background:rgba(168,67,28,.07);}
 .gc-explain{font-size:.78rem;color:var(--ink-3);line-height:1.4;}
 .ai-json-area{width:100%;box-sizing:border-box;min-height:70px;padding:8px 10px;font-family:var(--font-mono);font-size:.74rem;border:1px solid var(--ink-mute);border-radius:4px;background:var(--paper);color:var(--ink);resize:vertical;margin-bottom:8px;}
@@ -382,7 +382,7 @@ document.addEventListener('keydown', e => {
   }
 });
 </script>
-<script type="module" src="app.js?v=20250526e"></script>
+<script type="module" src="app.js?v=20250526f"></script>
 
 </body>
 </html>

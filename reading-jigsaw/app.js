@@ -1,7 +1,7 @@
 // app.js — Jigsaw Studio 메인 컨트롤러
 
 import { parse } from './engine/parser.js?v=20250526a';
-import { enrichWithAI } from './engine/ai.js?v=20250526a';
+import { enrichWithAI, extractGrammarCandidates } from './engine/ai.js?v=20250526a';
 import { autoSplit, insertBoundary, removeBoundary } from './engine/split.js?v=20250526a';
 import { extract, pickForPiece } from './engine/vocab.js?v=20250526a';
 import { detectAll } from './engine/grammar.js?v=20250526a';
@@ -29,7 +29,9 @@ const state = {
   loadedSample: false,
   apiKey: localStorage.getItem('jigsaw-api-key') || '',
   aiLoading: false,
-  grammarTarget: ''
+  grammarTarget: '',
+  grammarCandidates: null,
+  grammarLoading: false
 };
 
 // ───── Routing ─────
@@ -248,19 +250,19 @@ function viewBlanks() {
 
     <div class="claude-panel">
       <div class="claude-panel-head">
-        <span class="claude-panel-title">AI 보완</span>
-        <span class="claude-panel-desc">단어 뜻 · 질문 · 문법 설명 자동 생성 (AI)</span>
+        <span class="claude-panel-title">문법 포인트 선택</span>
+        <span class="claude-panel-desc">AI가 본문에서 후보를 추출하면 원하는 것만 선택하세요</span>
       </div>
       <div class="claude-panel-row" style="align-items:center;gap:10px;flex-wrap:wrap;">
         <label style="font-family:var(--font-mono);font-size:.76rem;font-weight:700;color:var(--ink-3);white-space:nowrap;">타겟 문법</label>
         <input id="grammar-target" class="vocab-edit-meaning" style="flex:1;min-width:160px;max-width:280px;"
                placeholder="예: 관계대명사, 수동태, to부정사 …" value="${escapeAttr(state.grammarTarget || '')}">
       </div>
-      <div class="claude-panel-row">
-        ${state.aiLoading
-          ? `<span style="font-family:var(--font-mono);font-size:.8rem;color:var(--moss);">AI가 처리 중...</span>`
-          : `<button class="btn btn-primary" id="run-ai">✨ AI 보완 실행</button>`}
-      </div>
+      ${state.grammarLoading
+        ? `<div class="claude-panel-row"><span style="font-family:var(--font-mono);font-size:.8rem;color:var(--moss);">AI가 문법 포인트를 분석 중...</span></div>`
+        : state.grammarCandidates
+          ? renderGrammarCandidates()
+          : `<div class="claude-panel-row"><button class="btn btn-primary" id="run-ai">✨ 문법 포인트 추출</button></div>`}
     </div>
 
     <div class="step-actions">
@@ -482,7 +484,8 @@ document.addEventListener('click', e => {
   // Step 3 — Claude panel
   if (t.id === 'copy-claude-prompt') return copyClaudePrompt();
   if (t.id === 'apply-ai-json') return applyAIJson();
-  if (t.id === 'run-ai') return runAIEnrich();
+  if (t.id === 'run-ai') return runGrammarExtract();
+  if (t.id === 'apply-grammar-btn') return applyGrammarSelections();
   // Step 5
   if (t.id === 'back-preview') { state.selectedPiece = -1; return go(4); }
   if (t.id === 'x-html-student') return exportHTML('student');
@@ -501,7 +504,7 @@ document.addEventListener('click', e => {
   if (t.dataset.merge !== undefined) {
     const idx = +t.dataset.merge;
     state.pieces = removeBoundary(state.pieces, state.sentences, idx);
-    rebuildVocab();
+    rebuildVocab(); state.grammarCandidates = null;
     renderEdit(); renderPrev(); persist();
     return;
   }
@@ -509,7 +512,7 @@ document.addEventListener('click', e => {
   if (t.dataset.split !== undefined) {
     const atIdx = +t.dataset.split;
     state.pieces = insertBoundary(state.pieces, state.sentences, atIdx);
-    rebuildVocab();
+    rebuildVocab(); state.grammarCandidates = null;
     renderEdit(); renderPrev(); persist();
     return;
   }
@@ -616,6 +619,30 @@ function applyAIJson() {
   }
 }
 
+function renderGrammarCandidates() {
+  const cands = state.grammarCandidates;
+  if (!cands?.pieces?.length) return '<div class="claude-panel-row" style="color:var(--ink-3);font-size:.82rem;">추출된 문법 포인트가 없습니다.</div>';
+  return `
+    <div class="gc-list">
+      ${cands.pieces.map(pc => `
+        <div class="gc-piece">
+          <div class="gc-piece-label">조각 ${pc.label}</div>
+          ${(pc.candidates || []).map((c, ci) => `
+            <label class="gc-item">
+              <input type="checkbox" class="gc-check" data-label="${pc.label}" data-ci="${ci}" checked>
+              <span class="gc-match">"${escapeHtml(c.match)}"</span>
+              <span class="gc-explain">${escapeHtml(c.explain)}</span>
+            </label>
+          `).join('')}
+        </div>
+      `).join('')}
+    </div>
+    <div class="claude-panel-row" style="margin-top:10px;gap:8px;">
+      <button class="btn btn-primary" id="apply-grammar-btn">✓ 선택한 문법 적용</button>
+      <button class="btn" id="run-ai">↺ 다시 추출</button>
+    </div>`;
+}
+
 async function runAIEnrich(applySplit = false) {
   state.aiLoading = true;
   renderEdit();
@@ -629,6 +656,58 @@ async function runAIEnrich(applySplit = false) {
     state.aiLoading = false;
     renderEdit();
   }
+}
+
+async function runGrammarExtract() {
+  state.grammarLoading = true;
+  state.grammarCandidates = null;
+  renderEdit();
+  try {
+    const result = await extractGrammarCandidates(state);
+    state.grammarCandidates = result;
+    renderEdit();
+  } catch (e) {
+    showAIError(e.message);
+  } finally {
+    state.grammarLoading = false;
+    renderEdit();
+  }
+}
+
+function applyGrammarSelections() {
+  if (!state.grammarCandidates) return;
+
+  // 기존 AI 문법 히트 초기화
+  for (const [sid, hits] of state.grammarMap) {
+    const filtered = hits.filter(h => h.label !== 'AI');
+    if (filtered.length) state.grammarMap.set(sid, filtered);
+    else state.grammarMap.delete(sid);
+  }
+
+  const checks = [...document.querySelectorAll('.gc-check:checked')];
+  for (const cb of checks) {
+    const pcLabel = cb.dataset.label;
+    const ci = +cb.dataset.ci;
+    const pc = state.grammarCandidates.pieces?.find(p => p.label === pcLabel);
+    if (!pc) continue;
+    const cand = pc.candidates?.[ci];
+    if (!cand?.match) continue;
+
+    const pieceIdx = state.pieces.findIndex(p => p.label === pcLabel);
+    if (pieceIdx < 0) continue;
+    const piece = state.pieces[pieceIdx];
+    for (const s of state.sentences.slice(piece.range[0], piece.range[1])) {
+      if (s.isHeading || !s.en.includes(cand.match)) continue;
+      const existing = state.grammarMap.get(s.id) || [];
+      state.grammarMap.set(s.id, [
+        { match: cand.match, label: 'AI', explain: cand.explain },
+        ...existing.filter(h => h.match !== cand.match)
+      ]);
+      break;
+    }
+  }
+
+  renderEdit(); renderPrev(); persist();
 }
 
 function applyAISplit(splitAt) {

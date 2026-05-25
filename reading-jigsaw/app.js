@@ -138,7 +138,7 @@ function viewSplit() {
         <div class="edit-step-tag">Step 2 · Section split</div>
         <h1 class="edit-title">본문을 조각으로 <em>나누기</em></h1>
       </div>
-      ${state.aiLoading ? `<div class="ai-loading">DeepSeek AI가 단어 뜻·질문·문법 포인트를 생성 중...</div>` : ''}
+      ${state.aiLoading ? `<div class="ai-loading">Gemini Flash가 단어 뜻·질문·문법 포인트를 생성 중...</div>` : ''}
       <div class="edit-meta">
         <div class="edit-meta-item"><span>sentences</span><b>${state.sentences.filter(s=>!s.isHeading).length}</b></div>
         <div class="edit-meta-item"><span>pieces</span><b>${state.pieces.length}</b></div>
@@ -228,7 +228,7 @@ function viewBlanks() {
     <div class="claude-panel">
       <div class="claude-panel-head">
         <span class="claude-panel-title">AI 보완</span>
-        <span class="claude-panel-desc">단어 뜻 · 질문 · 문법 설명 자동 생성 (DeepSeek)</span>
+        <span class="claude-panel-desc">단어 뜻 · 질문 · 문법 설명 자동 생성 (Gemini Flash)</span>
       </div>
       <div class="claude-panel-row">
         <button class="btn btn-primary" id="run-ai">✨ AI 보완 실행</button>

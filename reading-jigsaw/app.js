@@ -1059,22 +1059,27 @@ body{padding:16px;}@media print{body{padding:0;}}</style>
 }
 
 function exportDoc(mode) {
-  const idxs = getSelectedPieceIdxs();
-  const pages = idxs.map(i => renderPaper(state, i, mode))
-    .join('<div style="page-break-after:always;height:1px;"></div>');
-  const html = `<html xmlns:o="urn:schemas-microsoft-com:office:office"
-    xmlns:w="urn:schemas-microsoft-com:office:word"
-    xmlns="http://www.w3.org/TR/REC-html40">
-<head><meta charset="utf-8">
-<style>${EXPORT_CSS}</style>
-</head><body>${pages}</body></html>`;
-  const blob = new Blob(['﻿', html], { type: 'application/msword' });
-  const url = URL.createObjectURL(blob);
-  const a = document.createElement('a');
-  a.href = url;
-  a.download = `${safeName()}-${mode === 'student' ? 'Ss' : 'T'}.doc`;
-  document.body.appendChild(a); a.click();
-  setTimeout(() => { a.remove(); URL.revokeObjectURL(url); }, 2000);
+  try {
+    const idxs = getSelectedPieceIdxs();
+    if (!idxs.length) { alert('조각을 하나 이상 선택하세요.'); return; }
+    const pages = idxs.map(i => renderPaper(state, i, mode))
+      .join('<div style="page-break-after:always;"></div>');
+    const html = `<!DOCTYPE html>
+<html xmlns:o="urn:schemas-microsoft-com:office:office"
+      xmlns:w="urn:schemas-microsoft-com:office:word"
+      xmlns="http://www.w3.org/TR/REC-html40">
+<head><meta charset="utf-8"><style>${EXPORT_CSS}</style></head>
+<body>${pages}</body></html>`;
+    const blob = new Blob([html], { type: 'application/octet-stream' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `${safeName()}-${mode === 'student' ? 'Ss' : 'T'}.doc`;
+    document.body.appendChild(a); a.click();
+    setTimeout(() => { a.remove(); URL.revokeObjectURL(url); }, 2000);
+  } catch (e) {
+    alert('DOCX 생성 오류: ' + e.message);
+  }
 }
 
 function exportMD() {

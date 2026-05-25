@@ -159,7 +159,7 @@ function viewSplit() {
         <div class="edit-step-tag">Step 2 · Section split</div>
         <h1 class="edit-title">본문을 조각으로 <em>나누기</em></h1>
       </div>
-      ${state.aiLoading ? `<div class="ai-loading">Gemini Flash가 단어 뜻·질문·문법 포인트를 생성 중...</div>` : ''}
+      ${state.aiLoading ? `<div class="ai-loading">DeepSeek가 단어 뜻·질문·문법 포인트를 생성 중...</div>` : ''}
       <div class="edit-meta">
         <div class="edit-meta-item"><span>sentences</span><b>${state.sentences.filter(s=>!s.isHeading).length}</b></div>
         <div class="edit-meta-item"><span>pieces</span><b>${state.pieces.length}</b></div>
@@ -249,7 +249,7 @@ function viewBlanks() {
     <div class="claude-panel">
       <div class="claude-panel-head">
         <span class="claude-panel-title">AI 보완</span>
-        <span class="claude-panel-desc">단어 뜻 · 질문 · 문법 설명 자동 생성 (Gemini Flash)</span>
+        <span class="claude-panel-desc">단어 뜻 · 질문 · 문법 설명 자동 생성 (DeepSeek)</span>
       </div>
       <div class="claude-panel-row" style="align-items:center;gap:10px;flex-wrap:wrap;">
         <label style="font-family:var(--font-mono);font-size:.76rem;font-weight:700;color:var(--ink-3);white-space:nowrap;">타겟 문법</label>
@@ -258,7 +258,7 @@ function viewBlanks() {
       </div>
       <div class="claude-panel-row">
         ${state.aiLoading
-          ? `<span style="font-family:var(--font-mono);font-size:.8rem;color:var(--moss);">Gemini Flash가 처리 중...</span>`
+          ? `<span style="font-family:var(--font-mono);font-size:.8rem;color:var(--moss);">DeepSeek가 처리 중...</span>`
           : `<button class="btn btn-primary" id="run-ai">✨ AI 보완 실행</button>`}
       </div>
     </div>

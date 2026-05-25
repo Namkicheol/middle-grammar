@@ -1,4 +1,4 @@
-// engine/ai.js — /api/enrich 프록시를 통한 Gemini Flash 보완
+// engine/ai.js — /api/enrich 프록시를 통한 DeepSeek 보완
 
 export async function enrichWithAI(state) {
   const { pieces, sentences, vocabByPiece, grammarTarget } = state;

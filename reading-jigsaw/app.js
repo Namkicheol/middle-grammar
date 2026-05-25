@@ -1,12 +1,12 @@
 // app.js — Jigsaw Studio 메인 컨트롤러
 
 import { parse } from './engine/parser.js?v=20250526a';
-import { enrichWithAI, extractGrammarCandidates } from './engine/ai.js?v=20250526g';
+import { enrichWithAI, extractGrammarCandidates } from './engine/ai.js?v=20250526h';
 import { autoSplit, insertBoundary, removeBoundary } from './engine/split.js?v=20250526a';
 import { extract, pickForPiece } from './engine/vocab.js?v=20250526a';
 import { detectAll } from './engine/grammar.js?v=20250526a';
 import { suggest as suggestBlanks } from './engine/blanks.js?v=20250526a';
-import { renderPaper } from './ui/preview.js?v=20250526d';
+import { renderPaper } from './ui/preview.js?v=20250526h';
 
 const STORAGE_KEY = 'jigsaw-studio:v1';
 const SAMPLE_URL = 'assets/samples/donga-l4.txt';
@@ -15,7 +15,8 @@ const SAMPLE_URL = 'assets/samples/donga-l4.txt';
 const state = {
   step: 1,
   mode: 'student',       // student | teacher
-  hangulHint: 'off',      // off | consonant
+  hangulHint: 'consonant', // off | consonant
+  showKoStudent: true,    // 학생용에 한국어 해석 표시
   styleBase: 'english2',
   meta: { title: '', lesson: '', textbook: '' },
   source: '',
@@ -76,9 +77,15 @@ function renderPrev() {
     return;
   }
   const modeToggleHtml = `
-    <div class="prev-toggle">
-      <button class="${state.mode === 'student' ? 'on' : ''}" data-mode="student">학생</button>
-      <button class="${state.mode === 'teacher' ? 'on' : ''}" data-mode="teacher">교사</button>
+    <div style="display:flex;gap:6px;align-items:center;flex-wrap:wrap;">
+      <div class="prev-toggle">
+        <button class="${state.mode === 'student' ? 'on' : ''}" data-mode="student">학생</button>
+        <button class="${state.mode === 'teacher' ? 'on' : ''}" data-mode="teacher">교사</button>
+      </div>
+      <div class="prev-toggle">
+        <button class="${state.showKoStudent ? 'on' : ''}" data-ko="on">해석</button>
+        <button class="${!state.showKoStudent ? 'on' : ''}" data-ko="off">빈칸</button>
+      </div>
     </div>`;
 
   if (state.selectedPiece === -1 || state.step === 3) {
@@ -91,9 +98,11 @@ function renderPrev() {
       </div>
       ${allPapers}
     `;
-    $$('.prev-toggle button').forEach(b => b.addEventListener('click', () => {
-      state.mode = b.dataset.mode;
-      renderPrev();
+    $$('.prev-toggle button[data-mode]').forEach(b => b.addEventListener('click', () => {
+      state.mode = b.dataset.mode; renderPrev();
+    }));
+    $$('.prev-toggle button[data-ko]').forEach(b => b.addEventListener('click', () => {
+      state.showKoStudent = b.dataset.ko === 'on'; renderPrev();
     }));
     return;
   }
@@ -107,9 +116,11 @@ function renderPrev() {
     </div>
     ${renderPaper(state, idx, state.mode)}
   `;
-  $$('.prev-toggle button').forEach(b => b.addEventListener('click', () => {
-    state.mode = b.dataset.mode;
-    renderPrev();
+  $$('.prev-toggle button[data-mode]').forEach(b => b.addEventListener('click', () => {
+    state.mode = b.dataset.mode; renderPrev();
+  }));
+  $$('.prev-toggle button[data-ko]').forEach(b => b.addEventListener('click', () => {
+    state.showKoStudent = b.dataset.ko === 'on'; renderPrev();
   }));
 }
 
@@ -749,6 +760,14 @@ function applyAIResult(result, applySplit = false) {
     for (const v of vocabList) {
       const meaning = vocabMeanings[v.word] || vocabMeanings[v.word.toLowerCase()];
       if (meaning && typeof meaning === 'string') v.meaning = meaning;
+    }
+  }
+
+  // 문장 번역: sentence_ko = { "인덱스": "한국어번역" }
+  if (result.sentence_ko && typeof result.sentence_ko === 'object') {
+    for (const [idx, ko] of Object.entries(result.sentence_ko)) {
+      const s = state.sentences[Number(idx)];
+      if (s && !s.ko && typeof ko === 'string') s.ko = ko;
     }
   }
 

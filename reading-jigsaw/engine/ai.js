@@ -43,13 +43,15 @@ ${JSON.stringify(sentencesPayload)}
 2. vocab_meanings: 아래 JSON 템플릿의 빈 값("")을 한국어 뜻으로 채워서 반환하세요.
    모든 키를 그대로 유지하고 값만 채우세요. 단 하나도 빠뜨리지 마세요.
    템플릿: ${JSON.stringify(vocabTemplate)}
-3. pieces: split_at 순서대로 A~${String.fromCharCode(64 + numPieces)}:
+3. sentence_ko: 본문(t=b) 문장 인덱스를 키로 한 한국어 번역 객체
+   (소제목 h 제외, 자연스러운 중학생 수준 번역, 예: {"1":"스마트 쇼퍼가 되어라!","2":"당신은 스마트 쇼퍼라고 생각합니까?"})
+4. pieces: split_at 순서대로 A~${String.fromCharCode(64 + numPieces)}:
    - label: "A"/"B"/"C"/"D"
    - question: 조각 내용을 묻는 영어 질문 1개 (의문문)
    - answer: 1문장 짧은 모범 답안 (주어+동사 포함, 15단어 이내)
 
 출력 형식 (JSON만):
-{"split_at":[0,5,12,20],"vocab_meanings":{"strategies":"전략들","influence":"영향을 미치다","smart":"똑똑한","shopper":"구매자"},"pieces":[{"label":"A","question":"What marketing strategies are introduced?","answer":"Hunger marketing and viral marketing are introduced."}]}`;
+{"split_at":[0,5,12,20],"vocab_meanings":{"strategies":"전략들","shopper":"구매자"},"sentence_ko":{"1":"스마트 쇼퍼가 되어라!","2":"당신은 스마트 쇼퍼라고 생각합니까?"},"pieces":[{"label":"A","question":"What strategies are introduced?","answer":"Hunger and viral marketing strategies are introduced."}]}`;
 
   return callAPI(prompt);
 }

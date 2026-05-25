@@ -1,12 +1,12 @@
 // app.js — Jigsaw Studio 메인 컨트롤러
 
 import { parse } from './engine/parser.js?v=20250526a';
-import { enrichWithAI, extractGrammarCandidates, translateSentences } from './engine/ai.js?v=20250526k';
+import { enrichWithAI, extractGrammarCandidates, translateSentences } from './engine/ai.js?v=20250526l';
 import { autoSplit, insertBoundary, removeBoundary } from './engine/split.js?v=20250526a';
 import { extract, pickForPiece } from './engine/vocab.js?v=20250526a';
 import { detectAll } from './engine/grammar.js?v=20250526a';
 import { suggest as suggestBlanks } from './engine/blanks.js?v=20250526a';
-import { renderPaper } from './ui/preview.js?v=20250526k';
+import { renderPaper } from './ui/preview.js?v=20250526l';
 
 const STORAGE_KEY = 'jigsaw-studio:v1';
 const SAMPLE_URL = 'assets/samples/donga-l4.txt';
@@ -18,7 +18,8 @@ const state = {
   hangulHint: 'consonant', // off | consonant
   showKoStudent: true,    // 학생용에 한국어 해석 표시
   styleBase: 'english2',
-  meta: { title: '', lesson: '', textbook: '' },
+  meta: { title: '', lesson: '' },
+  grammarSelected: {},    // "label-ci" → true/false
   source: '',
   sentences: [],
   pieces: [],
@@ -144,18 +145,14 @@ function viewUpload() {
     </div>
 
     <div class="upload-zone">
-      <div class="upload-meta">
+      <div class="upload-meta" style="grid-template-columns:2fr 1fr;">
         <label class="meta-field">
           <span>제목</span>
-          <input id="m-title" type="text" placeholder="Be a Smart Shopper!" value="${escapeAttr(state.meta.title)}">
+          <input id="m-title" type="text" placeholder="본문 제목" value="${escapeAttr(state.meta.title)}">
         </label>
         <label class="meta-field">
           <span>Lesson</span>
-          <input id="m-lesson" type="text" placeholder="L4" value="${escapeAttr(state.meta.lesson)}">
-        </label>
-        <label class="meta-field">
-          <span>교과서</span>
-          <input id="m-textbook" type="text" placeholder="동아윤 중2" value="${escapeAttr(state.meta.textbook)}">
+          <input id="m-lesson" type="text" placeholder="Lesson 1" value="${escapeAttr(state.meta.lesson)}">
         </label>
       </div>
 
@@ -582,7 +579,6 @@ document.addEventListener('input', e => {
   if (e.target.id === 'source-input') state.source = e.target.value;
   if (e.target.id === 'm-title') state.meta.title = e.target.value;
   if (e.target.id === 'm-lesson') state.meta.lesson = e.target.value;
-  if (e.target.id === 'm-textbook') state.meta.textbook = e.target.value;
   if (e.target.id === 'grammar-target') { state.grammarTarget = e.target.value; persist(); return; }
   if (e.target.classList.contains('vocab-edit-meaning')) {
     const pi = +e.target.dataset.piece;
@@ -649,13 +645,16 @@ function renderGrammarCandidates() {
       ${cands.pieces.map(pc => `
         <div class="gc-piece">
           <div class="gc-piece-label">조각 ${pc.label}</div>
-          ${(pc.candidates || []).map((c, ci) => `
+          ${(pc.candidates || []).map((c, ci) => {
+            const key = `${pc.label}-${ci}`;
+            const isChecked = state.grammarSelected[key] !== false;
+            return `
             <label class="gc-item">
-              <input type="checkbox" class="gc-check" data-label="${pc.label}" data-ci="${ci}" checked>
+              <input type="checkbox" class="gc-check" data-label="${pc.label}" data-ci="${ci}" ${isChecked ? 'checked' : ''}>
               <span class="gc-match">"${escapeHtml(c.match)}"</span>
               <span class="gc-explain">${escapeHtml(c.explain)}</span>
-            </label>
-          `).join('')}
+            </label>`;
+          }).join('')}
         </div>
       `).join('')}
     </div>
@@ -702,8 +701,15 @@ async function runGrammarExtract() {
   try {
     const result = await extractGrammarCandidates(state);
     state.grammarCandidates = result;
+    // 초기에 모두 선택 상태로 초기화
+    state.grammarSelected = {};
+    (result.pieces || []).forEach(pc =>
+      (pc.candidates || []).forEach((_, ci) => {
+        state.grammarSelected[`${pc.label}-${ci}`] = true;
+      })
+    );
     renderEdit();
-    applyGrammarSelections(); // 전체 체크된 상태로 즉시 적용
+    applyGrammarSelections();
     renderPrev(); persist();
   } catch (e) {
     showAIError(e.message);
@@ -715,6 +721,11 @@ async function runGrammarExtract() {
 
 function applyGrammarSelections() {
   if (!state.grammarCandidates) return;
+
+  // DOM에서 체크 상태 먼저 저장 (renderEdit 이전에 캡처)
+  document.querySelectorAll('.gc-check').forEach(cb => {
+    state.grammarSelected[`${cb.dataset.label}-${cb.dataset.ci}`] = cb.checked;
+  });
 
   // 기존 AI 문법 히트 초기화
   for (const [sid, hits] of state.grammarMap) {
@@ -848,11 +859,10 @@ async function loadSample() {
     const r = await fetch(SAMPLE_URL);
     const text = await r.text();
     state.source = text;
-    state.meta = { title: 'Be a Smart Shopper!', lesson: 'L4', textbook: '동아윤 중2' };
+    state.meta = { title: 'Why Trees Are Smarter Than You Think', lesson: 'Lesson 4' };
     $('#source-input').value = text;
     $('#m-title').value = state.meta.title;
     $('#m-lesson').value = state.meta.lesson;
-    $('#m-textbook').value = state.meta.textbook;
     persist();
   } catch (e) {
     console.error(e);
@@ -940,7 +950,7 @@ ${pages}
 function buildMarkdown() {
   const lines = [];
   lines.push(`# ${state.meta.title || '직소 학습지'}`);
-  lines.push(`> ${state.meta.lesson || ''} · ${state.meta.textbook || ''}\n`);
+  lines.push(`> ${state.meta.lesson || ''}\n`);
   for (const p of state.pieces) {
     lines.push(`\n## ${p.label}. ${p.heading || '(소제목 없음)'} ${'★'.repeat(p.stars)}${'☆'.repeat(3-p.stars)}`);
     const rangeSentences = state.sentences.slice(p.range[0], p.range[1]).filter(s => !s.isHeading);
@@ -961,6 +971,8 @@ const EXPORT_CSS = `
 :root{--paper:#fbf6ec;--paper-warm:#f6efde;--paper-edge:#e8dcc1;--ink:#181613;--ink-3:#5d544a;--ink-mute:#cbc1ad;--pen:#1d2d8c;--terracotta:#a8431c;--moss:#3f6048;}
 body{margin:0;background:var(--paper);font-family:'Noto Serif KR','Fraunces',serif;color:var(--ink);padding:24px;}
 .paper{max-width:760px;margin:0 auto 32px;background:var(--paper-warm);border:1px solid var(--paper-edge);padding:32px 30px;box-shadow:0 18px 40px -12px rgba(40,32,20,.18);}
+.paper-id-row{display:flex;gap:28px;justify-content:flex-end;font-family:'JetBrains Mono',monospace;font-size:.7rem;color:#5d544a;margin-bottom:12px;letter-spacing:.03em;}
+.paper-id-row .id-line{display:inline-block;width:96px;border-bottom:1px solid #5d544a;vertical-align:bottom;margin-left:5px;}
 .paper-head{display:flex;align-items:flex-start;justify-content:space-between;padding-bottom:14px;margin-bottom:18px;border-bottom:2px solid var(--ink);}
 .paper-letter{font-family:'Fraunces';font-style:italic;font-weight:900;font-size:3.2rem;line-height:.85;letter-spacing:-.05em;}
 .paper-title{text-align:right;font-family:'Fraunces';font-style:italic;font-weight:600;font-size:1rem;color:var(--ink-3);}
@@ -996,6 +1008,7 @@ body{margin:0;background:var(--paper);font-family:'Noto Serif KR','Fraunces',ser
 .grammar-card .sentence{font-family:'Fraunces';font-size:.96rem;font-weight:600;margin-bottom:6px;}
 .grammar-card .ask{font-style:italic;font-size:.78rem;color:#0f1d6b;}.grammar-card .ask.answer{color:#c0392b;font-weight:600;font-style:normal;}
 .grammar-card .answer-line{display:block;margin-top:5px;border-bottom:1px solid var(--ink-mute);height:1.4em;}
+.grammar-hl{border-bottom:2px solid #a8431c;color:#a8431c;font-weight:700;background:rgba(168,67,28,.07);text-decoration:none;}
 .page-break{page-break-after:always;}
 @media print{ body{background:#fff;padding:0;} .paper{box-shadow:none;border:none;page-break-after:always;} }
 `;

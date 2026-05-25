@@ -160,11 +160,9 @@ function viewUpload() {
 
       <textarea id="source-input" class="upload-input" placeholder="본문을 여기에 붙여넣으세요. 빈 줄로 문단을 구분하면 더 정확히 분할됩니다.&#10;&#10;Be a Smart Shopper!&#10;&#10;Do you think you are a smart shopper?&#10;...">${escapeHtml(state.source)}</textarea>
 
+      <input type="file" id="file-input" accept=".txt,.pdf" style="display:none">
       <div class="upload-actions">
-        <label class="btn" style="cursor:pointer;">
-          📂 파일 열기
-          <input type="file" id="file-input" accept=".txt,.pdf" style="display:none">
-        </label>
+        <button class="btn" id="open-file-btn">📂 파일 열기</button>
         <button class="btn" id="load-sample">샘플 <span style="font-family:var(--font-mono);font-size:.66rem;color:var(--ink-mute);margin-left:4px;">동아윤 L4</span></button>
         <div style="flex:1"></div>
         <button class="btn btn-primary" id="go-clean">분할로 진행 →</button>
@@ -508,6 +506,7 @@ document.addEventListener('click', e => {
   }
 
   // Step 1
+  if (t.id === 'open-file-btn') { document.getElementById('file-input')?.click(); return; }
   if (t.id === 'load-sample') return loadSample();
   if (t.id === 'go-clean') return submitSource();
   // Step 2

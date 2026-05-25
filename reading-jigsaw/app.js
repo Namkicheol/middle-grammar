@@ -1,12 +1,12 @@
 // app.js — Jigsaw Studio 메인 컨트롤러
 
 import { parse } from './engine/parser.js?v=20250526a';
-import { enrichWithAI, extractGrammarCandidates, translateSentences } from './engine/ai.js?v=20250526q';
+import { enrichWithAI, extractGrammarCandidates, translateSentences } from './engine/ai.js?v=20250526r';
 import { autoSplit, insertBoundary, removeBoundary } from './engine/split.js?v=20250526a';
-import { extract, pickForPiece } from './engine/vocab.js?v=20250526q';
+import { extract, pickForPiece } from './engine/vocab.js?v=20250526r';
 import { detectAll } from './engine/grammar.js?v=20250526a';
 import { suggest as suggestBlanks } from './engine/blanks.js?v=20250526a';
-import { renderPaper } from './ui/preview.js?v=20250526q';
+import { renderPaper } from './ui/preview.js?v=20250526r';
 
 const STORAGE_KEY = 'jigsaw-studio:v1';
 const SAMPLE_URL = 'assets/samples/donga-l4.txt';
@@ -16,7 +16,7 @@ const state = {
   step: 1,
   mode: 'student',       // student | teacher
   hangulHint: 'consonant', // off | consonant
-  showKoStudent: 'cloze', // full | cloze | off
+  studentMode: 'ko-blank', // en-blank | ko-blank | full | off
   styleBase: 'english2',
   meta: { title: '', lesson: '' },
   grammarSelected: {},    // "label-ci" → true/false
@@ -85,9 +85,10 @@ function renderPrev() {
         <button class="${state.mode === 'teacher' ? 'on' : ''}" data-mode="teacher">교사</button>
       </div>
       <div class="prev-toggle">
-        <button class="${state.showKoStudent === 'full' ? 'on' : ''}" data-ko="full">해석</button>
-        <button class="${state.showKoStudent === 'cloze' ? 'on' : ''}" data-ko="cloze">빈칸</button>
-        <button class="${state.showKoStudent === 'off' ? 'on' : ''}" data-ko="off">해석OFF</button>
+        <button class="${state.studentMode === 'en-blank' ? 'on' : ''}" data-smode="en-blank">영어빈칸</button>
+        <button class="${state.studentMode === 'ko-blank' ? 'on' : ''}" data-smode="ko-blank">한글빈칸</button>
+        <button class="${state.studentMode === 'full' ? 'on' : ''}" data-smode="full">해석</button>
+        <button class="${state.studentMode === 'off' ? 'on' : ''}" data-smode="off">해석OFF</button>
       </div>
       <div class="prev-toggle">
         <button class="${state.hangulHint === 'consonant' ? 'on' : ''}" data-hint="consonant">초성</button>
@@ -125,8 +126,8 @@ function bindPrevToggles() {
   $$('.prev-toggle button[data-mode]').forEach(b => b.addEventListener('click', () => {
     state.mode = b.dataset.mode; renderPrev();
   }));
-  $$('.prev-toggle button[data-ko]').forEach(b => b.addEventListener('click', () => {
-    state.showKoStudent = b.dataset.ko; renderPrev();
+  $$('.prev-toggle button[data-smode]').forEach(b => b.addEventListener('click', () => {
+    state.studentMode = b.dataset.smode; renderPrev();
   }));
   $$('.prev-toggle button[data-hint]').forEach(b => b.addEventListener('click', () => {
     state.hangulHint = b.dataset.hint; renderPrev();
@@ -709,6 +710,23 @@ async function runAIEnrich(applySplit = false) {
   }
 }
 
+function suggestKoBlanks(ko) {
+  if (!ko) return new Set();
+  const tokens = ko.split(' ');
+  const SKIP = new Set(['때문에','하지만','그리고','그래서','하면','하여','이지만','이고','이며','으로','이다','했다','있다','없다','한다','된다','이다.','했다.','있다.','없다.','한다.']);
+  const max = tokens.length <= 5 ? 1 : 2;
+  const candidates = tokens
+    .map((tok, i) => ({ tok: tok.replace(/[.,!?]$/, ''), i, len: tok.length }))
+    .filter(({ tok }) => tok.length >= 3 && !SKIP.has(tok) && /[가-힣]/.test(tok))
+    .sort((a, b) => b.len - a.len);
+  const blanks = new Set();
+  for (const { i } of candidates) {
+    if (blanks.size >= max) break;
+    blanks.add(i);
+  }
+  return blanks;
+}
+
 async function runTranslate() {
   try {
     const result = await translateSentences(state);
@@ -716,11 +734,10 @@ async function runTranslate() {
       for (const [idx, val] of Object.entries(result)) {
         const s = state.sentences[Number(idx)];
         if (!s || s.ko) continue;
-        if (typeof val === 'string') {
-          s.ko = val;
-        } else if (val && typeof val === 'object') {
-          s.ko = val.ko || '';
-          if (val.cloze) s.koCloze = val.cloze;
+        s.ko = typeof val === 'string' ? val : (val?.ko || '');
+        if (s.ko && !state.koBlanks.has(s.id)) {
+          const suggested = suggestKoBlanks(s.ko);
+          if (suggested.size) state.koBlanks.set(s.id, suggested);
         }
       }
       renderPrev(); persist();
@@ -1039,7 +1056,7 @@ body{margin:0;background:var(--paper);font-family:'Noto Serif KR','Fraunces',ser
 .slow-en u{text-decoration:underline;text-decoration-thickness:2px;text-decoration-color:var(--pen);text-underline-offset:3px;}
 .slow-ko{font-size:.84rem;color:var(--ink-3);font-style:italic;margin-top:4px;}
 .slow-ko-cloze{color:var(--ink-2);font-style:normal;font-weight:500;}
-.ko-gap{display:inline-block;min-width:60px;border-bottom:1.5px solid #5d544a;text-align:center;color:transparent;font-size:.7em;}
+.ko-gap{display:inline-block;min-width:80px;border-bottom:1.5px solid #5d544a;vertical-align:baseline;}
 .slow-note{margin-top:6px;font-family:'JetBrains Mono';font-size:.66rem;color:#0f1d6b;padding-left:14px;border-left:2px solid var(--pen);}
 .q-card{background:rgba(255,255,255,.45);border:1px solid var(--ink-mute);border-radius:4px;padding:12px 14px;font-size:.88rem;}
 .q-card .qm{font-weight:700;margin-right:6px;}
@@ -1085,9 +1102,19 @@ function restore() {
     state.grammarMap = new Map(s.grammarMap || []);
     state.blanks = new Map(s.blanks || []);
     state.koBlanks = new Map((s.koBlanks || []).map(([sid, arr]) => [sid, new Set(arr)]));
-    // 구버전 잔존 필드 정리
+    // 구버전 필드 정리
     if (state.meta) { delete state.meta.textbook; }
-    if (typeof state.showKoStudent === 'boolean') state.showKoStudent = state.showKoStudent ? 'full' : 'off';
+    // showKoStudent → studentMode 마이그레이션
+    if (!state.studentMode) {
+      const old = state.showKoStudent;
+      state.studentMode = (old === false || old === 'off') ? 'off' : 'ko-blank';
+    }
+    delete state.showKoStudent;
+    // 구버전 vocab sids(Set→{}) 감지 시 재추출
+    if (state.sentences?.length && state.vocab?.some(c => c.sids && !Array.isArray(c.sids))) {
+      state.vocab = extract(state.sentences);
+      rebuildVocab();
+    }
     return true;
   } catch (e) {
     return false;

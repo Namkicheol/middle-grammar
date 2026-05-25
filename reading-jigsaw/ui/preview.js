@@ -78,30 +78,49 @@ function renderVocab(vocab, isStudent, hangulHint) {
 function renderSlow(bodies, state, isStudent) {
   const rows = bodies.map(s => {
     const blanks = state.blanks?.get(s.id) || [];
-    const en = isStudent
-      ? applyBlanks(s.en, blanks)
-      : applyBlanksTeacher(s.en, blanks);
+    const mode = state.studentMode || 'ko-blank'; // en-blank | ko-blank | full | off
+
+    // English line
+    let enHtml;
+    if (!isStudent) {
+      enHtml = `<div class="slow-en">${applyBlanksTeacher(s.en, blanks)}</div>`;
+    } else if (mode === 'en-blank') {
+      enHtml = `<div class="slow-en">${applyBlanks(s.en, blanks)}</div>`;
+    } else {
+      enHtml = `<div class="slow-en">${escapeHtml(s.en)}</div>`;
+    }
+
+    // Korean line
+    let koHtml = '';
+    if (!isStudent) {
+      koHtml = s.ko ? `<div class="slow-ko">${escapeHtml(s.ko)}</div>` : '';
+    } else if (mode === 'off' || mode === 'en-blank') {
+      koHtml = '';
+    } else if (mode === 'ko-blank') {
+      if (!s.ko) {
+        koHtml = '<div class="slow-ko">__________________________</div>';
+      } else {
+        const blanked = state.koBlanks?.get(s.id);
+        if (blanked?.size) {
+          const cloze = s.ko.split(' ').map((tok, i) =>
+            blanked.has(i) ? '<span class="ko-gap">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>' : escapeHtml(tok)
+          ).join(' ');
+          koHtml = `<div class="slow-ko slow-ko-cloze">${cloze}</div>`;
+        } else {
+          koHtml = `<div class="slow-ko">${escapeHtml(s.ko)}</div>`;
+        }
+      }
+    } else { // 'full'
+      koHtml = s.ko
+        ? `<div class="slow-ko">${escapeHtml(s.ko)}</div>`
+        : '<div class="slow-ko">__________________________</div>';
+    }
+
     const note = pickNote(state, s);
     return `
     <div class="slow-row">
-      <div class="slow-en">${en}</div>
-      ${(() => {
-        if (!isStudent) {
-          return s.ko ? `<div class="slow-ko">${escapeHtml(s.ko)}</div>` : '';
-        }
-        const koMode = state.showKoStudent; // full | cloze | off
-        if (koMode === 'off' || koMode === false) return '<div class="slow-ko">__________________________</div>';
-        if (!s.ko) return '<div class="slow-ko">__________________________</div>';
-        if (koMode === 'cloze') {
-          const blanked = state.koBlanks?.get(s.id);
-          if (blanked?.size) {
-            const cloze = s.ko.split(' ').map((tok, i) => blanked.has(i) ? '<span class="ko-gap">(    )</span>' : escapeHtml(tok)).join(' ');
-            return `<div class="slow-ko slow-ko-cloze">${cloze}</div>`;
-          }
-          return `<div class="slow-ko">${escapeHtml(s.ko)}</div>`;
-        }
-        return `<div class="slow-ko">${escapeHtml(s.ko)}</div>`;
-      })()}
+      ${enHtml}
+      ${koHtml}
       ${note ? `<div class="slow-note">${escapeHtml(note)}</div>` : ''}
     </div>`;
   }).join('');

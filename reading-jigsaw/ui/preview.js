@@ -17,14 +17,23 @@ export function renderPaper(state, pieceIdx, mode = 'student') {
   const star = '★', empty = '☆';
   const stars = star.repeat(p.stars) + empty.repeat(3 - p.stars);
 
+  const lesson = state.meta.lesson?.trim();
+  const title = state.meta.title?.trim();
+  const textbook = state.meta.textbook?.trim();
+  const headerTitle = [lesson, title].filter(Boolean).join(' · ') || '';
+
   return `
 <article class="paper" data-mode="${mode}" data-piece="${pieceIdx}">
+  <div class="paper-id-row">
+    <span>학번: <span class="id-line"></span></span>
+    <span>이름: <span class="id-line"></span></span>
+  </div>
   <header class="paper-head">
     <div class="paper-letter">${p.label}</div>
     <div class="paper-title">
-      <b>${escapeHtml(state.meta.lesson || 'L?')} · ${escapeHtml(state.meta.title || '본문')}</b>
+      ${headerTitle ? `<b>${escapeHtml(headerTitle)}</b>` : ''}
       ${escapeHtml(p.heading || '')}
-      <div class="meta">${escapeHtml(state.meta.textbook || '본문 직소')} · ${stars}</div>
+      <div class="meta">${textbook ? escapeHtml(textbook) + ' · ' : ''}${stars}</div>
     </div>
   </header>
 

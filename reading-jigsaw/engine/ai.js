@@ -43,15 +43,31 @@ ${JSON.stringify(sentencesPayload)}
 2. vocab_meanings: 아래 JSON 템플릿의 빈 값("")을 한국어 뜻으로 채워서 반환하세요.
    모든 키를 그대로 유지하고 값만 채우세요. 단 하나도 빠뜨리지 마세요.
    템플릿: ${JSON.stringify(vocabTemplate)}
-3. sentence_ko: 본문(t=b) 문장 인덱스를 키로 한 한국어 번역 객체
-   (소제목 h 제외, 자연스러운 중학생 수준 번역, 예: {"1":"스마트 쇼퍼가 되어라!","2":"당신은 스마트 쇼퍼라고 생각합니까?"})
-4. pieces: split_at 순서대로 A~${String.fromCharCode(64 + numPieces)}:
+3. pieces: split_at 순서대로 A~${String.fromCharCode(64 + numPieces)}:
    - label: "A"/"B"/"C"/"D"
    - question: 조각에서 사실 1가지만 묻는 짧은 영어 질문 (10단어 이내, and/or로 두 가지 묻지 말 것)
    - answer: 10단어 이내 짧은 1문장 (핵심 사실만, 설명 금지)
 
 출력 형식 (JSON만):
-{"split_at":[0,5,12,20],"vocab_meanings":{"strategies":"전략들","shopper":"구매자"},"sentence_ko":{"1":"스마트 쇼퍼가 되어라!","2":"당신은 스마트 쇼퍼라고 생각합니까?"},"pieces":[{"label":"A","question":"What strategies are introduced?","answer":"Hunger and viral marketing strategies are introduced."}]}`;
+{"split_at":[0,5,12,20],"vocab_meanings":{"strategies":"전략들","shopper":"구매자"},"pieces":[{"label":"A","question":"What strategies are introduced?","answer":"Hunger and viral marketing are introduced."}]}`;
+
+  return callAPI(prompt);
+}
+
+// Phase 1.5 — 문장 번역 (Phase 1 완료 후 별도 호출)
+export async function translateSentences(state) {
+  const bodyMap = {};
+  state.sentences.forEach((s, i) => {
+    if (!s.isHeading && s.en && !s.ko) bodyMap[i] = s.en;
+  });
+  if (!Object.keys(bodyMap).length) return {};
+
+  const prompt = `아래 영어 문장들을 중학생 수준의 자연스러운 한국어로 번역하세요.
+JSON만 출력하세요 (키=인덱스, 값=한국어번역).
+
+${JSON.stringify(bodyMap)}
+
+출력 형식: {"1":"번역","2":"번역",...}`;
 
   return callAPI(prompt);
 }

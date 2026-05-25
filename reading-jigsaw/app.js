@@ -1,12 +1,12 @@
 // app.js — Jigsaw Studio 메인 컨트롤러
 
 import { parse } from './engine/parser.js?v=20250526a';
-import { enrichWithAI, extractGrammarCandidates } from './engine/ai.js?v=20250526j';
+import { enrichWithAI, extractGrammarCandidates, translateSentences } from './engine/ai.js?v=20250526k';
 import { autoSplit, insertBoundary, removeBoundary } from './engine/split.js?v=20250526a';
 import { extract, pickForPiece } from './engine/vocab.js?v=20250526a';
 import { detectAll } from './engine/grammar.js?v=20250526a';
 import { suggest as suggestBlanks } from './engine/blanks.js?v=20250526a';
-import { renderPaper } from './ui/preview.js?v=20250526h';
+import { renderPaper } from './ui/preview.js?v=20250526k';
 
 const STORAGE_KEY = 'jigsaw-studio:v1';
 const SAMPLE_URL = 'assets/samples/donga-l4.txt';
@@ -671,7 +671,8 @@ async function runAIEnrich(applySplit = false) {
     const result = await enrichWithAI(state);
     applyAIResult(result, applySplit);
     renderEdit(); renderPrev(); persist();
-    // Phase 2 자동 실행 (문법 후보 사전 추출)
+    // Phase 1.5 + Phase 2 병렬 실행
+    runTranslate();
     runGrammarExtract();
   } catch (e) {
     showAIError(e.message);
@@ -679,6 +680,19 @@ async function runAIEnrich(applySplit = false) {
     state.aiLoading = false;
     renderEdit();
   }
+}
+
+async function runTranslate() {
+  try {
+    const result = await translateSentences(state);
+    if (result && typeof result === 'object') {
+      for (const [idx, ko] of Object.entries(result)) {
+        const s = state.sentences[Number(idx)];
+        if (s && !s.ko && typeof ko === 'string') s.ko = ko;
+      }
+      renderPrev(); persist();
+    }
+  } catch (e) { /* 번역 실패는 조용히 무시 */ }
 }
 
 async function runGrammarExtract() {

@@ -1,12 +1,12 @@
 // app.js — Jigsaw Studio 메인 컨트롤러
 
-import { parse } from './engine/parser.js?v=20250525g';
-import { enrichWithAI } from './engine/ai.js?v=20250525g';
-import { autoSplit, insertBoundary, removeBoundary } from './engine/split.js?v=20250525g';
-import { extract, pickForPiece } from './engine/vocab.js?v=20250525g';
-import { detectAll } from './engine/grammar.js?v=20250525g';
-import { suggest as suggestBlanks } from './engine/blanks.js?v=20250525g';
-import { renderPaper } from './ui/preview.js?v=20250525g';
+import { parse } from './engine/parser.js?v=20250525h';
+import { enrichWithAI } from './engine/ai.js?v=20250525h';
+import { autoSplit, insertBoundary, removeBoundary } from './engine/split.js?v=20250525h';
+import { extract, pickForPiece } from './engine/vocab.js?v=20250525h';
+import { detectAll } from './engine/grammar.js?v=20250525h';
+import { suggest as suggestBlanks } from './engine/blanks.js?v=20250525h';
+import { renderPaper } from './ui/preview.js?v=20250525h';
 
 const STORAGE_KEY = 'jigsaw-studio:v1';
 const SAMPLE_URL = 'assets/samples/donga-l4.txt';

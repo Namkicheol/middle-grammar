@@ -1,4 +1,4 @@
-// engine/ai.js — /api/enrich 프록시를 통한 DeepSeek-V3 보완
+// engine/ai.js — /api/enrich 프록시를 통한 Gemini Flash 보완
 
 export async function enrichWithAI(state) {
   const { pieces, sentences, vocabByPiece } = state;
@@ -30,21 +30,16 @@ ${JSON.stringify(piecesPayload)}
   const res = await fetch('/api/enrich', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({
-      model: 'deepseek-chat',
-      max_tokens: 2048,
-      messages: [{ role: 'user', content: prompt }]
-    })
+    body: JSON.stringify({ prompt })
   });
 
   if (!res.ok) {
     const err = await res.json().catch(() => ({}));
-    throw new Error(err?.error?.message || `HTTP ${res.status}`);
+    throw new Error(err?.error || `HTTP ${res.status}`);
   }
 
-  const data = await res.json();
-  const text = data.choices?.[0]?.message?.content || '';
-  const jsonMatch = text.match(/\{[\s\S]*\}/);
+  const { text } = await res.json();
+  const jsonMatch = text?.match(/\{[\s\S]*\}/);
   if (!jsonMatch) throw new Error('AI 응답에서 JSON을 찾지 못했습니다.');
   return JSON.parse(jsonMatch[0]);
 }

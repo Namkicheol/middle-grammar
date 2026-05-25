@@ -1,12 +1,12 @@
 // app.js — Jigsaw Studio 메인 컨트롤러
 
-import { parse } from './engine/parser.js?v=20250525d';
-import { enrichWithAI } from './engine/ai.js?v=20250525d';
-import { autoSplit, insertBoundary, removeBoundary } from './engine/split.js?v=20250525d';
-import { extract, pickForPiece } from './engine/vocab.js?v=20250525d';
-import { detectAll } from './engine/grammar.js?v=20250525d';
-import { suggest as suggestBlanks } from './engine/blanks.js?v=20250525d';
-import { renderPaper } from './ui/preview.js?v=20250525d';
+import { parse } from './engine/parser.js?v=20250525e';
+import { enrichWithAI } from './engine/ai.js?v=20250525e';
+import { autoSplit, insertBoundary, removeBoundary } from './engine/split.js?v=20250525e';
+import { extract, pickForPiece } from './engine/vocab.js?v=20250525e';
+import { detectAll } from './engine/grammar.js?v=20250525e';
+import { suggest as suggestBlanks } from './engine/blanks.js?v=20250525e';
+import { renderPaper } from './ui/preview.js?v=20250525e';
 
 const STORAGE_KEY = 'jigsaw-studio:v1';
 const SAMPLE_URL = 'assets/samples/donga-l4.txt';
@@ -686,10 +686,16 @@ function getSelectedPieceIdxs() {
   return checks.filter(c => c.checked).map(c => +c.dataset.idx);
 }
 
-async function exportHTML(mode) {
+function exportHTML(mode) {
   const idxs = getSelectedPieceIdxs();
   const html = buildStandaloneHTML(mode, idxs);
-  await download(`${safeName()}-${mode === 'student' ? 'Ss' : 'T'}.html`, html);
+  const name = `${safeName()}-${mode === 'student' ? 'Ss' : 'T'}.html`;
+  const blob = new Blob([html], { type: 'text/html;charset=utf-8' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url; a.download = name;
+  document.body.appendChild(a); a.click();
+  setTimeout(() => { a.remove(); URL.revokeObjectURL(url); }, 2000);
 }
 
 function printSelected(mode = 'student') {
@@ -727,23 +733,8 @@ function safeName() {
     .toLowerCase() || 'jigsaw';
 }
 
-async function download(name, content) {
-  const blob = new Blob([content], { type: 'text/html;charset=utf-8' });
-  if (window.showSaveFilePicker) {
-    try {
-      const fh = await window.showSaveFilePicker({
-        suggestedName: name,
-        types: [{ description: 'HTML 파일', accept: { 'text/html': ['.html'] } }]
-      });
-      const w = await fh.createWritable();
-      await w.write(blob);
-      await w.close();
-      return;
-    } catch (e) {
-      if (e.name === 'AbortError') return; // 사용자가 취소
-    }
-  }
-  // fallback: blob URL
+function download(name, content) {
+  const blob = new Blob([content], { type: 'text/plain;charset=utf-8' });
   const url = URL.createObjectURL(blob);
   const a = document.createElement('a');
   a.href = url; a.download = name;

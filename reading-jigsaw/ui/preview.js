@@ -1,7 +1,7 @@
 // ui/preview.js — 종이 학습지(조각 1장) 렌더러
 
-import { applyBlanks, applyBlanksTeacher } from '../engine/blanks.js?v=20250525d';
-import { toConsonants } from '../engine/hangul.js?v=20250525d';
+import { applyBlanks, applyBlanksTeacher } from '../engine/blanks.js?v=20250525e';
+import { toConsonants } from '../engine/hangul.js?v=20250525e';
 
 // state.pieces[idx]를 학습지 HTML로
 export function renderPaper(state, pieceIdx, mode = 'student') {

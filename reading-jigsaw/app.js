@@ -3,7 +3,7 @@
 import { parse } from './engine/parser.js?v=20250526a';
 import { enrichWithAI, extractGrammarCandidates, translateSentences } from './engine/ai.js?v=20250526l';
 import { autoSplit, insertBoundary, removeBoundary } from './engine/split.js?v=20250526a';
-import { extract, pickForPiece } from './engine/vocab.js?v=20250526a';
+import { extract, pickForPiece } from './engine/vocab.js?v=20250526l';
 import { detectAll } from './engine/grammar.js?v=20250526a';
 import { suggest as suggestBlanks } from './engine/blanks.js?v=20250526a';
 import { renderPaper } from './ui/preview.js?v=20250526l';
@@ -453,8 +453,12 @@ function pipeline() {
   state.pieces = autoSplit(state.sentences);
   state.vocab = extract(state.sentences);
   state.vocabByPiece = {};
+  const usedVocab = new Set();
   for (let i = 0; i < state.pieces.length; i++) {
-    state.vocabByPiece[i] = pickForPiece(state.vocab, state.pieces[i], state.sentences, 8);
+    const raw = pickForPiece(state.vocab, state.pieces[i], state.sentences, 10);
+    const deduped = raw.filter(c => !usedVocab.has(c.lc)).slice(0, 8);
+    deduped.forEach(c => usedVocab.add(c.lc));
+    state.vocabByPiece[i] = deduped;
   }
   state.grammarMap = detectAll(state.sentences);
   state.blanks = new Map();
@@ -838,8 +842,12 @@ function showAIError(msg) {
 
 function rebuildVocab() {
   state.vocabByPiece = {};
+  const usedVocab = new Set();
   for (let i = 0; i < state.pieces.length; i++) {
-    state.vocabByPiece[i] = pickForPiece(state.vocab, state.pieces[i], state.sentences, 8);
+    const raw = pickForPiece(state.vocab, state.pieces[i], state.sentences, 10);
+    const deduped = raw.filter(c => !usedVocab.has(c.lc)).slice(0, 8);
+    deduped.forEach(c => usedVocab.add(c.lc));
+    state.vocabByPiece[i] = deduped;
   }
 }
 

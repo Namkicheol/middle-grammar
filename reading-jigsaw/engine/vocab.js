@@ -39,10 +39,11 @@ export function extract(sentences, opts = {}) {
       if (lc.length < 3) continue;
       // 인명 추정 (대문자 + 본문에서 1~2회만 등장) → 일단 포함 후 후처리
       if (!wordMap.has(lc)) {
-        wordMap.set(lc, { word: t, count: 1, firstSid: s.id });
+        wordMap.set(lc, { word: t, count: 1, firstSid: s.id, sids: new Set([s.id]) });
       } else {
         const v = wordMap.get(lc);
         v.count++;
+        v.sids.add(s.id);
       }
     }
   }
@@ -56,7 +57,8 @@ export function extract(sentences, opts = {}) {
       word: v.word.replace(/^[^a-zA-Z]+|[^a-zA-Z]+$/g, ''),
       lc,
       count: v.count,
-      firstSid: v.firstSid
+      firstSid: v.firstSid,
+      sids: v.sids
     });
   }
   // 빈도 낮은(=새 단어 가능성 큰) 것 우선
@@ -64,11 +66,13 @@ export function extract(sentences, opts = {}) {
   return candidates;
 }
 
-// 조각 범위에 해당하는 어휘만 필터
+// 조각 범위에 해당하는 어휘만 필터 (범위 내 어디든 등장하면 포함)
 export function pickForPiece(allCandidates, piece, sentences, max = 10) {
   const [a, b] = piece.range;
   const ids = new Set(sentences.slice(a, b).map(s => s.id));
-  const inRange = allCandidates.filter(c => ids.has(c.firstSid));
+  const inRange = allCandidates.filter(c =>
+    c.sids ? [...c.sids].some(id => ids.has(id)) : ids.has(c.firstSid)
+  );
   return inRange.slice(0, max);
 }
 

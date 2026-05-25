@@ -690,7 +690,7 @@ function exportHTML(mode) {
   const idxs = getSelectedPieceIdxs();
   const html = buildStandaloneHTML(mode, idxs);
   const name = `${safeName()}-${mode === 'student' ? 'Ss' : 'T'}.html`;
-  const blob = new Blob([html], { type: 'text/html;charset=utf-8' });
+  const blob = new Blob([html], { type: 'application/octet-stream' });
   const url = URL.createObjectURL(blob);
   const a = document.createElement('a');
   a.href = url; a.download = name;

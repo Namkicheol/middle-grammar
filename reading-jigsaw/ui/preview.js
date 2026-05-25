@@ -89,11 +89,18 @@ function renderSlow(bodies, state, isStudent) {
         if (!isStudent) {
           return s.ko ? `<div class="slow-ko">${escapeHtml(s.ko)}</div>` : '';
         }
-        const koMode = state.showKoStudent; // full | cloze | off (or legacy true/false)
-        if (koMode === 'off' || koMode === false) return '<div class="slow-ko ko-blank">__________________________</div>';
-        if (koMode === 'cloze' && s.koCloze) return `<div class="slow-ko slow-ko-cloze">${escapeHtml(s.koCloze)}</div>`;
-        if (s.ko && (koMode === 'full' || koMode === true || koMode === 'cloze')) return `<div class="slow-ko">${escapeHtml(s.ko)}</div>`;
-        return '<div class="slow-ko ko-blank">__________________________</div>';
+        const koMode = state.showKoStudent; // full | cloze | off
+        if (koMode === 'off' || koMode === false) return '<div class="slow-ko">__________________________</div>';
+        if (!s.ko) return '<div class="slow-ko">__________________________</div>';
+        if (koMode === 'cloze') {
+          const blanked = state.koBlanks?.get(s.id);
+          if (blanked?.size) {
+            const cloze = s.ko.split(' ').map((tok, i) => blanked.has(i) ? '<span class="ko-gap">(    )</span>' : escapeHtml(tok)).join(' ');
+            return `<div class="slow-ko slow-ko-cloze">${cloze}</div>`;
+          }
+          return `<div class="slow-ko">${escapeHtml(s.ko)}</div>`;
+        }
+        return `<div class="slow-ko">${escapeHtml(s.ko)}</div>`;
       })()}
       ${note ? `<div class="slow-note">${escapeHtml(note)}</div>` : ''}
     </div>`;

@@ -39,11 +39,11 @@ export function extract(sentences, opts = {}) {
       if (lc.length < 3) continue;
       // 인명 추정 (대문자 + 본문에서 1~2회만 등장) → 일단 포함 후 후처리
       if (!wordMap.has(lc)) {
-        wordMap.set(lc, { word: t, count: 1, firstSid: s.id, sids: new Set([s.id]) });
+        wordMap.set(lc, { word: t, count: 1, firstSid: s.id, sids: [s.id] });
       } else {
         const v = wordMap.get(lc);
         v.count++;
-        v.sids.add(s.id);
+        if (!v.sids.includes(s.id)) v.sids.push(s.id);
       }
     }
   }
@@ -70,9 +70,10 @@ export function extract(sentences, opts = {}) {
 export function pickForPiece(allCandidates, piece, sentences, max = 10) {
   const [a, b] = piece.range;
   const ids = new Set(sentences.slice(a, b).map(s => s.id));
-  const inRange = allCandidates.filter(c =>
-    c.sids ? [...c.sids].some(id => ids.has(id)) : ids.has(c.firstSid)
-  );
+  const inRange = allCandidates.filter(c => {
+    const sids = Array.isArray(c.sids) ? c.sids : null;
+    return sids ? sids.some(id => ids.has(id)) : ids.has(c.firstSid);
+  });
   return inRange.slice(0, max);
 }
 

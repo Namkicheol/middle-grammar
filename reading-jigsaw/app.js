@@ -1,12 +1,12 @@
 // app.js — Jigsaw Studio 메인 컨트롤러
 
 import { parse } from './engine/parser.js?v=20250526a';
-import { enrichWithAI, extractGrammarCandidates, translateSentences } from './engine/ai.js?v=20250526p';
+import { enrichWithAI, extractGrammarCandidates, translateSentences } from './engine/ai.js?v=20250526q';
 import { autoSplit, insertBoundary, removeBoundary } from './engine/split.js?v=20250526a';
-import { extract, pickForPiece } from './engine/vocab.js?v=20250526p';
+import { extract, pickForPiece } from './engine/vocab.js?v=20250526q';
 import { detectAll } from './engine/grammar.js?v=20250526a';
 import { suggest as suggestBlanks } from './engine/blanks.js?v=20250526a';
-import { renderPaper } from './ui/preview.js?v=20250526p';
+import { renderPaper } from './ui/preview.js?v=20250526q';
 
 const STORAGE_KEY = 'jigsaw-studio:v1';
 const SAMPLE_URL = 'assets/samples/donga-l4.txt';
@@ -27,6 +27,7 @@ const state = {
   vocabByPiece: {},       // pieceIdx → [{ word, meaning, count }]
   grammarMap: new Map(),  // sid → hits[]
   blanks: new Map(),      // sid → [{text,start,end}]
+  koBlanks: new Map(),    // sid → Set<tokenIdx>
   selectedPiece: 0,
   loadedSample: false,
   apiKey: localStorage.getItem('jigsaw-api-key') || '',
@@ -315,9 +316,9 @@ function renderBlanksPiece(p, idx) {
       ${rangeSentences.map(s => `
         <div class="sent" data-sid="${s.id}">
           <div class="sent-num">${s.id + 1}</div>
-          <div>
+          <div style="flex:1">
             <div class="sent-en" data-en="${escapeAttr(s.en)}">${renderInlineMarkup(s)}</div>
-            ${s.ko ? `<div class="sent-ko">${escapeHtml(s.ko)}</div>` : ''}
+            ${s.ko ? `<div class="sent-ko-tokens">${renderKoTokens(s)}</div>` : ''}
           </div>
         </div>
       `).join('')}
@@ -356,6 +357,13 @@ function renderInlineMarkup(s) {
   }
   out += escapeHtml(s.en.slice(cursor));
   return out;
+}
+
+function renderKoTokens(s) {
+  const blanked = state.koBlanks.get(s.id) || new Set();
+  return s.ko.split(' ').map((tok, i) =>
+    `<span class="ko-token${blanked.has(i) ? ' ko-blk' : ''}" data-sid="${s.id}" data-ki="${i}">${escapeHtml(tok)}</span>`
+  ).join(' ');
 }
 
 // ─── Step 5: Preview ───
@@ -551,10 +559,26 @@ document.addEventListener('click', e => {
   }
 });
 
-// 텍스트 클릭으로 빈칸 추가 (간단 버전: 단어 더블클릭)
+// 더블클릭: 영어 빈칸 추가 / 한국어 토큰 빈칸 토글
 document.addEventListener('dblclick', e => {
+  if (state.step !== 3) return;
+
+  // 한국어 토큰 더블클릭
+  const koTok = e.target.closest('.ko-token');
+  if (koTok) {
+    e.preventDefault();
+    const sid = +koTok.dataset.sid;
+    const ki = +koTok.dataset.ki;
+    if (!state.koBlanks.has(sid)) state.koBlanks.set(sid, new Set());
+    const s = state.koBlanks.get(sid);
+    if (s.has(ki)) s.delete(ki); else s.add(ki);
+    renderEdit(); renderPrev(); persist();
+    return;
+  }
+
+  // 영어 단어 선택 더블클릭
   const sent = e.target.closest('.sent[data-sid]');
-  if (!sent || state.step !== 3) return;
+  if (!sent) return;
   const enEl = sent.querySelector('.sent-en');
   if (!enEl) return;
   const sel = window.getSelection();
@@ -565,7 +589,6 @@ document.addEventListener('dblclick', e => {
   const idx = s.en.indexOf(word);
   if (idx < 0) return;
   const blanks = state.blanks.get(sid) || [];
-  // 중복 방지
   if (!blanks.some(b => b.text === word)) {
     blanks.push({ text: word, start: idx, end: idx + word.length });
     blanks.sort((a, b) => a.start - b.start);
@@ -1016,6 +1039,7 @@ body{margin:0;background:var(--paper);font-family:'Noto Serif KR','Fraunces',ser
 .slow-en u{text-decoration:underline;text-decoration-thickness:2px;text-decoration-color:var(--pen);text-underline-offset:3px;}
 .slow-ko{font-size:.84rem;color:var(--ink-3);font-style:italic;margin-top:4px;}
 .slow-ko-cloze{color:var(--ink-2);font-style:normal;font-weight:500;}
+.ko-gap{display:inline-block;min-width:60px;border-bottom:1.5px solid #5d544a;text-align:center;color:transparent;font-size:.7em;}
 .slow-note{margin-top:6px;font-family:'JetBrains Mono';font-size:.66rem;color:#0f1d6b;padding-left:14px;border-left:2px solid var(--pen);}
 .q-card{background:rgba(255,255,255,.45);border:1px solid var(--ink-mute);border-radius:4px;padding:12px 14px;font-size:.88rem;}
 .q-card .qm{font-weight:700;margin-right:6px;}
@@ -1044,6 +1068,7 @@ function persist() {
       vocabByPiece: state.vocabByPiece,
       grammarMap: [...state.grammarMap.entries()],
       blanks: [...state.blanks.entries()],
+      koBlanks: [...state.koBlanks.entries()].map(([sid, set]) => [sid, [...set]]),
       selectedPiece: state.selectedPiece,
       grammarTarget: state.grammarTarget
     };
@@ -1059,6 +1084,7 @@ function restore() {
     Object.assign(state, s);
     state.grammarMap = new Map(s.grammarMap || []);
     state.blanks = new Map(s.blanks || []);
+    state.koBlanks = new Map((s.koBlanks || []).map(([sid, arr]) => [sid, new Set(arr)]));
     // 구버전 잔존 필드 정리
     if (state.meta) { delete state.meta.textbook; }
     if (typeof state.showKoStudent === 'boolean') state.showKoStudent = state.showKoStudent ? 'full' : 'off';

@@ -849,8 +849,17 @@ function bossAnim(type) {
   if (_bossTl) { _bossTl.kill(); _bossTl = null; }
   const b = BOSS_ASSETS[GS.bossPhase];
   if (type === 'windup') {
-    bossFighter.play('run');
-    _bossTl = gsap.to(bossWrap, { right: '17%', duration: .6, ease: 'power2.inOut' });
+    // 둘 다 중앙으로 돌격 — clash
+    if (_heroTl) { _heroTl.kill(); _heroTl = null; }
+    bossFighter.play('run'); heroFighter.play('run');
+    _bossTl = gsap.to(bossWrap, { right: '13%', duration: .5, ease: 'power2.out' });
+    _heroTl = gsap.to(heroWrap, { left: '13%', duration: .5, ease: 'power2.out', onComplete() { _heroTl = null; } });
+  } else if (type === 'attack') {
+    // 보스 반격 잽 (오답 시 영웅에게 달려들어 타격)
+    bossFighter.play('atk');
+    _bossTl = gsap.timeline()
+      .to(bossWrap, { right: '30%', duration: .24, ease: 'power3.out' })
+      .to(bossWrap, { right: '8%', duration: .5, ease: 'power2.in', onComplete() { _bossTl = null; bossFighter.play('idle'); } });
   } else if (type === 'hit') {
     bossFighter.play('hurt'); bossFighter.flash();
     _bossTl = gsap.timeline()
@@ -858,9 +867,13 @@ function bossAnim(type) {
       .fromTo(bossWrap, { x: 0 }, { x: 26, duration: .09, yoyo: true, repeat: 5, ease: 'power1.inOut' })
       .call(() => { _bossTl = null; bossImg.style.filter = `${b.tint || ''} drop-shadow(0 10px 28px ${b.glow})`; });
   } else {
-    bossFighter.play('idle');
+    // 후퇴 — 둘 다 제자리로
+    if (_heroTl) { _heroTl.kill(); _heroTl = null; }
+    bossFighter.play('idle'); heroFighter.play('idle');
     _bossTl = gsap.to(bossWrap, { right: '8%', duration: .42, ease: 'power2.out',
       onComplete() { _bossTl = null; } });
+    _heroTl = gsap.to(heroWrap, { left: '8%', duration: .42, ease: 'power2.out',
+      onComplete() { _heroTl = null; } });
   }
 }
 
@@ -1081,7 +1094,7 @@ function finishQuestion(isCorrect) {
     if (GS.hasShield) { dmg = 0; GS.hasShield = false; showFloating('🛡️ 보호막!', '#60a5fa'); }
     GS.heroHP = Math.max(0, GS.heroHP - dmg);
     GS.combo = 1;
-    heroAnim('hurt');
+    bossAnim('attack'); heroAnim('hurt');
     showDmgFloat('-' + dmg, '#f97316', 'left');
     cameraShake(12, .65);
     spawnBurst(CW*.22, CH*.42, ['#ef4444','#f97316','#dc2626','#fff'], 16, 1.1);

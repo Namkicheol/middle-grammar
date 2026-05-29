@@ -866,35 +866,50 @@ function addSkillGauge(v) {
   btn.className = 'skill-btn2' + (ready ? ' ready' : '');
 }
 
+// 필살기 4종 — 사용할 때마다 순환, 연출·데미지·색 다름
+let _ultIdx = 0;
+const ULTIMATES = [
+  { name:'⚡ 슈팅스타', color:'#38bdf8', base:13, shake:16, flash:.65, fx:'beam' },
+  { name:'📚 문장폭풍', color:'#a855f7', base:16, shake:20, flash:.6,  fx:'storm' },
+  { name:'⚔️ 문법심판', color:'#fde68a', base:24, shake:30, flash:.96, fx:'judge' },
+  { name:'☄️ 유성낙하', color:'#f97316', base:18, shake:24, flash:.7,  fx:'meteor' },
+];
 function castSkill() {
   if (!GS || skillGauge < SKILL_MAX || GS.phase === 10) return;
   skillGauge = 0;
   addSkillGauge(0);
+  const ult = ULTIMATES[_ultIdx % ULTIMATES.length]; _ultIdx++;
   heroFighter.play('special');
-
-  // GSAP timeline: dash across screen, flash, return
+  showFloating('필살기 ' + ult.name + '!', ult.color);
+  playSfx('cast');
   const ultFlash = document.getElementById('ult-flash');
+  const pc = [ult.color, '#fff', '#facc15', '#fb7185'];
   gsap.timeline()
-    .to(heroWrap, { left: '30%', duration: .38, ease: 'power4.out' })
-    .to(ultFlash,  { opacity: .85, duration: .18 })
+    .to(heroWrap, { left: '30%', duration: .34, ease: 'power4.out' })
+    .to(ultFlash,  { opacity: ult.flash, duration: .16 })
     .call(() => {
-      const dmg = Math.round((10 + GS.bossPhase * 5) * (GS.combo * .05 + .95));
+      const dmg = Math.round((ult.base + GS.bossPhase * 4) * (GS.combo * .05 + .95));
       GS.bossHP = Math.max(0, GS.bossHP - dmg);
       GS.score += dmg * 3;
       bossAnim('hit');
-      showDmgFloat('💥 -' + dmg, '#facc15', 'right');
-      showFloating('⚡ 필살기!', '#facc15');
-      cameraShake(18 + GS.bossPhase * 5, .9);
-      const pc = ['#facc15','#fb7185','#8b5cf6','#fff','#f97316','#38bdf8'];
-      spawnBurst(CW*.75, CH*.38, pc, 36+GS.bossPhase*8, 2.0+GS.bossPhase*.4);
-      spawnBurst(CW*.5,  CH*.42, pc, 22, 1.5);
-      spawnBurst(CW*.55, CH*.55, ['#facc15','#fff'], 14, 1.2);
-      playSfx('cast'); playSfx('correct');
+      showDmgFloat('💥 -' + dmg, ult.color, 'right');
+      cameraShake(ult.shake + GS.bossPhase * 4, .85);
+      playSfx('correct');
+      // 연출별 파티클 (비주얼 전용, 게임상태 변화 없음)
+      if (ult.fx === 'beam') {
+        [.5,.62,.74].forEach((x,i) => setTimeout(() => spawnBurst(CW*x, CH*.4, [ult.color,'#fff'], 12, 1.5), i*60));
+      } else if (ult.fx === 'storm') {
+        for (let i=0;i<4;i++) setTimeout(() => { spawnBurst(CW*(.6+Math.sin(i)*.12), CH*(.35+i*.05), pc, 14, 1.4); playSfx('slash'); cameraShake(8,.3); }, i*110);
+      } else if (ult.fx === 'judge') {
+        spawnBurst(CW*.75, CH*.4, pc, 48, 2.6); spawnBurst(CW*.5, CH*.42, ['#fde68a','#fff'], 24, 2.0);
+      } else { // meteor
+        for (let i=0;i<6;i++) setTimeout(() => { spawnBurst(CW*(.45+i*.07), CH*.18, ['#f97316','#fde68a','#fff'], 10, 1.5); playSfx('impact'); }, i*90);
+      }
       checkBossPhase();
       updateHUD();
     })
-    .to(ultFlash,  { opacity: 0, duration: .6 })
-    .to(heroWrap,  { left: '8%', duration: .55, ease: 'back.out(1.5)', onComplete() { heroFighter.play('idle'); } });
+    .to(ultFlash,  { opacity: 0, duration: .55 })
+    .to(heroWrap,  { left: '8%', duration: .5, ease: 'back.out(1.5)', onComplete() { heroFighter.play('idle'); } });
 }
 
 // ═══════════════════════════════════════════════════════════
@@ -1129,7 +1144,7 @@ function applyStatusFx(key) {
   const fx = STATUS_FX[key];
   GS.statusFx[key] = { ...fx, expires: performance.now() + fx.dur };
   updateStatusRow();
-  showFloating(fx.icon + ' ' + fx.label + '!', fx.color);
+  showFloating(fx.icon + ' ' + fx.label + '! ' + fx.desc, fx.color);
 }
 
 function updateStatusRow() {
@@ -1138,7 +1153,7 @@ function updateStatusRow() {
   const telShowing = document.getElementById('tel').style.display !== 'none';
   row.style.top = (hudH + (telShowing ? 86 : 6)) + 'px';
   row.innerHTML = Object.entries(GS.statusFx).map(([k,fx]) =>
-    `<div class="sfx-badge" style="border-color:${fx.color};color:${fx.color}">${fx.icon}${fx.label}</div>`
+    `<div class="sfx-badge" style="border-color:${fx.color};color:${fx.color}">${fx.icon}${fx.label} · ${fx.desc}</div>`
   ).join('');
 }
 

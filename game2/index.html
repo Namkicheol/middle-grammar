@@ -841,6 +841,24 @@ function bossFilterStr(b) {
   return `${b.tint || ''}${stageRed} drop-shadow(0 10px 28px ${glow})`;
 }
 
+// 영웅 승급 티어 (스테이지2+) — 용사 → 대용사 → 전설의 용사
+function heroTier(st) { return st >= 7 ? 2 : st >= 4 ? 1 : 0; }
+function heroStageName(st) {
+  return ['🏆 문법 용사', '⚜️ 문법 대용사', '🌟 전설의 문법 용사'][heroTier(st)];
+}
+// 영웅 필터(오라) — 스테이지 올라갈수록 황금→전설 빛 강화
+function heroFilterStr(h) {
+  const st = GS ? GS.stage : 1;
+  if (st < 2) return `${h.tint || ''} drop-shadow(0 8px 22px ${h.glow})`;
+  const tier = heroTier(st);
+  const auraGlow = ['rgba(250,204,21,.72)', 'rgba(255,214,128,.85)', 'rgba(125,211,252,.95)'][tier];
+  const extra = tier === 2 ? ' drop-shadow(0 0 18px rgba(255,255,255,.7))'
+              : tier === 1 ? ' drop-shadow(0 0 11px rgba(250,204,21,.6))' : '';
+  const sat   = (1.2 + 0.05 * (st - 2)).toFixed(2);
+  const bright = Math.min(1.35, 1 + 0.04 * (st - 2)).toFixed(2);
+  return `saturate(${sat}) brightness(${bright}) drop-shadow(0 8px 22px ${auraGlow})${extra}`;
+}
+
 function setCharSprites(phase) {
   const h = HERO_ASSETS[phase], b = BOSS_ASSETS[phase];
   // 진행 중인 타임라인 전체 킬 (killTweensOf는 .call() 콜백 킬 안 함)
@@ -856,14 +874,14 @@ function setCharSprites(phase) {
   if (bk !== _bossKey) { bossFighter = makeFighter(bossImg, bk); _bossKey = bk; } else bossFighter.play('idle');
   // 스테이지 올라갈수록 보스 더 크게 (보스다움 ↑, 최대 +40%)
   const bossStageScale = Math.min(1.4, 1 + 0.14 * (st - 1));
-  const heroStageScale = 1 + 0.05 * (st - 1);
+  const heroStageScale = Math.min(1.22, 1 + 0.045 * (st - 1));
   heroImg.style.transform = `translateY(${heroFighter.def.foot || 0}px) scale(${((h.scale || 1) * heroStageScale).toFixed(3)})`;
-  heroImg.style.filter = `${h.tint || ''} drop-shadow(0 8px 22px ${h.glow})`;
+  heroImg.style.filter = heroFilterStr(h);
   bossImg.style.transform = `scaleX(-1) translateY(${bossFighter.def.foot || 0}px) scale(${((b.scale || 1) * bossStageScale).toFixed(3)})`;
   bossImg.style.filter = bossFilterStr(b);
   gsap.set(heroWrap, { left: '8%', clearProps: 'x,right' });
   gsap.set(bossWrap, { right: '8%', clearProps: 'x,left' });
-  document.getElementById('hero-name').textContent = (st >= 2) ? '🏆 문법 용사' : h.name;
+  document.getElementById('hero-name').textContent = (st >= 2) ? heroStageName(st) : h.name;
   if (st >= 2) {
     const cyc = Math.floor((st - 2) / BOSS_STAGE_ROSTER.length);
     document.getElementById('boss-name').textContent = (BOSS_STAGE_NAME[bk] || '👹 보스') + (cyc > 0 ? ' ' + '⚡'.repeat(Math.min(3, cyc)) : '');

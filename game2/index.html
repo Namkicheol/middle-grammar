@@ -202,6 +202,21 @@ canvas#c{position:absolute;inset:0;width:100%;height:100%;}
 .wl-ans{color:#86efac;font-size:.72rem;margin-top:2px;}
 .wl-wrong{color:#fca5a5;font-size:.72rem;}
 
+/* ── 강화 카드 선택 ── */
+#card-pick{position:fixed;inset:0;z-index:95;display:none;align-items:center;justify-content:center;background:rgba(4,2,12,.93);backdrop-filter:blur(6px);}
+#card-pick.show{display:flex;}
+.card-pick-inner{text-align:center;width:94%;max-width:560px;animation:resultPop .5s cubic-bezier(.34,1.56,.64,1);}
+.card-pick-title{font-size:1.8rem;font-weight:900;color:#fde68a;text-shadow:0 0 18px rgba(251,191,36,.6);margin-bottom:4px;}
+.card-pick-sub{font-size:.9rem;color:#cbd5e1;margin-bottom:22px;}
+.card-slots{display:flex;gap:14px;justify-content:center;flex-wrap:wrap;}
+.up-card{width:150px;min-height:184px;background:linear-gradient(180deg,rgba(30,20,55,.96),rgba(12,8,24,.98));border:2px solid var(--cc,#fff);border-radius:18px;padding:20px 14px;cursor:pointer;font-family:inherit;color:#fff;display:flex;flex-direction:column;align-items:center;gap:9px;transition:transform .14s,box-shadow .14s;box-shadow:0 6px 22px rgba(0,0,0,.5);}
+.up-card:hover,.up-card:active{transform:translateY(-6px) scale(1.04);box-shadow:0 0 34px var(--cc);}
+.up-icon{font-size:3rem;filter:drop-shadow(0 0 12px var(--cc));line-height:1;}
+.up-title{font-size:1.05rem;font-weight:900;color:var(--cc);}
+.up-desc{font-size:.78rem;color:#cbd5e1;line-height:1.45;}
+.card-owned{margin-top:20px;font-size:.8rem;font-weight:800;color:#a5b4fc;}
+@media(max-width:520px){.up-card{width:31%;min-width:98px;min-height:152px;padding:14px 8px;gap:6px;}.up-icon{font-size:2.2rem;}.up-title{font-size:.84rem;}.up-desc{font-size:.66rem;}.card-pick-title{font-size:1.4rem;}}
+
 /* ── VICTORY CUTSCENE ── */
 #victory-cut{position:fixed;inset:0;z-index:85;display:none;align-items:center;justify-content:center;background:rgba(0,0,0,.93);}
 #victory-cut.show{display:flex;}
@@ -307,6 +322,16 @@ canvas#c{position:absolute;inset:0;width:100%;height:100%;}
   <div id="ng-flash"></div>
   <!-- Ultimate flash -->
   <div id="ult-flash"></div>
+
+  <!-- 스테이지 보상 카드 선택 -->
+  <div id="card-pick">
+    <div class="card-pick-inner">
+      <div class="card-pick-title">⭐ 강화 카드 선택</div>
+      <div class="card-pick-sub">하나를 골라 영웅을 강화하세요</div>
+      <div id="card-slots" class="card-slots"></div>
+      <div id="card-owned" class="card-owned"></div>
+    </div>
+  </div>
 
   <!-- Victory cutscene -->
   <div id="victory-cut">
@@ -547,8 +572,18 @@ function initGS(qs) {
     statusFx: {}, hasShield: false, hasPower: false,
     questions: shuffle([...qs]), qIdx: 0,
     currentQ: null, attackType: null, drops: [], dropId: 0,
+    upgrades: { atk:0, def:0, skill:0, time:0, score:0, startGauge:0 },
   };
 }
+// 스테이지 클리어 보상 카드 (랜덤 3장 중 1개 선택, 영구 누적)
+const UPGRADE_CARDS = [
+  { icon:'⚔️', title:'공격력 +12%',  desc:'보스에게 주는 피해 증가',   stat:'atk',        val:0.12, color:'#ef4444' },
+  { icon:'🛡️', title:'방어력 +12%',  desc:'받는 피해 감소',           stat:'def',        val:0.12, color:'#38bdf8' },
+  { icon:'⚡', title:'필살기 +30%',  desc:'필살기 게이지 충전 속도 ↑', stat:'skill',      val:0.30, color:'#a855f7' },
+  { icon:'⏱️', title:'시간 +12%',    desc:'문제 제한시간 증가',        stat:'time',       val:0.12, color:'#fbbf24' },
+  { icon:'🍀', title:'점수 +20%',    desc:'획득 점수 증가',           stat:'score',      val:0.20, color:'#22c55e' },
+  { icon:'🔋', title:'시작 게이지 +30%', desc:'스테이지 시작 시 필살기 충전', stat:'startGauge', val:30, color:'#22d3ee' },
+];
 // 스테이지별 난이도 배율 (stage 1=기본, 이후 점점 빡세짐)
 function stageTimeMul()  { return Math.pow(0.9,  (GS ? GS.stage : 1) - 1); }  // 제한시간 감소
 function stageDmgMul()   { return 1 + 0.25 * ((GS ? GS.stage : 1) - 1); }      // 피격 데미지 증가
@@ -578,16 +613,22 @@ const G = {
     if (this._qs) this.start(this._qs, this._label);
   },
   nextStage() {
-    // 누적 점수/스테이지 유지, 보스 새로, 영웅 일부 회복
+    // 다음 스테이지 전 보상 카드 선택
+    showCardPick();
+  },
+  _advanceStage() {
+    // 누적 점수/스테이지/강화 유지, 보스 새로, 영웅 풀피
     document.getElementById('result').classList.remove('show');
     document.getElementById('victory-cut').classList.remove('show');
-    const stage = GS.stage + 1, score = GS.score, maxCombo = GS.maxCombo;
+    document.getElementById('card-pick').classList.remove('show');
+    const stage = GS.stage + 1, score = GS.score, maxCombo = GS.maxCombo, upgrades = GS.upgrades;
     GS = initGS(this._qs);
-    GS.stage = stage; GS.score = score; GS.maxCombo = maxCombo;
+    GS.stage = stage; GS.score = score; GS.maxCombo = maxCombo; GS.upgrades = upgrades;
     GS.heroHP = 100;            // 새 스테이지마다 풀피로 시작
     wrongLog = [];
     setCharSprites(0);
     BGM.start(0);
+    skillGauge = Math.min(SKILL_MAX, GS.upgrades.startGauge || 0); addSkillGauge(0);  // 시작 게이지 강화
     updateHUD();
     if (rafId) cancelAnimationFrame(rafId);
     rafId = requestAnimationFrame(loop);
@@ -597,6 +638,12 @@ const G = {
     showFloating(`STAGE ${stage} 시작!`, '#fde68a');
     cameraShake(10, .5);
     setTimeout(() => { scheduleBossAttack(); scheduleDropSpawn(); }, 900);
+  },
+  pickCard(idx) {
+    const card = _cardChoices[idx]; if (!card) return;
+    GS.upgrades[card.stat] = (GS.upgrades[card.stat] || 0) + card.val;
+    showFloating(card.icon + ' ' + card.title + ' 획득!', card.color);
+    this._advanceStage();
   },
   goHome() {
     document.getElementById('result').classList.remove('show');
@@ -879,6 +926,7 @@ let skillGauge = 0;
 
 function addSkillGauge(v) {
   if (!GS || GS.phase === 10) return;
+  if (v > 0) v = v * (1 + (GS.upgrades.skill || 0));   // 필살기 충전 강화
   skillGauge = Math.min(SKILL_MAX, skillGauge + v);
   const pct = (skillGauge / SKILL_MAX) * 100;
   document.getElementById('skill-fill-bar').style.width = pct + '%';
@@ -913,7 +961,7 @@ function castSkill() {
     .call(() => {
       const dmg = Math.round((ult.base + GS.bossPhase * 4) * (GS.combo * .05 + .95));
       GS.bossHP = Math.max(0, GS.bossHP - dmg);
-      GS.score += dmg * 3;
+      GS.score += Math.round(dmg * 3 * (1 + (GS.upgrades.score || 0)));
       bossAnim('hit');
       showDmgFloat('💥 -' + dmg, ult.color, 'right');
       cameraShake(ult.shake + GS.bossPhase * 4, .85);
@@ -996,7 +1044,7 @@ function showQuestion() {
   const q = GS.questions[GS.qIdx++];
   GS.currentQ = q;
 
-  let timeLimit = GS.attackType.time * (PHASE_TIME_SCALE[GS.bossPhase] || 1) * stageTimeMul();
+  let timeLimit = GS.attackType.time * (PHASE_TIME_SCALE[GS.bossPhase] || 1) * stageTimeMul() * (1 + (GS.upgrades.time || 0));
   if (GS.statusFx.FREEZE) timeLimit *= 0.5;
 
   let opts = [...q.opts];
@@ -1084,11 +1132,11 @@ function finishQuestion(isCorrect) {
   if (isCorrect) {
     let dmg = 6 + GS.bossPhase * 2;
     if (GS.hasPower) { dmg = Math.round(dmg * 1.6); GS.hasPower = false; }
-    dmg = Math.round(dmg * (GS.combo * .05 + .95));
+    dmg = Math.round(dmg * (GS.combo * .05 + .95) * (1 + (GS.upgrades.atk || 0)));
     GS.bossHP = Math.max(0, GS.bossHP - dmg);
     GS.combo = Math.min(GS.combo + 1, 12);
     GS.maxCombo = Math.max(GS.maxCombo, GS.combo);
-    GS.score += dmg * GS.combo;
+    GS.score += Math.round(dmg * GS.combo * (1 + (GS.upgrades.score || 0)));
     GS.correct++;
     addSkillGauge(15);
     heroAnim('atk'); bossAnim('hit');
@@ -1102,7 +1150,7 @@ function finishQuestion(isCorrect) {
   } else {
     let dmg = ((GS.attackType && GS.attackType.damage) || 10) * stageDmgMul();
     if (GS.statusFx.BURN) dmg *= 2;
-    dmg = Math.round(dmg);
+    dmg = Math.round(dmg * (1 - (GS.upgrades.def || 0)));   // 방어력 강화로 피해 감소
     if (GS.hasShield) { dmg = 0; GS.hasShield = false; showFloating('🛡️ 보호막!', '#60a5fa'); }
     GS.heroHP = Math.max(0, GS.heroHP - dmg);
     GS.combo = 1;
@@ -1273,6 +1321,26 @@ function gameWin() {
   }, 3500);
 }
 function gameOver() { GS.phase=10; cancelTimers(); heroFighter.play('death'); setTimeout(()=>showResult(false), 700); }
+
+let _cardChoices = [];
+function showCardPick() {
+  _cardChoices = shuffle([...UPGRADE_CARDS]).slice(0, 3);
+  document.getElementById('card-slots').innerHTML = _cardChoices.map((c,i) =>
+    `<button class="up-card" style="--cc:${c.color}" onclick="G.pickCard(${i})">
+       <div class="up-icon">${c.icon}</div>
+       <div class="up-title">${c.title}</div>
+       <div class="up-desc">${c.desc}</div>
+     </button>`).join('');
+  const u = GS.upgrades, owned = [];
+  if (u.atk) owned.push('⚔️+'+Math.round(u.atk*100)+'%');
+  if (u.def) owned.push('🛡️+'+Math.round(u.def*100)+'%');
+  if (u.skill) owned.push('⚡+'+Math.round(u.skill*100)+'%');
+  if (u.time) owned.push('⏱️+'+Math.round(u.time*100)+'%');
+  if (u.score) owned.push('🍀+'+Math.round(u.score*100)+'%');
+  if (u.startGauge) owned.push('🔋'+u.startGauge+'%');
+  document.getElementById('card-owned').textContent = owned.length ? '보유 강화 · ' + owned.join('   ') : '';
+  document.getElementById('card-pick').classList.add('show');
+}
 
 function showResult(win) {
   // 등급(랭크) 계산 — 정답률·최대콤보 기반

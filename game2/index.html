@@ -1100,8 +1100,11 @@ function finishQuestion(isCorrect) {
     if (GS.heroHP <= 0) { setTimeout(gameOver, 350); return; }
   }
   updateHUD();
-  GS.phase = 0;
-  setTimeout(scheduleBossAttack, 600);
+  // 페이즈 전환/승리 컷씬(phase=10)이 시작됐으면 덮어쓰지 않음 (컷씬이 다음 턴을 예약)
+  if (GS.phase !== 10) {
+    GS.phase = 0;
+    setTimeout(scheduleBossAttack, 600);
+  }
 }
 
 // ═══════════════════════════════════════════════════════════

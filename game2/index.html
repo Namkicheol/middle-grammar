@@ -769,7 +769,31 @@ const SPRITE_DEFS = {
       hurt:   {file:'Take_hit.png', n:3, fps:10, loop:false, next:'idle' },
       death:  {file:'Death.png',    n:7, fps:8,  loop:false, hold:true },
     }},
+  // 최종 페이즈 변신 — 영웅 → Hero Knight (CC-0, LuizMelo)
+  knight: { base:'assets/fighters/knight/', fw:180, fh:180, scale:1.5, flip:false, foot:55,
+    anims:{
+      idle:   {file:'Idle.png',     n:11, fps:9,  loop:true },
+      run:    {file:'Run.png',      n:8,  fps:12, loop:true },
+      atk:    {file:'Attack1.png',  n:7,  fps:16, loop:false, next:'idle' },
+      atk2:   {file:'Attack2.png',  n:7,  fps:16, loop:false, next:'idle' },
+      special:{file:'Attack2.png',  n:7,  fps:17, loop:false, next:'idle' },
+      hurt:   {file:'Take_hit.png', n:4,  fps:12, loop:false, next:'idle' },
+      death:  {file:'Death.png',    n:11, fps:9,  loop:false, hold:true },
+    }},
+  // 최종 페이즈 변신 — 보스 → Medieval King / 대마왕 (CC-0, aamatniekss)
+  king: { base:'assets/fighters/king/', fw:160, fh:111, scale:2.2, flip:true, foot:-35,
+    anims:{
+      idle:   {file:'Idle.png',     n:8, fps:8,  loop:true },
+      run:    {file:'Run.png',      n:8, fps:12, loop:true },
+      atk:    {file:'Attack1.png',  n:4, fps:12, loop:false, next:'idle' },
+      atk2:   {file:'Attack2.png',  n:4, fps:12, loop:false, next:'idle' },
+      hurt:   {file:'Take_hit.png', n:4, fps:12, loop:false, next:'idle' },
+      death:  {file:'Death.png',    n:6, fps:9,  loop:false, hold:true },
+    }},
 };
+const HERO_SPRITE = ['warrior', 'warrior', 'knight'];
+const BOSS_SPRITE = ['wizard',  'wizard',  'king'];
+let _heroKey = 'warrior', _bossKey = 'wizard';
 
 function makeFighter(el, defKey) {
   const def = SPRITE_DEFS[defKey];
@@ -819,10 +843,13 @@ function setCharSprites(phase) {
   if (_heroTl) { _heroTl.kill(); _heroTl = null; }
   if (_bossTl) { _bossTl.kill(); _bossTl = null; }
   gsap.killTweensOf(heroWrap); gsap.killTweensOf(bossWrap);
-  heroFighter.play('idle'); bossFighter.play('idle');
-  heroImg.style.transform = `scale(${h.scale || 1})`;
+  // 페이즈별 캐릭터 변신 (최종 페이즈에 영웅→Knight, 보스→King)
+  const hk = HERO_SPRITE[phase] || 'warrior', bk = BOSS_SPRITE[phase] || 'wizard';
+  if (hk !== _heroKey) { heroFighter = makeFighter(heroImg, hk); _heroKey = hk; } else heroFighter.play('idle');
+  if (bk !== _bossKey) { bossFighter = makeFighter(bossImg, bk); _bossKey = bk; } else bossFighter.play('idle');
+  heroImg.style.transform = `translateY(${heroFighter.def.foot || 0}px) scale(${h.scale || 1})`;
   heroImg.style.filter = `${h.tint || ''} drop-shadow(0 8px 22px ${h.glow})`;
-  bossImg.style.transform = `scaleX(-1) scale(${b.scale || 1})`;
+  bossImg.style.transform = `scaleX(-1) translateY(${bossFighter.def.foot || 0}px) scale(${b.scale || 1})`;
   bossImg.style.filter = `${b.tint || ''} drop-shadow(0 10px 28px ${b.glow})`;
   gsap.set(heroWrap, { left: '8%', clearProps: 'x,right' });
   gsap.set(bossWrap, { right: '8%', clearProps: 'x,left' });

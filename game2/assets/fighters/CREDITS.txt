@@ -3,3 +3,7 @@ Fighter sprite assets (CC-0 / public domain) by LuizMelo
 - Wizard / Evil Wizard (boss): https://luizmelo.itch.io/
 License: Creative Commons Zero (CC-0). Free for commercial and non-commercial use.
 Obtained via the public CC-0 mirror: github.com/buzzfit/Battle-Agents (assets/images)
+
+--- 추가 (final-phase 변신 캐릭터, 모두 CC-0) ---
+- Hero Knight (영웅 최종폼): LuizMelo — https://luizmelo.itch.io/ (CC-0)
+- Medieval King Pack 2 (보스 최종폼/대마왕): aamatniekss — https://aamatniekss.itch.io/ (CC-0)

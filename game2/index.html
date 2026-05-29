@@ -594,14 +594,14 @@ function drawBG(phase, ts) {
 //  ASSET PATHS
 // ═══════════════════════════════════════════════════════════
 const HERO_ASSETS = [
-  { idle:'../game/assets/chars/hero-lv1.png', atk:'../game/assets/chars/hero-lv1-attack.png', name:'🧑 학생' },
-  { idle:'../game/assets/chars/hero-lv2.png', atk:'../game/assets/chars/hero-lv2-attack.png', name:'🧙 마법사' },
-  { idle:'../game/assets/chars/hero-lv3.png', atk:'../game/assets/chars/hero-lv3-attack.png', name:'⚔️ 영웅' },
+  { idle:'../game/assets/chars/hero-lv1.png', atk:'../game/assets/chars/hero-lv1-attack.png', name:'🗡️ 문법 수련생', scale:1.0,  glow:'rgba(56,189,248,.5)',  tint:'' },
+  { idle:'../game/assets/chars/hero-lv2.png', atk:'../game/assets/chars/hero-lv2-attack.png', name:'⚔️ 문법 검사',   scale:1.16, glow:'rgba(250,204,21,.6)', tint:'saturate(1.18) brightness(1.06)' },
+  { idle:'../game/assets/chars/hero-lv3.png', atk:'../game/assets/chars/hero-lv3-attack.png', name:'🏆 문법 용사',   scale:1.32, glow:'rgba(255,255,255,.75)', tint:'saturate(1.28) brightness(1.14)' },
 ];
 const BOSS_ASSETS = [
-  { idle:'../game/assets/chars/boss-lv1.png', hit:'../game/assets/chars/boss-lv1-hit.png', name:'👹 문법 고블린', cutName:'문법 고블린', cutSub:'1단계 보스 등장!', glow:'rgba(239,68,68,.5)' },
-  { idle:'../game/assets/chars/boss-lv2.png', hit:'../game/assets/chars/boss-lv2-hit.png', name:'🧙 문법 마법사', cutName:'문법 마법사', cutSub:'2단계 각성! 마법이 폭주한다!', glow:'rgba(139,92,246,.6)' },
-  { idle:'../game/assets/chars/boss-lv3.png', hit:'../game/assets/chars/boss-lv3-hit.png', name:'🐲 문법 마왕', cutName:'문법 대마왕', cutSub:'최종 형태 해방! 전력을 다해라!', glow:'rgba(220,38,38,.7)' },
+  { idle:'../game/assets/chars/boss-lv1.png', hit:'../game/assets/chars/boss-lv1-hit.png', name:'🔮 문법 견습 마도사', cutName:'문법 견습 마도사', cutSub:'1단계 보스 등장!', glow:'rgba(168,85,247,.55)', scale:1.0,  tint:'' },
+  { idle:'../game/assets/chars/boss-lv2.png', hit:'../game/assets/chars/boss-lv2-hit.png', name:'🧙 문법 흑마도사', cutName:'문법 흑마도사', cutSub:'2단계 각성! 마력이 폭주한다!', glow:'rgba(220,38,80,.6)', scale:1.28, tint:'hue-rotate(-35deg) saturate(1.35) brightness(1.05)' },
+  { idle:'../game/assets/chars/boss-lv3.png', hit:'../game/assets/chars/boss-lv3-hit.png', name:'👹 문법 대마왕', cutName:'문법 대마왕', cutSub:'최종 형태! 전력을 다해라!', glow:'rgba(239,68,68,.75)', scale:1.55, tint:'hue-rotate(-65deg) saturate(1.7) brightness(.92) contrast(1.1)' },
 ];
 
 // ═══════════════════════════════════════════════════════════
@@ -820,7 +820,10 @@ function setCharSprites(phase) {
   if (_bossTl) { _bossTl.kill(); _bossTl = null; }
   gsap.killTweensOf(heroWrap); gsap.killTweensOf(bossWrap);
   heroFighter.play('idle'); bossFighter.play('idle');
-  bossImg.style.filter = `drop-shadow(0 10px 28px ${b.glow})`;
+  heroImg.style.transform = `scale(${h.scale || 1})`;
+  heroImg.style.filter = `${h.tint || ''} drop-shadow(0 8px 22px ${h.glow})`;
+  bossImg.style.transform = `scaleX(-1) scale(${b.scale || 1})`;
+  bossImg.style.filter = `${b.tint || ''} drop-shadow(0 10px 28px ${b.glow})`;
   gsap.set(heroWrap, { left: '8%', clearProps: 'x,right' });
   gsap.set(bossWrap, { right: '8%', clearProps: 'x,left' });
   document.getElementById('hero-name').textContent = h.name;
@@ -832,8 +835,8 @@ function heroAnim(type) {
   if (type === 'atk') {
     heroFighter.play('atk');
     _heroTl = gsap.timeline()
-      .to(heroWrap, { left: '42%', duration: .32, ease: 'power3.out' })
-      .to(heroWrap, { left: '8%', duration: .5, ease: 'power2.in',
+      .to(heroWrap, { left: '17%', duration: .28, ease: 'power3.out' })
+      .to(heroWrap, { left: '8%', duration: .45, ease: 'power2.in',
           onComplete() { _heroTl = null; } });
   } else if (type === 'hurt') {
     heroFighter.play('hurt'); heroFighter.flash();
@@ -847,13 +850,13 @@ function bossAnim(type) {
   const b = BOSS_ASSETS[GS.bossPhase];
   if (type === 'windup') {
     bossFighter.play('run');
-    _bossTl = gsap.to(bossWrap, { right: '34%', duration: .7, ease: 'power2.inOut' });
+    _bossTl = gsap.to(bossWrap, { right: '17%', duration: .6, ease: 'power2.inOut' });
   } else if (type === 'hit') {
     bossFighter.play('hurt'); bossFighter.flash();
     _bossTl = gsap.timeline()
       .to(bossWrap, { right: '8%', duration: .34, ease: 'power3.out' })
       .fromTo(bossWrap, { x: 0 }, { x: 26, duration: .09, yoyo: true, repeat: 5, ease: 'power1.inOut' })
-      .call(() => { _bossTl = null; bossImg.style.filter = `drop-shadow(0 10px 28px ${b.glow})`; });
+      .call(() => { _bossTl = null; bossImg.style.filter = `${b.tint || ''} drop-shadow(0 10px 28px ${b.glow})`; });
   } else {
     bossFighter.play('idle');
     _bossTl = gsap.to(bossWrap, { right: '8%', duration: .42, ease: 'power2.out',
@@ -886,7 +889,7 @@ function castSkill() {
   // GSAP timeline: dash across screen, flash, return
   const ultFlash = document.getElementById('ult-flash');
   gsap.timeline()
-    .to(heroWrap, { left: '52%', duration: .38, ease: 'power4.out' })
+    .to(heroWrap, { left: '30%', duration: .38, ease: 'power4.out' })
     .to(ultFlash,  { opacity: .85, duration: .18 })
     .call(() => {
       const dmg = Math.round((10 + GS.bossPhase * 5) * (GS.combo * .05 + .95));

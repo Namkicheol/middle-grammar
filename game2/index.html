@@ -416,9 +416,16 @@ const BG_THEMES = [
   { sky: ['#0a0515','#1e0a35','#2e0a50'], ground: ['#2a0a4a','#150030'], glow: '#9333ea', line: '#7c3aed' },
   { sky: ['#050005','#100010','#180018'], ground: ['#0f0010','#050005'], glow: '#dc2626', line: '#7f1d1d' },
 ];
+// 스테이지2+ 보스별 배경 테마 (대마왕=진홍 / 미노타우르스=용암 / 해골군주=독기, 순환)
+const STAGE_BG_THEMES = [
+  { sky: ['#1a0008','#2a0012','#3a0018'], ground: ['#2a0012','#12000a'], glow: '#ef4444', line: '#7f1d1d' },
+  { sky: ['#120a02','#241405','#3a200a'], ground: ['#241405','#100802'], glow: '#f97316', line: '#7c2d12' },
+  { sky: ['#02120c','#04241a','#063a2a'], ground: ['#04241a','#02100a'], glow: '#10b981', line: '#064e3b' },
+];
 
 function drawBG(phase, ts) {
-  const t = BG_THEMES[phase] || BG_THEMES[0];
+  const _st = GS ? GS.stage : 1;
+  const t = (_st >= 2) ? STAGE_BG_THEMES[(_st - 2) % STAGE_BG_THEMES.length] : (BG_THEMES[phase] || BG_THEMES[0]);
   const g = ctx.createLinearGradient(0,0,0,CH);
   g.addColorStop(0,t.sky[0]); g.addColorStop(.5,t.sky[1]); g.addColorStop(1,t.sky[2]);
   ctx.fillStyle = g; ctx.fillRect(0,0,CW,CH);
@@ -825,8 +832,9 @@ function bossAnim(type) {
     // 둘 다 중앙으로 돌격 — clash
     if (_heroTl) { _heroTl.kill(); _heroTl = null; }
     bossFighter.play('run'); heroFighter.play('run'); playSfx('whoosh');
-    _bossTl = gsap.to(bossWrap, { right: '15%', duration: .5, ease: 'power2.out' });
-    _heroTl = gsap.to(heroWrap, { left: '15%', duration: .5, ease: 'power2.out', onComplete() { _heroTl = null; } });
+    const cp = (window.innerWidth < 600 ? 9 : 15) + '%';  // 모바일은 화면이 좁아 덜 붙게
+    _bossTl = gsap.to(bossWrap, { right: cp, duration: .5, ease: 'power2.out' });
+    _heroTl = gsap.to(heroWrap, { left: cp, duration: .5, ease: 'power2.out', onComplete() { _heroTl = null; } });
   } else if (type === 'attack') {
     // 보스 반격 잽 (오답 시 영웅에게 달려들어 타격)
     bossFighter.play('atk');

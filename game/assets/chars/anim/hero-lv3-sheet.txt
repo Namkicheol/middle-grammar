@@ -1,4 +1,0 @@
-frames=6
-frame_w=512
-frame_h=640
-total_w=3072

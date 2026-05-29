@@ -742,24 +742,38 @@ let heroFighter = makeFighter(heroImg, 'warrior');
 let bossFighter = makeFighter(bossImg, 'wizard');
 let _lastTs = performance.now();
 
+// 보스 필터(틴트+글로우) — 스테이지2+면 점점 붉고 강하게
+function bossFilterStr(b) {
+  const st = GS ? GS.stage : 1;
+  const stageRed = st >= 2 ? ` saturate(${(1 + 0.25 * (st - 1)).toFixed(2)}) contrast(${(1 + 0.05 * (st - 1)).toFixed(2)})` : '';
+  const glow = st >= 2 ? `rgba(239,68,68,${Math.min(0.92, 0.62 + 0.12 * (st - 1)).toFixed(2)})` : b.glow;
+  return `${b.tint || ''}${stageRed} drop-shadow(0 10px 28px ${glow})`;
+}
+
 function setCharSprites(phase) {
   const h = HERO_ASSETS[phase], b = BOSS_ASSETS[phase];
   // 진행 중인 타임라인 전체 킬 (killTweensOf는 .call() 콜백 킬 안 함)
   if (_heroTl) { _heroTl.kill(); _heroTl = null; }
   if (_bossTl) { _bossTl.kill(); _bossTl = null; }
   gsap.killTweensOf(heroWrap); gsap.killTweensOf(bossWrap);
-  // 페이즈별 캐릭터 변신 (최종 페이즈에 영웅→Knight, 보스→King)
-  const hk = HERO_SPRITE[phase] || 'warrior', bk = BOSS_SPRITE[phase] || 'wizard';
+  // 캐릭터 선택: 스테이지1은 페이즈별 변신(영웅 수련생→검사→용사 / 보스 마법사→흑마도사→대마왕),
+  // 스테이지2+는 영웅=용사(기사) · 보스=대마왕(왕) 고정으로 시작부터 풀파워
+  const st = GS ? GS.stage : 1;
+  const hk = (st >= 2) ? 'knight' : (HERO_SPRITE[phase] || 'warrior');
+  const bk = (st >= 2) ? 'king'   : (BOSS_SPRITE[phase] || 'wizard');
   if (hk !== _heroKey) { heroFighter = makeFighter(heroImg, hk); _heroKey = hk; } else heroFighter.play('idle');
   if (bk !== _bossKey) { bossFighter = makeFighter(bossImg, bk); _bossKey = bk; } else bossFighter.play('idle');
-  heroImg.style.transform = `translateY(${heroFighter.def.foot || 0}px) scale(${h.scale || 1})`;
+  // 스테이지 올라갈수록 보스 더 크게 (보스다움 ↑, 최대 +40%)
+  const bossStageScale = Math.min(1.4, 1 + 0.14 * (st - 1));
+  const heroStageScale = 1 + 0.05 * (st - 1);
+  heroImg.style.transform = `translateY(${heroFighter.def.foot || 0}px) scale(${((h.scale || 1) * heroStageScale).toFixed(3)})`;
   heroImg.style.filter = `${h.tint || ''} drop-shadow(0 8px 22px ${h.glow})`;
-  bossImg.style.transform = `scaleX(-1) translateY(${bossFighter.def.foot || 0}px) scale(${b.scale || 1})`;
-  bossImg.style.filter = `${b.tint || ''} drop-shadow(0 10px 28px ${b.glow})`;
+  bossImg.style.transform = `scaleX(-1) translateY(${bossFighter.def.foot || 0}px) scale(${((b.scale || 1) * bossStageScale).toFixed(3)})`;
+  bossImg.style.filter = bossFilterStr(b);
   gsap.set(heroWrap, { left: '8%', clearProps: 'x,right' });
   gsap.set(bossWrap, { right: '8%', clearProps: 'x,left' });
-  document.getElementById('hero-name').textContent = h.name;
-  document.getElementById('boss-name').textContent = b.name;
+  document.getElementById('hero-name').textContent = (st >= 2) ? '🏆 문법 용사' : h.name;
+  document.getElementById('boss-name').textContent = (st >= 2) ? `👹 문법 대마왕${st >= 3 ? ' ⚡' : ''}` : b.name;
 }
 
 function heroAnim(type) {
@@ -797,7 +811,7 @@ function bossAnim(type) {
     _bossTl = gsap.timeline()
       .to(bossWrap, { right: '8%', duration: .34, ease: 'power3.out' })
       .fromTo(bossWrap, { x: 0 }, { x: 26, duration: .09, yoyo: true, repeat: 5, ease: 'power1.inOut' })
-      .call(() => { _bossTl = null; bossImg.style.filter = `${b.tint || ''} drop-shadow(0 10px 28px ${b.glow})`; });
+      .call(() => { _bossTl = null; bossImg.style.filter = bossFilterStr(b); });
   } else {
     // 후퇴 — 둘 다 제자리로
     if (_heroTl) { _heroTl.kill(); _heroTl = null; }
@@ -1201,11 +1215,11 @@ function showResult(win) {
   document.getElementById('result-icon').textContent = win ? '🏆' : '💀';
   document.getElementById('result-title').textContent = win ? `STAGE ${GS.stage} 클리어!` : '패배...';
   document.getElementById('result-sub').textContent = win
-    ? `다음 스테이지는 더 강한 보스 · 더 빡센 문제!` : `STAGE ${GS.stage}에서 쓰러졌다... 다시 도전!`;
+    ? `여기서 끝낼 거야? 더 센 보스가 기다린다! 💪` : `STAGE ${GS.stage}에서 쓰러졌다... 복수하러 가자!`;
   // 승리=다음 스테이지 / 패배=처음부터 다시
   document.getElementById('result-btns').innerHTML = win
-    ? `<button class="btn-retry" onclick="G.nextStage()">다음 스테이지 ▶</button><button class="btn-home" onclick="G.goHome()">그만하기</button>`
-    : `<button class="btn-retry" onclick="G.retry()">다시 도전</button><button class="btn-home" onclick="G.goHome()">단원 선택</button>`;
+    ? `<button class="btn-retry" onclick="G.nextStage()">🔥 더 센 보스에 도전!</button><button class="btn-home" onclick="G.goHome()">오늘은 여기까지</button>`
+    : `<button class="btn-retry" onclick="G.retry()">⚔️ 다시 도전!</button><button class="btn-home" onclick="G.goHome()">단원 선택</button>`;
   document.getElementById('r-score').textContent = GS.score;
   document.getElementById('r-correct').textContent = GS.correct;
   document.getElementById('r-combo').textContent = 'x' + GS.maxCombo;

@@ -1116,7 +1116,7 @@ function finishQuestion(isCorrect) {
     playSfx('correct'); playSfx('slash'); setTimeout(() => playSfx('impact'), 150);
     checkBossPhase();
   } else {
-    let dmg = GS.attackType.damage;
+    let dmg = (GS.attackType && GS.attackType.damage) || 10;
     if (GS.statusFx.BURN) dmg *= 2;
     if (GS.hasShield) { dmg = 0; GS.hasShield = false; showFloating('🛡️ 보호막!', '#60a5fa'); }
     GS.heroHP = Math.max(0, GS.heroHP - dmg);

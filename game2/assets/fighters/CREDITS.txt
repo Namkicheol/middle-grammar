@@ -11,4 +11,7 @@ Obtained via the public CC-0 mirror: github.com/buzzfit/Battle-Agents (assets/im
 --- 스테이지 보스 (free 픽셀 몬스터) ---
 - minotaur (미노타우르스): Minotaur pack — free for commercial/non-commercial use
 - skeleton (해골군주): Skeleton Warrior pack — free for commercial/non-commercial use
+- werewolf (늑대인간): Werewolf pack — Black_Werewolf variant
+- yokai (텐구): Yokai pack — Yamabushi_tengu variant
   (출처 미러: github.com/Anton-Mysiura/game assets/animations)
+  ※ 미러 레포에 라이선스 파일 없음. 원본 팩 라이선스 미확정 — 재배포 제한 여부 사용자 확인 필요.

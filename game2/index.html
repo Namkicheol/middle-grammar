@@ -783,12 +783,30 @@ const SPRITE_DEFS = {
       hurt:   {file:'Take_hit.png', n:2, fps:10, loop:false, next:'idle' },
       death:  {file:'Death.png',    n:4, fps:9,  loop:false, hold:true },
     }},
+  werewolf: { base:'assets/fighters/werewolf/', fw:128, fh:128, scale:2.0, flip:true, foot:-48,
+    anims:{
+      idle:   {file:'Idle.png',     n:8, fps:9,  loop:true },
+      run:    {file:'Run.png',      n:9, fps:13, loop:true },
+      atk:    {file:'Attack1.png',  n:6, fps:14, loop:false, next:'idle' },
+      atk2:   {file:'Attack2.png',  n:4, fps:13, loop:false, next:'idle' },
+      hurt:   {file:'Take_hit.png', n:2, fps:10, loop:false, next:'idle' },
+      death:  {file:'Death.png',    n:2, fps:7,  loop:false, hold:true },
+    }},
+  yokai: { base:'assets/fighters/yokai/', fw:128, fh:128, scale:2.1, flip:true, foot:-44,
+    anims:{
+      idle:   {file:'Idle.png',     n:6, fps:8,  loop:true },
+      run:    {file:'Run.png',      n:8, fps:12, loop:true },
+      atk:    {file:'Attack1.png',  n:3, fps:12, loop:false, next:'idle' },
+      atk2:   {file:'Attack2.png',  n:6, fps:13, loop:false, next:'idle' },
+      hurt:   {file:'Take_hit.png', n:3, fps:11, loop:false, next:'idle' },
+      death:  {file:'Death.png',    n:6, fps:9,  loop:false, hold:true },
+    }},
 };
 const HERO_SPRITE = ['warrior', 'warrior', 'knight'];
 const BOSS_SPRITE = ['wizard',  'wizard',  'king'];
 // 스테이지2+ 보스 로스터 (스테이지마다 다른 캐릭으로 순환)
-const BOSS_STAGE_ROSTER = ['minotaur', 'skeleton', 'king'];  // 스테이지1이 대마왕으로 끝나므로 2단계는 다른 캐릭부터
-const BOSS_STAGE_NAME   = { king:'👹 문법 대마왕', minotaur:'🐂 문법 미노타우르스', skeleton:'💀 문법 해골군주' };
+const BOSS_STAGE_ROSTER = ['minotaur', 'werewolf', 'skeleton', 'yokai', 'king'];  // 스테이지1이 대마왕으로 끝나므로 2단계는 다른 캐릭부터
+const BOSS_STAGE_NAME   = { king:'👹 문법 대마왕', minotaur:'🐂 문법 미노타우르스', skeleton:'💀 문법 해골군주', werewolf:'🐺 문법 늑대인간', yokai:'👺 문법 텐구' };
 let _heroKey = 'warrior', _bossKey = 'wizard';
 
 function makeFighter(el, defKey) {

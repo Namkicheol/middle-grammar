@@ -39,8 +39,11 @@ canvas#c{position:absolute;inset:0;width:100%;height:100%;}
 /* ── CHARACTERS ── */
 #hero-wrap{position:absolute;left:8%;bottom:26%;transform-origin:bottom center;transition:left .35s cubic-bezier(.22,1,.36,1), transform .15s;}
 #boss-wrap{position:absolute;right:8%;bottom:26%;transform-origin:bottom center;transition:right .35s cubic-bezier(.22,1,.36,1), transform .15s;}
-#hero-img{height:clamp(140px,22vw,240px);width:auto;filter:drop-shadow(0 8px 24px rgba(14,165,233,.5));transform-origin:bottom center;}
-#boss-img{height:clamp(140px,22vw,240px);width:auto;filter:drop-shadow(0 8px 24px rgba(239,68,68,.5));transform-origin:bottom center;}
+#hero-img,#boss-img{background-repeat:no-repeat;background-position:0 0;image-rendering:pixelated;transform-origin:bottom center;will-change:background-position;}
+#hero-img{filter:drop-shadow(0 8px 22px rgba(14,165,233,.45));}
+#boss-img{filter:drop-shadow(0 10px 26px rgba(239,68,68,.5));transform:scaleX(-1);}
+@keyframes dmgFlash{0%{filter:brightness(1)}28%{filter:brightness(2.6) drop-shadow(0 0 30px #fff)}100%{filter:brightness(1)}}
+#hero-img.flash,#boss-img.flash{animation:dmgFlash .38s ease-out;}
 
 /* Idle float animation */
 @keyframes heroFloat{0%,100%{transform:translateY(0)}50%{transform:translateY(-10px)}}
@@ -222,8 +225,8 @@ canvas#c{position:absolute;inset:0;width:100%;height:100%;}
 
   <!-- Characters -->
   <div id="arena">
-    <div id="hero-wrap"><img id="hero-img" src="../game/assets/chars/hero-lv1.png" class="idle" alt="hero"></div>
-    <div id="boss-wrap"><img id="boss-img" src="../game/assets/chars/boss-lv1.png" class="idle" alt="boss"></div>
+    <div id="hero-wrap"><div id="hero-img"></div></div>
+    <div id="boss-wrap"><div id="boss-img"></div></div>
   </div>
 
   <!-- Drop items container -->
@@ -723,7 +726,9 @@ function paintBursts(now) {
 // ═══════════════════════════════════════════════════════════
 function loop(ts) {
   rafId = requestAnimationFrame(loop);
+  const dt = Math.min(64, ts - _lastTs); _lastTs = ts;
   drawBG(GS ? GS.bossPhase : 0, ts);
+  heroFighter.update(dt); bossFighter.update(dt);
   paintBursts(ts);
   // Expire status effects
   if (GS) {
@@ -743,15 +748,79 @@ const bossWrap = document.getElementById('boss-wrap');
 
 let _heroTl = null, _bossTl = null;
 
+// ─── SPRITE-SHEET FIGHTER ENGINE (CC-0 LuizMelo fighters) ────
+const SPRITE_DEFS = {
+  warrior: { base:'assets/fighters/hero/', fw:162, fh:162, scale:1.7, flip:false,
+    anims:{
+      idle:   {file:'Idle.png',     n:10, fps:9,  loop:true },
+      run:    {file:'Run.png',      n:8,  fps:12, loop:true },
+      atk:    {file:'Attack1.png',  n:7,  fps:16, loop:false, next:'idle' },
+      atk2:   {file:'Attack2.png',  n:7,  fps:16, loop:false, next:'idle' },
+      special:{file:'Attack3.png',  n:8,  fps:17, loop:false, next:'idle' },
+      hurt:   {file:'Take_hit.png', n:3,  fps:10, loop:false, next:'idle' },
+      death:  {file:'Death.png',    n:7,  fps:8,  loop:false, hold:true },
+    }},
+  wizard: { base:'assets/fighters/wizard/', fw:250, fh:250, scale:1.18, flip:true,
+    anims:{
+      idle:   {file:'Idle.png',     n:8, fps:8,  loop:true },
+      run:    {file:'Run.png',      n:8, fps:12, loop:true },
+      atk:    {file:'Attack1.png',  n:8, fps:14, loop:false, next:'idle' },
+      atk2:   {file:'Attack2.png',  n:8, fps:14, loop:false, next:'idle' },
+      hurt:   {file:'Take_hit.png', n:3, fps:10, loop:false, next:'idle' },
+      death:  {file:'Death.png',    n:7, fps:8,  loop:false, hold:true },
+    }},
+};
+
+function makeFighter(el, defKey) {
+  const def = SPRITE_DEFS[defKey];
+  for (const k in def.anims) { const im = new Image(); im.src = def.base + def.anims[k].file; }
+  el.style.width  = (def.fw * def.scale) + 'px';
+  el.style.height = (def.fh * def.scale) + 'px';
+  if (def.flip) el.style.transform = 'scaleX(-1)';
+  const f = {
+    def, el, defKey, state:null, frame:0, acc:0, done:null,
+    play(state, done=null) {
+      if (!def.anims[state]) state = 'idle';
+      if (this.state === state && def.anims[state].loop && !done) return;
+      this.state = state; this.frame = 0; this.acc = 0; this.done = done;
+      const a = def.anims[state];
+      el.style.backgroundImage = 'url(' + def.base + a.file + ')';
+      el.style.backgroundSize  = (def.fw*def.scale*a.n) + 'px ' + (def.fh*def.scale) + 'px';
+      el.style.backgroundPosition = '0 0';
+    },
+    update(dt) {
+      const a = def.anims[this.state]; if (!a) return;
+      this.acc += dt;
+      const spf = 1000 / a.fps;
+      while (this.acc >= spf) {
+        this.acc -= spf; this.frame++;
+        if (this.frame >= a.n) {
+          if (a.loop) { this.frame = 0; }
+          else if (a.hold) { this.frame = a.n-1; this.acc = 0;
+            if (this.done) { const cb = this.done; this.done = null; cb(); } break; }
+          else { const nx = a.next || 'idle', cb = this.done; this.done = null;
+            this.play(nx); if (cb) cb(); return; }
+        }
+      }
+      el.style.backgroundPosition = (-(this.frame*def.fw*def.scale)) + 'px 0';
+    },
+    flash() { el.classList.remove('flash'); void el.offsetWidth; el.classList.add('flash'); },
+  };
+  f.play('idle');
+  return f;
+}
+let heroFighter = makeFighter(heroImg, 'warrior');
+let bossFighter = makeFighter(bossImg, 'wizard');
+let _lastTs = performance.now();
+
 function setCharSprites(phase) {
   const h = HERO_ASSETS[phase], b = BOSS_ASSETS[phase];
   // 진행 중인 타임라인 전체 킬 (killTweensOf는 .call() 콜백 킬 안 함)
   if (_heroTl) { _heroTl.kill(); _heroTl = null; }
   if (_bossTl) { _bossTl.kill(); _bossTl = null; }
   gsap.killTweensOf(heroWrap); gsap.killTweensOf(bossWrap);
-  heroImg.src = h.idle; heroImg.className = 'idle';
-  bossImg.src = b.idle; bossImg.className = 'idle';
-  bossImg.style.filter = `drop-shadow(0 8px 28px ${b.glow})`;
+  heroFighter.play('idle'); bossFighter.play('idle');
+  bossImg.style.filter = `drop-shadow(0 10px 28px ${b.glow})`;
   gsap.set(heroWrap, { left: '8%', clearProps: 'x,right' });
   gsap.set(bossWrap, { right: '8%', clearProps: 'x,left' });
   document.getElementById('hero-name').textContent = h.name;
@@ -760,39 +829,35 @@ function setCharSprites(phase) {
 
 function heroAnim(type) {
   if (_heroTl) { _heroTl.kill(); _heroTl = null; }
-  const h = HERO_ASSETS[GS.bossPhase];
-  heroImg.className = '';
   if (type === 'atk') {
-    heroImg.src = h.atk;
-    heroImg.className = 'attack';
+    heroFighter.play('atk');
     _heroTl = gsap.timeline()
-      .to(heroWrap, { left: '44%', duration: .45, ease: 'power3.out' })
-      .to(heroWrap, { left: '8%', duration: .55, ease: 'power2.in',
-          onComplete() { _heroTl = null; heroImg.src = h.idle; heroImg.className = 'idle'; } });
+      .to(heroWrap, { left: '42%', duration: .32, ease: 'power3.out' })
+      .to(heroWrap, { left: '8%', duration: .5, ease: 'power2.in',
+          onComplete() { _heroTl = null; } });
   } else if (type === 'hurt') {
-    heroImg.className = 'hurt';
-    _heroTl = gsap.fromTo(heroWrap, { x: 0 }, { x: -24, duration: .12, yoyo: true, repeat: 4, ease: 'power1.inOut',
-      onComplete() { _heroTl = null; heroImg.className = 'idle'; gsap.set(heroWrap, { x: 0 }); } });
+    heroFighter.play('hurt'); heroFighter.flash();
+    _heroTl = gsap.fromTo(heroWrap, { x: 0 }, { x: -22, duration: .1, yoyo: true, repeat: 4, ease: 'power1.inOut',
+      onComplete() { _heroTl = null; gsap.set(heroWrap, { x: 0 }); } });
   }
 }
 
 function bossAnim(type) {
   if (_bossTl) { _bossTl.kill(); _bossTl = null; }
   const b = BOSS_ASSETS[GS.bossPhase];
-  bossImg.className = '';
   if (type === 'windup') {
-    bossImg.className = 'windup';
-    _bossTl = gsap.to(bossWrap, { right: '38%', duration: .75, ease: 'power2.inOut' });
+    bossFighter.play('run');
+    _bossTl = gsap.to(bossWrap, { right: '34%', duration: .7, ease: 'power2.inOut' });
   } else if (type === 'hit') {
-    bossImg.src = b.hit;
-    bossImg.className = 'hit';
+    bossFighter.play('hurt'); bossFighter.flash();
     _bossTl = gsap.timeline()
-      .to(bossWrap, { right: '8%', duration: .38, ease: 'power3.out' })
-      .fromTo(bossWrap, { x: 0 }, { x: 28, duration: .1, yoyo: true, repeat: 5, ease: 'power1.inOut' })
-      .call(() => { _bossTl = null; bossImg.src = b.idle; bossImg.className = 'idle'; bossImg.style.filter = `drop-shadow(0 8px 28px ${b.glow})`; });
+      .to(bossWrap, { right: '8%', duration: .34, ease: 'power3.out' })
+      .fromTo(bossWrap, { x: 0 }, { x: 26, duration: .09, yoyo: true, repeat: 5, ease: 'power1.inOut' })
+      .call(() => { _bossTl = null; bossImg.style.filter = `drop-shadow(0 10px 28px ${b.glow})`; });
   } else {
-    _bossTl = gsap.to(bossWrap, { right: '8%', duration: .45, ease: 'power2.out',
-      onComplete() { _bossTl = null; bossImg.src = b.idle; bossImg.className = 'idle'; } });
+    bossFighter.play('idle');
+    _bossTl = gsap.to(bossWrap, { right: '8%', duration: .42, ease: 'power2.out',
+      onComplete() { _bossTl = null; } });
   }
 }
 
@@ -816,8 +881,7 @@ function castSkill() {
   if (!GS || skillGauge < SKILL_MAX || GS.phase === 10) return;
   skillGauge = 0;
   addSkillGauge(0);
-  const h = HERO_ASSETS[GS.bossPhase];
-  heroImg.src = h.atk; heroImg.className = '';
+  heroFighter.play('special');
 
   // GSAP timeline: dash across screen, flash, return
   const ultFlash = document.getElementById('ult-flash');
@@ -841,7 +905,7 @@ function castSkill() {
       updateHUD();
     })
     .to(ultFlash,  { opacity: 0, duration: .6 })
-    .to(heroWrap,  { left: '8%', duration: .55, ease: 'back.out(1.5)', onComplete() { heroImg.src = h.idle; heroImg.className = 'idle'; } });
+    .to(heroWrap,  { left: '8%', duration: .55, ease: 'back.out(1.5)', onComplete() { heroFighter.play('idle'); } });
 }
 
 // ═══════════════════════════════════════════════════════════
@@ -1165,6 +1229,7 @@ function gameWin() {
   GS.phase = 10;
   cancelTimers();
   BGM.stop();
+  bossFighter.play('death'); heroFighter.play('idle');
   // Victory flash
   const fl = document.getElementById('phase-flash');
   fl.className = ''; void fl.offsetWidth; fl.className = 'go';
@@ -1181,7 +1246,7 @@ function gameWin() {
     showResult(true);
   }, 3500);
 }
-function gameOver() { GS.phase=10; cancelTimers(); showResult(false); }
+function gameOver() { GS.phase=10; cancelTimers(); heroFighter.play('death'); setTimeout(()=>showResult(false), 700); }
 
 function showResult(win) {
   document.getElementById('result-icon').textContent = win ? '🏆' : '💀';

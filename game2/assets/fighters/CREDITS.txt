@@ -1,0 +1,5 @@
+Fighter sprite assets (CC-0 / public domain) by LuizMelo
+- Fantasy Warrior (hero):  https://luizmelo.itch.io/
+- Wizard / Evil Wizard (boss): https://luizmelo.itch.io/
+License: Creative Commons Zero (CC-0). Free for commercial and non-commercial use.
+Obtained via the public CC-0 mirror: github.com/buzzfit/Battle-Agents (assets/images)

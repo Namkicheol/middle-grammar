@@ -7,3 +7,8 @@ Obtained via the public CC-0 mirror: github.com/buzzfit/Battle-Agents (assets/im
 --- 추가 (final-phase 변신 캐릭터, 모두 CC-0) ---
 - Hero Knight (영웅 최종폼): LuizMelo — https://luizmelo.itch.io/ (CC-0)
 - Medieval King Pack 2 (보스 최종폼/대마왕): aamatniekss — https://aamatniekss.itch.io/ (CC-0)
+
+--- 스테이지 보스 (free 픽셀 몬스터) ---
+- minotaur (미노타우르스): Minotaur pack — free for commercial/non-commercial use
+- skeleton (해골군주): Skeleton Warrior pack — free for commercial/non-commercial use
+  (출처 미러: github.com/Anton-Mysiura/game assets/animations)

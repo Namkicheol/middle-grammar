@@ -695,9 +695,31 @@ const SPRITE_DEFS = {
       hurt:   {file:'Take_hit.png', n:4, fps:12, loop:false, next:'idle' },
       death:  {file:'Death.png',    n:6, fps:9,  loop:false, hold:true },
     }},
+  // 상위 스테이지 보스 (CC0/free 픽셀 몬스터)
+  minotaur: { base:'assets/fighters/minotaur/', fw:128, fh:128, scale:2.0, flip:true, foot:-48,
+    anims:{
+      idle:   {file:'Idle.png',     n:10, fps:9,  loop:true },
+      run:    {file:'Run.png',      n:12, fps:12, loop:true },
+      atk:    {file:'Attack1.png',  n:4,  fps:12, loop:false, next:'idle' },
+      atk2:   {file:'Attack1.png',  n:4,  fps:12, loop:false, next:'idle' },
+      hurt:   {file:'Take_hit.png', n:3,  fps:11, loop:false, next:'idle' },
+      death:  {file:'Death.png',    n:5,  fps:9,  loop:false, hold:true },
+    }},
+  skeleton: { base:'assets/fighters/skeleton/', fw:128, fh:128, scale:2.0, flip:true, foot:-48,
+    anims:{
+      idle:   {file:'Idle.png',     n:7, fps:8,  loop:true },
+      run:    {file:'Run.png',      n:8, fps:12, loop:true },
+      atk:    {file:'Attack1.png',  n:5, fps:13, loop:false, next:'idle' },
+      atk2:   {file:'Attack2.png',  n:6, fps:13, loop:false, next:'idle' },
+      hurt:   {file:'Take_hit.png', n:2, fps:10, loop:false, next:'idle' },
+      death:  {file:'Death.png',    n:4, fps:9,  loop:false, hold:true },
+    }},
 };
 const HERO_SPRITE = ['warrior', 'warrior', 'knight'];
 const BOSS_SPRITE = ['wizard',  'wizard',  'king'];
+// 스테이지2+ 보스 로스터 (스테이지마다 다른 캐릭으로 순환)
+const BOSS_STAGE_ROSTER = ['king', 'minotaur', 'skeleton'];
+const BOSS_STAGE_NAME   = { king:'👹 문법 대마왕', minotaur:'🐂 문법 미노타우르스', skeleton:'💀 문법 해골군주' };
 let _heroKey = 'warrior', _bossKey = 'wizard';
 
 function makeFighter(el, defKey) {
@@ -760,7 +782,7 @@ function setCharSprites(phase) {
   // 스테이지2+는 영웅=용사(기사) · 보스=대마왕(왕) 고정으로 시작부터 풀파워
   const st = GS ? GS.stage : 1;
   const hk = (st >= 2) ? 'knight' : (HERO_SPRITE[phase] || 'warrior');
-  const bk = (st >= 2) ? 'king'   : (BOSS_SPRITE[phase] || 'wizard');
+  const bk = (st >= 2) ? BOSS_STAGE_ROSTER[(st - 2) % BOSS_STAGE_ROSTER.length] : (BOSS_SPRITE[phase] || 'wizard');
   if (hk !== _heroKey) { heroFighter = makeFighter(heroImg, hk); _heroKey = hk; } else heroFighter.play('idle');
   if (bk !== _bossKey) { bossFighter = makeFighter(bossImg, bk); _bossKey = bk; } else bossFighter.play('idle');
   // 스테이지 올라갈수록 보스 더 크게 (보스다움 ↑, 최대 +40%)
@@ -773,7 +795,12 @@ function setCharSprites(phase) {
   gsap.set(heroWrap, { left: '8%', clearProps: 'x,right' });
   gsap.set(bossWrap, { right: '8%', clearProps: 'x,left' });
   document.getElementById('hero-name').textContent = (st >= 2) ? '🏆 문법 용사' : h.name;
-  document.getElementById('boss-name').textContent = (st >= 2) ? `👹 문법 대마왕${st >= 3 ? ' ⚡' : ''}` : b.name;
+  if (st >= 2) {
+    const cyc = Math.floor((st - 2) / BOSS_STAGE_ROSTER.length);
+    document.getElementById('boss-name').textContent = (BOSS_STAGE_NAME[bk] || '👹 보스') + (cyc > 0 ? ' ' + '⚡'.repeat(Math.min(3, cyc)) : '');
+  } else {
+    document.getElementById('boss-name').textContent = b.name;
+  }
 }
 
 function heroAnim(type) {

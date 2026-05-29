@@ -328,7 +328,7 @@ canvas#c{position:absolute;inset:0;width:100%;height:100%;}
         <div class="result-stat"><b id="r-correct">0</b><span>정답</span></div>
         <div class="result-stat"><b id="r-combo">x1</b><span>최대콤보</span></div>
       </div>
-      <div class="result-btns">
+      <div class="result-btns" id="result-btns">
         <button class="btn-retry" onclick="G.retry()">다시 도전</button>
         <button class="btn-home" onclick="G.goHome()">단원 선택</button>
       </div>
@@ -518,6 +518,7 @@ function initGS(qs) {
   skillGauge = 0;
   addSkillGauge(0);
   return {
+    stage: 1,
     phase: 0, bossPhase: 0,
     heroHP: 100, bossHP: 100,
     combo: 1, maxCombo: 1, score: 0, correct: 0,
@@ -526,6 +527,10 @@ function initGS(qs) {
     currentQ: null, attackType: null, drops: [], dropId: 0,
   };
 }
+// 스테이지별 난이도 배율 (stage 1=기본, 이후 점점 빡세짐)
+function stageTimeMul()  { return Math.pow(0.9,  (GS ? GS.stage : 1) - 1); }  // 제한시간 감소
+function stageDmgMul()   { return 1 + 0.25 * ((GS ? GS.stage : 1) - 1); }      // 피격 데미지 증가
+function stageSpeedMul() { return Math.pow(0.85, (GS ? GS.stage : 1) - 1); }   // 보스 공격 간격 단축
 
 // ═══════════════════════════════════════════════════════════
 //  GAME CONTROLLER
@@ -549,6 +554,27 @@ const G = {
     document.getElementById('result').classList.remove('show');
     document.getElementById('victory-cut').classList.remove('show');
     if (this._qs) this.start(this._qs, this._label);
+  },
+  nextStage() {
+    // 누적 점수/스테이지 유지, 보스 새로, 영웅 일부 회복
+    document.getElementById('result').classList.remove('show');
+    document.getElementById('victory-cut').classList.remove('show');
+    const stage = GS.stage + 1, score = GS.score, maxCombo = GS.maxCombo;
+    GS = initGS(this._qs);
+    GS.stage = stage; GS.score = score; GS.maxCombo = maxCombo;
+    GS.heroHP = 100;            // 새 스테이지마다 풀피로 시작
+    wrongLog = [];
+    setCharSprites(0);
+    BGM.start(0);
+    updateHUD();
+    if (rafId) cancelAnimationFrame(rafId);
+    rafId = requestAnimationFrame(loop);
+    // 스테이지 인트로 연출
+    const fl = document.getElementById('phase-flash');
+    fl.className = ''; void fl.offsetWidth; fl.className = 'go';
+    showFloating(`STAGE ${stage} 시작!`, '#fde68a');
+    cameraShake(10, .5);
+    setTimeout(() => { scheduleBossAttack(); scheduleDropSpawn(); }, 900);
   },
   goHome() {
     document.getElementById('result').classList.remove('show');
@@ -758,8 +784,8 @@ function bossAnim(type) {
     // 둘 다 중앙으로 돌격 — clash
     if (_heroTl) { _heroTl.kill(); _heroTl = null; }
     bossFighter.play('run'); heroFighter.play('run'); playSfx('whoosh');
-    _bossTl = gsap.to(bossWrap, { right: '13%', duration: .5, ease: 'power2.out' });
-    _heroTl = gsap.to(heroWrap, { left: '13%', duration: .5, ease: 'power2.out', onComplete() { _heroTl = null; } });
+    _bossTl = gsap.to(bossWrap, { right: '15%', duration: .5, ease: 'power2.out' });
+    _heroTl = gsap.to(heroWrap, { left: '15%', duration: .5, ease: 'power2.out', onComplete() { _heroTl = null; } });
   } else if (type === 'attack') {
     // 보스 반격 잽 (오답 시 영웅에게 달려들어 타격)
     bossFighter.play('atk');
@@ -836,7 +862,7 @@ function castSkill() {
 function scheduleBossAttack() {
   if (bossTimer) clearTimeout(bossTimer);
   const [mn, mx] = PHASE_ATTACK_DELAY[GS ? GS.bossPhase : 0] || PHASE_ATTACK_DELAY[0];
-  const delay = mn + Math.random() * (mx - mn);
+  const delay = (mn + Math.random() * (mx - mn)) * stageSpeedMul();
   bossTimer = setTimeout(startAttack, delay);
 }
 
@@ -891,7 +917,7 @@ function showQuestion() {
   const q = GS.questions[GS.qIdx++];
   GS.currentQ = q;
 
-  let timeLimit = GS.attackType.time * (PHASE_TIME_SCALE[GS.bossPhase] || 1);
+  let timeLimit = GS.attackType.time * (PHASE_TIME_SCALE[GS.bossPhase] || 1) * stageTimeMul();
   if (GS.statusFx.FREEZE) timeLimit *= 0.5;
 
   let opts = [...q.opts];
@@ -995,8 +1021,9 @@ function finishQuestion(isCorrect) {
     playSfx('correct'); playSfx('slash'); setTimeout(() => playSfx('impact'), 150);
     checkBossPhase();
   } else {
-    let dmg = (GS.attackType && GS.attackType.damage) || 10;
+    let dmg = ((GS.attackType && GS.attackType.damage) || 10) * stageDmgMul();
     if (GS.statusFx.BURN) dmg *= 2;
+    dmg = Math.round(dmg);
     if (GS.hasShield) { dmg = 0; GS.hasShield = false; showFloating('🛡️ 보호막!', '#60a5fa'); }
     GS.heroHP = Math.max(0, GS.heroHP - dmg);
     GS.combo = 1;
@@ -1044,7 +1071,7 @@ function triggerPhaseChange(newPhase) {
   setTimeout(() => {
     document.getElementById('cut').classList.add('show');
     setCharSprites(newPhase);
-    document.getElementById('stage-badge').textContent = `PHASE ${newPhase + 1}`;
+    document.getElementById('stage-badge').textContent = `STAGE ${GS.stage} · P${newPhase + 1}`;
   }, 200);
   setTimeout(() => {
     document.getElementById('cut').classList.remove('show');
@@ -1172,9 +1199,13 @@ function gameOver() { GS.phase=10; cancelTimers(); heroFighter.play('death'); se
 
 function showResult(win) {
   document.getElementById('result-icon').textContent = win ? '🏆' : '💀';
-  document.getElementById('result-title').textContent = win ? '승리!' : '패배...';
+  document.getElementById('result-title').textContent = win ? `STAGE ${GS.stage} 클리어!` : '패배...';
   document.getElementById('result-sub').textContent = win
-    ? `${G._label || ''} 보스를 물리쳤다!` : '다시 도전해보자!';
+    ? `다음 스테이지는 더 강한 보스 · 더 빡센 문제!` : `STAGE ${GS.stage}에서 쓰러졌다... 다시 도전!`;
+  // 승리=다음 스테이지 / 패배=처음부터 다시
+  document.getElementById('result-btns').innerHTML = win
+    ? `<button class="btn-retry" onclick="G.nextStage()">다음 스테이지 ▶</button><button class="btn-home" onclick="G.goHome()">그만하기</button>`
+    : `<button class="btn-retry" onclick="G.retry()">다시 도전</button><button class="btn-home" onclick="G.goHome()">단원 선택</button>`;
   document.getElementById('r-score').textContent = GS.score;
   document.getElementById('r-correct').textContent = GS.correct;
   document.getElementById('r-combo').textContent = 'x' + GS.maxCombo;
@@ -1204,6 +1235,7 @@ function updateHUD() {
   document.getElementById('boss-hp-num').textContent = Math.round(GS.bossHP);
   document.getElementById('combo-badge').textContent = 'COMBO ×' + GS.combo;
   document.getElementById('score-badge').textContent = GS.score + '점';
+  document.getElementById('stage-badge').textContent = 'STAGE ' + GS.stage + ' · P' + (GS.bossPhase + 1);
 }
 
 function showDmgFloat(text, color, side) {

@@ -209,10 +209,10 @@ canvas#c{position:absolute;inset:0;width:100%;height:100%;}
     <div class="sel-title">⚔️ 문법 보스전</div>
     <div class="sel-sub">Fighter Edition — 단원을 골라 보스에 도전하세요</div>
     <div class="sel-boss-row">
-      <img src="../game/assets/chars/hero-lv1.png" alt="hero">
-      <img src="../game/assets/chars/boss-lv1.png" alt="boss1" style="height:88px">
-      <img src="../game/assets/chars/boss-lv2.png" alt="boss2" style="height:88px">
-      <img src="../game/assets/chars/boss-lv3.png" alt="boss3" style="height:96px">
+      <img src="assets/fighters/hero/portrait.png" alt="hero" style="height:96px">
+      <img src="assets/fighters/wizard/portrait.png" alt="boss1" style="height:92px">
+      <img src="assets/fighters/knight/portrait.png" alt="hero2" style="height:96px">
+      <img src="assets/fighters/king/portrait.png" alt="boss3" style="height:100px">
     </div>
   </div>
   <div class="sel-units" id="unit-list"></div>
@@ -298,7 +298,7 @@ canvas#c{position:absolute;inset:0;width:100%;height:100%;}
   <div id="victory-cut">
     <div class="vc-card">
       <div class="vc-title">VICTORY!</div>
-      <img class="vc-hero" id="vc-hero-img" src="../game/assets/chars/hero-lv1.png" alt="hero">
+      <img class="vc-hero" id="vc-hero-img" src="assets/fighters/hero/portrait.png" alt="hero">
       <div class="vc-name">보스 격파!</div>
       <div class="vc-sub" id="vc-sub"></div>
     </div>
@@ -309,8 +309,8 @@ canvas#c{position:absolute;inset:0;width:100%;height:100%;}
     <div class="cut-card">
       <div class="cut-phase" id="cut-phase">PHASE 2</div>
       <div class="cut-chars">
-        <img id="cut-hero-img" src="../game/assets/chars/hero-lv1.png" alt="hero">
-        <img id="cut-boss-img" src="../game/assets/chars/boss-lv2.png" alt="boss">
+        <img id="cut-hero-img" src="assets/fighters/hero/portrait.png" alt="hero">
+        <img id="cut-boss-img" src="assets/fighters/wizard/portrait.png" alt="boss">
       </div>
       <div class="cut-name" id="cut-name">문법 마법사</div>
       <div class="cut-sub" id="cut-sub">각성 완료...</div>
@@ -343,161 +343,40 @@ canvas#c{position:absolute;inset:0;width:100%;height:100%;}
 <script src="../game/questions.js"></script>
 <script src="../sounds.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/tone/14.8.49/Tone.js"></script>
 <script>
 // ═══════════════════════════════════════════════════════════
-//  BGM — Tone.js 페이즈별 전투 음악
+//  BGM — CC0 배틀 음악(OpenGameArt) 페이즈별 재생
 // ═══════════════════════════════════════════════════════════
 const BGM = (() => {
-  let _ready=false, _playing=false, _phase=0;
-  let _lead, _pad, _bass, _kick, _snare, _hat, _master;
-  let _melSeq, _bassSeq, _kickSeq, _hatSeq;
-
-  // Phase 0 (120 BPM) — 학생 : 차분한 전투
-  // Phase 1 (148 BPM) — 마법사 : 긴박감
-  // Phase 2 (168 BPM) — 마왕 : 극한 전투
-  const PHASES = [
-    {
-      bpm: 120,
-      mel:  ['E4','G4','A4',null,'G4','E4','D4',null,
-             'E4','C4','D4',null,'C4',null,null,null],
-      bass: ['A2',null,'E3',null,'A2',null,'G2',null,
-             'A2',null,'E3',null,'D2',null,'E2',null],
-      pad:  [['A3','C4','E4'],null,null,null,null,null,null,null,
-             ['G3','B3','D4'],null,null,null,null,null,null,null],
-    },
-    {
-      bpm: 148,
-      mel:  ['A4','C5','E5',null,'C5','A4','G4',null,
-             'A4','E4','G4',null,'A4',null,'G4',null],
-      bass: ['A2',null,'A2','E3','A2',null,'G2',null,
-             'A2',null,'A2','E3','F2',null,'E2',null],
-      pad:  [['A3','E4'],null,null,null,['G3','D4'],null,null,null,
-             ['A3','E4'],null,null,null,['F3','C4'],null,null,null],
-    },
-    {
-      bpm: 168,
-      mel:  ['E5','G5','A5',null,'G5','E5','D5','E5',
-             'C5',null,'D5','E5','G5',null,'E5',null],
-      bass: ['A1',null,'E2','A1','G1',null,'E1',null,
-             'A1',null,'A1','E2','D2',null,'A1',null],
-      pad:  [['A3','E4','A4'],null,null,null,['G3','D4','G4'],null,null,null,
-             ['A3','E4','A4'],null,null,null,['F3','C4','F4'],null,null,null],
-    },
-  ];
-
-  function build() {
-    if (_ready) return;
-    _ready = true;
-
-    _master = new Tone.Gain(0.78).toDestination();
-    const comp = new Tone.Compressor({ threshold:-18, ratio:4 }).connect(_master);
-    const rev  = new Tone.Reverb({ decay:1.5, wet:0.18 }).connect(comp);
-
-    // Lead synth (saw + filter)
-    _lead = new Tone.PolySynth(Tone.Synth, {
-      oscillator: { type:'sawtooth' },
-      envelope:   { attack:.02, decay:.12, sustain:.6, release:.28 },
-    });
-    const leadFilter = new Tone.Filter(2400,'lowpass').connect(rev);
-    _lead.connect(leadFilter);
-    _lead.volume.value = -9;
-
-    // Pad (warm chords)
-    _pad = new Tone.PolySynth(Tone.Synth, {
-      oscillator: { type:'triangle' },
-      envelope:   { attack:.35, decay:.4, sustain:.5, release:.8 },
-    }).connect(rev);
-    _pad.volume.value = -18;
-
-    // Bass
-    _bass = new Tone.Synth({
-      oscillator: { type:'square' },
-      envelope:   { attack:.01, decay:.18, sustain:.55, release:.2 },
-    });
-    const bassFilter = new Tone.Filter(600,'lowpass').connect(comp);
-    _bass.connect(bassFilter);
-    _bass.volume.value = -7;
-
-    // Kick
-    _kick = new Tone.MembraneSynth({ pitchDecay:.06, octaves:6,
-      envelope:{ attack:.001, decay:.32, sustain:0, release:.15 }
-    }).connect(comp);
-    _kick.volume.value = -3;
-
-    // Snare (noise + tone)
-    _snare = new Tone.NoiseSynth({ noise:{type:'white'},
-      envelope:{ attack:.001, decay:.14, sustain:0, release:.05 }
-    }).connect(comp);
-    _snare.volume.value = -10;
-
-    // Hi-hat
-    _hat = new Tone.MetalSynth({ frequency:400, envelope:{attack:.001,decay:.04,release:.01},
-      resonance:8000, modulationIndex:32, octaves:1.5 }).connect(comp);
-    _hat.volume.value = -18;
-
-    const p = PHASES[_phase];
-    Tone.getTransport().bpm.value = p.bpm;
-    Tone.getTransport().loop = true;
-    Tone.getTransport().loopEnd = '2m';
-
-    _melSeq  = new Tone.Sequence((t,n)=>{ if(n) _lead.triggerAttackRelease(n,'8n',t); }, p.mel,  '16n').start(0);
-    _bassSeq = new Tone.Sequence((t,n)=>{ if(n) _bass.triggerAttackRelease(n,'8n',t); }, p.bass, '16n').start(0);
-    new Tone.Sequence((t,n)=>{ if(n) _pad.triggerAttackRelease(n,'4n',t); }, p.pad, '16n').start(0);
-
-    // Kick: beat 1 and 3 (every 8 16th notes)
-    _kickSeq = new Tone.Sequence((t,i)=>{
-      if(i===0||i===8) _kick.triggerAttackRelease('C1','16n',t);
-    }, [...Array(16).keys()], '16n').start(0);
-
-    // Snare: beat 2 and 4
-    new Tone.Sequence((t,i)=>{
-      if(i===4||i===12) _snare.triggerAttackRelease('8n',t);
-    }, [...Array(16).keys()], '16n').start(0);
-
-    // Hi-hat: 8th notes, offbeat quieter
-    _hatSeq = new Tone.Sequence((t,i)=>{
-      _hat.volume.value = i%2===0 ? -18 : -22;
-      _hat.triggerAttackRelease('16n',t);
-    }, [...Array(16).keys()], '16n').start(0);
+  // CC0 배틀 음악(OpenGameArt) — 페이즈별 트랙 크로스페이드
+  const TRACKS = { a:'assets/bgm/battle-theme.ogg', b:'assets/bgm/hard-boss.ogg' };
+  const PHASE_TRACK = ['a', 'a', 'b'];   // 0·1단계=RPG 배틀, 2단계(대마왕)=격렬
+  const _au = {};
+  let _cur = null, _playing = false, _phase = 0;
+  function get(key) {
+    if (!_au[key]) { const a = new Audio(TRACKS[key]); a.loop = true; a.volume = 0; a.preload = 'auto'; _au[key] = a; }
+    return _au[key];
   }
-
+  function fade(a, target, ms) {
+    if (a._raf) cancelAnimationFrame(a._raf);
+    const v0 = a.volume, t0 = performance.now();
+    (function step(now) {
+      const k = Math.min(1, (now - t0) / ms);
+      a.volume = Math.max(0, Math.min(1, v0 + (target - v0) * k));
+      if (k < 1) a._raf = requestAnimationFrame(step);
+      else if (target === 0) { try { a.pause(); } catch (e) {} }
+    })(performance.now());
+  }
+  function switchTo(key) {
+    const next = get(key);
+    Object.keys(_au).forEach(k => { if (_au[k] !== next) fade(_au[k], 0, 500); });
+    _cur = next;
+    next.play().then(() => fade(next, 0.5, 700)).catch(() => {});
+  }
   return {
-    async start(phase=0) {
-      if (_playing) return;
-      _phase = phase;
-      _playing = true;
-      try {
-        await Tone.start();
-        build();
-        const p = PHASES[phase];
-        Tone.getTransport().bpm.value = p.bpm;
-        if (_melSeq)  _melSeq.events  = p.mel;
-        if (_bassSeq) _bassSeq.events = p.bass;
-        if (Tone.getTransport().state !== 'started') Tone.getTransport().start('+0.05');
-      } catch(e) { console.warn('BGM error:', e); }
-    },
-    stop() {
-      _playing = false;
-      try {
-        if (_master) _master.gain.rampTo(0, 0.12);
-        setTimeout(() => {
-          try { Tone.getTransport().stop(); if (_master) _master.gain.rampTo(0.78, 0); } catch(e){}
-        }, 180);
-      } catch(e){}
-    },
-    setPhase(p) {
-      if (_phase === p || !_ready) return;
-      _phase = p;
-      const track = PHASES[p];
-      try {
-        Tone.getTransport().bpm.rampTo(track.bpm, 1.2);
-        if (_melSeq)  _melSeq.events  = track.mel;
-        if (_bassSeq) _bassSeq.events = track.bass;
-        if (_lead) _lead.volume.rampTo(-9 + p*1.5, 0.5);
-        if (_kick) _kick.volume.rampTo(-3 + p*1.5, 0.5);
-      } catch(e){}
-    },
+    async start(phase = 0) { _phase = phase; _playing = true; switchTo(PHASE_TRACK[phase] || 'a'); },
+    stop() { _playing = false; Object.keys(_au).forEach(k => fade(_au[k], 0, 250)); },
+    setPhase(p) { if (p === _phase) return; _phase = p; if (_playing) switchTo(PHASE_TRACK[p] || 'a'); },
     get isPlaying() { return _playing; }
   };
 })();
@@ -594,14 +473,14 @@ function drawBG(phase, ts) {
 //  ASSET PATHS
 // ═══════════════════════════════════════════════════════════
 const HERO_ASSETS = [
-  { idle:'../game/assets/chars/hero-lv1.png', atk:'../game/assets/chars/hero-lv1-attack.png', name:'🗡️ 문법 수련생', scale:1.0,  glow:'rgba(56,189,248,.5)',  tint:'' },
-  { idle:'../game/assets/chars/hero-lv2.png', atk:'../game/assets/chars/hero-lv2-attack.png', name:'⚔️ 문법 검사',   scale:1.16, glow:'rgba(250,204,21,.6)', tint:'saturate(1.18) brightness(1.06)' },
-  { idle:'../game/assets/chars/hero-lv3.png', atk:'../game/assets/chars/hero-lv3-attack.png', name:'🏆 문법 용사',   scale:1.32, glow:'rgba(255,255,255,.75)', tint:'saturate(1.28) brightness(1.14)' },
+  { idle:'assets/fighters/hero/portrait.png',   atk:'', name:'🗡️ 문법 수련생', scale:1.0,  glow:'rgba(56,189,248,.5)',  tint:'' },
+  { idle:'assets/fighters/hero/portrait.png',   atk:'', name:'⚔️ 문법 검사',   scale:1.16, glow:'rgba(250,204,21,.6)', tint:'saturate(1.18) brightness(1.06)' },
+  { idle:'assets/fighters/knight/portrait.png', atk:'', name:'🏆 문법 용사',   scale:1.32, glow:'rgba(255,255,255,.75)', tint:'saturate(1.28) brightness(1.14)' },
 ];
 const BOSS_ASSETS = [
-  { idle:'../game/assets/chars/boss-lv1.png', hit:'../game/assets/chars/boss-lv1-hit.png', name:'🔮 문법 견습 마도사', cutName:'문법 견습 마도사', cutSub:'1단계 보스 등장!', glow:'rgba(168,85,247,.55)', scale:1.0,  tint:'' },
-  { idle:'../game/assets/chars/boss-lv2.png', hit:'../game/assets/chars/boss-lv2-hit.png', name:'🧙 문법 흑마도사', cutName:'문법 흑마도사', cutSub:'2단계 각성! 마력이 폭주한다!', glow:'rgba(220,38,80,.6)', scale:1.28, tint:'hue-rotate(-35deg) saturate(1.35) brightness(1.05)' },
-  { idle:'../game/assets/chars/boss-lv3.png', hit:'../game/assets/chars/boss-lv3-hit.png', name:'👹 문법 대마왕', cutName:'문법 대마왕', cutSub:'최종 형태! 전력을 다해라!', glow:'rgba(239,68,68,.75)', scale:1.55, tint:'hue-rotate(-65deg) saturate(1.7) brightness(.92) contrast(1.1)' },
+  { idle:'assets/fighters/wizard/portrait.png', hit:'', name:'🔮 문법 견습 마도사', cutName:'문법 견습 마도사', cutSub:'1단계 보스 등장!', glow:'rgba(168,85,247,.55)', scale:1.0,  tint:'' },
+  { idle:'assets/fighters/wizard/portrait.png', hit:'', name:'🧙 문법 흑마도사', cutName:'문법 흑마도사', cutSub:'2단계 각성! 마력이 폭주한다!', glow:'rgba(220,38,80,.6)', scale:1.28, tint:'hue-rotate(-35deg) saturate(1.35) brightness(1.05)' },
+  { idle:'assets/fighters/king/portrait.png',   hit:'', name:'👹 문법 대마왕', cutName:'문법 대마왕', cutSub:'최종 형태! 전력을 다해라!', glow:'rgba(239,68,68,.75)', scale:1.55, tint:'hue-rotate(-65deg) saturate(1.7) brightness(.92) contrast(1.1)' },
 ];
 
 // ═══════════════════════════════════════════════════════════

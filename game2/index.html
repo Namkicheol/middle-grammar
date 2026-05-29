@@ -174,16 +174,26 @@ canvas#c{position:absolute;inset:0;width:100%;height:100%;}
 /* ── RESULT ── */
 #result{position:fixed;inset:0;z-index:90;display:none;align-items:center;justify-content:center;background:rgba(0,0,0,.88);}
 #result.show{display:flex;}
-.result-card{text-align:center;color:#fff;padding:28px 36px;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.14);border-radius:28px;backdrop-filter:blur(12px);max-width:480px;width:92%;max-height:85vh;overflow-y:auto;}
-.result-icon{font-size:4rem;margin-bottom:8px;}
-.result-title{font-size:2rem;font-weight:900;margin-bottom:4px;}
-.result-sub{font-size:.88rem;color:#94a3b8;margin-bottom:18px;}
-.result-stats{display:flex;gap:20px;justify-content:center;margin-bottom:20px;}
-.result-stat b{display:block;font-size:1.6rem;font-weight:900;color:#fde68a;}
+.result-card{text-align:center;color:#fff;padding:30px 36px 26px;background:linear-gradient(180deg,rgba(30,20,55,.94),rgba(11,7,22,.97));border:2px solid rgba(255,255,255,.16);border-radius:26px;backdrop-filter:blur(12px);max-width:480px;width:92%;max-height:88vh;overflow-y:auto;animation:resultPop .5s cubic-bezier(.34,1.56,.64,1);}
+.result-card.win{border-color:rgba(250,204,21,.55);box-shadow:0 0 60px rgba(250,204,21,.32),inset 0 0 40px rgba(250,204,21,.06);}
+.result-card.lose{border-color:rgba(239,68,68,.5);box-shadow:0 0 50px rgba(239,68,68,.28);}
+@keyframes resultPop{from{transform:scale(.7) translateY(30px);opacity:0}to{transform:scale(1) translateY(0);opacity:1}}
+.result-icon{font-size:4.2rem;margin-bottom:2px;filter:drop-shadow(0 4px 14px rgba(250,204,21,.5));animation:resultIcon 1.5s ease-in-out infinite;}
+@keyframes resultIcon{0%,100%{transform:translateY(0) rotate(-4deg)}50%{transform:translateY(-7px) rotate(4deg)}}
+.result-title{font-size:2.1rem;font-weight:900;margin-bottom:2px;}
+.result-grade{margin-bottom:8px;line-height:1;}
+.result-grade .gr{font-size:2.7rem;font-weight:900;background:linear-gradient(135deg,#fde68a,#fbbf24,#f59e0b);-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;filter:drop-shadow(0 0 12px rgba(251,191,36,.7));}
+.result-card.lose .result-grade .gr{background:linear-gradient(135deg,#fca5a5,#ef4444,#b91c1c);-webkit-background-clip:text;background-clip:text;}
+.result-grade .stars{color:#fbbf24;font-size:1.4rem;text-shadow:0 0 10px rgba(251,191,36,.7);margin-left:10px;letter-spacing:3px;vertical-align:6px;}
+.result-sub{font-size:.9rem;color:#cbd5e1;margin-bottom:18px;}
+.result-stats{display:flex;gap:14px;justify-content:center;margin-bottom:20px;}
+.result-stat{background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.1);border-radius:14px;padding:10px 14px;min-width:74px;}
+.result-stat b{display:block;font-size:1.6rem;font-weight:900;color:#fde68a;font-variant-numeric:tabular-nums;}
 .result-stat span{font-size:.7rem;color:#94a3b8;}
-.result-btns{display:flex;gap:10px;justify-content:center;}
-.result-btns button{border:none;border-radius:14px;font-family:inherit;font-size:.95rem;font-weight:900;padding:12px 24px;cursor:pointer;transition:all .14s;}
-.btn-retry{background:#7c3aed;color:#fff;}
+.result-btns{display:flex;gap:10px;justify-content:center;flex-wrap:wrap;}
+.result-btns button{border:none;border-radius:14px;font-family:inherit;font-size:.95rem;font-weight:900;padding:13px 24px;cursor:pointer;transition:all .14s;}
+.btn-retry{background:linear-gradient(135deg,#8b5cf6,#7c3aed);color:#fff;box-shadow:0 6px 18px rgba(124,58,237,.5);}
+.btn-retry:active{transform:translateY(1px);}
 .btn-home{background:rgba(255,255,255,.12);color:#fff;}
 .wrong-log{margin-top:18px;text-align:left;border-top:1px solid rgba(255,255,255,.1);padding-top:14px;}
 .wrong-log-title{font-size:.8rem;font-weight:900;color:#f87171;margin-bottom:8px;text-align:center;}
@@ -326,6 +336,7 @@ canvas#c{position:absolute;inset:0;width:100%;height:100%;}
     <div class="result-card">
       <div class="result-icon" id="result-icon">🏆</div>
       <div class="result-title" id="result-title">승리!</div>
+      <div class="result-grade" id="result-grade"></div>
       <div class="result-sub" id="result-sub">보스를 물리쳤다!</div>
       <div class="result-stats">
         <div class="result-stat"><b id="r-score">0</b><span>점수</span></div>
@@ -729,7 +740,7 @@ const SPRITE_DEFS = {
 const HERO_SPRITE = ['warrior', 'warrior', 'knight'];
 const BOSS_SPRITE = ['wizard',  'wizard',  'king'];
 // 스테이지2+ 보스 로스터 (스테이지마다 다른 캐릭으로 순환)
-const BOSS_STAGE_ROSTER = ['king', 'minotaur', 'skeleton'];
+const BOSS_STAGE_ROSTER = ['minotaur', 'skeleton', 'king'];  // 스테이지1이 대마왕으로 끝나므로 2단계는 다른 캐릭부터
 const BOSS_STAGE_NAME   = { king:'👹 문법 대마왕', minotaur:'🐂 문법 미노타우르스', skeleton:'💀 문법 해골군주' };
 let _heroKey = 'warrior', _bossKey = 'wizard';
 
@@ -1269,6 +1280,18 @@ function gameWin() {
 function gameOver() { GS.phase=10; cancelTimers(); heroFighter.play('death'); setTimeout(()=>showResult(false), 700); }
 
 function showResult(win) {
+  // 등급(랭크) 계산 — 정답률·최대콤보 기반
+  const acc = GS.correct / Math.max(1, GS.correct + wrongLog.length);
+  let grade = 'C', stars = 0;
+  if (!win) { grade = 'D'; stars = 0; }
+  else if (GS.maxCombo >= 10 && acc >= 0.9) { grade = 'S'; stars = 3; }
+  else if (GS.maxCombo >= 7) { grade = 'A'; stars = 2; }
+  else if (GS.maxCombo >= 4) { grade = 'B'; stars = 1; }
+  else { grade = 'C'; stars = 0; }
+  const card = document.querySelector('#result .result-card');
+  if (card) { card.classList.remove('win','lose'); card.classList.add(win ? 'win' : 'lose'); }
+  document.getElementById('result-grade').innerHTML =
+    `<span class="gr">RANK ${grade}</span><span class="stars">${'★'.repeat(stars)}${'☆'.repeat(3-stars)}</span>`;
   document.getElementById('result-icon').textContent = win ? '🏆' : '💀';
   document.getElementById('result-title').textContent = win ? `STAGE ${GS.stage} 클리어!` : '패배...';
   document.getElementById('result-sub').textContent = win

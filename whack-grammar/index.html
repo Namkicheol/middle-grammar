@@ -256,6 +256,9 @@ header{display:flex;align-items:center;gap:8px;padding:12px 14px 6px;position:re
 .mole.grow .mole-eye{background:radial-gradient(circle at 50% 50%,#fff 0%,#bef264 30%,#4d7c0f 75%,transparent 100%);}
 .mole.shrink .mole-body{background:radial-gradient(ellipse at 50% 28%,#cbd5e1 0%,#64748b 48%,#1e293b 100%);}
 .mole.shrink .mole-eye{background:radial-gradient(circle at 50% 50%,#fff 0%,#cbd5e1 30%,#475569 75%,transparent 100%);}
+.mole-tool{position:absolute;top:42%;left:50%;transform:translate(-50%,-50%);z-index:3;
+  font-size:clamp(1.6rem,7vw,2.4rem);pointer-events:none;
+  filter:drop-shadow(0 2px 5px rgba(0,0,0,.7));line-height:1;}
 .mole.heart .mole-sign{display:none;}
 .mole.heart .mole-body::before{content:'❤️';position:absolute;top:-22%;left:50%;transform:translateX(-50%);
   font-size:1.7rem;filter:drop-shadow(0 0 8px rgba(244,114,182,.9));
@@ -884,13 +887,14 @@ function spawnSpecial(kind) {
   const slot = grid.children[slotIdx];
   const mole = document.createElement('div');
   mole.className = `mole show popping ${kind}`;
-  const sign = kind === 'grow' ? '<div class="mole-sign">🔨</div>'
-             : kind === 'shrink' ? '<div class="mole-sign">🔧</div>' : '';
+  // 🔨/🔧 아이콘을 몸통 중앙에 올림(보이는 곳=눌리는 곳). 라벨은 클릭 안 가로채게 pointer-events:none.
+  const tool = kind === 'grow' ? '<div class="mole-tool">🔨</div>'
+             : kind === 'shrink' ? '<div class="mole-tool">🔧</div>' : '';
   mole.innerHTML = `
-    ${sign}
     <div class="mole-body">
       <div class="mole-eye l"></div><div class="mole-eye r"></div>
-    </div>`;
+    </div>
+    ${tool}`;
   slot.appendChild(mole);
   setTimeout(() => {
     if (mole.parentNode) mole.classList.replace('popping', 'up');

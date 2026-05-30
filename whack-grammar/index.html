@@ -474,6 +474,7 @@ header{display:flex;align-items:center;gap:8px;padding:12px 14px 6px;position:re
   </header>
   <div class="hud">
     <div class="hud-card score-big"><span class="lbl">점수</span><span class="val" id="hud-score">0</span></div>
+    <div class="hud-card"><span class="lbl">라운드</span><span class="val" id="hud-round">R1</span></div>
     <div class="hud-card"><span class="lbl">콤보</span><span class="val combo" id="hud-combo">×0</span></div>
     <div class="hud-card boost hide" id="hud-boost"><span class="lbl">×2</span><span class="val" id="hud-boost-time">10</span></div>
     <div class="hud-card"><span class="lbl">HP</span><div class="hp-row" id="hud-hp"><span></span><span></span><span></span></div></div>
@@ -506,6 +507,7 @@ header{display:flex;align-items:center;gap:8px;padding:12px 14px 6px;position:re
         <div><strong id="end-combo">0</strong>최고콤보</div>
       </div>
       <div class="end-actions">
+        <button class="go retry-big hide" id="btn-next-round" onclick="nextRound()">🔥 다음 라운드</button>
         <button class="go" id="btn-retry">다시 도전</button>
         <a class="back-btn" href="../game/">목록으로</a>
       </div>

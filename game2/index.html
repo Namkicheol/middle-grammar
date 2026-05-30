@@ -24,6 +24,10 @@ body{background:#000;overflow:hidden;font-family:'Baloo 2','Noto Sans KR',sans-s
 .unit-card .uc-lbl{font-size:.68rem;font-weight:900;letter-spacing:.8px;color:#a78bfa;margin-bottom:5px;}
 .unit-card h3{font-size:.95rem;font-weight:900;line-height:1.3;}
 .unit-card .uc-cnt{font-size:.7rem;color:#94a3b8;margin-top:6px;}
+.mode-toggle{grid-column:1/-1;display:flex;gap:8px;justify-content:center;margin-bottom:2px;}
+.mode-btn{background:rgba(255,255,255,.06);border:1.5px solid rgba(255,255,255,.14);border-radius:14px;padding:10px 22px;font-family:inherit;font-size:.95rem;font-weight:900;color:#cbd5e1;cursor:pointer;transition:.16s;}
+.mode-btn.on{background:linear-gradient(135deg,#7c3aed,#a855f7);border-color:#a855f7;color:#fff;box-shadow:0 4px 16px rgba(124,58,237,.5);}
+.mode-hint{grid-column:1/-1;text-align:center;font-size:.78rem;color:#94a3b8;margin-bottom:8px;line-height:1.4;}
 .all-card{grid-column:1/-1;background:linear-gradient(135deg,#4c1d95,#7c3aed,#1d4ed8);border:none;border-radius:18px;padding:18px;text-align:center;cursor:pointer;color:#fff;font-weight:900;font-size:1.05rem;box-shadow:0 12px 28px rgba(124,58,237,.4);transition:all .16s;}
 .all-card:hover{transform:translateY(-2px);box-shadow:0 18px 36px rgba(124,58,237,.5);}
 .back-link{text-align:center;padding-bottom:14px;}
@@ -573,6 +577,7 @@ function initGS(qs) {
     questions: shuffle([...qs]), qIdx: 0,
     currentQ: null, attackType: null, drops: [], dropId: 0,
     upgrades: { atk:0, def:0, skill:0, time:0, score:0, startGauge:0 },
+    practice: false, practiceTotal: 0, practiceDone: 0, practiceCorrect: 0,
   };
 }
 // 스테이지 클리어 보상 카드 (랜덤 3장 중 1개 선택, 영구 누적)
@@ -594,9 +599,11 @@ function stageSpeedMul() { return Math.pow(0.85, (GS ? GS.stage : 1) - 1); }   /
 // ═══════════════════════════════════════════════════════════
 const G = {
   _qs: null, _label: '',
-  start(qs, label) {
-    this._qs = qs; this._label = label;
+  start(qs, label, practice) {
+    this._qs = qs; this._label = label; this._practice = !!practice;
     GS = initGS(qs);
+    GS.practice = !!practice;
+    GS.practiceTotal = practice ? Math.min(10, qs.length) : 0;
     clearDropsDOM();   // 이전 판 남은 아이템 DOM 제거 (안 그러면 보이는데 안 먹힘)
     document.getElementById('sel').style.display = 'none';
     document.getElementById('game').style.display = 'block';
@@ -605,13 +612,19 @@ const G = {
     updateHUD();
     if (rafId) cancelAnimationFrame(rafId);
     rafId = requestAnimationFrame(loop);
-    scheduleBossAttack();
-    scheduleDropSpawn();
+    if (GS.practice) {
+      // 연습 모드: 보스 공격/드랍 없이 문제만 차분히. 보스는 그냥 서 있음.
+      document.getElementById('stage-badge').textContent = '📖 연습 모드';
+      setTimeout(practiceNextQuestion, 600);
+    } else {
+      scheduleBossAttack();
+      scheduleDropSpawn();
+    }
   },
   retry() {
     document.getElementById('result').classList.remove('show');
     document.getElementById('victory-cut').classList.remove('show');
-    if (this._qs) this.start(this._qs, this._label);
+    if (this._qs) this.start(this._qs, this._label, this._practice);
   },
   nextStage() {
     // 다음 스테이지 전 보상 카드 선택
@@ -1082,6 +1095,62 @@ function startAttack() {
 }
 
 // ═══════════════════════════════════════════════════════════
+//  PRACTICE MODE (시간제한·피격 없는 학습 모드)
+// ═══════════════════════════════════════════════════════════
+function practiceNextQuestion() {
+  if (!GS || !GS.practice) return;
+  if (GS.practiceDone >= GS.practiceTotal) { practiceResult(); return; }
+  GS.phase = 0;
+  GS.attackType = ATTACK_TYPES[0];
+  showQuestion();
+}
+
+function practiceFinish(isCorrect) {
+  document.getElementById('qpop').classList.remove('show');
+  if (isCorrect) {
+    GS.practiceCorrect++;
+    GS.combo = Math.min(GS.combo + 1, 12);
+    GS.maxCombo = Math.max(GS.maxCombo, GS.combo);
+    heroAnim('atk'); bossAnim('hit');
+    spawnBurst(CW*.78, CH*.42, ['#fbbf24','#f97316','#fff'], 14, 1.1);
+  } else {
+    GS.combo = 1;
+  }
+  GS.practiceDone++;
+  updateHUD();
+  setTimeout(practiceNextQuestion, 450);
+}
+
+function practiceResult() {
+  GS.phase = 10;
+  cancelTimers();
+  BGM.stop();
+  const total = GS.practiceTotal, correct = GS.practiceCorrect;
+  const pct = total ? Math.round(correct / total * 100) : 0;
+  const card = document.querySelector('#result .result-card');
+  if (card) { card.classList.remove('lose'); card.classList.add('win'); }
+  document.getElementById('result-icon').textContent = '📖';
+  document.getElementById('result-title').textContent = '연습 완료!';
+  document.getElementById('result-grade').innerHTML = `<span class="gr">${pct}점</span>`;
+  document.getElementById('result-sub').textContent = correct === total ? '전부 맞혔어요! 보스전에 도전해볼까요? 💪' : '틀린 문제를 확인하고 다시 도전해봐요!';
+  document.getElementById('result-btns').innerHTML =
+    `<button class="btn-retry" onclick="G.retry()">📖 다시 연습</button><button class="btn-home" onclick="G.goHome()">단원 선택</button>`;
+  document.getElementById('r-score').textContent = correct + '/' + total;
+  document.getElementById('r-correct').textContent = correct;
+  document.getElementById('r-combo').textContent = 'x' + GS.maxCombo;
+  const wl = document.getElementById('wrong-log');
+  const wll = document.getElementById('wrong-log-list');
+  if (wrongLog.length) {
+    wl.style.display = 'block';
+    wll.innerHTML = wrongLog.map(w =>
+      `<div class="wrong-log-item"><div class="wl-eng">${w.eng}</div>
+       <div class="wl-ans">✅ 정답: <strong>${w.ans}</strong></div>
+       <div class="wl-wrong">❌ 내 답: ${w.wrong}</div></div>`).join('');
+  } else { wl.style.display = 'none'; }
+  document.getElementById('result').classList.add('show');
+}
+
+// ═══════════════════════════════════════════════════════════
 //  QUESTION SYSTEM
 // ═══════════════════════════════════════════════════════════
 function showQuestion() {
@@ -1091,14 +1160,15 @@ function showQuestion() {
   const q = GS.questions[GS.qIdx++];
   GS.currentQ = q;
 
+  if (!GS.attackType) GS.attackType = ATTACK_TYPES[0];   // 연습 모드 등 보스공격 없이 문제 띄울 때 기본값
   let timeLimit = GS.attackType.time * (PHASE_TIME_SCALE[GS.bossPhase] || 1) * stageTimeMul() * (1 + (GS.upgrades.time || 0));
   if (GS.statusFx.FREEZE) timeLimit *= 0.5;
 
   let opts = [...q.opts];
   if (GS.statusFx.SHOCK) opts = shuffle(opts);
 
-  document.getElementById('qpop-atk-label').textContent = GS.attackType.label;
-  document.getElementById('qpop-atk-label').style.color = GS.attackType.color;
+  document.getElementById('qpop-atk-label').textContent = GS.practice ? ('📖 연습 ' + (GS.practiceDone + 1) + '/' + GS.practiceTotal) : GS.attackType.label;
+  document.getElementById('qpop-atk-label').style.color = GS.practice ? '#38bdf8' : GS.attackType.color;
   document.getElementById('qpop-eng').textContent = q.eng;
   document.getElementById('qpop-kor').textContent = q.kor;
   document.getElementById('qpop-fb').textContent = '';
@@ -1129,17 +1199,25 @@ function showQuestion() {
   const start = performance.now();
   const timerEl = document.getElementById('qpop-timer');
   const fillEl = document.getElementById('timer-fill');
-  function tickTimer() {
-    if (GS.phase !== 2) return;
-    const rem = Math.max(0, timeLimit - (performance.now() - start) / 1000);
-    timerEl.textContent = rem.toFixed(1);
-    fillEl.style.width = (rem / timeLimit * 100) + '%';
-    fillEl.style.background = rem > timeLimit*.5 ? '#fbbf24' : rem > timeLimit*.25 ? '#f97316' : '#ef4444';
-    timerEl.className = 'qpop-timer' + (rem < 1.5 ? ' crit' : rem < 3 ? ' warn' : '');
-    if (rem > 0) { qTimer = requestAnimationFrame(tickTimer); }
-    else { clearInterval(shockIv); timeExpired(q.ans); }
+  if (GS.practice) {
+    // 연습 모드: 시간 제한 없음 — 타이머 바 가득, 카운트다운 안 함
+    timerEl.textContent = '∞';
+    timerEl.className = 'qpop-timer';
+    fillEl.style.width = '100%';
+    fillEl.style.background = '#38bdf8';
+  } else {
+    function tickTimer() {
+      if (GS.phase !== 2) return;
+      const rem = Math.max(0, timeLimit - (performance.now() - start) / 1000);
+      timerEl.textContent = rem.toFixed(1);
+      fillEl.style.width = (rem / timeLimit * 100) + '%';
+      fillEl.style.background = rem > timeLimit*.5 ? '#fbbf24' : rem > timeLimit*.25 ? '#f97316' : '#ef4444';
+      timerEl.className = 'qpop-timer' + (rem < 1.5 ? ' crit' : rem < 3 ? ' warn' : '');
+      if (rem > 0) { qTimer = requestAnimationFrame(tickTimer); }
+      else { clearInterval(shockIv); timeExpired(q.ans); }
+    }
+    qTimer = requestAnimationFrame(tickTimer);
   }
-  qTimer = requestAnimationFrame(tickTimer);
   document.getElementById('qpop').classList.add('show');
 }
 
@@ -1157,6 +1235,14 @@ function handleAnswer(chosen, correct, clickedBtn) {
     wrongLog.push({ eng: GS.currentQ.eng, ans: correct, wrong: chosen });
   }
   const fb = document.getElementById('qpop-fb');
+  if (GS.practice) {
+    // 연습: 피격 없이 정답/해설만. 오답이면 정답을 또렷이 보여줌.
+    fb.textContent = isCorrect ? '✅ 정답!' : ('❌ 오답 — 정답: ' + correct);
+    fb.className = 'qpop-fb ' + (isCorrect ? 'ok' : 'ng');
+    if (isCorrect) playSfx('correct'); else playSfx('wrong');
+    setTimeout(() => practiceFinish(isCorrect), isCorrect ? 800 : 1500);
+    return;
+  }
   fb.textContent = isCorrect ? '✅ 정답! 공격!' : '❌ 오답! 피격!';
   fb.className = 'qpop-fb ' + (isCorrect ? 'ok' : 'ng');
   setTimeout(() => finishQuestion(isCorrect), isCorrect ? 650 : 950);
@@ -1572,19 +1658,40 @@ function cancelTimers() {
 // ═══════════════════════════════════════════════════════════
 //  SELECT SCREEN
 // ═══════════════════════════════════════════════════════════
+let _practiceMode = false;
 function buildSelect() {
   if (typeof GAME_QUESTIONS === 'undefined') return;
   const c = document.getElementById('unit-list');
-  const allBtn = document.createElement('div');
-  allBtn.className = 'all-card';
-  allBtn.innerHTML = '⚔️ 전체 단원 보스전<br><small style="font-weight:700;opacity:.8">모든 문제로 최강 보스 도전</small>';
-  allBtn.onclick = () => G.start(Object.values(GAME_QUESTIONS).flatMap(u=>u.questions), '전체 단원');
-  c.appendChild(allBtn);
+  c.innerHTML = '';
+  // 모드 토글 (보스전 / 연습)
+  const toggle = document.createElement('div');
+  toggle.className = 'mode-toggle';
+  toggle.innerHTML =
+    `<button class="mode-btn${_practiceMode?'':' on'}" data-m="boss">⚔️ 보스전</button>` +
+    `<button class="mode-btn${_practiceMode?' on':''}" data-m="practice">📖 연습 모드</button>`;
+  toggle.querySelectorAll('.mode-btn').forEach(b => {
+    b.onclick = () => { _practiceMode = (b.dataset.m === 'practice'); buildSelect(); };
+  });
+  c.appendChild(toggle);
+  const hint = document.createElement('div');
+  hint.className = 'mode-hint';
+  hint.textContent = _practiceMode
+    ? '📖 연습 모드: 시간 제한·피해 없이 차분하게 10문제. 틀려도 정답을 알려줘요.'
+    : '⚔️ 보스전: 시간 안에 맞혀 보스를 물리치세요!';
+  c.appendChild(hint);
+  if (!_practiceMode) {
+    const allBtn = document.createElement('div');
+    allBtn.className = 'all-card';
+    allBtn.innerHTML = '⚔️ 전체 단원 보스전<br><small style="font-weight:700;opacity:.8">모든 문제로 최강 보스 도전</small>';
+    allBtn.onclick = () => G.start(Object.values(GAME_QUESTIONS).flatMap(u=>u.questions), '전체 단원', false);
+    c.appendChild(allBtn);
+  }
   Object.entries(GAME_QUESTIONS).forEach(([k,u]) => {
     const card = document.createElement('div');
     card.className = 'unit-card';
-    card.innerHTML = `<div class="uc-lbl">${k.toUpperCase()}</div><h3>${u.label}</h3><div class="uc-cnt">문제 ${u.questions.length}개</div>`;
-    card.onclick = () => G.start(u.questions, u.label);
+    const cnt = _practiceMode ? Math.min(10, u.questions.length) + '문제 연습' : '문제 ' + u.questions.length + '개';
+    card.innerHTML = `<div class="uc-lbl">${k.toUpperCase()}</div><h3>${u.label}</h3><div class="uc-cnt">${cnt}</div>`;
+    card.onclick = () => G.start(u.questions, u.label, _practiceMode);
     c.appendChild(card);
   });
 }

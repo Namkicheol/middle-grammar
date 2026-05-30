@@ -765,7 +765,7 @@ const SPRITE_DEFS = {
       death:  {file:'Death.png',    n:6, fps:9,  loop:false, hold:true },
     }},
   // 상위 스테이지 보스 (LuizMelo Monsters Creatures Fantasy, CC0, 150px)
-  skeleton: { base:'assets/fighters/skeleton/', fw:150, fh:150, scale:1.8, flip:true, foot:-55,
+  skeleton: { base:'assets/fighters/skeleton/', fw:150, fh:150, scale:1.8, flip:true, footPad:34,
     anims:{
       idle:   {file:'Idle.png',     n:4, fps:7,  loop:true },
       run:    {file:'Run.png',      n:4, fps:9,  loop:true },
@@ -774,7 +774,7 @@ const SPRITE_DEFS = {
       hurt:   {file:'Take_hit.png', n:4, fps:11, loop:false, next:'idle' },
       death:  {file:'Death.png',    n:4, fps:8,  loop:false, hold:true },
     }},
-  goblin: { base:'assets/fighters/goblin/', fw:150, fh:150, scale:1.7, flip:true, foot:-55,
+  goblin: { base:'assets/fighters/goblin/', fw:150, fh:150, scale:1.7, flip:true, footPad:33,
     anims:{
       idle:   {file:'Idle.png',     n:4, fps:8,  loop:true },
       run:    {file:'Run.png',      n:8, fps:13, loop:true },
@@ -783,7 +783,7 @@ const SPRITE_DEFS = {
       hurt:   {file:'Take_hit.png', n:4, fps:11, loop:false, next:'idle' },
       death:  {file:'Death.png',    n:4, fps:10, loop:false, hold:true },
     }},
-  mushroom: { base:'assets/fighters/mushroom/', fw:150, fh:150, scale:1.9, flip:true, foot:-55,
+  mushroom: { base:'assets/fighters/mushroom/', fw:150, fh:150, scale:1.9, flip:true, footPad:39,
     anims:{
       idle:   {file:'Idle.png',     n:4, fps:8,  loop:true },
       run:    {file:'Run.png',      n:8, fps:13, loop:true },
@@ -792,7 +792,7 @@ const SPRITE_DEFS = {
       hurt:   {file:'Take_hit.png', n:4, fps:11, loop:false, next:'idle' },
       death:  {file:'Death.png',    n:4, fps:9,  loop:false, hold:true },
     }},
-  flying_eye: { base:'assets/fighters/flying_eye/', fw:150, fh:150, scale:1.7, flip:true, foot:30,
+  flying_eye: { base:'assets/fighters/flying_eye/', fw:150, fh:150, scale:1.7, flip:true, footPad:2,
     anims:{
       idle:   {file:'Idle.png',     n:8, fps:10, loop:true },
       run:    {file:'Run.png',      n:8, fps:12, loop:true },
@@ -895,7 +895,13 @@ function setCharSprites(phase) {
   const heroStageScale = Math.min(1.22, 1 + 0.045 * (st - 1));
   heroImg.style.transform = `translateY(${heroFighter.def.foot || 0}px) scale(${((h.scale || 1) * heroStageScale).toFixed(3)})`;
   heroImg.style.filter = heroFilterStr(h);
-  bossImg.style.transform = `scaleX(-1) translateY(${bossFighter.def.foot || 0}px) scale(${((b.scale || 1) * bossStageScale).toFixed(3)})`;
+  const _bScreen = (b.scale || 1) * bossStageScale;
+  // footPad(스프라이트 발밑 투명 여백, native px)가 있으면 화면배율만큼 끌어내려 발을 바닥에 정확히 붙임.
+  // 없으면 기존 foot 상수 사용(king 등).
+  const _bFoot = (bossFighter.def.footPad != null)
+    ? (bossFighter.def.footPad * bossFighter.def.scale * _bScreen)
+    : (bossFighter.def.foot || 0);
+  bossImg.style.transform = `scaleX(-1) translateY(${_bFoot.toFixed(1)}px) scale(${_bScreen.toFixed(3)})`;
   bossImg.style.filter = bossFilterStr(b);
   gsap.set(heroWrap, { left: '8%', clearProps: 'x,right' });
   gsap.set(bossWrap, { right: '8%', clearProps: 'x,left' });

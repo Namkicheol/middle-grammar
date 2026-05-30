@@ -622,8 +622,10 @@ const G = {
     document.getElementById('victory-cut').classList.remove('show');
     document.getElementById('card-pick').classList.remove('show');
     const stage = GS.stage + 1, score = GS.score, maxCombo = GS.maxCombo, upgrades = GS.upgrades;
+    const savedQuestions = GS.questions, savedQIdx = GS.qIdx;   // 문제 진행상황 유지 — 스테이지 넘어가도 본 문제 반복 안 함
     GS = initGS(this._qs);
     GS.stage = stage; GS.score = score; GS.maxCombo = maxCombo; GS.upgrades = upgrades;
+    GS.questions = savedQuestions; GS.qIdx = savedQIdx;   // 이어서 안 본 문제부터 출제
     GS.heroHP = 100;            // 새 스테이지마다 풀피로 시작
     wrongLog = [];
     setCharSprites(0);

@@ -8,10 +8,20 @@ Obtained via the public CC-0 mirror: github.com/buzzfit/Battle-Agents (assets/im
 - Hero Knight (영웅 최종폼): LuizMelo — https://luizmelo.itch.io/ (CC-0)
 - Medieval King Pack 2 (보스 최종폼/대마왕): aamatniekss — https://aamatniekss.itch.io/ (CC-0)
 
---- 스테이지 보스 (free 픽셀 몬스터) ---
-- minotaur (미노타우르스): Minotaur pack — free for commercial/non-commercial use
-- skeleton (해골군주): Skeleton Warrior pack — free for commercial/non-commercial use
-- werewolf (늑대인간): Werewolf pack — Black_Werewolf variant
-- yokai (텐구): Yokai pack — Yamabushi_tengu variant
-  (출처 미러: github.com/Anton-Mysiura/game assets/animations)
-  ※ 미러 레포에 라이선스 파일 없음. 원본 팩 라이선스 미확정 — 재배포 제한 여부 사용자 확인 필요.
+--- 스테이지 보스 (CraftPix.net / Free Game Assets, itch.io) ---
+원본 출처(확인 완료, 2026-05-30):
+- minotaur: Free Minotaur Sprite Sheet Pixel Art Pack
+  https://craftpix.net/freebies/free-minotaur-sprite-sheet-pixel-art-pack/
+- skeleton: Free Skeleton/Warrior Sprite (CraftPix freebie)
+- werewolf (늑대인간): Free Werewolf Sprite Sheets Pixel Art — Black_Werewolf variant
+  https://craftpix.net/freebies/free-werewolf-sprite-sheets-pixel-art/
+- yokai (텐구): Free Yokai Pixel Art Character Sprites — Yamabushi_tengu variant
+  https://craftpix.net/freebies/free-yokai-pixel-art-character-sprites/
+  (다운로드 미러: github.com/Anton-Mysiura/game assets/animations)
+
+License: CraftPix.net Freebie License (https://craftpix.net/file-licenses/ §2)
+  ✅ 개인/상업 프로젝트 무제한 사용·수정 허용, 출처표기 불필요
+  ❌ 소스파일(PNG) 재판매·재배포 금지 ("redistribute the art … usable to another
+     end user" 금지). 게임 내 렌더링 사용은 허용되나, public 저장소가 raw PNG를
+     개별 다운로드 가능하게 노출하는 점은 엄격 해석 시 회색지대.
+  ❌ AI/ML 학습용 사용 금지(§3) — 본 프로젝트 해당 없음.

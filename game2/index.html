@@ -597,6 +597,7 @@ const G = {
   start(qs, label) {
     this._qs = qs; this._label = label;
     GS = initGS(qs);
+    clearDropsDOM();   // 이전 판 남은 아이템 DOM 제거 (안 그러면 보이는데 안 먹힘)
     document.getElementById('sel').style.display = 'none';
     document.getElementById('game').style.display = 'block';
     BGM.start(0);
@@ -627,6 +628,7 @@ const G = {
     GS.stage = stage; GS.score = score; GS.maxCombo = maxCombo; GS.upgrades = upgrades;
     GS.questions = savedQuestions; GS.qIdx = savedQIdx;   // 이어서 안 본 문제부터 출제
     GS.heroHP = 100;            // 새 스테이지마다 풀피로 시작
+    clearDropsDOM();   // 이전 스테이지 남은 아이템 DOM 제거 (보이는데 안 먹히던 버그)
     wrongLog = [];
     setCharSprites(0);
     BGM.start(0);
@@ -1276,6 +1278,12 @@ function updateStatusRow() {
 }
 
 const MAX_DROPS = 1;
+
+function clearDropsDOM() {
+  const layer = document.getElementById('drops-layer');
+  if (layer) layer.innerHTML = '';
+  if (GS) GS.drops = [];
+}
 
 function scheduleDropSpawn() {
   if (dropTimer) clearTimeout(dropTimer);

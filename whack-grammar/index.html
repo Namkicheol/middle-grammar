@@ -695,7 +695,8 @@ function endGame() {
     retryBtn.textContent = '재도전';
   }
   document.getElementById('screen-end').classList.remove('hide');
-  if (typeof window.showScorePopup === 'function') {
+  // 라운드 클리어(다음 라운드 가능) 때는 점수팝업이 '다음 라운드' 버튼을 덮으므로 게임오버에서만 표시
+  if (isGameOver && typeof window.showScorePopup === 'function') {
     window.showScorePopup(correctCount, questionPool.length, { title, wrongItems: whackWrongItems });
   }
 }

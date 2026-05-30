@@ -252,6 +252,10 @@ header{display:flex;align-items:center;gap:8px;padding:12px 14px 6px;position:re
     inset 0 -10px 14px rgba(131,24,67,.6),inset 0 6px 0 rgba(252,231,243,.5);
 }
 .mole.heart .mole-eye{background:radial-gradient(circle at 50% 50%,#fff 0%,#fbcfe8 30%,#be185d 75%,transparent 100%);}
+.mole.grow .mole-body{background:radial-gradient(ellipse at 50% 28%,#d9f99d 0%,#84cc16 48%,#3f6212 100%);}
+.mole.grow .mole-eye{background:radial-gradient(circle at 50% 50%,#fff 0%,#bef264 30%,#4d7c0f 75%,transparent 100%);}
+.mole.shrink .mole-body{background:radial-gradient(ellipse at 50% 28%,#cbd5e1 0%,#64748b 48%,#1e293b 100%);}
+.mole.shrink .mole-eye{background:radial-gradient(circle at 50% 50%,#fff 0%,#cbd5e1 30%,#475569 75%,transparent 100%);}
 .mole.heart .mole-sign{display:none;}
 .mole.heart .mole-body::before{content:'❤️';position:absolute;top:-22%;left:50%;transform:translateX(-50%);
   font-size:1.7rem;filter:drop-shadow(0 0 8px rgba(244,114,182,.9));
@@ -516,11 +520,25 @@ header{display:flex;align-items:center;gap:8px;padding:12px 14px 6px;position:re
 <script>
 const SLOT_COUNT = 9;
 const ROUND_QUESTIONS = 10;
-const Q_TIME = 9500;            // per-question time limit (ms)
-const MOLE_LIFE_MIN = 3000;     // mole on-screen min
-const MOLE_LIFE_MAX = 4200;     // mole on-screen max
-const SPAWN_INTERVAL = [780, 1180]; // ms between spawns
-const MAX_LIVE_MOLES = 3;
+// 난이도 변수 — 라운드가 올라갈수록 applyRoundDifficulty()가 조정 (기본값=라운드1)
+let Q_TIME = 9500;            // per-question time limit (ms)
+let MOLE_LIFE_MIN = 3000;     // mole on-screen min
+let MOLE_LIFE_MAX = 4200;     // mole on-screen max
+let SPAWN_INTERVAL = [780, 1180]; // ms between spawns
+let MAX_LIVE_MOLES = 3;
+let round = 1;               // 현재 라운드(스테이지)
+
+// 라운드별 난이도: 두더지가 더 빨리 사라지고, 제한시간 짧아지고, 더 자주 나옴
+function applyRoundDifficulty() {
+  const r = round - 1;       // 0부터
+  Q_TIME = Math.max(4500, 9500 - r * 1000);
+  MOLE_LIFE_MIN = Math.max(1400, 3000 - r * 350);
+  MOLE_LIFE_MAX = Math.max(2200, 4200 - r * 400);
+  const lo = Math.max(380, 780 - r * 90);
+  const hi = Math.max(640, 1180 - r * 110);
+  SPAWN_INTERVAL = [lo, hi];
+  MAX_LIVE_MOLES = Math.min(5, 3 + Math.floor(r / 2));
+}
 
 let unitKey = 'g1-l1';
 let questionPool = [];
@@ -616,9 +634,13 @@ function pickQuestionPool(key) {
 }
 
 function startGame() {
+  round = 1;
+  applyRoundDifficulty();
   questionPool = pickQuestionPool(unitKey);
   if (!questionPool.length) { alert('문제를 불러올 수 없어요.'); return; }
   qIdx = 0; score = 0; combo = 0; bestCombo = 0; hp = MAX_HP; correctCount = 0; whackWrongItems = [];
+  endHammerFx();
+  updateRoundBadge();
   endBoost();
   clearTimeout(bombTimer); clearTimeout(heartTimer);
   document.getElementById('screen-start').classList.add('hide');
@@ -630,6 +652,7 @@ function startGame() {
   // 특수 아이템 스폰 사이클 시작
   scheduleBomb();
   scheduleHeart();
+  scheduleHammer();
   setTimeout(startWhackBgm, 350);
 }
 
@@ -648,27 +671,61 @@ function endGame() {
   });
   liveMoles.clear();
   const isGameOver = hp <= 0;
-  const title = isGameOver ? 'GAME OVER' : '클리어!';
+  const cleared = !isGameOver;   // 라운드 클리어(HP 남음)
+  const title = isGameOver ? 'GAME OVER' : `ROUND ${round} 클리어!`;
   document.getElementById('end-title').textContent = title;
   document.getElementById('end-sub').textContent = isGameOver
-    ? `HP 소진 · ${correctCount} / ${questionPool.length} 정답`
-    : `${correctCount} / ${questionPool.length} 정답 · 최고 콤보 ${bestCombo}`;
+    ? `HP 소진 · ROUND ${round}에서 종료 · ${correctCount} 정답`
+    : `${correctCount} / ${questionPool.length} 정답 · 최고 콤보 ${bestCombo} · 다음 라운드는 더 빨라져요!`;
   document.getElementById('end-score').textContent = score;
   document.getElementById('end-correct').textContent = correctCount;
   document.getElementById('end-combo').textContent = bestCombo;
-  // HP 소진 케이스는 재도전을 강조 — 점수 팝업 스킵하고 게임 자체 패널만 띄움
   const retryBtn = document.getElementById('btn-retry');
-  if (isGameOver) {
+  const nextBtn = document.getElementById('btn-next-round');
+  if (cleared) {
+    // 클리어 → 다음 라운드 버튼 강조, 재시작은 작게
+    if (nextBtn) { nextBtn.classList.remove('hide'); nextBtn.textContent = `🔥 ROUND ${round + 1} 도전!`; }
+    retryBtn.classList.remove('retry-big');
+    retryBtn.textContent = '처음부터';
+  } else {
+    if (nextBtn) nextBtn.classList.add('hide');
     retryBtn.classList.add('retry-big');
     retryBtn.textContent = '재도전';
-  } else {
-    retryBtn.classList.remove('retry-big');
-    retryBtn.textContent = '다시 도전';
   }
   document.getElementById('screen-end').classList.remove('hide');
   if (typeof window.showScorePopup === 'function') {
     window.showScorePopup(correctCount, questionPool.length, { title, wrongItems: whackWrongItems });
   }
+}
+
+// 다음 라운드: 점수·기록 누적 유지, 난이도 상승, 새 문제
+function nextRound() {
+  round++;
+  applyRoundDifficulty();
+  questionPool = pickQuestionPool(unitKey);
+  if (!questionPool.length) { questionPool = pickQuestionPool(unitKey); }
+  qIdx = 0; combo = 0; hp = MAX_HP; whackWrongItems = [];
+  // score / correctCount / bestCombo 는 누적 유지
+  endBoost();
+  endHammerFx();
+  clearTimeout(bombTimer); clearTimeout(heartTimer);
+  document.getElementById('screen-end').classList.add('hide');
+  const nextBtn = document.getElementById('btn-next-round');
+  if (nextBtn) nextBtn.classList.add('hide');
+  buildGrid();
+  updateRoundBadge();
+  updateHud();
+  gameRunning = true;
+  nextQuestion();
+  scheduleBomb();
+  scheduleHeart();
+  scheduleHammer();
+  setTimeout(startWhackBgm, 200);
+}
+
+function updateRoundBadge() {
+  const el = document.getElementById('hud-round');
+  if (el) el.textContent = 'R' + round;
 }
 
 function updateHud() {
@@ -824,7 +881,10 @@ function spawnSpecial(kind) {
   const slot = grid.children[slotIdx];
   const mole = document.createElement('div');
   mole.className = `mole show popping ${kind}`;
+  const sign = kind === 'grow' ? '<div class="mole-sign">🔨</div>'
+             : kind === 'shrink' ? '<div class="mole-sign">🔧</div>' : '';
   mole.innerHTML = `
+    ${sign}
     <div class="mole-body">
       <div class="mole-eye l"></div><div class="mole-eye r"></div>
     </div>`;
@@ -883,6 +943,7 @@ function handleHit(e, mole, slotIdx, word) {
   const kind = rec && rec.kind;
   if (kind === 'bomb') { onBombHit(mole); return; }
   if (kind === 'heart') { onHeartHit(mole); return; }
+  if (kind === 'grow' || kind === 'shrink') { onHammerHit(mole, kind); return; }
   // 일반 정답/오답
   const correct = word === currentAns;
   spawnSmash(mole, correct ? 'ok' : 'ng');
@@ -976,6 +1037,56 @@ function endBoost() {
   scoreMultiplier = 1;
   hudBoost.classList.add('hide');
   cancelAnimationFrame(multiplierRaf);
+}
+
+// ── 망치 크기 이벤트 ──────────────────────────────────
+// 🔨 확대 두더지 = 망치 커짐(쉬움), 🔧 축소 두더지 = 망치 작아짐(어려움)
+let hammerTimer = 0;
+let hammerFxTimer = 0;
+const HAMMER_INTERVAL = [7000, 12000];
+const HAMMER_CHANCE = 0.5;
+function hammerCursor(size) {
+  const s = size, scale = size / 44;
+  const off = Math.round(16 * scale);
+  return `url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='${s}' height='${s}' viewBox='0 0 44 44'><g transform='rotate(-30 22 22)'><rect x='19' y='15' width='6' height='24' rx='2' fill='%23581c87'/><rect x='10' y='4' width='24' height='14' rx='3' fill='%23f472b6'/><rect x='10' y='4' width='24' height='5' rx='2' fill='%23fbcfe8'/></g></svg>") ${off} ${Math.round(4*scale)}, pointer`;
+}
+function applyHammerScale(scale, seconds, label, type) {
+  clearTimeout(hammerFxTimer);
+  field.style.cursor = hammerCursor(Math.round(44 * scale));
+  spawnStrike(label, type);
+  hammerFxTimer = setTimeout(endHammerFx, seconds * 1000);
+}
+function endHammerFx() {
+  clearTimeout(hammerFxTimer);
+  field.style.cursor = '';   // CSS 기본 망치 커서로 복귀
+}
+function scheduleHammer() {
+  clearTimeout(hammerTimer);
+  const delay = HAMMER_INTERVAL[0] + Math.random() * (HAMMER_INTERVAL[1] - HAMMER_INTERVAL[0]);
+  hammerTimer = setTimeout(() => {
+    if (!gameRunning) return;
+    if (Math.random() < HAMMER_CHANCE) spawnSpecial(Math.random() < 0.5 ? 'grow' : 'shrink');
+    scheduleHammer();
+  }, delay);
+}
+function onHammerHit(mole, kind) {
+  shakeField();
+  playWhackHit();
+  mole.classList.remove('up', 'popping');
+  mole.classList.add('hit');
+  burstDust(mole);
+  if (kind === 'grow') {
+    field.classList.add('ok-flash');
+    setTimeout(() => field.classList.remove('ok-flash'), 340);
+    spawnPop('🔨 망치 확대!');
+    applyHammerScale(1.7, 8, '망치가 커졌다!', 'ok');
+  } else {
+    field.classList.add('ng-flash');
+    setTimeout(() => field.classList.remove('ng-flash'), 340);
+    spawnPop('🔧 망치 축소!');
+    applyHammerScale(0.6, 8, '망치가 작아졌다!', 'ng');
+  }
+  setTimeout(() => mole.remove(), 420);
 }
 function tickBoost() {
   const left = multiplierUntil - performance.now();

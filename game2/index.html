@@ -891,7 +891,8 @@ function setCharSprites(phase) {
   // 스테이지2+는 영웅=용사(기사) · 보스=대마왕(왕) 고정으로 시작부터 풀파워
   const st = GS ? GS.stage : 1;
   const hk = (st >= 2) ? 'knight' : (HERO_SPRITE[phase] || 'warrior');
-  const bk = (st >= 2) ? BOSS_STAGE_ROSTER[(st - 2) % BOSS_STAGE_ROSTER.length] : (BOSS_SPRITE[phase] || 'wizard');
+  // 스테이지2+는 페이즈마다 다른 몬스터로 교체 (한 보스가 색만 바뀌며 반복되던 느낌 제거)
+  const bk = (st >= 2) ? BOSS_STAGE_ROSTER[((st - 2) * 3 + phase) % BOSS_STAGE_ROSTER.length] : (BOSS_SPRITE[phase] || 'wizard');
   if (hk !== _heroKey) { heroFighter = makeFighter(heroImg, hk); _heroKey = hk; } else heroFighter.play('idle');
   if (bk !== _bossKey) { bossFighter = makeFighter(bossImg, bk); _bossKey = bk; } else bossFighter.play('idle');
   // 스테이지 올라갈수록 보스 더 크게 (보스다움 ↑, 최대 +40%)

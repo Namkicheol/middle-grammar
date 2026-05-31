@@ -45,7 +45,10 @@ Claude Code의 1차 진입 문서다. Codex는 `AGENTS.md`를 사용한다. 두 
 | `score-popup.js` | 점수 결과 팝업 |
 | `worksheet-sentence-guide.md` | 예문 출처·문장 변형 규칙 |
 | `answer-checker-guide.md` | 정답 처리·검증 규칙 |
-| `Ne교과서 md파일/` | NE능률 중1·중2 교과서·기본AB·심화·어법드릴 md |
+| `refs/NE-md변환/` | NE능률 중1·중2 교과서·기본AB·심화·어법드릴 md (저작권 — `refs/`는 gitignore, 로컬 참고 전용) |
+| `refs/NE-중1-교과서/`, `refs/NE-중2-교과서/` | 원본 PDF·hwp (로컬 전용) |
+| `refs/미래엔-활동지/` | 미래엔(최) 본문 활동지·직소 자료 (로컬 전용) |
+| `game/questions.js` | 게임·whack·game2 공유 문항 은행 (손수 관리 파일 — 재생성 금지, 직접 수정) |
 | `blog-deploy/` | 티스토리 발행용 markdown |
 | `blog-images/YYYY-MM-DD/` | 블로그 본문·썸네일 이미지 |
 | `<topic>-basic/index.html` | 중1 기초 워크시트 |
@@ -63,28 +66,35 @@ Claude Code의 1차 진입 문서다. Codex는 `AGENTS.md`를 사용한다. 두 
 | 중1 L4 | `to-will-basic/index.html`, `to-will-hard/index.html` |
 | 중1 L5 | `reflexive-to-basic/index.html`, `reflexive-to-hard/index.html` |
 | 중1 L6 | `look-because-basic/index.html`, `look-because-hard/index.html` |
+| 중1 L7 | `make-that-basic/index.html`, `make-that-hard/index.html` (make+형용사 & 접속사 that) |
+| 중1 L8 | `exclaim-something-basic/index.html`, `exclaim-something-hard/index.html` (감탄문 What/How & -thing+형용사) |
 | 중2 L1 | `g2-give-relclause-basic/index.html`, `g2-give-relclause-hard/index.html` |
 | 중2 L2 | `g2-perfect-compare-basic/index.html`, `g2-perfect-compare-hard/index.html` |
 | 중2 L3 | `g2-to-if-basic/index.html`, `g2-to-if-hard/index.html` |
 | 중2 L4 | `g2-sothat-passive-basic/index.html`, `g2-sothat-passive-hard/index.html`, `g2-passive-practice/index.html` |
+| 특수 | `reading-jigsaw/index.html` (리딩 직소 활동) |
+
+> 중2 L5~L8은 아직 미제작. 자료는 `refs/NE-md변환/2022me_중2_L{5~8}_문법연습문제_기본AB.md`·`_심화.md`에 있음.
 
 ## NE교과서 자료
+
+> 모든 NE 자료는 `refs/`(gitignore, 로컬 전용) 하위에 있다. 커밋·푸시되지 않는다.
 
 중1 자료:
 
 ```text
-Ne교과서 md파일/2022me_중1_L{1~8}_교과서.md
-Ne교과서 md파일/2022me_중1_L{1~8}_문법연습문제_기본AB.md
-Ne교과서 md파일/2022me_중1_L{1~8}_문법연습문제_심화.md
-Ne교과서 md파일/2022me_중1_L{1~8}_어법드릴문제.md
+refs/NE-md변환/2022me_중1_L{1~8}_교과서.md
+refs/NE-md변환/2022me_중1_L{1~8}_문법연습문제_기본AB.md
+refs/NE-md변환/2022me_중1_L{1~8}_문법연습문제_심화.md
+refs/NE-md변환/2022me_중1_L{1~8}_어법드릴문제.md
 ```
 
 중2 자료:
 
 ```text
-Ne교과서 md파일/(22개정) 중학교 영어 2 교과서 전단원 PDF.md
-Ne교과서 md파일/2022me_중2_L{1~8}_문법연습문제_기본AB.md
-Ne교과서 md파일/2022me_중2_L{1~8}_문법연습문제_심화.md
+refs/NE-md변환/(22개정) 중학교 영어 2 교과서 전단원 PDF.md
+refs/NE-md변환/2022me_중2_L{1~8}_문법연습문제_기본AB.md
+refs/NE-md변환/2022me_중2_L{1~8}_문법연습문제_심화.md
 ```
 
 중2 통합 파일 줄 범위:

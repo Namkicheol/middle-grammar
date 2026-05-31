@@ -49,6 +49,7 @@ Codex의 1차 진입 문서다. Claude Code는 `CLAUDE.md`를 사용한다. 두 
 | `refs/NE-중1-교과서/` | NE능률 중1 원본 PDF·hwp + 문법연습문제·어법드릴 |
 | `refs/NE-중2-교과서/` | NE능률 중2 원본 PDF + 문법연습문제 |
 | `refs/미래엔-활동지/` | 미래엔(최) 본문 활동지·직소 자료 |
+| `game/questions.js` | 게임·whack·game2 공유 문항 은행 (손수 관리 파일 — 재생성 금지, 직접 수정) |
 | `blog-deploy/` | 티스토리 발행용 markdown |
 | `blog-images/YYYY-MM-DD/` | 블로그 본문·썸네일 이미지 |
 | `<topic>-basic/index.html` | 중1 기초 워크시트 |
@@ -66,12 +67,19 @@ Codex의 1차 진입 문서다. Claude Code는 `CLAUDE.md`를 사용한다. 두 
 | 중1 L4 | `to-will-basic/index.html`, `to-will-hard/index.html` |
 | 중1 L5 | `reflexive-to-basic/index.html`, `reflexive-to-hard/index.html` |
 | 중1 L6 | `look-because-basic/index.html`, `look-because-hard/index.html` |
+| 중1 L7 | `make-that-basic/index.html`, `make-that-hard/index.html` (make+형용사 & 접속사 that) |
+| 중1 L8 | `exclaim-something-basic/index.html`, `exclaim-something-hard/index.html` (감탄문 What/How & -thing+형용사) |
 | 중2 L1 | `g2-give-relclause-basic/index.html`, `g2-give-relclause-hard/index.html` |
 | 중2 L2 | `g2-perfect-compare-basic/index.html`, `g2-perfect-compare-hard/index.html` |
 | 중2 L3 | `g2-to-if-basic/index.html`, `g2-to-if-hard/index.html` |
 | 중2 L4 | `g2-sothat-passive-basic/index.html`, `g2-sothat-passive-hard/index.html`, `g2-passive-practice/index.html` |
+| 특수 | `reading-jigsaw/index.html` (리딩 직소 활동) |
+
+> 중2 L5~L8은 아직 미제작. 자료는 `refs/NE-md변환/2022me_중2_L{5~8}_문법연습문제_기본AB.md`·`_심화.md`에 있음.
 
 ## NE교과서 자료
+
+> 모든 NE 자료는 `refs/`(gitignore, 로컬 전용) 하위에 있다. 커밋·푸시되지 않는다.
 
 중1 자료:
 

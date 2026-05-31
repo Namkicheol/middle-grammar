@@ -56,7 +56,6 @@ Blue and purple gradient accent. High quality, 600px wide format.
 
 오늘은 핵심 개념만 쏙 정리하고, 자동채점 라이브워크시트로 바로 연습해보자!
 
-<p align="center"><img src="https://raw.githubusercontent.com/namkicheol/middle-grammar/main/blog-images/2026-05-31/img1-want-relclause.png" width="600" alt="동사 목적어 to부정사 문법 구조 설명"></p>
 
 ---
 
@@ -118,7 +117,6 @@ Blue and purple gradient accent. High quality, 600px wide format.
 
 <span style="color:#319795;">**목적격 관계대명사는 생략할 수 있어**</span>. "the song which I heard" = "the song I heard" — 둘 다 맞아!
 
-<p align="center"><img src="https://raw.githubusercontent.com/namkicheol/middle-grammar/main/blog-images/2026-05-31/img2-want-relclause.png" width="600" alt="목적격 관계대명사 선행사 구분 설명"></p>
 
 ---
 
@@ -132,7 +130,6 @@ Blue and purple gradient accent. High quality, 600px wide format.
 
 틀리면 바로 힌트와 해석이 뜨니까 복습까지 한 번에 끝낼 수 있어!
 
-<p align="center"><img src="https://raw.githubusercontent.com/namkicheol/middle-grammar/main/blog-images/2026-05-31/img3-want-relclause.png" width="600" alt="워크시트 완성 후 기뻐하는 학생들"></p>
 
 ▶ **바로 풀러 가기**
 

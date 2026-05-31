@@ -62,7 +62,6 @@ Bright classroom background, confetti and sparkles. Energetic and positive mood.
 
 사역동사는 "make, let, have" 뒤에 동사원형을 쓰는 구조고, 원급 비교는 "as + 형용사/부사 원급 + as"로 두 대상을 비교하는 거야. 오늘은 이 두 문법을 핵심만 정리하고, 자동채점 워크시트로 바로 연습해보자!
 
-<p align="center"><img src="https://raw.githubusercontent.com/namkicheol/middle-grammar/main/blog-images/2026-05-31/img1-causative-asas.png" width="600" alt="사역동사와 원급 비교 개념 설명 이미지"></p>
 
 ---
 
@@ -103,7 +102,6 @@ Bright classroom background, confetti and sparkles. Energetic and positive mood.
 
 또 하나 주의할 점! 목적어가 3인칭 단수라도 동사원형에는 **-s를 붙이지 않아**. "My mom has my brother **set** the table."에서 brother가 3인칭이지만 sets가 아니라 set이야. <span style="color:#c53030;">**set이 맞고 sets는 틀려**</span> — 사역동사 뒤 동사원형은 주어·수 변화 없음!
 
-<p align="center"><img src="https://raw.githubusercontent.com/namkicheol/middle-grammar/main/blog-images/2026-05-31/img2-causative-asas.png" width="600" alt="원급 비교 as as 구조 설명"></p>
 
 ---
 
@@ -146,7 +144,6 @@ as ~ as 사이에는 원급(기본형)만 들어가야 해. <span style="color:#
 
 틀리면 바로 힌트와 해석이 뜨니까 복습까지 한 번에 끝낼 수 있어!
 
-<p align="center"><img src="https://raw.githubusercontent.com/namkicheol/middle-grammar/main/blog-images/2026-05-31/img3-causative-asas.png" width="600" alt="워크시트 완성 후 기뻐하는 학생들"></p>
 
 ▶ **바로 풀러 가기**
 

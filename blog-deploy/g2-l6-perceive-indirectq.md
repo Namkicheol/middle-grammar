@@ -57,7 +57,6 @@ Cheerful, motivating, study mood. Width 600px. No logos or text overlays.
 
 오늘은 이 두 문법을 핵심만 정리하고, 자동채점 워크시트로 바로 연습해보자!
 
-<p align="center"><img src="https://raw.githubusercontent.com/namkicheol/middle-grammar/main/blog-images/2026-05-31/img1-perceive-indirectq.png" width="600" alt="지각동사 동사원형과 -ing 비교 설명 이미지"></p>
 
 ---
 
@@ -111,7 +110,6 @@ Cheerful, motivating, study mood. Width 600px. No logos or text overlays.
 
 틀리면 바로 힌트와 해석이 나오니까 복습까지 한 번에 끝낼 수 있어!
 
-<p align="center"><img src="https://raw.githubusercontent.com/namkicheol/middle-grammar/main/blog-images/2026-05-31/img2-perceive-indirectq.png" width="600" alt="간접의문문 어순 변환 설명 이미지"></p>
 
 ---
 
@@ -155,7 +153,6 @@ Cheerful, motivating, study mood. Width 600px. No logos or text overlays.
 
 (iframe 삽입: https://namkicheol.github.io/middle-grammar/g2-perceive-indirectq-basic/)
 
-<p align="center"><img src="https://raw.githubusercontent.com/namkicheol/middle-grammar/main/blog-images/2026-05-31/img3-perceive-indirectq.png" width="600" alt="워크시트 공부하는 중학생들"></p>
 
 심화 버전도 아래에 있으니 이어서 도전해봐!
 

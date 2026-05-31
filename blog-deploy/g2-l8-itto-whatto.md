@@ -60,7 +60,6 @@ Dramatic, premium, high-stakes feel. 16:9 ratio. High quality.
 
 얼핏 복잡해 보여도 구조만 딱 잡으면 문제에서 바로 써먹을 수 있어! 핵심 포인트를 깔끔하게 정리하고 자동채점 워크시트로 바로 연습해보자.
 
-<p align="center"><img src="https://raw.githubusercontent.com/namkicheol/middle-grammar/main/blog-images/2026-05-31/img1-itto-whatto.png" width="600" alt="가주어 it 의문사 to부정사 워크시트 썸네일"></p>
 
 ---
 
@@ -77,7 +76,6 @@ Dramatic, premium, high-stakes feel. 16:9 ratio. High quality.
 
 > 💡 <span style="color:#dd6b20;">**현직쌤 팁**</span>: "It is important **drinking** water." 이런 식으로 동명사를 진주어로 쓰는 건 가주어 it 구문이 아니야. 중2 시험에서는 진주어 자리에 **to부정사** 형태가 맞는지를 꼭 확인해!
 
-<p align="center"><img src="https://raw.githubusercontent.com/namkicheol/middle-grammar/main/blog-images/2026-05-31/img2-itto-whatto.png" width="600" alt="가주어 it과 비인칭 it 구조 비교 설명"></p>
 
 ---
 
@@ -130,7 +128,6 @@ Dramatic, premium, high-stakes feel. 16:9 ratio. High quality.
 | **where** to + 동사원형 | 어디서/어디에 ~할지 | Please tell me **where to park**. |
 | **when** to + 동사원형 | 언제 ~할지 | He asked **when to start** the presentation. |
 
-<p align="center"><img src="https://raw.githubusercontent.com/namkicheol/middle-grammar/main/blog-images/2026-05-31/img3-itto-whatto.png" width="600" alt="의문사 to부정사 4종 카드 비교"></p>
 
 > 💡 <span style="color:#dd6b20;">**현직쌤 팁**</span>: 「**의문사 + to부정사**」는 「**의문사 + 주어 + should + 동사원형**」으로 바꿔 쓸 수 있어. 문장 전환 문제에서 자주 나오니 꼭 기억해!
 > - what to do = what **I should do**

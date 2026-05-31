@@ -1,7 +1,16 @@
+// ⚠ 주의: game/questions.js는 2026-05-17 최초 생성 이후 손수 보강·밸런싱되었다(커밋 4dc5421 등).
+//   이 스크립트를 그대로 돌리면 현재 워크시트에서 추출되는 문항만 남아 은행이 절반 이하(약 274문항)로 줄고
+//   수작업 결과가 전부 사라진다. 덮어쓰기 전 반드시 확인할 것. (실행 시 OVERWRITE_QUESTIONS=1 필요)
 const fs = require('fs');
 const path = require('path');
 
 const ROOT = path.join(__dirname, '..');
+
+if (!process.env.OVERWRITE_QUESTIONS) {
+  console.error('[중단] game/questions.js는 수작업 보강된 파일입니다. 재생성하면 문항이 대량 손실됩니다.');
+  console.error('       정말 덮어쓰려면: OVERWRITE_QUESTIONS=1 node tools/extract-questions.js');
+  process.exit(1);
+}
 
 function stripHtml(s) {
   return s.replace(/<span\s+class=["']ex["'][^>]*>[\s\S]*?<\/span>/g, '') // 워크시트 힌트 괄호 제거
@@ -186,7 +195,9 @@ for (const unit of UNITS) {
       continue;
     }
     const html = fs.readFileSync(filePath, 'utf8');
-    const prefix = unit.key.replace(/-/g, '_') + '_' + path.dirname(source.file).replace(/\W+/g, '_');
+    // 파일 경로 전체(확장자 제외)로 prefix를 만들어 같은 폴더의 두 파일(예: gerund-basic/index.html·index2.html)이
+    // 동일 id로 충돌하지 않게 한다. 충돌하면 boss 모드의 bossSeenIds가 서로 다른 문항을 같은 것으로 취급해 문항이 누락된다.
+    const prefix = unit.key.replace(/-/g, '_') + '_' + source.file.replace(/\.[^.]*$/, '').replace(/\W+/g, '_');
     const level = /hard|심화|practice/.test(source.file) ? 2 : 1;
     const parsed = source.pattern === 'A' ? parsePatternA(html, prefix) : parsePatternB(html, prefix);
     parsed.forEach(q => { q.level = level; });

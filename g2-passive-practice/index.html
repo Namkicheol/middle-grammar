@@ -535,7 +535,7 @@ function norm(s){
     .replace(/weren't/g,"were not").replace(/don't/g,"do not")
     .replace(/doesn't/g,"does not").replace(/didn't/g,"did not")
     .replace(/haven't/g,"have not").replace(/hasn't/g,"has not")
-    .replace(/\s+/g," ");
+    .replace(/\s+/g," ").replace(/[.!?]+$/,"").trim();
 }
 
 function sw(idx,el){

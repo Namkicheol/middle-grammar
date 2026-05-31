@@ -19,3 +19,13 @@ handoff-*.md
 # Added by code-review-graph
 .code-review-graph/
 code-review-graph/
+.env
+
+# OMC / MCP 툴 아티팩트
+.omc/
+.playwright-mcp/
+
+# 루트 레벨 개발용 스크린샷 (정식 이미지는 blog-images/·game/assets/·game2/assets/ 하위)
+/*.png
+/*.jpg
+/*.jpeg

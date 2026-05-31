@@ -73,9 +73,11 @@ Codex의 1차 진입 문서다. Claude Code는 `CLAUDE.md`를 사용한다. 두 
 | 중2 L2 | `g2-perfect-compare-basic/index.html`, `g2-perfect-compare-hard/index.html` |
 | 중2 L3 | `g2-to-if-basic/index.html`, `g2-to-if-hard/index.html` |
 | 중2 L4 | `g2-sothat-passive-basic/index.html`, `g2-sothat-passive-hard/index.html`, `g2-passive-practice/index.html` |
+| 중2 L5 | `g2-want-relclause-basic/index.html`, `g2-want-relclause-hard/index.html` (동사+목적어+to부정사 & 목적격 관계대명사) |
+| 중2 L6 | `g2-perceive-indirectq-basic/index.html`, `g2-perceive-indirectq-hard/index.html` (지각동사 & 간접의문문) |
+| 중2 L7 | `g2-causative-asas-basic/index.html`, `g2-causative-asas-hard/index.html` (사역동사 & 원급 비교) |
+| 중2 L8 | `g2-itto-whatto-basic/index.html`, `g2-itto-whatto-hard/index.html` (가주어 it & 의문사+to부정사) |
 | 특수 | `reading-jigsaw/index.html` (리딩 직소 활동) |
-
-> 중2 L5~L8은 아직 미제작. 자료는 `refs/NE-md변환/2022me_중2_L{5~8}_문법연습문제_기본AB.md`·`_심화.md`에 있음.
 
 ## NE교과서 자료
 

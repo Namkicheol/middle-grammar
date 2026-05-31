@@ -28,7 +28,7 @@ body{font-family:'Noto Sans KR','Baloo 2',sans-serif;background:var(--bg);paddin
 .pbg{background:#e2e8f0;border-radius:99px;height:10px;overflow:hidden;}
 .pfill{height:100%;border-radius:99px;background:linear-gradient(90deg,var(--blue),var(--purple));transition:width .4s;}
 
-.tabs{display:flex;gap:8px;padding:0 20px;margin-bottom:20px;overflow-x:auto;scrollbar-width:none;max-width:800px;margin-left:auto;margin-right:auto;}
+.tabs{display:flex;gap:8px;padding:0 20px;margin-bottom:20px;flex-wrap:wrap;max-width:800px;margin-left:auto;margin-right:auto;}
 .tabs::-webkit-scrollbar{display:none;}
 .tab{flex-shrink:0;padding:11px 20px;border-radius:20px;border:2px solid #e2e8f0;background:var(--white);color:var(--gray);font-family:inherit;font-weight:700;font-size:1rem;cursor:pointer;transition:all .2s;}
 .tab.active{background:var(--blue);border-color:var(--blue);color:#fff;box-shadow:0 4px 12px rgba(14,165,233,.35);}

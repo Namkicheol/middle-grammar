@@ -63,7 +63,7 @@ U("f2_id",{placeholder:false})
 U("f3_id",{placeholder:false})
 ```
 
-내보내기 경로는 **현재 프로젝트 CLAUDE.md의 blog images 폴더** 참조.
+내보내기 경로는 **현재 프로젝트 AGENTS.md의 blog images 폴더** 참조.
 경로가 명시되지 않은 경우 `blog-images/YYYY-MM-DD/` 폴더에 저장.
 
 ```
@@ -81,7 +81,7 @@ export_nodes(
 
 ### 5단계 — 블로그 글에 이미지 삽입
 
-프로젝트별 이미지 삽입 방식은 CLAUDE.md 참조.
+프로젝트별 이미지 삽입 방식은 AGENTS.md 참조.
 
 **GitHub 기반 프로젝트** (GitHub raw URL 사용):
 ```
@@ -91,7 +91,7 @@ https://raw.githubusercontent.com/{repo}/main/{이미지경로}/{파일명}.png
 **Tistory 직접 업로드 방식:**
 이미지를 티스토리에 업로드 후 발급된 URL 사용.
 
-이미지 width는 프로젝트별 CLAUDE.md에 정의된 값 사용 (기본: `width="600"`).
+이미지 width는 프로젝트별 AGENTS.md에 정의된 값 사용 (기본: `width="600"`).
 
 ## 글 발행일 표시
 

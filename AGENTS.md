@@ -1,6 +1,6 @@
-# middle-grammar — AGENTS.md (Codex)
+# middle-grammar
 
-Codex의 1차 진입 문서다. Claude Code는 `CLAUDE.md`를 사용한다. 두 파일은 도구 framing만 다르고 섹션·순서·규칙은 동일하다. 새 규칙은 양쪽 모두 갱신한다.
+이 파일이 canonical 작업 지침이다. `CLAUDE.md`(Claude Code)와 `AGENTS.md`(Codex)는 같은 파일이다(symlink). Claude Code·Codex 공통.
 
 ## 프로젝트
 
@@ -9,7 +9,7 @@ Codex의 1차 진입 문서다. Claude Code는 `CLAUDE.md`를 사용한다. 두 
 - 순수 HTML/CSS/JS
 - NE능률 교과서·부속 교재 자료를 참고하되 원문 복사는 금지
 
-## Codex 작업 흐름
+## 작업 흐름
 
 1. 요청 범위를 먼저 좁힌다.
    - 사용자가 요청한 파일과 직접 관련된 공통 파일만 수정한다.
@@ -32,9 +32,13 @@ Codex의 1차 진입 문서다. Claude Code는 `CLAUDE.md`를 사용한다. 두 
 
 ## 스킬·에이전트 자료 취급
 
-`.claude/skills/*/SKILL.md`와 `.claude/agents/*.md`는 Claude Code의 skill/agent 정의다. Codex에서는 자동 로드되지 않으므로 로컬 참고 문서로 읽어 절차·체크리스트를 그대로 따른다.
+`.claude/skills/*/SKILL.md`와 `.claude/agents/*.md`는 Claude Code의 skill/agent 정의다. Claude Code 세션에서는 자동 로드되며, Codex에서는 자동 로드되지 않으므로 로컬 참고 문서로 읽어 절차·체크리스트를 그대로 따른다.
 
-`CLAUDE.md`는 Claude Code용 parallel 문서. 같은 규칙·순서를 유지하되 도구 framing만 다르다.
+전역 지침은 `~/.claude/CLAUDE.md`(Claude Code) / `~/.codex/AGENTS.md`(Codex)에 있다.
+
+브랜치 prefix는 사용하는 도구 관례를 따른다 (Claude Code `claude/`, Codex `codex/`).
+
+커밋 트레일러(`Co-Authored-By: Claude…`)는 도구 기본 동작을 따르되 강제하지 않는다. Codex 커밋에는 넣지 않는다.
 
 ## 파일 구조
 
@@ -45,10 +49,10 @@ Codex의 1차 진입 문서다. Claude Code는 `CLAUDE.md`를 사용한다. 두 
 | `score-popup.js` | 점수 결과 팝업 |
 | `worksheet-sentence-guide.md` | 예문 출처·문장 변형 규칙 |
 | `answer-checker-guide.md` | 정답 처리·검증 규칙 |
-| `refs/NE-md변환/` | NE능률 중1·중2 교과서·기본AB·심화·어법드릴 md |
-| `refs/NE-중1-교과서/` | NE능률 중1 원본 PDF·hwp + 문법연습문제·어법드릴 |
-| `refs/NE-중2-교과서/` | NE능률 중2 원본 PDF + 문법연습문제 |
-| `refs/미래엔-활동지/` | 미래엔(최) 본문 활동지·직소 자료 |
+| `refs/NE-md변환/` | NE능률 중1·중2 교과서·기본AB·심화·어법드릴 md (저작권 — `refs/`는 gitignore, 로컬 참고 전용) |
+| `refs/NE-중1-교과서/` | NE능률 중1 원본 PDF·hwp + 문법연습문제·어법드릴 (로컬 전용) |
+| `refs/NE-중2-교과서/` | NE능률 중2 원본 PDF + 문법연습문제 (로컬 전용) |
+| `refs/학습지 참고자료/` | 미래엔(최) 본문 활동지·직소 자료 (로컬 전용) |
 | `game/questions.js` | 게임·whack·game2 공유 문항 은행 (손수 관리 파일 — 재생성 금지, 직접 수정) |
 | `blog-deploy/` | 티스토리 발행용 markdown |
 | `blog-images/YYYY-MM-DD/` | 블로그 본문·썸네일 이미지 |
@@ -118,7 +122,7 @@ refs/NE-md변환/2022me_중2_L{1~8}_문법연습문제_심화.md
 - 이름·대명사만 바꾸는 것은 불충분하다.
 - 주어, 목적어, 장소, 시간, 소재 등 최소 2개 이상을 바꾼다.
 - 교과서 참고 예문과 창작 예문을 대략 50:50으로 섞는다.
-- 원문 대조가 필요한 경우 `rg`로 핵심 구절을 검색한다.
+- 원문 대조가 필요한 경우 rg/Grep으로 핵심 구절을 검색한다.
 
 ## 한국어 용어 규칙
 

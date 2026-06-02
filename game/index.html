@@ -1130,7 +1130,6 @@ cleanupZeroScoreRecords();
   });
   document.querySelectorAll('.mode-btn').forEach(btn => {
     btn.addEventListener('click', () => {
-      if (btn.dataset.mode === 'boss') { location.href = '../game2/'; return; }
       document.querySelectorAll('.mode-btn').forEach(b => b.classList.remove('on'));
       btn.classList.add('on');
       selectedMode = btn.dataset.mode || 'bubble';
@@ -1142,7 +1141,7 @@ cleanupZeroScoreRecords();
 
 function startSelectedGame(unitKey) {
   if (selectedMode === 'boss') {
-    location.href = '../game2/';
+    location.href = '../game2/?unit=' + encodeURIComponent(unitKey);
   } else if (selectedMode === 'speed') startSpeedQuiz(unitKey);
   else if (selectedMode === 'whack') location.href = '../whack-grammar/?unit=' + encodeURIComponent(unitKey);
   else startGame(unitKey);

@@ -8806,6 +8806,318 @@ const GAME_QUESTIONS = {
           "where did he from"
         ],
         "level": 2
+      },
+      {
+        "id": "g2_l6_game_p01",
+        "kor": "나는 고양이가 따뜻한 지붕 위로 뛰어오르는 것을 보았다.",
+        "eng": "I saw the cat ___ onto the warm roof.",
+        "ans": "jump",
+        "opts": [
+          "jump",
+          "to jump",
+          "jumps",
+          "jumped"
+        ],
+        "level": 1
+      },
+      {
+        "id": "g2_l6_game_p02",
+        "kor": "우리는 누군가 위층에서 피아노 치는 소리를 들었다.",
+        "eng": "We heard someone ___ the piano upstairs.",
+        "ans": "playing",
+        "opts": [
+          "playing",
+          "to play",
+          "played",
+          "plays"
+        ],
+        "level": 1
+      },
+      {
+        "id": "g2_l6_game_p03",
+        "kor": "그녀는 제빵사가 이른 아침에 빵을 만드는 것을 지켜보았다.",
+        "eng": "She watched the baker ___ bread early.",
+        "ans": "make",
+        "opts": [
+          "make",
+          "to make",
+          "makes",
+          "made"
+        ],
+        "level": 1
+      },
+      {
+        "id": "g2_l6_game_p04",
+        "kor": "그는 연설 전에 심장이 빠르게 뛰는 것을 느꼈다.",
+        "eng": "He felt his heart ___ fast before the speech.",
+        "ans": "beat",
+        "opts": [
+          "beat",
+          "to beat",
+          "beats",
+          "beaten"
+        ],
+        "level": 1
+      },
+      {
+        "id": "g2_l6_game_p05",
+        "kor": "그들은 굴뚝에서 연기가 피어오르는 것을 알아차렸다.",
+        "eng": "They noticed smoke ___ from the chimney.",
+        "ans": "rising",
+        "opts": [
+          "rising",
+          "to rise",
+          "rises",
+          "risen"
+        ],
+        "level": 2
+      },
+      {
+        "id": "g2_l6_game_p06",
+        "kor": "나는 빗방울이 창문을 두드리는 소리를 들었다.",
+        "eng": "I heard raindrops ___ on the window.",
+        "ans": "tapping",
+        "opts": [
+          "tapping",
+          "to tap",
+          "taps",
+          "tapped"
+        ],
+        "level": 1
+      },
+      {
+        "id": "g2_l6_game_p07",
+        "kor": "Noah는 반딧불이가 어두운 정원에서 빛나는 것을 보았다.",
+        "eng": "Noah saw fireflies ___ in the dark garden.",
+        "ans": "glowing",
+        "opts": [
+          "glowing",
+          "to glow",
+          "glows",
+          "glowed"
+        ],
+        "level": 2
+      },
+      {
+        "id": "g2_l6_game_p08",
+        "kor": "Ava는 바람이 소나무 사이로 울부짖는 소리를 들었다.",
+        "eng": "Ava heard the wind ___ through the pines.",
+        "ans": "howl",
+        "opts": [
+          "howl",
+          "to howl",
+          "howls",
+          "howled"
+        ],
+        "level": 2
+      },
+      {
+        "id": "g2_l6_game_p09",
+        "kor": "아이들은 돌고래가 배 근처에서 헤엄치는 것을 지켜보았다.",
+        "eng": "The kids watched dolphins ___ near the boat.",
+        "ans": "swim",
+        "opts": [
+          "swim",
+          "to swim",
+          "swims",
+          "swum"
+        ],
+        "level": 1
+      },
+      {
+        "id": "g2_l6_game_p10",
+        "kor": "나는 기차가 역을 떠날 때 움직이는 것을 느꼈다.",
+        "eng": "I felt the train ___ as it left.",
+        "ans": "move",
+        "opts": [
+          "move",
+          "to move",
+          "moves",
+          "moved"
+        ],
+        "level": 1
+      },
+      {
+        "id": "g2_l6_game_p11",
+        "kor": "우리는 번개가 밤하늘을 가로질러 번쩍이는 것을 보았다.",
+        "eng": "We saw lightning ___ across the night sky.",
+        "ans": "flash",
+        "opts": [
+          "flash",
+          "to flash",
+          "flashes",
+          "flashed"
+        ],
+        "level": 2
+      },
+      {
+        "id": "g2_l6_game_p12",
+        "kor": "그녀는 남동생이 구석에 숨는 것을 알아차렸다.",
+        "eng": "She noticed her brother ___ in the corner.",
+        "ans": "hiding",
+        "opts": [
+          "hiding",
+          "to hide",
+          "hides",
+          "hid"
+        ],
+        "level": 2
+      },
+      {
+        "id": "g2_l6_game_i01",
+        "kor": "너는 다음 버스가 언제 도착하는지 아니?",
+        "eng": "Do you know ___ the next bus arrives?",
+        "ans": "when",
+        "opts": [
+          "when",
+          "what",
+          "who",
+          "how"
+        ],
+        "level": 1
+      },
+      {
+        "id": "g2_l6_game_i02",
+        "kor": "그 박물관이 어디에 위치해 있는지 말해줄 수 있니?",
+        "eng": "Can you tell me ___ the museum is located?",
+        "ans": "where",
+        "opts": [
+          "where",
+          "when",
+          "who",
+          "why"
+        ],
+        "level": 1
+      },
+      {
+        "id": "g2_l6_game_i03",
+        "kor": "누가 이 그림을 그렸는지 나에게 말해줘.",
+        "eng": "Tell me ___ painted this picture.",
+        "ans": "who",
+        "opts": [
+          "who",
+          "whom",
+          "which",
+          "what"
+        ],
+        "level": 1
+      },
+      {
+        "id": "g2_l6_game_i04",
+        "kor": "나는 그녀가 쇼핑몰에서 무엇을 샀는지 모른다.",
+        "eng": "I don't know ___ she bought at the mall.",
+        "ans": "what",
+        "opts": [
+          "what",
+          "which",
+          "who",
+          "why"
+        ],
+        "level": 1
+      },
+      {
+        "id": "g2_l6_game_i05",
+        "kor": "나는 어느 셔츠를 입을지 결정할 수 없다.",
+        "eng": "I can't decide ___ shirt to wear.",
+        "ans": "which",
+        "opts": [
+          "which",
+          "who",
+          "what",
+          "whose"
+        ],
+        "level": 2
+      },
+      {
+        "id": "g2_l6_game_i06",
+        "kor": "너는 이 우산이 누구 것인지 아니?",
+        "eng": "Do you know ___ umbrella this is?",
+        "ans": "whose",
+        "opts": [
+          "whose",
+          "who",
+          "which",
+          "what"
+        ],
+        "level": 2
+      },
+      {
+        "id": "g2_l6_game_i07",
+        "kor": "네가 그 퍼즐을 어떻게 풀었는지 보여줘.",
+        "eng": "Show me ___ you solved the puzzle.",
+        "ans": "how",
+        "opts": [
+          "how",
+          "what",
+          "why",
+          "who"
+        ],
+        "level": 1
+      },
+      {
+        "id": "g2_l6_game_i08",
+        "kor": "나는 오늘 비가 올지 안 올지 확실하지 않다.",
+        "eng": "I'm not sure ___ it will rain today.",
+        "ans": "if",
+        "opts": [
+          "if",
+          "that",
+          "what",
+          "how"
+        ],
+        "level": 2
+      },
+      {
+        "id": "g2_l6_game_i09",
+        "kor": "나는 그 가게가 왜 일찍 문을 닫았는지 궁금하다.",
+        "eng": "I wonder ___ the shop closed early.",
+        "ans": "why",
+        "opts": [
+          "why",
+          "where",
+          "who",
+          "which"
+        ],
+        "level": 2
+      },
+      {
+        "id": "g2_l6_game_i10",
+        "kor": "그는 우리가 얼마나 오래 기다렸는지 물었다.",
+        "eng": "He asked ___ long we had waited.",
+        "ans": "how",
+        "opts": [
+          "how",
+          "what",
+          "when",
+          "why"
+        ],
+        "level": 2
+      },
+      {
+        "id": "g2_l6_game_i11",
+        "kor": "나는 그 영화가 몇 시에 끝나는지 알고 싶다.",
+        "eng": "I want to know ___ time the movie ends.",
+        "ans": "what",
+        "opts": [
+          "what",
+          "when",
+          "which",
+          "how"
+        ],
+        "level": 1
+      },
+      {
+        "id": "g2_l6_game_i12",
+        "kor": "그들은 그 이야기가 사실인지 궁금해했다.",
+        "eng": "They wondered ___ the story was true.",
+        "ans": "whether",
+        "opts": [
+          "whether",
+          "that",
+          "what",
+          "which"
+        ],
+        "level": 2
       }
     ]
   },

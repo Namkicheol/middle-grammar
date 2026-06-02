@@ -170,16 +170,12 @@ body{font-family:'Baloo 2','Noto Sans KR',sans-serif;background:var(--bg);paddin
   <div class="sec-hdr"><div class="lbl">Part 1 · 15문제</div><h2>종합 문법 훈련</h2><div class="desc">문맥 파악 · 오류 수정 · 평서문 → 감탄문 변환 · 우리말 영작</div></div>
 
   <!-- ─── 문맥 파악 MCQ (a1-a4) ─── -->
-  <div class="question-card" id="qc-a1"><span class="q-num">1</span><span class="q-type ctx">문맥 파악</span>
-    <div class="q-text">다음 중 감탄문이 문법적으로 올바른 문장을 고르세요.</div>
-    <div class="choices full" data-qid="a1" data-ans="What a brilliant idea you have!">
-      <button class="choice" onclick="pickChoice(this)">What brilliant idea you have!</button>
-      <button class="choice" onclick="pickChoice(this)">How a brilliant idea you have!</button>
-      <button class="choice" onclick="pickChoice(this)">What a brilliant idea you have!</button>
-      <button class="choice" onclick="pickChoice(this)">How brilliant a idea you have!</button>
-    </div>
-    <div class="answer-hint" id="ah-a1">💡 정답: <strong>What a brilliant idea you have!</strong> — 명사(idea) 포함 → 「What + a + 형용사 + 명사 + 주어 + 동사」 어순. How는 명사 없을 때 사용<br>📝 해석: 너 정말 멋진 생각을 가지고 있구나!</div>
-    <button class="hint-btn" onclick="showHint('a1')">💡 힌트 보기</button>
+  <div class='question-card' id='qc-a1'><span class='q-num'>1</span>
+    <div class='q-text'>What a brilliant idea you have!</div>
+    <div class='q-kor'>너 정말 멋진 생각을 가지고 있구나! — ⭕맞으면 O · ❌틀리면 X</div>
+    <div class='choices ox' data-qid='a1' data-ans='O'><button class="choice" onclick="pickChoice(this)">O</button><button class="choice" onclick="pickChoice(this)">X</button></div>
+    <div class='answer-hint' id='ah-a1'>💡 정답: <strong>O</strong> — 명사(idea) 포함 → 「What + a + 형용사(brilliant) + 명사(idea) + 주어(you) + 동사(have)」 올바른 어순<br>📝 해석: 너 정말 멋진 생각을 가지고 있구나!</div>
+    <button class='hint-btn' onclick="showHint('a1')">💡 힌트 보기</button>
   </div>
 
   <div class="question-card" id="qc-a2"><span class="q-num">2</span><span class="q-type ctx">문맥 파악</span>
@@ -272,19 +268,12 @@ body{font-family:'Baloo 2','Noto Sans KR',sans-serif;background:var(--bg);paddin
   </div>
 
   <!-- ─── 평서문 → 감탄문 (a9-a11) ─── -->
-  <div class="question-card" id="qc-a9"><span class="q-num">9</span><span class="q-type trans">감탄문 변환</span>
-    <div class="q-text">
-      <span class="orig">평서문: This is a very interesting story.</span><br><br>
-      → 감탄문으로 바르게 바꾼 것을 고르세요.
-    </div>
-    <div class="choices full" data-qid="a9" data-ans="What an interesting story this is!">
-      <button class="choice" onclick="pickChoice(this)">How an interesting story this is!</button>
-      <button class="choice" onclick="pickChoice(this)">What a interesting story this is!</button>
-      <button class="choice" onclick="pickChoice(this)">What an interesting story this is!</button>
-      <button class="choice" onclick="pickChoice(this)">How interesting a story this is!</button>
-    </div>
-    <div class="answer-hint" id="ah-a9">💡 정답: <strong>③</strong> — 명사(story) 있음 → What. interesting이 모음으로 시작 → an<br>📝 해석: 이것은 정말 흥미로운 이야기구나!</div>
-    <button class="hint-btn" onclick="showHint('a9')">💡 힌트 보기</button>
+  <div class='question-card' id='qc-a9'><span class='q-num'>9</span>
+    <div class='q-text'>How an interesting story this is!</div>
+    <div class='q-kor'>이것은 정말 흥미로운 이야기구나! — ⭕맞으면 O · ❌틀리면 X</div>
+    <div class='choices ox' data-qid='a9' data-ans='X'><button class="choice" onclick="pickChoice(this)">O</button><button class="choice" onclick="pickChoice(this)">X</button></div>
+    <div class='answer-hint' id='ah-a9'>💡 정답: <strong>X</strong> — 명사(story)가 있을 때는 How가 아닌 What을 씀. 올바른 형태: What an interesting story this is! (interesting이 모음 시작 → an)<br>📝 해석: 이것은 정말 흥미로운 이야기구나!</div>
+    <button class='hint-btn' onclick="showHint('a9')">💡 힌트 보기</button>
   </div>
 
   <div class="question-card" id="qc-a10"><span class="q-num">10</span><span class="q-type trans">감탄문 변환</span>

@@ -183,18 +183,18 @@ body{font-family:'Baloo 2','Noto Sans KR',sans-serif;background:var(--bg);paddin
 
   <!-- MCQ 10-12: 어법에 맞는 문장 고르기 -->
   <div class='question-card' id='qc-a10'><span class='q-num'>10</span>
-    <div class='q-text'>다음 중 어법에 맞는 것을 고르세요.</div>
-    <div class='q-kor'>그녀는 지난여름에 제주를 방문했다.</div>
-    <div class='choices choices full' data-qid='a10' data-ans='She visited Jeju last summer.'><button class="choice" onclick="pickChoice(this)">She has visited Jeju last summer.</button><button class="choice" onclick="pickChoice(this)">She visited Jeju last summer.</button><button class="choice" onclick="pickChoice(this)">She have visited Jeju last summer.</button><button class="choice" onclick="pickChoice(this)">She has visit Jeju last summer.</button></div>
-    <div class='answer-hint' id='ah-a10'>💡 정답: <strong>She visited Jeju last summer.</strong> — "last summer"처럼 과거 시점을 나타내는 표현은 현재완료가 아닌 과거시제와 씁니다.<br>📝 해석: 그녀는 지난여름에 제주를 방문했다.</div>
+    <div class='q-text'>She visited Jeju last summer.</div>
+    <div class='q-kor'>그녀는 지난여름에 제주를 방문했다. — ⭕맞으면 O · ❌틀리면 X</div>
+    <div class='choices ox' data-qid='a10' data-ans='O'><button class="choice" onclick="pickChoice(this)">O</button><button class="choice" onclick="pickChoice(this)">X</button></div>
+    <div class='answer-hint' id='ah-a10'>💡 정답: <strong>O</strong> — "last summer"처럼 과거 시점을 나타낼 때는 현재완료가 아닌 과거시제(visited) 사용: 올바른 형태<br>📝 해석: 그녀는 지난여름에 제주를 방문했다.</div>
     <button class='hint-btn' onclick="showHint('a10')">💡 힌트 보기</button>
   </div>
 
   <div class='question-card' id='qc-a11'><span class='q-num'>11</span>
-    <div class='q-text'>다음 중 어법에 맞는 것을 고르세요.</div>
-    <div class='q-kor'>그는 5년 동안 여기서 살아 왔다.</div>
-    <div class='choices choices full' data-qid='a11' data-ans='He has lived here for five years.'><button class="choice" onclick="pickChoice(this)">He have lived here for five years.</button><button class="choice" onclick="pickChoice(this)">He has live here for five years.</button><button class="choice" onclick="pickChoice(this)">He has lived here for five years.</button><button class="choice" onclick="pickChoice(this)">He has lived here since five years.</button></div>
-    <div class='answer-hint' id='ah-a11'>💡 정답: <strong>He has lived here for five years.</strong> — He(단수)→has, live의 과거분사 lived, 기간 앞에는 for<br>📝 해석: 그는 5년 동안 여기서 살아 왔다.</div>
+    <div class='q-text'>He have lived here for five years.</div>
+    <div class='q-kor'>그는 5년 동안 여기서 살아 왔다. — ⭕맞으면 O · ❌틀리면 X</div>
+    <div class='choices ox' data-qid='a11' data-ans='X'><button class="choice" onclick="pickChoice(this)">O</button><button class="choice" onclick="pickChoice(this)">X</button></div>
+    <div class='answer-hint' id='ah-a11'>💡 정답: <strong>X</strong> — He(3인칭 단수)는 have가 아닌 has. "He have lived" → "He has lived"로 고쳐야 함<br>📝 해석: 그는 5년 동안 여기서 살아 왔다.</div>
     <button class='hint-btn' onclick="showHint('a11')">💡 힌트 보기</button>
   </div>
 

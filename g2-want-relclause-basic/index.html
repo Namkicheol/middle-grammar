@@ -157,16 +157,18 @@ body{font-family:'Baloo 2','Noto Sans KR',sans-serif;background:var(--bg);paddin
 
   <!-- 구분 문제 7-9: 어법에 맞는 문장 고르기 -->
   <div class='question-card' id='qc-a7'><span class='q-num'>7</span>
-    <div class='q-text'>다음 중 어법에 맞는 것을 고르세요.</div>
-    <div class='choices choices full' data-qid='a7' data-ans='She told him to wash the dishes.'><button class="choice" onclick="pickChoice(this)">She told him wash the dishes.</button><button class="choice" onclick="pickChoice(this)">She told him to wash the dishes.</button><button class="choice" onclick="pickChoice(this)">She told to him wash the dishes.</button><button class="choice" onclick="pickChoice(this)">She told him washing the dishes.</button></div>
-    <div class='answer-hint' id='ah-a7'>💡 정답: <strong>She told him to wash the dishes.</strong> — tell + 목적어(him) + to부정사(to wash)<br>📝 해석: 그녀는 그에게 설거지를 하라고 말했다.</div>
+    <div class='q-text'>She told him to wash the dishes.</div>
+    <div class='q-kor'>그녀는 그에게 설거지를 하라고 말했다. — ⭕맞으면 O · ❌틀리면 X</div>
+    <div class='choices ox' data-qid='a7' data-ans='O'><button class="choice" onclick="pickChoice(this)">O</button><button class="choice" onclick="pickChoice(this)">X</button></div>
+    <div class='answer-hint' id='ah-a7'>💡 정답: <strong>O</strong> — tell + 목적어(him) + to부정사(to wash): 올바른 형태<br>📝 해석: 그녀는 그에게 설거지를 하라고 말했다.</div>
     <button class='hint-btn' onclick="showHint('a7')">💡 힌트 보기</button>
   </div>
 
   <div class='question-card' id='qc-a8'><span class='q-num'>8</span>
-    <div class='q-text'>다음 중 어법에 맞는 것을 고르세요.</div>
-    <div class='choices choices full' data-qid='a8' data-ans='My dad allowed me to stay up late.'><button class="choice" onclick="pickChoice(this)">My dad allowed me stay up late.</button><button class="choice" onclick="pickChoice(this)">My dad allowed me staying up late.</button><button class="choice" onclick="pickChoice(this)">My dad allowed me to stay up late.</button><button class="choice" onclick="pickChoice(this)">My dad allowed to me stay up late.</button></div>
-    <div class='answer-hint' id='ah-a8'>💡 정답: <strong>My dad allowed me to stay up late.</strong> — allow + 목적어(me) + to부정사(to stay)<br>📝 해석: 아빠는 내가 늦게까지 깨어 있는 것을 허락하셨다.</div>
+    <div class='q-text'>My dad allowed me stay up late.</div>
+    <div class='q-kor'>아빠는 내가 늦게까지 깨어 있는 것을 허락하셨다. — ⭕맞으면 O · ❌틀리면 X</div>
+    <div class='choices ox' data-qid='a8' data-ans='X'><button class="choice" onclick="pickChoice(this)">O</button><button class="choice" onclick="pickChoice(this)">X</button></div>
+    <div class='answer-hint' id='ah-a8'>💡 정답: <strong>X</strong> — allow + 목적어 + to부정사. "allowed me stay" → "allowed me to stay"로 고쳐야 함<br>📝 해석: 아빠는 내가 늦게까지 깨어 있는 것을 허락하셨다.</div>
     <button class='hint-btn' onclick="showHint('a8')">💡 힌트 보기</button>
   </div>
 

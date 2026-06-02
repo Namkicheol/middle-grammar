@@ -170,16 +170,12 @@ body{font-family:'Baloo 2','Noto Sans KR',sans-serif;background:var(--bg);paddin
   <div class="sec-hdr"><div class="lbl">Part 1 · 15문제</div><h2>종합 문법 훈련</h2><div class="desc">문맥 파악 · 오류 수정 · 문장 합치기 · 우리말 영작</div></div>
 
   <!-- ─── 문맥 파악 MCQ (a1-a4) ─── -->
-  <div class="question-card" id="qc-a1"><span class="q-num">1</span><span class="q-type ctx">문맥 파악</span>
-    <div class="q-text">다음 중 look을 올바르게 사용한 문장을 고르세요.</div>
-    <div class="choices full" data-qid="a1" data-ans="She looks sad.">
-      <button class="choice" onclick="pickChoice(this)">She looks sadly.</button>
-      <button class="choice" onclick="pickChoice(this)">She looks sad.</button>
-      <button class="choice" onclick="pickChoice(this)">She looks sadness.</button>
-      <button class="choice" onclick="pickChoice(this)">She looks sadly sad.</button>
-    </div>
-    <div class="answer-hint" id="ah-a1">💡 정답: <strong>She looks sad.</strong> — look 뒤에는 형용사(sad)! sadly(부사), sadness(명사)는 불가<br>📝 해석: 그녀는 슬퍼 보인다.</div>
-    <button class="hint-btn" onclick="showHint('a1')">💡 힌트 보기</button>
+  <div class='question-card' id='qc-a1'><span class='q-num'>1</span>
+    <div class='q-text'>She looks sadly.</div>
+    <div class='q-kor'>그녀는 슬퍼 보인다. — ⭕맞으면 O · ❌틀리면 X</div>
+    <div class='choices ox' data-qid='a1' data-ans='X'><button class="choice" onclick="pickChoice(this)">O</button><button class="choice" onclick="pickChoice(this)">X</button></div>
+    <div class='answer-hint' id='ah-a1'>💡 정답: <strong>X</strong> — 감각동사 look 뒤에는 형용사가 와야 함. sadly는 부사이므로 불가. 올바른 형태: She looks sad.<br>📝 해석: 그녀는 슬퍼 보인다.</div>
+    <button class='hint-btn' onclick="showHint('a1')">💡 힌트 보기</button>
   </div>
 
   <div class="question-card" id="qc-a2"><span class="q-num">2</span><span class="q-type ctx">문맥 파악</span>
@@ -272,19 +268,12 @@ body{font-family:'Baloo 2','Noto Sans KR',sans-serif;background:var(--bg);paddin
   </div>
 
   <!-- ─── 문장 합치기 (a9-a11) ─── -->
-  <div class="question-card" id="qc-a9"><span class="q-num">9</span><span class="q-type trans">문장 합치기</span>
-    <div class="q-text">
-      <span class="orig">원문 1: The classroom was very noisy.<br>원문 2: The teacher closed the door.</span><br><br>
-      → because를 사용하여 두 문장을 알맞게 연결한 것을 고르세요.
-    </div>
-    <div class="choices full" data-qid="a9" data-ans="The teacher closed the door because the classroom was very noisy.">
-      <button class="choice" onclick="pickChoice(this)">The teacher closed the door because the classroom was very noisy.</button>
-      <button class="choice" onclick="pickChoice(this)">Because the teacher closed the door, the classroom was very noisy.</button>
-      <button class="choice" onclick="pickChoice(this)">The classroom was noisy because the teacher closed the door.</button>
-      <button class="choice" onclick="pickChoice(this)">The door closed because it was noisy.</button>
-    </div>
-    <div class="answer-hint" id="ah-a9">💡 정답: <strong>The teacher closed the door because the classroom was very noisy.</strong> — 교실이 시끄러웠던 것이 원인, 선생님이 문을 닫은 것이 결과<br>📝 해석: 교실이 매우 시끄러웠기 때문에 선생님은 문을 닫으셨다.</div>
-    <button class="hint-btn" onclick="showHint('a9')">💡 힌트 보기</button>
+  <div class='question-card' id='qc-a9'><span class='q-num'>9</span>
+    <div class='q-text'>The teacher closed the door because the classroom was very noisy.</div>
+    <div class='q-kor'>교실이 매우 시끄러웠기 때문에 선생님은 문을 닫으셨다. — ⭕맞으면 O · ❌틀리면 X</div>
+    <div class='choices ox' data-qid='a9' data-ans='O'><button class="choice" onclick="pickChoice(this)">O</button><button class="choice" onclick="pickChoice(this)">X</button></div>
+    <div class='answer-hint' id='ah-a9'>💡 정답: <strong>O</strong> — 교실이 시끄러웠던 것(원인) → 선생님이 문을 닫은 것(결과). because + 주어(the classroom) + 동사(was) 포함한 완전한 절 사용<br>📝 해석: 교실이 매우 시끄러웠기 때문에 선생님은 문을 닫으셨다.</div>
+    <button class='hint-btn' onclick="showHint('a9')">💡 힌트 보기</button>
   </div>
 
   <div class="question-card" id="qc-a10"><span class="q-num">10</span><span class="q-type trans">문장 합치기</span>

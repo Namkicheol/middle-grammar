@@ -171,26 +171,18 @@ body{font-family:'Baloo 2','Noto Sans KR',sans-serif;background:var(--bg);paddin
 
   <!-- ─── 문맥 파악 MCQ (a1-a4) ─── -->
   <div class="question-card" id="qc-a1"><span class="q-num">1</span><span class="q-type ctx">문맥 파악</span>
-    <div class="q-text">다음 중 「make + 목적어 + 형용사」를 올바르게 쓴 문장을 고르세요.</div>
-    <div class="choices full" data-qid="a1" data-ans="The good news made my parents happy.">
-      <button class="choice" onclick="pickChoice(this)">The good news made my parents happily.</button>
-      <button class="choice" onclick="pickChoice(this)">The good news made my parents happy.</button>
-      <button class="choice" onclick="pickChoice(this)">The good news made my parents happiness.</button>
-      <button class="choice" onclick="pickChoice(this)">The good news made happily my parents.</button>
-    </div>
-    <div class="answer-hint" id="ah-a1">💡 정답: <strong>The good news made my parents happy.</strong> — 「make + 목적어 + 형용사」 어순 · happily(부사) / happiness(명사)는 보어로 쓰일 수 없음<br>📝 해석: 그 좋은 소식은 우리 부모님을 행복하게 만들었다.</div>
+    <div class="q-text">The good news made my parents happily.</div>
+    <div class="q-kor">그 좋은 소식은 우리 부모님을 행복하게 만들었다. — ⭕맞으면 O · ❌틀리면 X</div>
+    <div class="choices ox" data-qid="a1" data-ans="X"><button class="choice" onclick="pickChoice(this)">O</button><button class="choice" onclick="pickChoice(this)">X</button></div>
+    <div class="answer-hint" id="ah-a1">💡 정답: <strong>X</strong> — 「make + 목적어 + 형용사」 구조에서 보어는 형용사여야 합니다. happily는 부사이므로 오답. → The good news made my parents <strong>happy</strong>.<br>📝 해석: 그 좋은 소식은 우리 부모님을 행복하게 만들었다.</div>
     <button class="hint-btn" onclick="showHint('a1')">💡 힌트 보기</button>
   </div>
 
   <div class="question-card" id="qc-a2"><span class="q-num">2</span><span class="q-type ctx">문맥 파악</span>
-    <div class="q-text">다음 중 접속사 that을 올바르게 쓴 문장을 고르세요.</div>
-    <div class="choices full" data-qid="a2" data-ans="I think that the answer is wrong.">
-      <button class="choice" onclick="pickChoice(this)">I think which the answer is wrong.</button>
-      <button class="choice" onclick="pickChoice(this)">I think that the answer is wrong.</button>
-      <button class="choice" onclick="pickChoice(this)">I think that the answer wrong.</button>
-      <button class="choice" onclick="pickChoice(this)">I think because the answer is wrong.</button>
-    </div>
-    <div class="answer-hint" id="ah-a2">💡 정답: <strong>I think that the answer is wrong.</strong> — 「think + that + 완전한 절(주어 the answer + 동사 is + 보어 wrong)」<br>📝 해석: 나는 그 답이 틀렸다고 생각한다.</div>
+    <div class="q-text">I think that the answer is wrong.</div>
+    <div class="q-kor">나는 그 답이 틀렸다고 생각한다. — ⭕맞으면 O · ❌틀리면 X</div>
+    <div class="choices ox" data-qid="a2" data-ans="O"><button class="choice" onclick="pickChoice(this)">O</button><button class="choice" onclick="pickChoice(this)">X</button></div>
+    <div class="answer-hint" id="ah-a2">💡 정답: <strong>O</strong> — 「think + that + 완전한 절」 구조. that 뒤에 주어(the answer) + 동사(is) + 보어(wrong)가 갖추어진 올바른 문장입니다.<br>📝 해석: 나는 그 답이 틀렸다고 생각한다.</div>
     <button class="hint-btn" onclick="showHint('a2')">💡 힌트 보기</button>
   </div>
 

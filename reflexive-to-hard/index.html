@@ -222,17 +222,12 @@ body{font-family:'Baloo 2','Noto Sans KR',sans-serif;background:var(--bg);paddin
     <button class="hint-btn" onclick="showHint('a3')">💡 힌트 보기</button>
   </div>
 
-  <div class="question-card" id="qc-a4"><span class="q-num">4</span><span class="q-type ctx">문맥 파악</span>
-    <div class="q-text">목적('~하기 위해')의 to부정사가 쓰인 문장을 고르시오.</div>
-    <div class="vocab"><span class="vw">raise 모으다, 올리다</span><span class="vw">charity 자선 단체</span><span class="vw">decide 결심하다</span><span class="vw">plan 계획하다</span></div>
-    <div class="choices" data-qid="a4" data-ans="They held a bake sale to raise money for charity.">
-      <button class="choice" onclick="pickChoice(this)">She wants to become a nurse.</button>
-      <button class="choice" onclick="pickChoice(this)">They held a bake sale to raise money for charity.</button>
-      <button class="choice" onclick="pickChoice(this)">He decided to stay home all day.</button>
-      <button class="choice" onclick="pickChoice(this)">We plan to visit the science museum.</button>
-    </div>
-    <div class="answer-hint" id="ah-a4">💡 정답: <strong>They held a bake sale to raise money for charity.</strong><br>— "to raise" = 목적 "돈을 모으기 위해" (동사 held를 수식)<br>나머지는 모두 동사의 목적어 (want/decide/plan + to부정사)<br>📝 해석: 그들은 자선 단체를 위해 돈을 모으기 위해 베이크 세일을 열었다.</div>
-    <button class="hint-btn" onclick="showHint('a4')">💡 힌트 보기</button>
+  <div class='question-card' id='qc-a4'><span class='q-num'>4</span>
+    <div class='q-text'>They held a bake sale to raise money for charity.</div>
+    <div class='q-kor'>그들은 자선 단체를 위해 돈을 모으기 위해 베이크 세일을 열었다. — ⭕맞으면 O · ❌틀리면 X</div>
+    <div class='choices ox' data-qid='a4' data-ans='O'><button class="choice" onclick="pickChoice(this)">O</button><button class="choice" onclick="pickChoice(this)">X</button></div>
+    <div class='answer-hint' id='ah-a4'>💡 정답: <strong>O</strong> — to raise가 '돈을 모으기 위해'라는 목적을 나타내는 to부정사 (동사 held를 수식)<br>📝 해석: 그들은 자선 단체를 위해 돈을 모으려고 베이크 세일을 열었다.</div>
+    <button class='hint-btn' onclick="showHint('a4')">💡 힌트 보기</button>
   </div>
 
   <!-- ─── 오류 수정 (a5-a8) ─── -->

@@ -379,7 +379,8 @@ canvas#c{position:absolute;inset:0;width:100%;height:100%;}
 // ═══════════════════════════════════════════════════════════
 const BGM = (() => {
   // CC0 배틀 음악(OpenGameArt) — 페이즈별 트랙 크로스페이드
-  const TRACKS = { a:'assets/bgm/battle-theme.ogg', b:'assets/bgm/hard-boss.ogg' };
+  // iOS Safari는 OGG를 재생 못 해서 MP3로 교체 (전 브라우저 호환)
+  const TRACKS = { a:'assets/bgm/battle-theme.mp3', b:'assets/bgm/hard-boss.mp3' };
   const PHASE_TRACK = ['a', 'a', 'b'];   // 0·1단계=RPG 배틀, 2단계(대마왕)=격렬
   const _au = {};
   let _cur = null, _playing = false, _phase = 0;

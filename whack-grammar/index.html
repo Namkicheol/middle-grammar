@@ -658,7 +658,7 @@ function startGame() {
   scheduleBomb();
   scheduleHeart();
   scheduleHammer();
-  setTimeout(startWhackBgm, 350);
+  startWhackBgm();   // 시작 버튼 제스처 안에서 즉시 — iOS 오디오 잠금해제 보장
 }
 
 function endGame() {
@@ -726,7 +726,7 @@ function nextRound() {
   scheduleBomb();
   scheduleHeart();
   scheduleHammer();
-  setTimeout(startWhackBgm, 200);
+  startWhackBgm();   // 버튼 제스처 안에서 즉시
 }
 
 function updateRoundBadge() {

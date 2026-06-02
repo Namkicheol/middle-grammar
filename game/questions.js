@@ -4775,15 +4775,41 @@ const GAME_QUESTIONS = {
         "level": 1
       },
       {
+        "id": "g1_l7_make_that_hard_index_a1",
+        "kor": "그 좋은 소식은 우리 부모님을 행복하게 만들었다.",
+        "eng": "다음 중 「make + 목적어 + 형용사」를 올바르게 쓴 문장을 고르세요.",
+        "ans": "The good news made my parents happy.",
+        "opts": [
+          "The good news made my parents happily.",
+          "The good news made my parents happiness.",
+          "The good news made happily my parents.",
+          "The good news made my parents happy."
+        ],
+        "level": 2
+      },
+      {
+        "id": "g1_l7_make_that_hard_index_a2",
+        "kor": "나는 그 답이 틀렸다고 생각한다.",
+        "eng": "다음 중 접속사 that을 올바르게 쓴 문장을 고르세요.",
+        "ans": "I think that the answer is wrong.",
+        "opts": [
+          "I think that the answer wrong.",
+          "I think because the answer is wrong.",
+          "I think that the answer is wrong.",
+          "I think which the answer is wrong."
+        ],
+        "level": 2
+      },
+      {
         "id": "g1_l7_make_that_hard_index_a3",
         "kor": "그 차가운 비는 소풍에서 모든 사람을 비참하게 만들었다.",
         "eng": "The cold rain made everyone ___ at the picnic. cold rain 차가운 비picnic 소풍",
         "ans": "miserable",
         "opts": [
-          "miserably",
-          "misery",
           "miserableness",
-          "miserable"
+          "miserable",
+          "miserably",
+          "misery"
         ],
         "level": 2
       },
@@ -4793,10 +4819,49 @@ const GAME_QUESTIONS = {
         "eng": "Sam said ___ he was going to be late for the meeting. be going to ~할 예정이다meeting 회의",
         "ans": "that",
         "opts": [
-          "if",
-          "which",
           "that",
-          "because"
+          "because",
+          "if",
+          "which"
+        ],
+        "level": 2
+      },
+      {
+        "id": "g1_l7_make_that_hard_index_a9",
+        "kor": "Sarah는 오빠가 이번 주말에 자신을 방문할 것이라고 희망한다.",
+        "eng": "원문 1: Sarah hopes.원문 2: Her brother will visit her this weekend. → 접속사 that을 사용하여 두 문장을 알맞게 연결한 것을 고르세요.",
+        "ans": "Sarah hopes that her brother will visit her this weekend.",
+        "opts": [
+          "Sarah hopes which her brother will visit her this weekend.",
+          "That Sarah hopes her brother will visit her this weekend.",
+          "Sarah hopes her brother that will visit her this weekend.",
+          "Sarah hopes that her brother will visit her this weekend."
+        ],
+        "level": 2
+      },
+      {
+        "id": "g1_l7_make_that_hard_index_a10",
+        "kor": "우리는 도서관이 금요일에 일찍 문을 닫는다는 것을 몰랐다.",
+        "eng": "원문 1: We didn't know.원문 2: The library closes early on Fridays. → 접속사 that을 사용하여 두 문장을 알맞게 연결한 것을 고르세요.",
+        "ans": "We didn't know that the library closes early on Fridays.",
+        "opts": [
+          "That we didn't know the library closes early on Fridays.",
+          "We didn't know the library that closes early on Fridays.",
+          "We didn't know that the library closes early on Fridays.",
+          "We didn't know because the library closes early on Fridays."
+        ],
+        "level": 2
+      },
+      {
+        "id": "g1_l7_make_that_hard_index_a11",
+        "kor": "Mia는 수학이 가장 재미있는 과목이라고 생각한다.",
+        "eng": "원문 1: Mia thinks.원문 2: Math is the most interesting subject. → 접속사 that을 사용하여 두 문장을 알맞게 연결한 것을 고르세요.",
+        "ans": "Mia thinks that math is the most interesting subject.",
+        "opts": [
+          "Mia that thinks math is the most interesting subject.",
+          "Mia thinks that math is the most interesting subject.",
+          "Mia thinks math the most interesting subject is.",
+          "Math thinks that Mia is the most interesting subject."
         ],
         "level": 2
       },
@@ -4806,10 +4871,10 @@ const GAME_QUESTIONS = {
         "eng": "The opening song made the crowd ___ right from the start.",
         "ans": "excited",
         "opts": [
-          "excite",
           "excited",
           "excitedly",
-          "excitement"
+          "excitement",
+          "excite"
         ],
         "level": 2
       },
@@ -4819,10 +4884,10 @@ const GAME_QUESTIONS = {
         "eng": "The amazing performances ___ all the parents proud.",
         "ans": "made",
         "opts": [
-          "made",
           "make",
           "making",
-          "was made"
+          "was made",
+          "made"
         ],
         "level": 2
       },
@@ -4832,10 +4897,10 @@ const GAME_QUESTIONS = {
         "eng": "The food trucks made the visitors ___ with delicious smells.",
         "ans": "hungry",
         "opts": [
-          "hungrily",
           "hunger",
           "hungering",
-          "hungry"
+          "hungry",
+          "hungrily"
         ],
         "level": 2
       },
@@ -4845,10 +4910,10 @@ const GAME_QUESTIONS = {
         "eng": "Even the cool weather ___ us comfortable all afternoon.",
         "ans": "made",
         "opts": [
-          "make",
           "making",
           "made",
-          "makes"
+          "makes",
+          "make"
         ],
         "level": 2
       },
@@ -4858,10 +4923,10 @@ const GAME_QUESTIONS = {
         "eng": "… the funny host had made every ___ laugh out loud.",
         "ans": "visitor",
         "opts": [
-          "visiting",
           "visitor",
           "visitors",
-          "visit"
+          "visit",
+          "visiting"
         ],
         "level": 2
       },
@@ -4871,10 +4936,10 @@ const GAME_QUESTIONS = {
         "eng": "Last weekend, Mia heard ___ her favorite band was coming to town.",
         "ans": "that",
         "opts": [
-          "that",
           "because",
           "when",
-          "which"
+          "which",
+          "that"
         ],
         "level": 2
       },
@@ -4884,10 +4949,10 @@ const GAME_QUESTIONS = {
         "eng": "She was excited ___ their songs were her favorites.",
         "ans": "because",
         "opts": [
-          "that",
           "when",
           "which",
-          "because"
+          "because",
+          "that"
         ],
         "level": 2
       },
@@ -4897,10 +4962,10 @@ const GAME_QUESTIONS = {
         "eng": "Her mom said ___ Mia could go to the concert.",
         "ans": "that",
         "opts": [
-          "if",
           "which",
           "that",
-          "because"
+          "because",
+          "if"
         ],
         "level": 2
       },
@@ -4910,10 +4975,10 @@ const GAME_QUESTIONS = {
         "eng": "Mia couldn't sleep that night ___ she was so excited.",
         "ans": "because",
         "opts": [
-          "how",
           "because",
           "that",
-          "which"
+          "which",
+          "how"
         ],
         "level": 2
       },
@@ -4923,10 +4988,10 @@ const GAME_QUESTIONS = {
         "eng": "___ she had saved enough allowance, she could even buy a ticket for her best friend.",
         "ans": "Because",
         "opts": [
-          "Because",
           "That",
           "Which",
-          "Although"
+          "Although",
+          "Because"
         ],
         "level": 2
       }
@@ -5158,15 +5223,41 @@ const GAME_QUESTIONS = {
         "level": 1
       },
       {
+        "id": "g1_l8_exclaim_something_hard_index_a1",
+        "kor": "너 정말 멋진 생각을 가지고 있구나!",
+        "eng": "다음 중 감탄문이 문법적으로 올바른 문장을 고르세요.",
+        "ans": "What a brilliant idea you have!",
+        "opts": [
+          "What brilliant idea you have!",
+          "How a brilliant idea you have!",
+          "How brilliant a idea you have!",
+          "What a brilliant idea you have!"
+        ],
+        "level": 2
+      },
+      {
+        "id": "g1_l8_exclaim_something_hard_index_a2",
+        "kor": "나는 차가운 마실 것을 원한다.",
+        "eng": "다음 중 -thing 어순이 올바른 문장을 고르세요.",
+        "ans": "I want something cold to drink.",
+        "opts": [
+          "I want a cold something to drink.",
+          "I want something coldly to drink.",
+          "I want something cold to drink.",
+          "I want cold something to drink."
+        ],
+        "level": 2
+      },
+      {
         "id": "g1_l8_exclaim_something_hard_index_a3",
         "kor": "그 새 롤러코스터는 정말 신나구나!",
         "eng": "___ exciting the new roller coaster is! exciting 신나는roller coaster 롤러코스터",
         "ans": "How",
         "opts": [
-          "What",
-          "Very",
           "A",
-          "How"
+          "How",
+          "What",
+          "Very"
         ],
         "level": 2
       },
@@ -5176,10 +5267,49 @@ const GAME_QUESTIONS = {
         "eng": "Did Mia bring ___ for the picnic? delicious 맛있는picnic 소풍",
         "ans": "anything delicious",
         "opts": [
-          "anything deliciously",
-          "a delicious thing",
           "anything delicious",
-          "delicious anything"
+          "delicious anything",
+          "anything deliciously",
+          "a delicious thing"
+        ],
+        "level": 2
+      },
+      {
+        "id": "g1_l8_exclaim_something_hard_index_a9",
+        "kor": "이것은 정말 흥미로운 이야기구나!",
+        "eng": "평서문: This is a very interesting story. → 감탄문으로 바르게 바꾼 것을 고르세요.",
+        "ans": "What an interesting story this is!",
+        "opts": [
+          "How an interesting story this is!",
+          "What a interesting story this is!",
+          "How interesting a story this is!",
+          "What an interesting story this is!"
+        ],
+        "level": 2
+      },
+      {
+        "id": "g1_l8_exclaim_something_hard_index_a10",
+        "kor": "그 강은 정말 깊구나!",
+        "eng": "평서문: The river is very deep. → 감탄문으로 바르게 바꾼 것을 고르세요.",
+        "ans": "How deep the river is!",
+        "opts": [
+          "What a deep the river is!",
+          "How a deep river the is!",
+          "How deep the river is!",
+          "What deep the river is!"
+        ],
+        "level": 2
+      },
+      {
+        "id": "g1_l8_exclaim_something_hard_index_a11",
+        "kor": "그녀는 정말 똑똑한 소녀구나!",
+        "eng": "평서문: She is a very smart girl. → 감탄문으로 바르게 바꾼 것을 고르세요.",
+        "ans": "What a smart girl she is!",
+        "opts": [
+          "How a smart girl she is!",
+          "What a smart girl she is!",
+          "How smart a girl she is!",
+          "What smart girl she is!"
         ],
         "level": 2
       },
@@ -5189,10 +5319,10 @@ const GAME_QUESTIONS = {
         "eng": "\"___ a huge tank this is!\"",
         "ans": "What",
         "opts": [
-          "A",
           "What",
           "How",
-          "Very"
+          "Very",
+          "A"
         ],
         "level": 2
       },
@@ -5202,10 +5332,10 @@ const GAME_QUESTIONS = {
         "eng": "\"___ graceful they are!\"",
         "ans": "How",
         "opts": [
-          "How",
           "What",
           "A",
-          "Very"
+          "Very",
+          "How"
         ],
         "level": 2
       },
@@ -5215,10 +5345,10 @@ const GAME_QUESTIONS = {
         "eng": "\"___ friendly turtles these are!\"",
         "ans": "What",
         "opts": [
-          "How",
           "A",
           "Very",
-          "What"
+          "What",
+          "How"
         ],
         "level": 2
       },
@@ -5228,10 +5358,10 @@ const GAME_QUESTIONS = {
         "eng": "___ enormous it looked!",
         "ans": "How",
         "opts": [
-          "A",
           "An",
           "How",
-          "What"
+          "What",
+          "A"
         ],
         "level": 2
       },
@@ -5241,10 +5371,10 @@ const GAME_QUESTIONS = {
         "eng": "\"___ an amazing experience this has been!\"",
         "ans": "What",
         "opts": [
-          "A",
           "What",
           "How",
-          "Very"
+          "Very",
+          "A"
         ],
         "level": 2
       },
@@ -5254,10 +5384,10 @@ const GAME_QUESTIONS = {
         "eng": "Mia decided to do ___ for her grandma.",
         "ans": "something special",
         "opts": [
-          "something special",
           "special something",
           "something specially",
-          "a special"
+          "a special",
+          "something special"
         ],
         "level": 2
       },
@@ -5267,10 +5397,10 @@ const GAME_QUESTIONS = {
         "eng": "\"I want to make ___,\" she thought.",
         "ans": "something sweet",
         "opts": [
-          "sweet something",
           "sweetly something",
           "a sweet",
-          "something sweet"
+          "something sweet",
+          "sweet something"
         ],
         "level": 2
       },
@@ -5280,10 +5410,10 @@ const GAME_QUESTIONS = {
         "eng": "… she found ___ on the shelf — an old recipe book!",
         "ans": "something interesting",
         "opts": [
-          "a interesting",
           "something interestingly",
           "something interesting",
-          "interesting something"
+          "interesting something",
+          "a interesting"
         ],
         "level": 2
       },
@@ -5293,10 +5423,10 @@ const GAME_QUESTIONS = {
         "eng": "\"I don't have ___ in the box, but these are for you.\"",
         "ans": "anything fancy",
         "opts": [
-          "anything fancily",
           "anything fancy",
           "fancy anything",
-          "a fancy"
+          "a fancy",
+          "anything fancily"
         ],
         "level": 2
       },
@@ -5306,10 +5436,10 @@ const GAME_QUESTIONS = {
         "eng": "\"___ this is!\"",
         "ans": "What a thoughtful gift",
         "opts": [
-          "What a thoughtful gift",
           "How thoughtful gift",
           "How a thoughtful",
-          "What thoughtful gift"
+          "What thoughtful gift",
+          "What a thoughtful gift"
         ],
         "level": 2
       }
@@ -8217,15 +8347,54 @@ const GAME_QUESTIONS = {
         "level": 1
       },
       {
+        "id": "g2_l5_g2_want_relclause_basic_index_a7",
+        "kor": "그녀는 그에게 설거지를 하라고 말했다.",
+        "eng": "다음 중 어법에 맞는 것을 고르세요.",
+        "ans": "She told him to wash the dishes.",
+        "opts": [
+          "She told to him wash the dishes.",
+          "She told him washing the dishes.",
+          "She told him to wash the dishes.",
+          "She told him wash the dishes."
+        ],
+        "level": 1
+      },
+      {
+        "id": "g2_l5_g2_want_relclause_basic_index_a8",
+        "kor": "아빠는 내가 늦게까지 깨어 있는 것을 허락하셨다.",
+        "eng": "다음 중 어법에 맞는 것을 고르세요.",
+        "ans": "My dad allowed me to stay up late.",
+        "opts": [
+          "My dad allowed to me stay up late.",
+          "My dad allowed me to stay up late.",
+          "My dad allowed me stay up late.",
+          "My dad allowed me staying up late."
+        ],
+        "level": 1
+      },
+      {
+        "id": "g2_l5_g2_want_relclause_basic_index_a9",
+        "kor": "선장은 선원들에게 기다리라고 명령했다.",
+        "eng": "다음 중 어법에 맞는 것을 고르세요.",
+        "ans": "The captain ordered the sailors to wait.",
+        "opts": [
+          "The captain ordered the sailors to wait.",
+          "The captain ordered the sailors wait.",
+          "The captain ordered the sailors waited.",
+          "The captain ordered to the sailors wait."
+        ],
+        "level": 1
+      },
+      {
         "id": "g2_l5_g2_want_relclause_basic_index_b1",
         "kor": "이것은 내가 라디오에서 들었던 노래이다.",
         "eng": "This is the song ___ I heard on the radio.",
         "ans": "which",
         "opts": [
+          "who",
           "whose",
           "what",
-          "which",
-          "who"
+          "which"
         ],
         "level": 1
       },
@@ -8235,10 +8404,10 @@ const GAME_QUESTIONS = {
         "eng": "She is a friend ___ everyone trusts.",
         "ans": "whom",
         "opts": [
+          "what",
           "whose",
           "whom",
-          "which",
-          "what"
+          "which"
         ],
         "level": 1
       },
@@ -8248,10 +8417,10 @@ const GAME_QUESTIONS = {
         "eng": "The cake ___ I baked yesterday tasted great.",
         "ans": "that",
         "opts": [
+          "whose",
           "that",
           "who",
-          "whom",
-          "whose"
+          "whom"
         ],
         "level": 1
       },
@@ -8261,10 +8430,10 @@ const GAME_QUESTIONS = {
         "eng": "The problem ___ we solved was very tricky.",
         "ans": "which",
         "opts": [
+          "which",
           "who",
           "whom",
-          "what",
-          "which"
+          "what"
         ],
         "level": 1
       },
@@ -8274,10 +8443,10 @@ const GAME_QUESTIONS = {
         "eng": "He is the actor ___ many fans admire.",
         "ans": "whom",
         "opts": [
+          "which",
           "whose",
           "what",
-          "whom",
-          "which"
+          "whom"
         ],
         "level": 1
       },
@@ -8287,10 +8456,36 @@ const GAME_QUESTIONS = {
         "eng": "The puppy ___ we found in the park is healthy now.",
         "ans": "which",
         "opts": [
+          "whom",
           "whose",
           "which",
-          "who",
-          "whom"
+          "who"
+        ],
+        "level": 1
+      },
+      {
+        "id": "g2_l5_g2_want_relclause_basic_index_b7",
+        "kor": "이곳은 내가 너에게 말했던 그 식당이다.",
+        "eng": "밑줄 친 관계대명사를 생략할 수 있는 문장을 고르세요.",
+        "ans": "This is the restaurant that I told you about.",
+        "opts": [
+          "The girl who lives next door is kind.",
+          "This is the restaurant that I told you about.",
+          "The boy who called you is my cousin.",
+          "The dog which barks all night is hers."
+        ],
+        "level": 1
+      },
+      {
+        "id": "g2_l5_g2_want_relclause_basic_index_b8",
+        "kor": "우리가 본 그 영화는 정말 멋졌다.",
+        "eng": "밑줄 친 관계대명사를 생략할 수 있는 문장을 고르세요.",
+        "ans": "The movie which we watched was amazing.",
+        "opts": [
+          "The movie which we watched was amazing.",
+          "The teacher who helped me is very kind.",
+          "The bird that sings in the morning is small.",
+          "A friend who keeps secrets is precious."
         ],
         "level": 1
       },
@@ -8300,10 +8495,10 @@ const GAME_QUESTIONS = {
         "eng": "The teacher asked the students ___ their phones during the test.",
         "ans": "not to use",
         "opts": [
-          "not to use",
           "to not using",
           "don't use",
-          "not using"
+          "not using",
+          "not to use"
         ],
         "level": 2
       },
@@ -8313,10 +8508,10 @@ const GAME_QUESTIONS = {
         "eng": "This is the umbrella ___ I borrowed from my friend last week.",
         "ans": "which",
         "opts": [
-          "who",
           "whose",
           "what",
-          "which"
+          "which",
+          "who"
         ],
         "level": 2
       },
@@ -8326,10 +8521,10 @@ const GAME_QUESTIONS = {
         "eng": "My coach expects me ___ harder before the match.",
         "ans": "to train",
         "opts": [
-          "training",
           "trained",
           "to train",
-          "train"
+          "train",
+          "training"
         ],
         "level": 2
       },
@@ -8339,10 +8534,10 @@ const GAME_QUESTIONS = {
         "eng": "The lady ___ we met at the station was very friendly.",
         "ans": "whom",
         "opts": [
-          "what",
           "whom",
           "which",
-          "whose"
+          "whose",
+          "what"
         ],
         "level": 2
       }
@@ -8431,15 +8626,145 @@ const GAME_QUESTIONS = {
         "level": 1
       },
       {
+        "id": "g2_l6_g2_perceive_indirectq_basic_index_a7",
+        "kor": "나는 개 한 마리가 밖에서 짖고 있는 소리를 들었다.",
+        "eng": "다음 중 어법에 맞는 것을 고르세요.",
+        "ans": "I heard a dog barking outside.",
+        "opts": [
+          "I heard a dog barks outside.",
+          "I heard to a dog bark outside.",
+          "I heard a dog barking outside.",
+          "I heard a dog to bark outside."
+        ],
+        "level": 1
+      },
+      {
+        "id": "g2_l6_g2_perceive_indirectq_basic_index_a8",
+        "kor": "우리는 연이 하늘 높이 날아오르는 것을 보았다.",
+        "eng": "다음 중 어법에 맞는 것을 고르세요.",
+        "ans": "We saw the kite fly high in the sky.",
+        "opts": [
+          "We saw to the kite fly high in the sky.",
+          "We saw the kite fly high in the sky.",
+          "We saw the kite to fly high in the sky.",
+          "We saw the kite flew high in the sky."
+        ],
+        "level": 1
+      },
+      {
+        "id": "g2_l6_g2_perceive_indirectq_basic_index_b1",
+        "kor": "나는 그녀가 지금 어디에 사는지 궁금하다.",
+        "eng": "다음 중 어법에 맞는 것을 고르세요.",
+        "ans": "I wonder where she lives now.",
+        "opts": [
+          "I wonder where she lives now.",
+          "I wonder where does she live now.",
+          "I wonder where lives she now.",
+          "I wonder where she does live now."
+        ],
+        "level": 1
+      },
+      {
+        "id": "g2_l6_g2_perceive_indirectq_basic_index_b2",
+        "kor": "너는 그 기차가 언제 떠나는지 아니?",
+        "eng": "다음 중 어법에 맞는 것을 고르세요.",
+        "ans": "Do you know when the train leaves?",
+        "opts": [
+          "Do you know when leaves the train?",
+          "Do you know when does the train leave?",
+          "Do you know when the train does leave?",
+          "Do you know when the train leaves?"
+        ],
+        "level": 1
+      },
+      {
+        "id": "g2_l6_g2_perceive_indirectq_basic_index_b3",
+        "kor": "나는 내가 열쇠를 어디에 두었는지 기억이 안 난다.",
+        "eng": "다음 중 어법에 맞는 것을 고르세요.",
+        "ans": "I can't remember where I left my keys.",
+        "opts": [
+          "I can't remember where left I my keys.",
+          "I can't remember where I did leave my keys.",
+          "I can't remember where I left my keys.",
+          "I can't remember where did I leave my keys."
+        ],
+        "level": 1
+      },
+      {
+        "id": "g2_l6_g2_perceive_indirectq_basic_index_b4",
+        "kor": "누가 창문을 깼는지 나에게 말해 줘.",
+        "eng": "다음 중 어법에 맞는 것을 고르세요.",
+        "ans": "Tell me who broke the window.",
+        "opts": [
+          "Tell me who does broke the window.",
+          "Tell me who broke the window.",
+          "Tell me who did break the window.",
+          "Tell me who the window broke."
+        ],
+        "level": 1
+      },
+      {
+        "id": "g2_l6_g2_perceive_indirectq_basic_index_b5",
+        "kor": "너는 누가 그 대회에서 우승했는지 아니?",
+        "eng": "다음 중 어법에 맞는 것을 고르세요.",
+        "ans": "Do you know who won the contest?",
+        "opts": [
+          "Do you know who won the contest?",
+          "Do you know who did win the contest?",
+          "Do you know who the contest won?",
+          "Do you know who does win the contest?"
+        ],
+        "level": 1
+      },
+      {
+        "id": "g2_l6_g2_perceive_indirectq_basic_index_b6",
+        "kor": "나는 그가 매운 음식을 좋아하는지 잘 모르겠다.",
+        "eng": "다음 중 어법에 맞는 것을 고르세요.",
+        "ans": "I am not sure if he likes spicy food.",
+        "opts": [
+          "I am not sure does he like spicy food.",
+          "I am not sure if does he like spicy food.",
+          "I am not sure if likes he spicy food.",
+          "I am not sure if he likes spicy food."
+        ],
+        "level": 1
+      },
+      {
+        "id": "g2_l6_g2_perceive_indirectq_basic_index_b7",
+        "kor": "그들이 왜 일찍 떠났는지 나에게 말해 줄 수 있니?",
+        "eng": "다음 중 어법에 맞는 것을 고르세요.",
+        "ans": "Can you tell me why they left early?",
+        "opts": [
+          "Can you tell me why left they early?",
+          "Can you tell me why they did left early?",
+          "Can you tell me why they left early?",
+          "Can you tell me why did they leave early?"
+        ],
+        "level": 1
+      },
+      {
+        "id": "g2_l6_g2_perceive_indirectq_basic_index_b8",
+        "kor": "나는 그 공연이 몇 시에 시작하는지 잊어버렸다.",
+        "eng": "다음 중 어법에 맞는 것을 고르세요.",
+        "ans": "I forgot what time the show starts.",
+        "opts": [
+          "I forgot what time the show does start.",
+          "I forgot what time the show starts.",
+          "I forgot what time does the show start.",
+          "I forgot what time starts the show."
+        ],
+        "level": 1
+      },
+      {
         "id": "g2_l6_g2_perceive_indirectq_hard_index_a1",
         "kor": "폭풍이 부는 동안, 우리는 그 낡은 집이 강한 바람에 흔들리는 것을 느꼈다.",
         "eng": "During the storm, we felt the old house ___ in the strong wind.",
         "ans": "tremble",
         "opts": [
-          "trembles",
-          "trembled",
           "tremble",
-          "to tremble"
+          "to tremble",
+          "trembles",
+          "trembled"
         ],
         "level": 2
       },
@@ -8449,10 +8774,10 @@ const GAME_QUESTIONS = {
         "eng": "As I walked past the bakery, I smelled fresh bread ___ inside.",
         "ans": "baking",
         "opts": [
-          "bakes",
-          "baking",
           "to bake",
-          "baked"
+          "baked",
+          "bakes",
+          "baking"
         ],
         "level": 2
       },
@@ -8462,10 +8787,10 @@ const GAME_QUESTIONS = {
         "eng": "My little sister kept asking me ___ the rainbow appeared in the sky.",
         "ans": "why",
         "opts": [
-          "why",
-          "why did",
           "did why",
-          "does why"
+          "does why",
+          "why",
+          "why did"
         ],
         "level": 2
       },
@@ -8475,10 +8800,10 @@ const GAME_QUESTIONS = {
         "eng": "The new student looked nervous, so I wondered ___.",
         "ans": "where he was from",
         "opts": [
-          "where was he from",
-          "where did he from",
           "from where was he",
-          "where he was from"
+          "where he was from",
+          "where was he from",
+          "where did he from"
         ],
         "level": 2
       }
@@ -8580,15 +8905,54 @@ const GAME_QUESTIONS = {
         "level": 1
       },
       {
+        "id": "g2_l7_g2_causative_asas_basic_index_a8",
+        "kor": "그녀의 미소는 모두를 행복하게 만들었다.",
+        "eng": "다음 중 어법에 맞는 것을 고르세요.",
+        "ans": "Her smile made everyone feel happy.",
+        "opts": [
+          "Her smile made everyone feels happy.",
+          "Her smile made everyone feel happy.",
+          "Her smile made everyone to feel happy.",
+          "Her smile made everyone feeling happy."
+        ],
+        "level": 1
+      },
+      {
+        "id": "g2_l7_g2_causative_asas_basic_index_a9",
+        "kor": "그들은 우리가 박물관에 무료로 들어가게 해 주었다.",
+        "eng": "다음 중 어법에 맞는 것을 고르세요.",
+        "ans": "They let us enter the museum for free.",
+        "opts": [
+          "They let us enter the museum for free.",
+          "They let us to enter the museum for free.",
+          "They let us entering the museum for free.",
+          "They let us enters the museum for free."
+        ],
+        "level": 1
+      },
+      {
+        "id": "g2_l7_g2_causative_asas_basic_index_a10",
+        "kor": "그녀는 그에게 창문을 닫아 달라고 부탁했다.",
+        "eng": "다음 중 어법에 맞는 것을 고르세요.",
+        "ans": "She asked him to close the window.",
+        "opts": [
+          "She had him to close the window.",
+          "She made him to close the window.",
+          "She let him to close the window.",
+          "She asked him to close the window."
+        ],
+        "level": 1
+      },
+      {
         "id": "g2_l7_g2_causative_asas_basic_index_b1",
         "kor": "내 배낭은 네 것만큼 무겁다.",
         "eng": "My backpack is as ___ as yours.",
         "ans": "heavy",
         "opts": [
+          "heaviest",
           "more heavy",
           "heavy",
-          "heavier",
-          "heaviest"
+          "heavier"
         ],
         "level": 1
       },
@@ -8598,10 +8962,10 @@ const GAME_QUESTIONS = {
         "eng": "Leo runs as ___ as his older brother.",
         "ans": "fast",
         "opts": [
+          "more fast",
           "fast",
           "faster",
-          "fastest",
-          "more fast"
+          "fastest"
         ],
         "level": 1
       },
@@ -8611,10 +8975,10 @@ const GAME_QUESTIONS = {
         "eng": "This soup is as ___ as my grandma's.",
         "ans": "delicious",
         "opts": [
+          "delicious",
           "more delicious",
           "most delicious",
-          "deliciously",
-          "delicious"
+          "deliciously"
         ],
         "level": 1
       },
@@ -8624,10 +8988,10 @@ const GAME_QUESTIONS = {
         "eng": "The lake near our town is as ___ as the sea.",
         "ans": "deep",
         "opts": [
+          "deeper",
           "deepest",
           "more deep",
-          "deep",
-          "deeper"
+          "deep"
         ],
         "level": 1
       },
@@ -8637,10 +9001,10 @@ const GAME_QUESTIONS = {
         "eng": "This chair is not as ___ as the old sofa.",
         "ans": "comfortable",
         "opts": [
+          "comfortably",
           "most comfortable",
           "comfortable",
-          "more comfortable",
-          "comfortably"
+          "more comfortable"
         ],
         "level": 1
       },
@@ -8650,10 +9014,49 @@ const GAME_QUESTIONS = {
         "eng": "Today's test was not as ___ as last week's.",
         "ans": "easy",
         "opts": [
+          "more easy",
           "easy",
           "easier",
-          "easiest",
-          "more easy"
+          "easiest"
+        ],
+        "level": 1
+      },
+      {
+        "id": "g2_l7_g2_causative_asas_basic_index_b7",
+        "kor": "나는 아빠만큼 일찍 일어난다.",
+        "eng": "다음 중 어법에 맞는 것을 고르세요.",
+        "ans": "I wake up as early as my dad.",
+        "opts": [
+          "I wake up as early as my dad.",
+          "I wake up as early my dad.",
+          "I wake up as earlier as my dad.",
+          "I wake up so early than my dad."
+        ],
+        "level": 1
+      },
+      {
+        "id": "g2_l7_g2_causative_asas_basic_index_b8",
+        "kor": "나는 우리 누나만큼 수학을 잘하지는 못한다.",
+        "eng": "다음 중 어법에 맞는 것을 고르세요.",
+        "ans": "I'm not as good at math as my sister.",
+        "opts": [
+          "I'm not as good at math than my sister.",
+          "I'm as not good at math as my sister.",
+          "I'm not as better at math as my sister.",
+          "I'm not as good at math as my sister."
+        ],
+        "level": 1
+      },
+      {
+        "id": "g2_l7_g2_causative_asas_basic_index_b9",
+        "kor": "그는 선생님만큼 또렷하게 말한다.",
+        "eng": "다음 중 어법에 맞는 것을 고르세요.",
+        "ans": "He speaks as clearly as the teacher.",
+        "opts": [
+          "He speaks as clear as the teacher.",
+          "He speaks as clearly than the teacher.",
+          "He speaks as clearly as the teacher.",
+          "He speaks more clearly as the teacher."
         ],
         "level": 1
       },
@@ -8663,10 +9066,10 @@ const GAME_QUESTIONS = {
         "eng": "The teacher had the students ___ their reports by Friday.",
         "ans": "finish",
         "opts": [
-          "to finish",
-          "finishing",
           "finishes",
-          "finish"
+          "finish",
+          "to finish",
+          "finishing"
         ],
         "level": 2
       },
@@ -8676,10 +9079,10 @@ const GAME_QUESTIONS = {
         "eng": "My new headphones are not as ___ as my old ones.",
         "ans": "expensive",
         "opts": [
-          "most expensive",
-          "expensively",
           "expensive",
-          "more expensive"
+          "more expensive",
+          "most expensive",
+          "expensively"
         ],
         "level": 2
       },
@@ -8689,10 +9092,10 @@ const GAME_QUESTIONS = {
         "eng": "Her grandmother let her ___ the old piano in the living room.",
         "ans": "touch",
         "opts": [
-          "touched",
-          "touch",
           "touching",
-          "to touch"
+          "to touch",
+          "touched",
+          "touch"
         ],
         "level": 2
       },
@@ -8702,10 +9105,10 @@ const GAME_QUESTIONS = {
         "eng": "My younger sister can swim as ___ as I can.",
         "ans": "well",
         "opts": [
-          "well",
-          "good",
           "better",
-          "best"
+          "best",
+          "well",
+          "good"
         ],
         "level": 2
       }
@@ -8716,15 +9119,54 @@ const GAME_QUESTIONS = {
     "color": "#eab308",
     "questions": [
       {
+        "id": "g2_l8_g2_itto_whatto_basic_index_a1",
+        "kor": "약속을 지키는 것은 중요하다.",
+        "eng": "다음 중 밑줄 친 It이 가주어로 쓰인 문장을 고르세요.",
+        "ans": "It is important to keep a promise.",
+        "opts": [
+          "It is important to keep a promise.",
+          "It is twelve o'clock now.",
+          "It is far from the bus stop.",
+          "I bought a hat. It looks nice."
+        ],
+        "level": 1
+      },
+      {
+        "id": "g2_l8_g2_itto_whatto_basic_index_a2",
+        "kor": "일찍 일어나는 것은 쉽지 않다.",
+        "eng": "다음 중 밑줄 친 It이 가주어로 쓰인 문장을 고르세요.",
+        "ans": "It is not easy to get up early.",
+        "opts": [
+          "It is about ten kilometers from here.",
+          "There is a kite in the sky. It looks pretty.",
+          "It is cold and windy outside today.",
+          "It is not easy to get up early."
+        ],
+        "level": 1
+      },
+      {
+        "id": "g2_l8_g2_itto_whatto_basic_index_a3",
+        "kor": "공원에서 자전거를 타는 것은 재미있다.",
+        "eng": "다음 중 밑줄 친 It이 가주어로 쓰인 문장을 고르세요.",
+        "ans": "It is fun to ride a bike in the park.",
+        "opts": [
+          "It is raining very hard now.",
+          "My new phone is great. It is very fast.",
+          "It is fun to ride a bike in the park.",
+          "It is Monday today."
+        ],
+        "level": 1
+      },
+      {
         "id": "g2_l8_g2_itto_whatto_basic_index_a4",
         "kor": "물을 충분히 마시는 것은 중요하다.",
         "eng": "___ is important to drink enough water.",
         "ans": "It",
         "opts": [
+          "There",
           "It",
           "That",
-          "This",
-          "There"
+          "This"
         ],
         "level": 1
       },
@@ -8734,10 +9176,23 @@ const GAME_QUESTIONS = {
         "eng": "It is dangerous ___ swim in the deep river.",
         "ans": "to",
         "opts": [
+          "to",
           "for",
           "at",
-          "of",
-          "to"
+          "of"
+        ],
+        "level": 1
+      },
+      {
+        "id": "g2_l8_g2_itto_whatto_basic_index_a6",
+        "kor": "반 친구들을 돕는 것은 좋은 일이다.",
+        "eng": "다음 중 어법에 맞는 것을 고르세요.",
+        "ans": "It is good to help your classmates.",
+        "opts": [
+          "To help your classmates it is good.",
+          "It is good help your classmates.",
+          "Is good to help your classmates.",
+          "It is good to help your classmates."
         ],
         "level": 1
       },
@@ -8898,15 +9353,28 @@ const GAME_QUESTIONS = {
         "level": 1
       },
       {
+        "id": "g2_l8_g2_itto_whatto_basic_index_b9",
+        "kor": "나는 말 타는 방법을 배웠다.",
+        "eng": "다음 중 어법에 맞는 것을 고르세요.",
+        "ans": "I learned how to ride a horse.",
+        "opts": [
+          "I learned how ride a horse.",
+          "I learned to how ride a horse.",
+          "I learned how to ride a horse.",
+          "I learned why to ride a horse."
+        ],
+        "level": 1
+      },
+      {
         "id": "g2_l8_g2_itto_whatto_basic_index_b10",
         "kor": "그는 새 도서관에서 어디에 앉아야 할지 몰랐다.",
         "eng": "He didn't know ___ in the new library.",
         "ans": "where to sit",
         "opts": [
-          "why to sit",
           "to where sit",
           "where to sit",
-          "where sit"
+          "where sit",
+          "why to sit"
         ],
         "level": 1
       },
@@ -8916,10 +9384,10 @@ const GAME_QUESTIONS = {
         "eng": "We haven't decided ___ for the trip yet.",
         "ans": "when to leave",
         "opts": [
-          "when leave",
           "when to leave",
           "when leaving",
-          "why to leave"
+          "why to leave",
+          "when leave"
         ],
         "level": 1
       },
@@ -8929,10 +9397,10 @@ const GAME_QUESTIONS = {
         "eng": "It is interesting ___ Japanese pop songs.",
         "ans": "to learn",
         "opts": [
-          "to learn",
           "learn",
           "learns",
-          "learning to"
+          "learning to",
+          "to learn"
         ],
         "level": 2
       },
@@ -8942,10 +9410,10 @@ const GAME_QUESTIONS = {
         "eng": "It is hard ___ me to finish the report in one day.",
         "ans": "for",
         "opts": [
-          "to",
           "of",
           "with",
-          "for"
+          "for",
+          "to"
         ],
         "level": 2
       },
@@ -8955,10 +9423,10 @@ const GAME_QUESTIONS = {
         "eng": "She is learning ___ to make Italian pasta from a video.",
         "ans": "how",
         "opts": [
-          "why",
           "where",
           "how",
-          "what"
+          "what",
+          "why"
         ],
         "level": 2
       },
@@ -8968,10 +9436,10 @@ const GAME_QUESTIONS = {
         "eng": "He couldn't decide ___ to put the heavy bookshelf.",
         "ans": "where",
         "opts": [
-          "why",
           "where",
           "what",
-          "when"
+          "when",
+          "why"
         ],
         "level": 2
       }

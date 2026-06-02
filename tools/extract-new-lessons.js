@@ -39,7 +39,8 @@ function parsePatternA(html, unitKey) {
     let qid = idMatch ? idMatch[1] : `q${++idx}`;
     let ans = '';
     const opts = [];
-    const choiceSection = block.match(/<div\b[^>]*class=["']choices["'][^>]*>([\s\S]*?)<\/div>/);
+    // class='choices' 뿐 아니라 class='choices choices full'(긴 문장 고르기) 등 다중 클래스도 매칭
+    const choiceSection = block.match(/<div\b[^>]*class=["'][^"']*\bchoices\b[^"']*["'][^>]*>([\s\S]*?)<\/div>/);
     if (choiceSection) {
       const choiceTag = choiceSection[0].match(/<div\b[^>]*>/);
       if (choiceTag) { qid = attr(choiceTag[0], 'data-qid') || qid; ans = attr(choiceTag[0], 'data-ans'); }
@@ -51,6 +52,8 @@ function parsePatternA(html, unitKey) {
     if (!ans) continue;
     const qtextMatch = block.match(/<div\b[^>]*class=["']q-text["'][^>]*>([\s\S]*?)<\/div>/);
     let eng = qtextMatch ? stripHtml(qtextMatch[1]) : '';
+    // 게임 부적합: "틀린/어색한 것을 고르세요" → 정답이 비문이라 게임에서 초록불로 강조되면 오개념. 제외.
+    if (/맞지\s*않|틀린\s*(것|문장)|어색한/.test(eng)) continue;
     const korMatch = block.match(/<div\b[^>]*class=["']q-kor["'][^>]*>([\s\S]*?)<\/div>/);
     const hintMatch = block.match(/📝\s*해석:\s*([\s\S]*?)<\/div>/);
     let kor = korMatch ? stripHtml(korMatch[1]) : hintMatch ? stripHtml(hintMatch[1]) : '';

@@ -1227,29 +1227,20 @@ function playGameOver() {
   _tone(c, 311.13, 'triangle', t + 0.62, 0.40, 0.26); // Eb4
 }
 
-// ── BGM ─────────────────────────────────────────────────────
-let _whackBgmTimer = null;
-let _whackBgmBeat = 0;
+// ── BGM (CC0 8비트 음악 — HTML5 audio, iOS 안정 재생) ──────────
+let _whackBgmAudio = null;
 function startWhackBgm() {
-  if (_whackBgmTimer) return;
-  _whackBgmBeat = 0;
-  const bass   = [196, 220, 196, 196, 175, 196, 175, 196];
-  const melody = [784, 880, 784, 698, 784, 880, 988, 880];
-  const tick = () => {
-    if (!gameRunning) { stopWhackBgm(); return; }
-    const c = whackAC(); if (!c) return;
-    const t = c.currentTime;
-    const b = _whackBgmBeat++;
-    _tone(c, bass[b % bass.length], 'sawtooth', t, 0.20, 0.048);
-    if (b % 2 === 0) _tone(c, melody[b % melody.length], 'triangle', t + 0.02, 0.14, 0.038);
-    if (b % 4 === 3) _tone(c, melody[(b+2) % melody.length] * 1.5, 'sine', t + 0.05, 0.09, 0.026);
-  };
-  tick();
-  _whackBgmTimer = setInterval(tick, 280);
+  if (!_whackBgmAudio) {
+    _whackBgmAudio = new Audio('assets/bgm/whack-theme.mp3');
+    _whackBgmAudio.loop = true;
+    _whackBgmAudio.volume = 0.4;
+    _whackBgmAudio.preload = 'auto';
+  }
+  // 시작 버튼 클릭(제스처) 안에서 호출되므로 iOS에서도 재생됨
+  _whackBgmAudio.play().catch(() => {});
 }
 function stopWhackBgm() {
-  if (_whackBgmTimer) clearInterval(_whackBgmTimer);
-  _whackBgmTimer = null;
+  if (_whackBgmAudio) { try { _whackBgmAudio.pause(); _whackBgmAudio.currentTime = 0; } catch (e) {} }
 }
 
 function spawnSmash(mole, type) {

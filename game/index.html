@@ -1159,6 +1159,7 @@ function goStart() {
   cancelAnimationFrame(rafId);
   clearSpeedTimer();
   clearBossTimer();
+  stopBubbleBgm();
   closeScorePopupOverlay();
   currentStage = 1;
   document.getElementById('start-screen').style.display = '';
@@ -3385,7 +3386,7 @@ function startGame(unitKey, stage) {
   updateTimerHUD();
   cancelAnimationFrame(rafId);
   rafId = requestAnimationFrame(loop);
-  setTimeout(() => startBubbleBgm(), 400);
+  startBubbleBgm();   // 단원 선택 클릭(제스처) 안에서 즉시 — iOS BGM 재생 보장
   setTimeout(() => triggerQuizModal(), 300);
 }
 
@@ -4366,27 +4367,19 @@ function stopBossBgm() {
   bossBgmTimer = null;
 }
 
-let bubbleBgmTimer2 = null;
-let bubbleBgmBeat2 = 0;
+// 보글보글 BGM (CC0 8비트 음악 — HTML5 audio, iOS 안정 재생)
+let bubbleBgmAudio = null;
 function startBubbleBgm() {
-  if (bubbleBgmTimer2) return;
-  bubbleBgmBeat2 = 0;
-  const melody = [523, 659, 784, 880, 784, 659, 523, 440, 523, 659, 784, 1047, 880, 784, 659, 784];
-  const bass   = [131, 196, 196, 220, 196, 196, 131, 196, 147, 196, 196, 220,  196, 220, 196, 220];
-  const tick = () => {
-    const gs = document.getElementById('game-screen');
-    if (gameOver || !gs || gs.style.display === 'none') { stopBubbleBgm(); return; }
-    const b = bubbleBgmBeat2++;
-    playTone(bass[b % bass.length], 0.22, 0.055, 'sawtooth');
-    if (b % 2 === 0) playTone(melody[b % melody.length], 0.14, 0.042, 'triangle');
-    if (b % 8 === 3) playTone(melody[(b+4) % melody.length] * 1.5, 0.09, 0.032, 'sine');
-  };
-  tick();
-  bubbleBgmTimer2 = setInterval(tick, 300);
+  if (!bubbleBgmAudio) {
+    bubbleBgmAudio = new Audio('assets/bgm/bubble-theme.mp3');
+    bubbleBgmAudio.loop = true;
+    bubbleBgmAudio.volume = 0.38;
+    bubbleBgmAudio.preload = 'auto';
+  }
+  bubbleBgmAudio.play().catch(() => {});
 }
 function stopBubbleBgm() {
-  if (bubbleBgmTimer2) clearInterval(bubbleBgmTimer2);
-  bubbleBgmTimer2 = null;
+  if (bubbleBgmAudio) { try { bubbleBgmAudio.pause(); bubbleBgmAudio.currentTime = 0; } catch (e) {} }
 }
 
 function playBossStartFx() {

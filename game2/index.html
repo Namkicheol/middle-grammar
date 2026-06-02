@@ -432,7 +432,33 @@ function cameraShake(intensity=6, dur=0.4) {
 const canvas = document.getElementById('c');
 const ctx = canvas.getContext('2d');
 let CW = 0, CH = 0;
-function resize() { CW = canvas.width = window.innerWidth; CH = canvas.height = window.innerHeight; }
+// 바닥선 위치(화면 높이 대비) — setCharSprites에서 실제 캐릭터 발 위치로 동기화.
+let GROUND_FRAC = 0.72;
+// 세로로 긴 화면일수록 arena(캐릭터)를 위로 올려 가운데로. 가로/PC는 그대로.
+function updateGround() {
+  const ar = window.innerHeight / Math.max(1, window.innerWidth);
+  const shift = ar <= 1.0 ? 0 : Math.min(18, (ar - 1.0) * 24);  // 세로비율↑ → 최대 18% 위로
+  const arena = document.getElementById('arena');
+  if (arena) arena.style.bottom = shift + '%';
+}
+// 캐릭터 발(=hero-wrap 하단)에 바닥선을 맞춘다. footPad 계산 오차 없이 항상 정확.
+function syncGroundToFeet() {
+  const w = document.getElementById('hero-wrap');
+  if (w) GROUND_FRAC = Math.min(0.85, Math.max(0.4, w.getBoundingClientRect().bottom / window.innerHeight));
+}
+let _relayoutT = null;
+function resize() {
+  CW = canvas.width = window.innerWidth; CH = canvas.height = window.innerHeight;
+  updateGround();
+  clearTimeout(_relayoutT); _relayoutT = setTimeout(relayoutFighters, 150);
+}
+// 화면 크기 변경 시 현재 페이즈로 파이터를 다시 만들어 새 viewScale 적용
+function relayoutFighters() {
+  if (typeof GS === 'undefined' || !GS) return;
+  if (document.getElementById('game').style.display === 'none') return;
+  _heroKey = ''; _bossKey = '';   // 강제 재생성
+  setCharSprites(GS.bossPhase || 0);
+}
 window.addEventListener('resize', resize); resize();
 
 const STARS = Array.from({length:80}, () => ({
@@ -468,7 +494,7 @@ function drawBG(phase, ts) {
   });
 
   // Ground
-  const gY = CH * .72;
+  const gY = CH * GROUND_FRAC;
   const gg = ctx.createLinearGradient(0,gY,0,CH);
   gg.addColorStop(0,t.ground[0]); gg.addColorStop(1,t.ground[1]);
   ctx.fillStyle = gg; ctx.fillRect(0,gY,CW,CH-gY);
@@ -801,21 +827,26 @@ const BOSS_STAGE_ROSTER = ['goblin', 'mushroom', 'skeleton', 'flying_eye', 'king
 const BOSS_STAGE_NAME   = { king:'👹 문법 대마왕', skeleton:'💀 문법 해골군주', goblin:'👺 문법 고블린', mushroom:'🍄 문법 버섯괴물', flying_eye:'👁️ 문법 마안' };
 let _heroKey = 'warrior', _bossKey = 'wizard';
 
+// 화면 폭에 따른 스프라이트 축소 배율 — 좁은 화면(모바일)에서 두 캐릭터가 겹치지 않게.
+function viewScale() {
+  return Math.max(0.5, Math.min(1, window.innerWidth / 760));
+}
 function makeFighter(el, defKey) {
   const def = SPRITE_DEFS[defKey];
+  const S = def.scale * viewScale();   // 화면 폭 반영 유효 배율
   for (const k in def.anims) { const im = new Image(); im.src = def.base + def.anims[k].file; }
-  el.style.width  = (def.fw * def.scale) + 'px';
-  el.style.height = (def.fh * def.scale) + 'px';
+  el.style.width  = (def.fw * S) + 'px';
+  el.style.height = (def.fh * S) + 'px';
   if (def.flip) el.style.transform = 'scaleX(-1)';
   const f = {
-    def, el, defKey, state:null, frame:0, acc:0, done:null,
+    def, el, defKey, S, state:null, frame:0, acc:0, done:null,
     play(state, done=null) {
       if (!def.anims[state]) state = 'idle';
       if (this.state === state && def.anims[state].loop && !done) return;
       this.state = state; this.frame = 0; this.acc = 0; this.done = done;
       const a = def.anims[state];
       el.style.backgroundImage = 'url(' + def.base + a.file + ')';
-      el.style.backgroundSize  = (def.fw*def.scale*a.n) + 'px ' + (def.fh*def.scale) + 'px';
+      el.style.backgroundSize  = (def.fw*S*a.n) + 'px ' + (def.fh*S) + 'px';
       el.style.backgroundPosition = '0 0';
     },
     update(dt) {
@@ -832,7 +863,7 @@ function makeFighter(el, defKey) {
             this.play(nx); if (cb) cb(); return; }
         }
       }
-      el.style.backgroundPosition = (-(this.frame*def.fw*def.scale)) + 'px 0';
+      el.style.backgroundPosition = (-(this.frame*def.fw*S)) + 'px 0';
     },
     flash() { el.classList.remove('flash'); void el.offsetWidth; el.classList.add('flash'); },
   };
@@ -889,7 +920,7 @@ function setCharSprites(phase) {
   const _hScreen = (h.scale || 1) * heroStageScale;
   // 영웅도 보스와 동일하게 footPad(발밑 투명 여백, native px) 우선 적용해 발을 바닥에 정확히 붙임.
   const _hFoot = (heroFighter.def.footPad != null)
-    ? (heroFighter.def.footPad * heroFighter.def.scale * _hScreen)
+    ? (heroFighter.def.footPad * heroFighter.S * _hScreen)
     : (heroFighter.def.foot || 0);
   heroImg.style.transform = `translateY(${_hFoot.toFixed(1)}px) scale(${_hScreen.toFixed(3)})`;
   heroImg.style.filter = heroFilterStr(h);
@@ -897,12 +928,13 @@ function setCharSprites(phase) {
   // footPad(스프라이트 발밑 투명 여백, native px)가 있으면 화면배율만큼 끌어내려 발을 바닥에 정확히 붙임.
   // 없으면 기존 foot 상수 사용(king 등).
   const _bFoot = (bossFighter.def.footPad != null)
-    ? (bossFighter.def.footPad * bossFighter.def.scale * _bScreen)
+    ? (bossFighter.def.footPad * bossFighter.S * _bScreen)
     : (bossFighter.def.foot || 0);
   bossImg.style.transform = `scaleX(-1) translateY(${_bFoot.toFixed(1)}px) scale(${_bScreen.toFixed(3)})`;
   bossImg.style.filter = bossFilterStr(b);
   gsap.set(heroWrap, { left: '8%', clearProps: 'x,right' });
   gsap.set(bossWrap, { right: '8%', clearProps: 'x,left' });
+  syncGroundToFeet();   // 바닥선을 캐릭터 발에 맞춤
   document.getElementById('hero-name').textContent = (st >= 2) ? heroStageName(st) : h.name;
   if (st >= 2) {
     const cyc = Math.floor((st - 2) / BOSS_STAGE_ROSTER.length);

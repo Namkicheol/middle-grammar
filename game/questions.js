@@ -3877,6 +3877,30 @@ const GAME_QUESTIONS = {
           "to buy"
         ],
         "level": 2
+      },
+      {
+        "id": "g1_l5_wsox_reflexivetobasic_1",
+        "kor": "그는 시험에 합격하기 위해 열심히 공부했다. — 맞으면 O · 틀리면 X",
+        "eng": "He studied hard to pass the exam.",
+        "ans": "O",
+        "opts": [
+          "O",
+          "X"
+        ],
+        "type": "ox",
+        "level": 1
+      },
+      {
+        "id": "g1_l5_wsox_reflexivetohard_1",
+        "kor": "그들은 자선 단체를 위해 돈을 모으기 위해 베이크 세일을 열었다. — 맞으면 O · 틀리면 X",
+        "eng": "They held a bake sale to raise money for charity.",
+        "ans": "O",
+        "opts": [
+          "O",
+          "X"
+        ],
+        "type": "ox",
+        "level": 2
       }
     ]
   },
@@ -4325,6 +4349,30 @@ const GAME_QUESTIONS = {
           "when"
         ],
         "level": 2
+      },
+      {
+        "id": "g1_l6_wsox_lookbecausehard_1",
+        "kor": "그녀는 슬퍼 보인다. — 맞으면 O · 틀리면 X",
+        "eng": "She looks sadly.",
+        "ans": "X",
+        "opts": [
+          "O",
+          "X"
+        ],
+        "type": "ox",
+        "level": 2
+      },
+      {
+        "id": "g1_l6_wsox_lookbecausehard_2",
+        "kor": "교실이 매우 시끄러웠기 때문에 선생님은 문을 닫으셨다. — 맞으면 O · 틀리면 X",
+        "eng": "The teacher closed the door because the classroom was very noisy.",
+        "ans": "O",
+        "opts": [
+          "O",
+          "X"
+        ],
+        "type": "ox",
+        "level": 2
       }
     ]
   },
@@ -4708,6 +4756,30 @@ const GAME_QUESTIONS = {
           "Because"
         ],
         "level": 2
+      },
+      {
+        "id": "g1_l7_wsox_makethathard_1",
+        "kor": "그 좋은 소식은 우리 부모님을 행복하게 만들었다. — 맞으면 O · 틀리면 X",
+        "eng": "The good news made my parents happily.",
+        "ans": "X",
+        "opts": [
+          "O",
+          "X"
+        ],
+        "type": "ox",
+        "level": 2
+      },
+      {
+        "id": "g1_l7_wsox_makethathard_2",
+        "kor": "나는 그 답이 틀렸다고 생각한다. — 맞으면 O · 틀리면 X",
+        "eng": "I think that the answer is wrong.",
+        "ans": "O",
+        "opts": [
+          "O",
+          "X"
+        ],
+        "type": "ox",
+        "level": 2
       }
     ]
   },
@@ -5064,6 +5136,30 @@ const GAME_QUESTIONS = {
           "a fancy",
           "anything fancily"
         ],
+        "level": 2
+      },
+      {
+        "id": "g1_l8_wsox_exclaimsomethinghard_1",
+        "kor": "너 정말 멋진 생각을 가지고 있구나! — 맞으면 O · 틀리면 X",
+        "eng": "What a brilliant idea you have!",
+        "ans": "O",
+        "opts": [
+          "O",
+          "X"
+        ],
+        "type": "ox",
+        "level": 2
+      },
+      {
+        "id": "g1_l8_wsox_exclaimsomethinghard_2",
+        "kor": "이것은 정말 흥미로운 이야기구나! — 맞으면 O · 틀리면 X",
+        "eng": "How an interesting story this is!",
+        "ans": "X",
+        "opts": [
+          "O",
+          "X"
+        ],
+        "type": "ox",
         "level": 2
       }
     ]
@@ -5630,6 +5726,30 @@ const GAME_QUESTIONS = {
           "that"
         ],
         "level": 2
+      },
+      {
+        "id": "g2_l1_wsox_g2giverelclausebasic_1",
+        "kor": "그녀는 나에게 종이학을 만들어 주었다. — 맞으면 O · 틀리면 X",
+        "eng": "She made a paper crane of me.",
+        "ans": "X",
+        "opts": [
+          "O",
+          "X"
+        ],
+        "type": "ox",
+        "level": 1
+      },
+      {
+        "id": "g2_l1_wsox_g2giverelclausebasic_2",
+        "kor": "그는 우리에게 흥미로운 비밀을 말해 주었다. — 맞으면 O · 틀리면 X",
+        "eng": "He told us an interesting secret.",
+        "ans": "O",
+        "opts": [
+          "O",
+          "X"
+        ],
+        "type": "ox",
+        "level": 1
       }
     ]
   },
@@ -6221,6 +6341,30 @@ const GAME_QUESTIONS = {
           "seen"
         ],
         "level": 2
+      },
+      {
+        "id": "g2_l2_wsox_g2perfectcomparebasic_1",
+        "kor": "그녀는 지난여름에 제주를 방문했다. — 맞으면 O · 틀리면 X",
+        "eng": "She visited Jeju last summer.",
+        "ans": "O",
+        "opts": [
+          "O",
+          "X"
+        ],
+        "type": "ox",
+        "level": 1
+      },
+      {
+        "id": "g2_l2_wsox_g2perfectcomparebasic_2",
+        "kor": "그는 5년 동안 여기서 살아 왔다. — 맞으면 O · 틀리면 X",
+        "eng": "He have lived here for five years.",
+        "ans": "X",
+        "opts": [
+          "O",
+          "X"
+        ],
+        "type": "ox",
+        "level": 1
       }
     ]
   },
@@ -6838,6 +6982,42 @@ const GAME_QUESTIONS = {
           "needs"
         ],
         "level": 2
+      },
+      {
+        "id": "g2_l3_wsox_g2toifbasic_1",
+        "kor": "나는 오늘 해야 할 일이 없다. — 맞으면 O · 틀리면 X",
+        "eng": "I have nothing doing today.",
+        "ans": "X",
+        "opts": [
+          "O",
+          "X"
+        ],
+        "type": "ox",
+        "level": 1
+      },
+      {
+        "id": "g2_l3_wsox_g2toifbasic_2",
+        "kor": "Jake는 그 대회에서 이길 기회가 있다. — 맞으면 O · 틀리면 X",
+        "eng": "Jake has a chance to win the contest.",
+        "ans": "O",
+        "opts": [
+          "O",
+          "X"
+        ],
+        "type": "ox",
+        "level": 1
+      },
+      {
+        "id": "g2_l3_wsox_g2toifbasic_3",
+        "kor": "내일 눈이 오면, 우리는 눈사람을 만들 것이다. — 맞으면 O · 틀리면 X",
+        "eng": "If it snows tomorrow, we will build a snowman.",
+        "ans": "O",
+        "opts": [
+          "O",
+          "X"
+        ],
+        "type": "ox",
+        "level": 1
       }
     ]
   },
@@ -7754,6 +7934,18 @@ const GAME_QUESTIONS = {
           "spicy"
         ],
         "level": 2
+      },
+      {
+        "id": "g2_l4_wsox_g2sothatpassivebasic_1",
+        "kor": "그 콘서트는 너무 인기가 있어서 모든 티켓이 팔렸다. — 맞으면 O · 틀리면 X",
+        "eng": "The concert was very popular that all tickets sold out.",
+        "ans": "X",
+        "opts": [
+          "O",
+          "X"
+        ],
+        "type": "ox",
+        "level": 1
       }
     ]
   },
@@ -7994,6 +8186,30 @@ const GAME_QUESTIONS = {
           "what"
         ],
         "level": 2
+      },
+      {
+        "id": "g2_l5_wsox_g2wantrelclausebasic_1",
+        "kor": "그녀는 그에게 설거지를 하라고 말했다. — 맞으면 O · 틀리면 X",
+        "eng": "She told him to wash the dishes.",
+        "ans": "O",
+        "opts": [
+          "O",
+          "X"
+        ],
+        "type": "ox",
+        "level": 1
+      },
+      {
+        "id": "g2_l5_wsox_g2wantrelclausebasic_2",
+        "kor": "아빠는 내가 늦게까지 깨어 있는 것을 허락하셨다. — 맞으면 O · 틀리면 X",
+        "eng": "My dad allowed me stay up late.",
+        "ans": "X",
+        "opts": [
+          "O",
+          "X"
+        ],
+        "type": "ox",
+        "level": 1
       }
     ]
   },
@@ -8865,6 +9081,42 @@ const GAME_QUESTIONS = {
           "good"
         ],
         "level": 2
+      },
+      {
+        "id": "g2_l7_wsox_g2causativeasasbasic_1",
+        "kor": "그녀의 미소는 모두를 행복하게 만들었다. — 맞으면 O · 틀리면 X",
+        "eng": "Her smile made everyone feel happy.",
+        "ans": "O",
+        "opts": [
+          "O",
+          "X"
+        ],
+        "type": "ox",
+        "level": 1
+      },
+      {
+        "id": "g2_l7_wsox_g2causativeasasbasic_2",
+        "kor": "그들은 우리가 박물관에 무료로 들어가게 해 주었다. — 맞으면 O · 틀리면 X",
+        "eng": "They let us to enter the museum for free.",
+        "ans": "X",
+        "opts": [
+          "O",
+          "X"
+        ],
+        "type": "ox",
+        "level": 1
+      },
+      {
+        "id": "g2_l7_wsox_g2causativeasasbasic_3",
+        "kor": "그녀는 그에게 창문을 닫게 했다. — 맞으면 O · 틀리면 X",
+        "eng": "She had him to close the window.",
+        "ans": "X",
+        "opts": [
+          "O",
+          "X"
+        ],
+        "type": "ox",
+        "level": 1
       }
     ]
   },
@@ -9157,6 +9409,30 @@ const GAME_QUESTIONS = {
           "why"
         ],
         "level": 2
+      },
+      {
+        "id": "g2_l8_wsox_g2ittowhattobasic_1",
+        "kor": "반 친구들을 돕는 것은 좋은 일이다. — 맞으면 O · 틀리면 X",
+        "eng": "It is good help your classmates.",
+        "ans": "X",
+        "opts": [
+          "O",
+          "X"
+        ],
+        "type": "ox",
+        "level": 1
+      },
+      {
+        "id": "g2_l8_wsox_g2ittowhattobasic_2",
+        "kor": "나는 말 타는 방법을 배웠다. — 맞으면 O · 틀리면 X",
+        "eng": "I learned how to ride a horse.",
+        "ans": "O",
+        "opts": [
+          "O",
+          "X"
+        ],
+        "type": "ox",
+        "level": 1
       }
     ]
   },

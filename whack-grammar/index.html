@@ -1359,22 +1359,8 @@ const _unitParam = _params.get('unit');
 if (_unitParam && GAME_QUESTIONS[_unitParam]) unitKey = _unitParam;
 buildUnitList();
 buildGrid();
-if (_unitParam && GAME_QUESTIONS[_unitParam]) {
-  // auto-start when arriving via mode selector
-  setTimeout(startGame, 60);
-  // 자동 시작은 제스처가 없어 BGM(HTML5 audio)이 막힌다 → 첫 입력에 BGM 시작.
-  (function () {
-    function kick() {
-      if (gameRunning) startWhackBgm();
-      ['pointerdown','touchstart','click','keydown'].forEach(ev => {
-        document.removeEventListener(ev, kick, true); window.removeEventListener(ev, kick, true);
-      });
-    }
-    ['pointerdown','touchstart','click','keydown'].forEach(ev => {
-      document.addEventListener(ev, kick, true); window.addEventListener(ev, kick, true);
-    });
-  })();
-}
+// 허브에서 ?unit=로 와도 자동 시작하지 않고 시작 화면(시작! 버튼)을 보여준다.
+// 버튼을 누르는 그 제스처 안에서 게임+BGM이 시작돼 보글보글처럼 음악이 바로 난다.
 </script>
 </body>
 </html>

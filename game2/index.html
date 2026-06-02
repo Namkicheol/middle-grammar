@@ -214,6 +214,7 @@ canvas#c{position:absolute;inset:0;width:100%;height:100%;}
 .wl-eng{color:#e2e8f0;font-weight:700;}
 .wl-ans{color:#86efac;font-size:.72rem;margin-top:2px;}
 .wl-wrong{color:#fca5a5;font-size:.72rem;}
+.wl-hint{color:#fde68a;font-size:.72rem;margin-top:4px;background:rgba(250,204,21,.08);border-radius:7px;padding:5px 8px;}
 
 /* ── 강화 카드 선택 ── */
 #card-pick{position:fixed;inset:0;z-index:95;display:none;align-items:center;justify-content:center;background:rgba(4,2,12,.93);backdrop-filter:blur(6px);}
@@ -390,7 +391,7 @@ canvas#c{position:absolute;inset:0;width:100%;height:100%;}
   </div>
 </div>
 
-<script src="../game/questions.js?v=questions-20260602e"></script>
+<script src="../game/questions.js?v=questions-20260602f"></script>
 <script src="../sounds.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
 <script>
@@ -595,6 +596,18 @@ const DROP_TYPES = {
 // ═══════════════════════════════════════════════════════════
 let GS = null;
 let wrongLog = [];
+// 틀린 문제 목록 HTML(정답 + 간단 해설). 결과 화면 2곳(패배/승리)에서 공용.
+function wrongLogHTML() {
+  return wrongLog.map(w => {
+    const hint = (w.type === 'ox')
+      ? (w.ans === 'O' ? '✅ 어법에 맞는 문장이에요' : '❌ 어법상 틀린 문장이에요')
+      : (/_{3,}/.test(w.eng || '') ? '정답 문장: ' + w.eng.replace(/_{3,}/, '<strong>' + w.ans + '</strong>') : '');
+    return `<div class="wrong-log-item"><div class="wl-eng">${w.eng}</div>
+       <div class="wl-ans">✅ 정답: <strong>${w.ans}</strong></div>
+       <div class="wl-wrong">❌ 내 답: ${w.wrong}</div>
+       ${hint ? `<div class="wl-hint">💡 ${hint}${w.kor ? ' <span style="opacity:.65">— ' + w.kor + '</span>' : ''}</div>` : ''}</div>`;
+  }).join('');
+}
 let rafId = null, bossTimer = null, qTimer = null, dropTimer = null, telIv = null;
 
 function initGS(qs) {
@@ -1175,10 +1188,7 @@ function practiceResult() {
   const wll = document.getElementById('wrong-log-list');
   if (wrongLog.length) {
     wl.style.display = 'block';
-    wll.innerHTML = wrongLog.map(w =>
-      `<div class="wrong-log-item"><div class="wl-eng">${w.eng}</div>
-       <div class="wl-ans">✅ 정답: <strong>${w.ans}</strong></div>
-       <div class="wl-wrong">❌ 내 답: ${w.wrong}</div></div>`).join('');
+    wll.innerHTML = wrongLogHTML();
   } else { wl.style.display = 'none'; }
   document.getElementById('result').classList.add('show');
 }
@@ -1265,7 +1275,7 @@ function handleAnswer(chosen, correct, clickedBtn) {
   });
   if (!isCorrect) {
     clickedBtn.classList.add('ng');
-    wrongLog.push({ eng: GS.currentQ.eng, ans: correct, wrong: chosen });
+    wrongLog.push({ eng: GS.currentQ.eng, ans: correct, wrong: chosen, type: GS.currentQ.type, kor: GS.currentQ.kor });
   }
   const fb = document.getElementById('qpop-fb');
   if (GS.practice) {
@@ -1289,7 +1299,7 @@ function timeExpired(correct) {
   const fb = document.getElementById('qpop-fb');
   fb.textContent = '⏰ 시간 초과! 피격!';
   fb.className = 'qpop-fb ng';
-  wrongLog.push({ eng: GS.currentQ.eng, ans: correct, wrong: '(시간초과)' });
+  wrongLog.push({ eng: GS.currentQ.eng, ans: correct, wrong: '(시간초과)', type: GS.currentQ.type, kor: GS.currentQ.kor });
   setTimeout(() => finishQuestion(false), 950);
 }
 
@@ -1542,11 +1552,7 @@ function showResult(win) {
   const wll = document.getElementById('wrong-log-list');
   if (wrongLog.length) {
     wl.style.display='block';
-    wll.innerHTML = wrongLog.map(w =>
-      `<div class="wrong-log-item"><div class="wl-eng">${w.eng}</div>
-       <div class="wl-ans">✅ 정답: <strong>${w.ans}</strong></div>
-       <div class="wl-wrong">❌ 내 답: ${w.wrong}</div></div>`
-    ).join('');
+    wll.innerHTML = wrongLogHTML();
   } else { wl.style.display='none'; }
   document.getElementById('result').classList.add('show');
   BGM.stop();

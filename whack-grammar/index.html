@@ -521,7 +521,7 @@ header{display:flex;align-items:center;gap:8px;padding:12px 14px 6px;position:re
 <script>function toast(msg, type){}</script>
 <script src="../sounds.js"></script>
 <script src="../score-popup.js"></script>
-<script src="../game/questions.js?v=questions-20260602e"></script>
+<script src="../game/questions.js?v=questions-20260602f"></script>
 <script>
 const SLOT_COUNT = 9;
 const ROUND_QUESTIONS = 10;
@@ -555,6 +555,12 @@ let hp = 3;
 let correctCount = 0;
 let whackWrongItems = [];
 let answered = false;
+// 틀린 문제 간단 해설: 정답 채운 완성 문장(빈칸형) / O·X 안내(OX형)
+function makeHint(q, ans) {
+  if (q.type === 'ox') return ans === 'O' ? '✅ 어법에 맞는 문장이에요' : '❌ 어법상 틀린 문장이에요 — 바르게 고쳐 보세요';
+  if (/_{3,}/.test(q.eng || '')) return '정답 문장: ' + q.eng.replace(/_{3,}/, '<b>' + ans + '</b>');
+  return '정답: <b>' + ans + '</b>';
+}
 let qStart = 0;
 let qTimerRaf = 0;
 let spawnTimer = 0;
@@ -793,7 +799,7 @@ function onQTimeout() {
   spawnStrike('시간초과', 'ng');
   playWhackMiss();
   const curQ = questionPool[qIdx];
-  if (curQ) whackWrongItems.push({ question: (curQ.kor ? curQ.kor + ' / ' : '') + curQ.eng, my: '(시간초과)', right: currentAns });
+  if (curQ) whackWrongItems.push({ question: (curQ.kor ? curQ.kor + ' / ' : '') + curQ.eng, my: '(시간초과)', right: currentAns, hintHtml: makeHint(curQ, currentAns) });
   if (hp <= 0) { triggerGameOver(); return; }
   setTimeout(advance, 700);
 }
@@ -996,7 +1002,7 @@ function handleHit(e, mole, slotIdx, word) {
     spawnStrike('빗나감!', 'ng');
     playWhackMiss();
     const curQ = questionPool[qIdx];
-    if (curQ) whackWrongItems.push({ question: (curQ.kor ? curQ.kor + ' / ' : '') + curQ.eng, my: word || '(없음)', right: currentAns });
+    if (curQ) whackWrongItems.push({ question: (curQ.kor ? curQ.kor + ' / ' : '') + curQ.eng, my: word || '(없음)', right: currentAns, hintHtml: makeHint(curQ, currentAns) });
     setTimeout(() => submergeMole(mole), 380);
     updateHud();
     if (hp <= 0) { answered = true; triggerGameOver(); }

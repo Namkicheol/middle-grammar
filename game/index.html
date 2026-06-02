@@ -937,7 +937,7 @@ body{
   </div>
 </div>
 
-<script src="./questions.js?v=questions-20260602e"></script>
+<script src="./questions.js?v=questions-20260602f"></script>
 <script src="../score-popup.js"></script>
 <script src="../sounds.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/phaser@3.90.0/dist/phaser.min.js"></script>
@@ -1319,7 +1319,7 @@ function answerSpeedQuiz(chosen, q, optsEl) {
     speedScore = Math.max(0, speedScore - 20);
     document.getElementById('speed-review').textContent = makeReviewText(q);
     document.getElementById('speed-review').style.color = '#ef4444';
-    speedWrongItems.push({ question: q.kor + ' / ' + q.eng, my: chosen, right: q.ans });
+    speedWrongItems.push({ question: q.kor + ' / ' + q.eng, my: chosen, right: q.ans, hintHtml: makeReviewText(q) });
     playSnap();
   }
 
@@ -2866,7 +2866,7 @@ function answerBossQuestion(chosen, q, optsEl) {
     bossScore = Math.max(0, bossScore - (25 + counter.level * 15));
     document.getElementById('boss-review').textContent = `${counter.name}! ` + makeReviewText(q);
     document.getElementById('boss-review').style.color = '#ef4444';
-    bossWrongItems.push({ question: q.kor + ' / ' + q.eng, my: chosen, right: q.ans });
+    bossWrongItems.push({ question: q.kor + ' / ' + q.eng, my: chosen, right: q.ans, hintHtml: makeReviewText(q) });
     setBossDuelState(counter.state, counter.label, 'danger');
     playBossCounterFx(counter.level);
     floatDamage('player', counter.damage, 'player');

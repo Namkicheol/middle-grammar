@@ -485,7 +485,7 @@ header{display:flex;align-items:center;gap:8px;padding:12px 14px 6px;position:re
   <div class="qcard">
     <div class="qkor" id="q-kor">한국어 해석</div>
     <div class="qeng" id="q-eng">English sentence</div>
-    <div class="qhint">⚠ 틀린 부분을 고쳐 두드리세요</div>
+    <div class="qhint" id="q-hint">⚠ 틀린 부분을 고쳐 두드리세요</div>
     <div class="qmeta"><span id="q-progress">1 / 10</span><span>제한시간 <span class="qbar"><span id="q-bar"></span></span></span></div>
   </div>
   <div class="field" id="field">
@@ -521,7 +521,7 @@ header{display:flex;align-items:center;gap:8px;padding:12px 14px 6px;position:re
 <script>function toast(msg, type){}</script>
 <script src="../sounds.js"></script>
 <script src="../score-popup.js"></script>
-<script src="../game/questions.js?v=questions-20260602c"></script>
+<script src="../game/questions.js?v=questions-20260602d"></script>
 <script>
 const SLOT_COUNT = 9;
 const ROUND_QUESTIONS = 10;
@@ -633,8 +633,8 @@ function shuffle(arr) {
 function pickQuestionPool(key) {
   const src = GAME_QUESTIONS[key];
   if (!src) return [];
-  // whack mode needs a fill-in-blank shape; skip metas without '___'
-  const playable = src.questions.filter(q => /_{3,}/.test(q.eng || ''));
+  // 빈칸형(___) 또는 OX(O/X 판단) 문항만 사용. OX는 빈칸이 없어도 O/X 두더지로 출제.
+  const playable = src.questions.filter(q => /_{3,}/.test(q.eng || '') || q.type === 'ox');
   return shuffle(playable.slice()).slice(0, ROUND_QUESTIONS);
 }
 
@@ -746,11 +746,19 @@ function renderQuestion() {
   qKor.textContent = q.kor;
   // q.eng has '___' — substitute a wrong option in red strike-through so the
   // sentence reads as an error to fix, then student picks the right answer mole
-  const wrongOpt = q.opts.find(o => o !== q.ans) || '____';
-  const safe = wrongOpt.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
-  // strip parenthetical hints like '(be)' / '(be, 부정형)' — they suit fill-in-blank, not error-correction
-  const cleaned = q.eng.replace(/\s*\([^)]*\)/g, '');
-  qEng.innerHTML = cleaned.replace(/_{3,}/g, `<span class="qwrong">${safe}</span>`);
+  const hintEl = document.getElementById('q-hint');
+  if (q.type === 'ox') {
+    // OX: 문장을 그대로 보여주고 O/X 두더지를 고르게 한다(빈칸 치환 없음)
+    qEng.textContent = q.eng;
+    if (hintEl) hintEl.textContent = '⭕ 맞으면 O · ❌ 틀리면 X 두더지를 두드려요';
+  } else {
+    const wrongOpt = q.opts.find(o => o !== q.ans) || '____';
+    const safe = wrongOpt.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+    // strip parenthetical hints like '(be)' / '(be, 부정형)' — they suit fill-in-blank, not error-correction
+    const cleaned = q.eng.replace(/\s*\([^)]*\)/g, '');
+    qEng.innerHTML = cleaned.replace(/_{3,}/g, `<span class="qwrong">${safe}</span>`);
+    if (hintEl) hintEl.textContent = '⚠ 틀린 부분을 고쳐 두드리세요';
+  }
   qProg.textContent = `${qIdx + 1} / ${questionPool.length}`;
 }
 

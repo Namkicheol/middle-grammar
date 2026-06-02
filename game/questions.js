@@ -9118,6 +9118,150 @@ const GAME_QUESTIONS = {
           "which"
         ],
         "level": 2
+      },
+      {
+        "id": "g2_l6_ox_01",
+        "kor": "⭕ 어법에 맞으면 O, ❌ 틀리면 X",
+        "eng": "We watched the eagle soar above the cliff.",
+        "ans": "O",
+        "opts": [
+          "O",
+          "X"
+        ],
+        "type": "ox",
+        "level": 1
+      },
+      {
+        "id": "g2_l6_ox_02",
+        "kor": "⭕ 어법에 맞으면 O, ❌ 틀리면 X",
+        "eng": "She watched the children to swim in the pool.",
+        "ans": "X",
+        "opts": [
+          "O",
+          "X"
+        ],
+        "type": "ox",
+        "level": 1
+      },
+      {
+        "id": "g2_l6_ox_03",
+        "kor": "⭕ 어법에 맞으면 O, ❌ 틀리면 X",
+        "eng": "He felt his phone buzz in his pocket.",
+        "ans": "O",
+        "opts": [
+          "O",
+          "X"
+        ],
+        "type": "ox",
+        "level": 1
+      },
+      {
+        "id": "g2_l6_ox_04",
+        "kor": "⭕ 어법에 맞으면 O, ❌ 틀리면 X",
+        "eng": "I heard the baby to cry all night long.",
+        "ans": "X",
+        "opts": [
+          "O",
+          "X"
+        ],
+        "type": "ox",
+        "level": 1
+      },
+      {
+        "id": "g2_l6_ox_05",
+        "kor": "⭕ 어법에 맞으면 O, ❌ 틀리면 X",
+        "eng": "They noticed a bird building its nest.",
+        "ans": "O",
+        "opts": [
+          "O",
+          "X"
+        ],
+        "type": "ox",
+        "level": 2
+      },
+      {
+        "id": "g2_l6_ox_06",
+        "kor": "⭕ 어법에 맞으면 O, ❌ 틀리면 X",
+        "eng": "We saw the runner crossed the finish line.",
+        "ans": "X",
+        "opts": [
+          "O",
+          "X"
+        ],
+        "type": "ox",
+        "level": 2
+      },
+      {
+        "id": "g2_l6_ox_07",
+        "kor": "⭕ 어법에 맞으면 O, ❌ 틀리면 X",
+        "eng": "I wonder where my cousin works these days.",
+        "ans": "O",
+        "opts": [
+          "O",
+          "X"
+        ],
+        "type": "ox",
+        "level": 1
+      },
+      {
+        "id": "g2_l6_ox_08",
+        "kor": "⭕ 어법에 맞으면 O, ❌ 틀리면 X",
+        "eng": "Do you know when does the museum open?",
+        "ans": "X",
+        "opts": [
+          "O",
+          "X"
+        ],
+        "type": "ox",
+        "level": 1
+      },
+      {
+        "id": "g2_l6_ox_09",
+        "kor": "⭕ 어법에 맞으면 O, ❌ 틀리면 X",
+        "eng": "Tell me who fixed the broken clock.",
+        "ans": "O",
+        "opts": [
+          "O",
+          "X"
+        ],
+        "type": "ox",
+        "level": 2
+      },
+      {
+        "id": "g2_l6_ox_10",
+        "kor": "⭕ 어법에 맞으면 O, ❌ 틀리면 X",
+        "eng": "I'm not sure what does she need now.",
+        "ans": "X",
+        "opts": [
+          "O",
+          "X"
+        ],
+        "type": "ox",
+        "level": 2
+      },
+      {
+        "id": "g2_l6_ox_11",
+        "kor": "⭕ 어법에 맞으면 O, ❌ 틀리면 X",
+        "eng": "Can you tell me how the machine works?",
+        "ans": "O",
+        "opts": [
+          "O",
+          "X"
+        ],
+        "type": "ox",
+        "level": 1
+      },
+      {
+        "id": "g2_l6_ox_12",
+        "kor": "⭕ 어법에 맞으면 O, ❌ 틀리면 X",
+        "eng": "I can't remember where she does live.",
+        "ans": "X",
+        "opts": [
+          "O",
+          "X"
+        ],
+        "type": "ox",
+        "level": 2
       }
     ]
   },

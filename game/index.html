@@ -4244,6 +4244,26 @@ function showImpactBurst(side, level) {
 
 // ── Audio ──
 let audioCtx;
+// iOS Safari/크로스오리진 대응: 첫 제스처에 무음 버퍼로 AudioContext 잠금 해제
+(function () {
+  let unlocked = false;
+  function unlock() {
+    if (!audioCtx) { try { audioCtx = new (window.AudioContext || window.webkitAudioContext)(); } catch (e) { return; } }
+    try {
+      const buf = audioCtx.createBuffer(1, 1, 22050);
+      const src = audioCtx.createBufferSource();
+      src.buffer = buf; src.connect(audioCtx.destination); src.start(0);
+    } catch (e) {}
+    if (audioCtx.state === 'suspended') audioCtx.resume().then(() => { unlocked = true; }).catch(() => {});
+    else if (audioCtx.state === 'running') unlocked = true;
+    if (unlocked) ['touchstart','touchend','pointerdown','mousedown','click','keydown'].forEach(ev => {
+      document.removeEventListener(ev, unlock, true); window.removeEventListener(ev, unlock, true);
+    });
+  }
+  ['touchstart','touchend','pointerdown','mousedown','click','keydown'].forEach(ev => {
+    document.addEventListener(ev, unlock, true); window.addEventListener(ev, unlock, true);
+  });
+})();
 // ── Special element helpers ──
 function spawnSkull() {
   const fromLeft = Math.random() < 0.5;

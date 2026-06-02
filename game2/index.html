@@ -1685,6 +1685,22 @@ function initFromParam() {
   }
 }
 initFromParam();
+
+// 허브에서 넘어오면 이 페이지엔 사용자 제스처가 없어 BGM 오토플레이가 막힌다(iOS·데스크톱 공통).
+// 첫 입력(터치/클릭/키)에 BGM을 (재)시작해서 자체 선택화면이 있던 때처럼 소리가 나게 한다.
+(function () {
+  function kickBGM() {
+    if (typeof GS !== 'undefined' && GS && document.getElementById('game').style.display !== 'none') {
+      BGM.start(GS.bossPhase || 0);
+    }
+    ['pointerdown','touchstart','click','keydown'].forEach(ev => {
+      document.removeEventListener(ev, kickBGM, true); window.removeEventListener(ev, kickBGM, true);
+    });
+  }
+  ['pointerdown','touchstart','click','keydown'].forEach(ev => {
+    document.addEventListener(ev, kickBGM, true); window.addEventListener(ev, kickBGM, true);
+  });
+})();
 </script>
 </body>
 </html>

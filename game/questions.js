@@ -8347,45 +8347,6 @@ const GAME_QUESTIONS = {
         "level": 1
       },
       {
-        "id": "g2_l5_g2_want_relclause_basic_index_a7",
-        "kor": "그녀는 그에게 설거지를 하라고 말했다.",
-        "eng": "다음 중 어법에 맞는 것을 고르세요.",
-        "ans": "She told him to wash the dishes.",
-        "opts": [
-          "She told to him wash the dishes.",
-          "She told him washing the dishes.",
-          "She told him to wash the dishes.",
-          "She told him wash the dishes."
-        ],
-        "level": 1
-      },
-      {
-        "id": "g2_l5_g2_want_relclause_basic_index_a8",
-        "kor": "아빠는 내가 늦게까지 깨어 있는 것을 허락하셨다.",
-        "eng": "다음 중 어법에 맞는 것을 고르세요.",
-        "ans": "My dad allowed me to stay up late.",
-        "opts": [
-          "My dad allowed to me stay up late.",
-          "My dad allowed me to stay up late.",
-          "My dad allowed me stay up late.",
-          "My dad allowed me staying up late."
-        ],
-        "level": 1
-      },
-      {
-        "id": "g2_l5_g2_want_relclause_basic_index_a9",
-        "kor": "선장은 선원들에게 기다리라고 명령했다.",
-        "eng": "다음 중 어법에 맞는 것을 고르세요.",
-        "ans": "The captain ordered the sailors to wait.",
-        "opts": [
-          "The captain ordered the sailors to wait.",
-          "The captain ordered the sailors wait.",
-          "The captain ordered the sailors waited.",
-          "The captain ordered to the sailors wait."
-        ],
-        "level": 1
-      },
-      {
         "id": "g2_l5_g2_want_relclause_basic_index_b1",
         "kor": "이것은 내가 라디오에서 들었던 노래이다.",
         "eng": "This is the song ___ I heard on the radio.",
@@ -8622,136 +8583,6 @@ const GAME_QUESTIONS = {
           "stood",
           "stands",
           "standing"
-        ],
-        "level": 1
-      },
-      {
-        "id": "g2_l6_g2_perceive_indirectq_basic_index_a7",
-        "kor": "나는 개 한 마리가 밖에서 짖고 있는 소리를 들었다.",
-        "eng": "다음 중 어법에 맞는 것을 고르세요.",
-        "ans": "I heard a dog barking outside.",
-        "opts": [
-          "I heard a dog barks outside.",
-          "I heard to a dog bark outside.",
-          "I heard a dog barking outside.",
-          "I heard a dog to bark outside."
-        ],
-        "level": 1
-      },
-      {
-        "id": "g2_l6_g2_perceive_indirectq_basic_index_a8",
-        "kor": "우리는 연이 하늘 높이 날아오르는 것을 보았다.",
-        "eng": "다음 중 어법에 맞는 것을 고르세요.",
-        "ans": "We saw the kite fly high in the sky.",
-        "opts": [
-          "We saw to the kite fly high in the sky.",
-          "We saw the kite fly high in the sky.",
-          "We saw the kite to fly high in the sky.",
-          "We saw the kite flew high in the sky."
-        ],
-        "level": 1
-      },
-      {
-        "id": "g2_l6_g2_perceive_indirectq_basic_index_b1",
-        "kor": "나는 그녀가 지금 어디에 사는지 궁금하다.",
-        "eng": "다음 중 어법에 맞는 것을 고르세요.",
-        "ans": "I wonder where she lives now.",
-        "opts": [
-          "I wonder where she lives now.",
-          "I wonder where does she live now.",
-          "I wonder where lives she now.",
-          "I wonder where she does live now."
-        ],
-        "level": 1
-      },
-      {
-        "id": "g2_l6_g2_perceive_indirectq_basic_index_b2",
-        "kor": "너는 그 기차가 언제 떠나는지 아니?",
-        "eng": "다음 중 어법에 맞는 것을 고르세요.",
-        "ans": "Do you know when the train leaves?",
-        "opts": [
-          "Do you know when leaves the train?",
-          "Do you know when does the train leave?",
-          "Do you know when the train does leave?",
-          "Do you know when the train leaves?"
-        ],
-        "level": 1
-      },
-      {
-        "id": "g2_l6_g2_perceive_indirectq_basic_index_b3",
-        "kor": "나는 내가 열쇠를 어디에 두었는지 기억이 안 난다.",
-        "eng": "다음 중 어법에 맞는 것을 고르세요.",
-        "ans": "I can't remember where I left my keys.",
-        "opts": [
-          "I can't remember where left I my keys.",
-          "I can't remember where I did leave my keys.",
-          "I can't remember where I left my keys.",
-          "I can't remember where did I leave my keys."
-        ],
-        "level": 1
-      },
-      {
-        "id": "g2_l6_g2_perceive_indirectq_basic_index_b4",
-        "kor": "누가 창문을 깼는지 나에게 말해 줘.",
-        "eng": "다음 중 어법에 맞는 것을 고르세요.",
-        "ans": "Tell me who broke the window.",
-        "opts": [
-          "Tell me who does broke the window.",
-          "Tell me who broke the window.",
-          "Tell me who did break the window.",
-          "Tell me who the window broke."
-        ],
-        "level": 1
-      },
-      {
-        "id": "g2_l6_g2_perceive_indirectq_basic_index_b5",
-        "kor": "너는 누가 그 대회에서 우승했는지 아니?",
-        "eng": "다음 중 어법에 맞는 것을 고르세요.",
-        "ans": "Do you know who won the contest?",
-        "opts": [
-          "Do you know who won the contest?",
-          "Do you know who did win the contest?",
-          "Do you know who the contest won?",
-          "Do you know who does win the contest?"
-        ],
-        "level": 1
-      },
-      {
-        "id": "g2_l6_g2_perceive_indirectq_basic_index_b6",
-        "kor": "나는 그가 매운 음식을 좋아하는지 잘 모르겠다.",
-        "eng": "다음 중 어법에 맞는 것을 고르세요.",
-        "ans": "I am not sure if he likes spicy food.",
-        "opts": [
-          "I am not sure does he like spicy food.",
-          "I am not sure if does he like spicy food.",
-          "I am not sure if likes he spicy food.",
-          "I am not sure if he likes spicy food."
-        ],
-        "level": 1
-      },
-      {
-        "id": "g2_l6_g2_perceive_indirectq_basic_index_b7",
-        "kor": "그들이 왜 일찍 떠났는지 나에게 말해 줄 수 있니?",
-        "eng": "다음 중 어법에 맞는 것을 고르세요.",
-        "ans": "Can you tell me why they left early?",
-        "opts": [
-          "Can you tell me why left they early?",
-          "Can you tell me why they did left early?",
-          "Can you tell me why they left early?",
-          "Can you tell me why did they leave early?"
-        ],
-        "level": 1
-      },
-      {
-        "id": "g2_l6_g2_perceive_indirectq_basic_index_b8",
-        "kor": "나는 그 공연이 몇 시에 시작하는지 잊어버렸다.",
-        "eng": "다음 중 어법에 맞는 것을 고르세요.",
-        "ans": "I forgot what time the show starts.",
-        "opts": [
-          "I forgot what time the show does start.",
-          "I forgot what time the show starts.",
-          "I forgot what time does the show start.",
-          "I forgot what time starts the show."
         ],
         "level": 1
       },
@@ -9361,45 +9192,6 @@ const GAME_QUESTIONS = {
         "level": 1
       },
       {
-        "id": "g2_l7_g2_causative_asas_basic_index_a8",
-        "kor": "그녀의 미소는 모두를 행복하게 만들었다.",
-        "eng": "다음 중 어법에 맞는 것을 고르세요.",
-        "ans": "Her smile made everyone feel happy.",
-        "opts": [
-          "Her smile made everyone feels happy.",
-          "Her smile made everyone feel happy.",
-          "Her smile made everyone to feel happy.",
-          "Her smile made everyone feeling happy."
-        ],
-        "level": 1
-      },
-      {
-        "id": "g2_l7_g2_causative_asas_basic_index_a9",
-        "kor": "그들은 우리가 박물관에 무료로 들어가게 해 주었다.",
-        "eng": "다음 중 어법에 맞는 것을 고르세요.",
-        "ans": "They let us enter the museum for free.",
-        "opts": [
-          "They let us enter the museum for free.",
-          "They let us to enter the museum for free.",
-          "They let us entering the museum for free.",
-          "They let us enters the museum for free."
-        ],
-        "level": 1
-      },
-      {
-        "id": "g2_l7_g2_causative_asas_basic_index_a10",
-        "kor": "그녀는 그에게 창문을 닫아 달라고 부탁했다.",
-        "eng": "다음 중 어법에 맞는 것을 고르세요.",
-        "ans": "She asked him to close the window.",
-        "opts": [
-          "She had him to close the window.",
-          "She made him to close the window.",
-          "She let him to close the window.",
-          "She asked him to close the window."
-        ],
-        "level": 1
-      },
-      {
         "id": "g2_l7_g2_causative_asas_basic_index_b1",
         "kor": "내 배낭은 네 것만큼 무겁다.",
         "eng": "My backpack is as ___ as yours.",
@@ -9474,45 +9266,6 @@ const GAME_QUESTIONS = {
           "easy",
           "easier",
           "easiest"
-        ],
-        "level": 1
-      },
-      {
-        "id": "g2_l7_g2_causative_asas_basic_index_b7",
-        "kor": "나는 아빠만큼 일찍 일어난다.",
-        "eng": "다음 중 어법에 맞는 것을 고르세요.",
-        "ans": "I wake up as early as my dad.",
-        "opts": [
-          "I wake up as early as my dad.",
-          "I wake up as early my dad.",
-          "I wake up as earlier as my dad.",
-          "I wake up so early than my dad."
-        ],
-        "level": 1
-      },
-      {
-        "id": "g2_l7_g2_causative_asas_basic_index_b8",
-        "kor": "나는 우리 누나만큼 수학을 잘하지는 못한다.",
-        "eng": "다음 중 어법에 맞는 것을 고르세요.",
-        "ans": "I'm not as good at math as my sister.",
-        "opts": [
-          "I'm not as good at math than my sister.",
-          "I'm as not good at math as my sister.",
-          "I'm not as better at math as my sister.",
-          "I'm not as good at math as my sister."
-        ],
-        "level": 1
-      },
-      {
-        "id": "g2_l7_g2_causative_asas_basic_index_b9",
-        "kor": "그는 선생님만큼 또렷하게 말한다.",
-        "eng": "다음 중 어법에 맞는 것을 고르세요.",
-        "ans": "He speaks as clearly as the teacher.",
-        "opts": [
-          "He speaks as clear as the teacher.",
-          "He speaks as clearly than the teacher.",
-          "He speaks as clearly as the teacher.",
-          "He speaks more clearly as the teacher."
         ],
         "level": 1
       },
@@ -9636,19 +9389,6 @@ const GAME_QUESTIONS = {
           "for",
           "at",
           "of"
-        ],
-        "level": 1
-      },
-      {
-        "id": "g2_l8_g2_itto_whatto_basic_index_a6",
-        "kor": "반 친구들을 돕는 것은 좋은 일이다.",
-        "eng": "다음 중 어법에 맞는 것을 고르세요.",
-        "ans": "It is good to help your classmates.",
-        "opts": [
-          "To help your classmates it is good.",
-          "It is good help your classmates.",
-          "Is good to help your classmates.",
-          "It is good to help your classmates."
         ],
         "level": 1
       },
@@ -9805,19 +9545,6 @@ const GAME_QUESTIONS = {
           "buys",
           "bought",
           "to buy"
-        ],
-        "level": 1
-      },
-      {
-        "id": "g2_l8_g2_itto_whatto_basic_index_b9",
-        "kor": "나는 말 타는 방법을 배웠다.",
-        "eng": "다음 중 어법에 맞는 것을 고르세요.",
-        "ans": "I learned how to ride a horse.",
-        "opts": [
-          "I learned how ride a horse.",
-          "I learned to how ride a horse.",
-          "I learned how to ride a horse.",
-          "I learned why to ride a horse."
         ],
         "level": 1
       },

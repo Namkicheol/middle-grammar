@@ -1367,8 +1367,22 @@ const _unitParam = _params.get('unit');
 if (_unitParam && GAME_QUESTIONS[_unitParam]) unitKey = _unitParam;
 buildUnitList();
 buildGrid();
-// 허브에서 ?unit=로 와도 자동 시작하지 않고 시작 화면(시작! 버튼)을 보여준다.
-// 버튼을 누르는 그 제스처 안에서 게임+BGM이 시작돼 보글보글처럼 음악이 바로 난다.
+// 허브에서 ?unit=로 들어오면 시작 화면 없이 바로 게임 시작(시작 버튼이 모바일에서 화면 밖으로
+// 밀리는 문제 제거). 자동 시작은 제스처가 없어 BGM이 막히므로 첫 입력에 BGM을 시작한다.
+if (_unitParam && GAME_QUESTIONS[_unitParam]) {
+  setTimeout(startGame, 60);
+  (function () {
+    function kick() {
+      if (gameRunning) startWhackBgm();
+      ['pointerdown','touchstart','click','keydown'].forEach(ev => {
+        document.removeEventListener(ev, kick, true); window.removeEventListener(ev, kick, true);
+      });
+    }
+    ['pointerdown','touchstart','click','keydown'].forEach(ev => {
+      document.addEventListener(ev, kick, true); window.addEventListener(ev, kick, true);
+    });
+  })();
+}
 </script>
 </body>
 </html>

@@ -1564,7 +1564,9 @@ function _flashEl(id) {
 function showFloating(text, color) {
   const el = document.createElement('div');
   el.className = 'dmg-float';
-  el.style.cssText = `color:${color};font-size:1.6rem;font-weight:900;left:50%;transform:translateX(-50%);top:32%;text-shadow:0 3px 12px rgba(0,0,0,.9),0 0 18px ${color};white-space:nowrap;`;
+  // 가로 중앙: dmgFloat 애니메이션이 transform을 덮어써 translateX(-50%)가 무효화되므로
+  // left:0;right:0 + text-align:center 로 중앙 정렬(transform에 의존 안 함).
+  el.style.cssText = `color:${color};font-size:1.6rem;font-weight:900;left:0;right:0;text-align:center;top:32%;text-shadow:0 3px 12px rgba(0,0,0,.9),0 0 18px ${color};white-space:nowrap;`;
   el.textContent = text;
   document.body.appendChild(el);
   setTimeout(() => el.remove(), 1100);

@@ -798,6 +798,42 @@ const GAME_QUESTIONS = {
           "does"
         ],
         "level": 2
+      },
+      {
+        "id": "g1_l1_ox_1",
+        "kor": "내 삼촌은 소방관이다. — 맞으면 O · 틀리면 X",
+        "eng": "My uncle is a firefighter.",
+        "ans": "O",
+        "opts": [
+          "O",
+          "X"
+        ],
+        "type": "ox",
+        "level": 1
+      },
+      {
+        "id": "g1_l1_ox_2",
+        "kor": "그들은 축구를 잘한다. — 맞으면 O · 틀리면 X",
+        "eng": "They is good at soccer.",
+        "ans": "X",
+        "opts": [
+          "O",
+          "X"
+        ],
+        "type": "ox",
+        "level": 1
+      },
+      {
+        "id": "g1_l1_ox_3",
+        "kor": "그녀는 아침을 먹지 않는다. — 맞으면 O · 틀리면 X",
+        "eng": "She doesn't eats breakfast.",
+        "ans": "X",
+        "opts": [
+          "O",
+          "X"
+        ],
+        "type": "ox",
+        "level": 1
       }
     ]
   },
@@ -1519,6 +1555,42 @@ const GAME_QUESTIONS = {
           "turned"
         ],
         "level": 2
+      },
+      {
+        "id": "g1_l2_ox_1",
+        "kor": "아이들이 밖에서 놀고 있다. — 맞으면 O · 틀리면 X",
+        "eng": "The kids are playing outside.",
+        "ans": "O",
+        "opts": [
+          "O",
+          "X"
+        ],
+        "type": "ox",
+        "level": 1
+      },
+      {
+        "id": "g1_l2_ox_2",
+        "kor": "그는 공원에서 달리고 있다. — 맞으면 O · 틀리면 X",
+        "eng": "He is run in the park.",
+        "ans": "X",
+        "opts": [
+          "O",
+          "X"
+        ],
+        "type": "ox",
+        "level": 1
+      },
+      {
+        "id": "g1_l2_ox_3",
+        "kor": "그녀는 만화 그리기를 즐긴다. — 맞으면 O · 틀리면 X",
+        "eng": "She enjoys drawing cartoons.",
+        "ans": "O",
+        "opts": [
+          "O",
+          "X"
+        ],
+        "type": "ox",
+        "level": 1
       }
     ]
   },
@@ -2318,6 +2390,42 @@ const GAME_QUESTIONS = {
           "Was he"
         ],
         "level": 2
+      },
+      {
+        "id": "g1_l3_ox_1",
+        "kor": "우리는 지난 주말에 해변에 있었다. — 맞으면 O · 틀리면 X",
+        "eng": "We were at the beach last weekend.",
+        "ans": "O",
+        "opts": [
+          "O",
+          "X"
+        ],
+        "type": "ox",
+        "level": 1
+      },
+      {
+        "id": "g1_l3_ox_2",
+        "kor": "그녀는 여행 후에 피곤했다. — 맞으면 O · 틀리면 X",
+        "eng": "She were tired after the trip.",
+        "ans": "X",
+        "opts": [
+          "O",
+          "X"
+        ],
+        "type": "ox",
+        "level": 1
+      },
+      {
+        "id": "g1_l3_ox_3",
+        "kor": "그 영화는 정말 흥미진진했다. — 맞으면 O · 틀리면 X",
+        "eng": "The movie was really exciting.",
+        "ans": "O",
+        "opts": [
+          "O",
+          "X"
+        ],
+        "type": "ox",
+        "level": 1
       }
     ]
   },
@@ -3117,6 +3225,42 @@ const GAME_QUESTIONS = {
           "to finish"
         ],
         "level": 2
+      },
+      {
+        "id": "g1_l4_ox_1",
+        "kor": "나는 기타를 배우고 싶다. — 맞으면 O · 틀리면 X",
+        "eng": "I want to learn the guitar.",
+        "ans": "O",
+        "opts": [
+          "O",
+          "X"
+        ],
+        "type": "ox",
+        "level": 1
+      },
+      {
+        "id": "g1_l4_ox_2",
+        "kor": "그녀는 할머니를 방문할 것이다. — 맞으면 O · 틀리면 X",
+        "eng": "She will to visit her grandmother.",
+        "ans": "X",
+        "opts": [
+          "O",
+          "X"
+        ],
+        "type": "ox",
+        "level": 1
+      },
+      {
+        "id": "g1_l4_ox_3",
+        "kor": "너는 더 열심히 공부해야 한다. — 맞으면 O · 틀리면 X",
+        "eng": "You should to study harder.",
+        "ans": "X",
+        "opts": [
+          "O",
+          "X"
+        ],
+        "type": "ox",
+        "level": 1
       }
     ]
   },

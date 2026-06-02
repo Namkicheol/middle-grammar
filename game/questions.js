@@ -8471,7 +8471,7 @@ const GAME_QUESTIONS = {
       },
       {
         "id": "g2_l6_ox_01",
-        "kor": "우리는 독수리가 절벽 위로 날아오르는 것을 보았다. — ⭕맞으면 O · ❌틀리면 X",
+        "kor": "우리는 독수리가 절벽 위로 날아오르는 것을 보았다. — 맞으면 O · 틀리면 X",
         "eng": "We watched the eagle soar above the cliff.",
         "ans": "O",
         "opts": [
@@ -8483,7 +8483,7 @@ const GAME_QUESTIONS = {
       },
       {
         "id": "g2_l6_ox_02",
-        "kor": "그녀는 아이들이 수영장에서 수영하는 것을 지켜보았다. — ⭕맞으면 O · ❌틀리면 X",
+        "kor": "그녀는 아이들이 수영장에서 수영하는 것을 지켜보았다. — 맞으면 O · 틀리면 X",
         "eng": "She watched the children to swim in the pool.",
         "ans": "X",
         "opts": [
@@ -8495,7 +8495,7 @@ const GAME_QUESTIONS = {
       },
       {
         "id": "g2_l6_ox_03",
-        "kor": "그는 주머니에서 휴대폰이 울리는 것을 느꼈다. — ⭕맞으면 O · ❌틀리면 X",
+        "kor": "그는 주머니에서 휴대폰이 울리는 것을 느꼈다. — 맞으면 O · 틀리면 X",
         "eng": "He felt his phone buzz in his pocket.",
         "ans": "O",
         "opts": [
@@ -8507,7 +8507,7 @@ const GAME_QUESTIONS = {
       },
       {
         "id": "g2_l6_ox_04",
-        "kor": "나는 아기가 밤새도록 우는 소리를 들었다. — ⭕맞으면 O · ❌틀리면 X",
+        "kor": "나는 아기가 밤새도록 우는 소리를 들었다. — 맞으면 O · 틀리면 X",
         "eng": "I heard the baby to cry all night long.",
         "ans": "X",
         "opts": [
@@ -8519,7 +8519,7 @@ const GAME_QUESTIONS = {
       },
       {
         "id": "g2_l6_ox_05",
-        "kor": "그들은 새가 둥지를 짓고 있는 것을 알아차렸다. — ⭕맞으면 O · ❌틀리면 X",
+        "kor": "그들은 새가 둥지를 짓고 있는 것을 알아차렸다. — 맞으면 O · 틀리면 X",
         "eng": "They noticed a bird building its nest.",
         "ans": "O",
         "opts": [
@@ -8531,7 +8531,7 @@ const GAME_QUESTIONS = {
       },
       {
         "id": "g2_l6_ox_06",
-        "kor": "우리는 그 주자가 결승선을 통과하는 것을 보았다. — ⭕맞으면 O · ❌틀리면 X",
+        "kor": "우리는 그 주자가 결승선을 통과하는 것을 보았다. — 맞으면 O · 틀리면 X",
         "eng": "We saw the runner crossed the finish line.",
         "ans": "X",
         "opts": [
@@ -8543,7 +8543,7 @@ const GAME_QUESTIONS = {
       },
       {
         "id": "g2_l6_ox_07",
-        "kor": "나는 사촌이 요즘 어디서 일하는지 궁금하다. — ⭕맞으면 O · ❌틀리면 X",
+        "kor": "나는 사촌이 요즘 어디서 일하는지 궁금하다. — 맞으면 O · 틀리면 X",
         "eng": "I wonder where my cousin works these days.",
         "ans": "O",
         "opts": [
@@ -8555,7 +8555,7 @@ const GAME_QUESTIONS = {
       },
       {
         "id": "g2_l6_ox_08",
-        "kor": "너는 박물관이 언제 여는지 아니? — ⭕맞으면 O · ❌틀리면 X",
+        "kor": "너는 박물관이 언제 여는지 아니? — 맞으면 O · 틀리면 X",
         "eng": "Do you know when does the museum open?",
         "ans": "X",
         "opts": [
@@ -8567,7 +8567,7 @@ const GAME_QUESTIONS = {
       },
       {
         "id": "g2_l6_ox_09",
-        "kor": "누가 고장 난 시계를 고쳤는지 나에게 말해줘. — ⭕맞으면 O · ❌틀리면 X",
+        "kor": "누가 고장 난 시계를 고쳤는지 나에게 말해줘. — 맞으면 O · 틀리면 X",
         "eng": "Tell me who fixed the broken clock.",
         "ans": "O",
         "opts": [
@@ -8579,7 +8579,7 @@ const GAME_QUESTIONS = {
       },
       {
         "id": "g2_l6_ox_10",
-        "kor": "나는 그녀가 지금 무엇이 필요한지 잘 모르겠다. — ⭕맞으면 O · ❌틀리면 X",
+        "kor": "나는 그녀가 지금 무엇이 필요한지 잘 모르겠다. — 맞으면 O · 틀리면 X",
         "eng": "I'm not sure what does she need now.",
         "ans": "X",
         "opts": [
@@ -8591,7 +8591,7 @@ const GAME_QUESTIONS = {
       },
       {
         "id": "g2_l6_ox_11",
-        "kor": "그 기계가 어떻게 작동하는지 나에게 알려줄래? — ⭕맞으면 O · ❌틀리면 X",
+        "kor": "그 기계가 어떻게 작동하는지 나에게 알려줄래? — 맞으면 O · 틀리면 X",
         "eng": "Can you tell me how the machine works?",
         "ans": "O",
         "opts": [
@@ -8603,7 +8603,7 @@ const GAME_QUESTIONS = {
       },
       {
         "id": "g2_l6_ox_12",
-        "kor": "나는 그녀가 어디에 사는지 기억이 안 난다. — ⭕맞으면 O · ❌틀리면 X",
+        "kor": "나는 그녀가 어디에 사는지 기억이 안 난다. — 맞으면 O · 틀리면 X",
         "eng": "I can't remember where she does live.",
         "ans": "X",
         "opts": [

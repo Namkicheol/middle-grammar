@@ -36,7 +36,8 @@ body{background:#000;overflow:hidden;font-family:'Baloo 2','Noto Sans KR',sans-s
 /* ── GAME SCREEN ── */
 #boss-start{position:fixed;inset:0;z-index:200;display:none;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:24px;background:linear-gradient(160deg,#0f172a,#1e1b4b 45%,#0f172a);}
 .bs-title{font-size:1.7rem;font-weight:900;color:#fff;margin-bottom:6px;}
-.bs-unit{font-size:1rem;font-weight:800;color:#a78bfa;margin-bottom:24px;line-height:1.4;max-width:420px;}
+.bs-unit{font-size:1rem;font-weight:800;color:#a78bfa;margin-bottom:10px;line-height:1.4;max-width:420px;}
+.bs-record{font-size:.84rem;font-weight:800;color:#fde68a;margin-bottom:18px;}
 .bs-row{display:flex;gap:20px;margin-bottom:30px;}
 .bs-row img{height:96px;width:auto;image-rendering:pixelated;filter:drop-shadow(0 6px 18px rgba(124,58,237,.6));}
 .bs-btn{font-family:inherit;font-size:1.2rem;font-weight:900;color:#fff;background:linear-gradient(135deg,#7c3aed,#a855f7);border:none;border-radius:16px;padding:17px 46px;box-shadow:0 12px 32px rgba(124,58,237,.6);cursor:pointer;-webkit-tap-highlight-color:transparent;transition:transform .12s;}
@@ -47,7 +48,7 @@ body{background:#000;overflow:hidden;font-family:'Baloo 2','Noto Sans KR',sans-s
 canvas#c{position:absolute;inset:0;width:100%;height:100%;}
 
 /* ── ARENA (character stage) ── */
-#arena{position:absolute;left:0;right:0;bottom:0;height:72%;pointer-events:none;}
+#arena{position:absolute;left:0;right:0;bottom:0;height:72%;pointer-events:none;transition:bottom .38s cubic-bezier(.22,1,.36,1);}
 
 /* ── CHARACTERS ── */
 #hero-wrap{position:absolute;left:8%;bottom:26%;transform-origin:bottom center;transition:left .35s cubic-bezier(.22,1,.36,1), transform .15s;}
@@ -138,7 +139,7 @@ canvas#c{position:absolute;inset:0;width:100%;height:100%;}
 @keyframes sfxPulse{0%,100%{opacity:1}50%{opacity:.65}}
 
 /* ── DROP ITEMS ── */
-.drop-item{position:absolute;font-size:2.2rem;cursor:pointer;z-index:24;pointer-events:all;filter:drop-shadow(0 4px 14px rgba(255,255,255,.35));user-select:none;width:64px;height:64px;margin:-32px 0 0 -32px;display:flex;align-items:center;justify-content:center;border-radius:50%;-webkit-tap-highlight-color:transparent;}
+.drop-item{position:absolute;font-size:1.7rem;cursor:pointer;z-index:24;pointer-events:all;user-select:none;width:58px;height:58px;margin:-29px 0 0 -29px;display:flex;align-items:center;justify-content:center;border-radius:50%;-webkit-tap-highlight-color:transparent;background:radial-gradient(circle at 35% 30%,rgba(255,255,255,.16),rgba(22,12,44,.94) 62%);border:2px solid rgba(167,139,250,.55);box-shadow:0 0 18px rgba(167,139,250,.4),inset 0 2px 6px rgba(255,255,255,.14);}
 
 /* ── QUESTION POPUP ── */
 #qpop{position:absolute;left:50%;bottom:12px;width:min(480px,96%);transform:translateX(-50%) translateY(20px) scale(.92);opacity:0;pointer-events:none;z-index:30;transition:transform .28s cubic-bezier(.34,1.56,.64,1),opacity .22s;}
@@ -178,7 +179,7 @@ canvas#c{position:absolute;inset:0;width:100%;height:100%;}
 .cut-card{animation:cutIn .55s cubic-bezier(.34,1.56,.64,1);}
 .cut-phase{font-size:.82rem;font-weight:900;color:#fbbf24;letter-spacing:.35em;margin-bottom:14px;}
 .cut-chars{display:flex;justify-content:center;align-items:flex-end;gap:32px;margin-bottom:16px;}
-.cut-chars img{height:160px;width:auto;filter:drop-shadow(0 0 28px rgba(124,58,237,.9));}
+.cut-chars img{height:160px;width:auto;image-rendering:pixelated;filter:drop-shadow(0 0 28px rgba(124,58,237,.9));}
 @keyframes cutCharIn{from{transform:scale(.4) rotate(-8deg);opacity:0}to{transform:scale(1) rotate(0);opacity:1}}
 .cut-chars img{animation:cutCharIn .7s cubic-bezier(.34,1.56,.64,1);}
 .cut-name{font-size:2rem;font-weight:900;color:#fff;text-shadow:0 0 28px rgba(139,92,246,.8);}
@@ -239,7 +240,7 @@ canvas#c{position:absolute;inset:0;width:100%;height:100%;}
 @keyframes victoryHeroIn{from{transform:scale(.3) rotate(-12deg);opacity:0}to{transform:scale(1) rotate(0);opacity:1}}
 .vc-card{text-align:center;color:#fff;animation:victoryIn .7s cubic-bezier(.34,1.56,.64,1);}
 .vc-title{font-size:3.8rem;font-weight:900;color:#fde68a;letter-spacing:.08em;margin-bottom:14px;animation:victoryPulse 1.2s ease-in-out infinite;}
-.vc-hero{height:clamp(160px,28vw,220px);width:auto;filter:drop-shadow(0 0 48px rgba(250,204,21,.9));animation:victoryHeroIn .8s cubic-bezier(.34,1.56,.64,1);}
+.vc-hero{height:clamp(160px,28vw,220px);width:auto;image-rendering:pixelated;filter:drop-shadow(0 0 48px rgba(250,204,21,.9));animation:victoryHeroIn .8s cubic-bezier(.34,1.56,.64,1);}
 .vc-name{font-size:1.5rem;font-weight:900;color:#fff;margin-top:14px;text-shadow:0 0 24px rgba(139,92,246,.9);}
 .vc-sub{font-size:.9rem;color:#a78bfa;margin-top:6px;}
 </style>
@@ -251,9 +252,10 @@ canvas#c{position:absolute;inset:0;width:100%;height:100%;}
 <div id="boss-start">
   <div class="bs-title">⚔️ 문법 보스전</div>
   <div class="bs-unit" id="boss-start-unit"></div>
+  <div class="bs-record" id="bs-record">&nbsp;</div>
   <div class="bs-row">
     <img src="assets/fighters/hero/portrait.png" alt="hero">
-    <img src="assets/fighters/wizard/portrait.png" alt="boss">
+    <img src="assets/fighters/goblin/portrait.png" alt="boss">
   </div>
   <button id="boss-start-btn" class="bs-btn">⚔️ 전투 시작!</button>
   <div class="bs-back"><a href="../game/index.html">← 목록</a></div>
@@ -457,11 +459,28 @@ let CW = 0, CH = 0;
 // 바닥선 위치(화면 높이 대비) — setCharSprites에서 실제 캐릭터 발 위치로 동기화.
 let GROUND_FRAC = 0.72;
 // 세로로 긴 화면일수록 arena(캐릭터)를 위로 올려 가운데로. 가로/PC는 그대로.
-function updateGround() {
+function arenaBasePct() {
   const ar = window.innerHeight / Math.max(1, window.innerWidth);
-  const shift = ar <= 1.0 ? 0 : Math.min(18, (ar - 1.0) * 24);  // 세로비율↑ → 최대 18% 위로
+  return ar <= 1.0 ? 0 : Math.min(18, (ar - 1.0) * 24);  // 세로비율↑ → 최대 18% 위로
+}
+function updateGround() {
   const arena = document.getElementById('arena');
-  if (arena) arena.style.bottom = shift + '%';
+  if (arena) arena.style.bottom = arenaBasePct() + '%';
+}
+// ── 문제 팝업이 뜨면 아레나를 팝업 위로 끌어올려 전투가 항상 보이게 한다 ──
+function liftArenaForQpop() {
+  const arena = document.getElementById('arena');
+  const qp = document.getElementById('qpop');
+  if (!arena || !qp) return;
+  const vh = window.innerHeight;
+  const feetAbove = vh * 0.72 * 0.26;          // hero-wrap bottom:26% (arena 높이 72vh 기준)
+  let target = Math.max(vh * arenaBasePct() / 100, qp.offsetHeight + 20 - feetAbove);
+  target = Math.min(target, vh * 0.42);        // HUD와 겹치지 않게 상한
+  arena.style.bottom = target + 'px';
+}
+function restoreArena() {
+  if (GS && GS.practice && GS.practiceDone < GS.practiceTotal) return;  // 연습 중엔 연속 출제라 내리지 않음
+  updateGround();
 }
 // 캐릭터 발(=hero-wrap 하단)에 바닥선을 맞춘다. footPad 계산 오차 없이 항상 정확.
 function syncGroundToFeet() {
@@ -471,6 +490,7 @@ function syncGroundToFeet() {
 let _relayoutT = null;
 function resize() {
   CW = canvas.width = window.innerWidth; CH = canvas.height = window.innerHeight;
+  if (_scn) buildScenery();   // 최초 호출 시엔 undefined → drawBG에서 lazy 생성
   updateGround();
   clearTimeout(_relayoutT); _relayoutT = setTimeout(relayoutFighters, 150);
 }
@@ -490,20 +510,41 @@ const STARS = Array.from({length:80}, () => ({
 }));
 
 const BG_THEMES = [
-  { sky: ['#0a0515','#150a30','#200a40'], ground: ['#1a0a3a','#0a0020'], glow: '#7c3aed', line: '#5b21b6' },
-  { sky: ['#0a0515','#1e0a35','#2e0a50'], ground: ['#2a0a4a','#150030'], glow: '#9333ea', line: '#7c3aed' },
-  { sky: ['#050005','#100010','#180018'], ground: ['#0f0010','#050005'], glow: '#dc2626', line: '#7f1d1d' },
+  { sky: ['#0a0515','#150a30','#200a40'], ground: ['#1a0a3a','#0a0020'], glow: '#7c3aed', line: '#5b21b6', far:'#241147', near:'#140a2e', moon:'#e7e3f7' },
+  { sky: ['#0a0515','#1e0a35','#2e0a50'], ground: ['#2a0a4a','#150030'], glow: '#9333ea', line: '#7c3aed', far:'#2d1257', near:'#190c38', moon:'#e9d8ff' },
+  { sky: ['#050005','#100010','#180018'], ground: ['#0f0010','#050005'], glow: '#dc2626', line: '#7f1d1d', far:'#2a0512', near:'#16020a', moon:'#ff8a7a' },
 ];
 // 스테이지2+ 보스별 배경 테마 (대마왕=진홍 / 미노타우르스=용암 / 해골군주=독기, 순환)
 const STAGE_BG_THEMES = [
-  { sky: ['#1a0008','#2a0012','#3a0018'], ground: ['#2a0012','#12000a'], glow: '#ef4444', line: '#7f1d1d' },
-  { sky: ['#120a02','#241405','#3a200a'], ground: ['#241405','#100802'], glow: '#f97316', line: '#7c2d12' },
-  { sky: ['#02120c','#04241a','#063a2a'], ground: ['#04241a','#02100a'], glow: '#10b981', line: '#064e3b' },
+  { sky: ['#1a0008','#2a0012','#3a0018'], ground: ['#2a0012','#12000a'], glow: '#ef4444', line: '#7f1d1d', far:'#3a0a14', near:'#1c040c', moon:'#ff7a6a' },
+  { sky: ['#120a02','#241405','#3a200a'], ground: ['#241405','#100802'], glow: '#f97316', line: '#7c2d12', far:'#3a1d08', near:'#1c0e04', moon:'#ffb36a' },
+  { sky: ['#02120c','#04241a','#063a2a'], ground: ['#04241a','#02100a'], glow: '#10b981', line: '#064e3b', far:'#06301f', near:'#03190f', moon:'#7dffd0' },
 ];
+
+// ─── 픽셀풍 배경 지형 (달·산 실루엣·성탑·벽돌 바닥) — 절차 생성, 외부 에셋 없음 ───
+// var: resize()가 이 선언보다 먼저 실행되므로 TDZ 없는 var 사용 (drawBG에서 lazy 생성)
+var _scn = null;
+function buildScenery() {
+  const far = [];
+  for (let i = 0; i <= 18; i++) far.push(.07 + Math.random() * .15);   // 능선 높이(CH 비율)
+  const near = [.06, .27, .56, .82].map(x => ({
+    x: x + (Math.random() - .5) * .04,
+    w: .055 + Math.random() * .045,
+    h: .09 + Math.random() * .07,
+    win: 2 + Math.floor(Math.random() * 2),
+  }));
+  _scn = { far, near };
+}
+function hexA(hex, a) {
+  const n = parseInt(hex.slice(1), 16);
+  return `rgba(${n >> 16 & 255},${n >> 8 & 255},${n & 255},${a})`;
+}
 
 function drawBG(phase, ts) {
   const _st = GS ? GS.stage : 1;
   const t = (_st >= 2) ? STAGE_BG_THEMES[(_st - 2) % STAGE_BG_THEMES.length] : (BG_THEMES[phase] || BG_THEMES[0]);
+  if (!_scn) buildScenery();
+  const gY = CH * GROUND_FRAC;
   const g = ctx.createLinearGradient(0,0,0,CH);
   g.addColorStop(0,t.sky[0]); g.addColorStop(.5,t.sky[1]); g.addColorStop(1,t.sky[2]);
   ctx.fillStyle = g; ctx.fillRect(0,0,CW,CH);
@@ -515,8 +556,43 @@ function drawBG(phase, ts) {
     ctx.beginPath(); ctx.arc(s.x*CW, s.y*CH*.7, s.r, 0, Math.PI*2); ctx.fill();
   });
 
+  // Moon (페이즈·스테이지 따라 색 변함 — 최종전은 핏빛 달)
+  const mx = CW*.82, my = CH*.26, mr = Math.min(CW,CH)*.07;   // HUD 아래 열린 하늘에 배치
+  const halo = ctx.createRadialGradient(mx,my,mr*.5, mx,my,mr*2.8);
+  halo.addColorStop(0, hexA(t.glow,.16)); halo.addColorStop(1,'transparent');
+  ctx.fillStyle = halo; ctx.fillRect(mx-mr*3,my-mr*3,mr*6,mr*6);
+  ctx.fillStyle = t.moon;
+  ctx.beginPath(); ctx.arc(mx,my,mr,0,Math.PI*2); ctx.fill();
+  ctx.fillStyle = 'rgba(0,0,0,.13)';
+  ctx.beginPath(); ctx.arc(mx-mr*.3,my-mr*.2,mr*.22,0,Math.PI*2); ctx.fill();
+  ctx.beginPath(); ctx.arc(mx+mr*.32,my+mr*.3,mr*.15,0,Math.PI*2); ctx.fill();
+  ctx.beginPath(); ctx.arc(mx+mr*.1,my-mr*.42,mr*.1,0,Math.PI*2); ctx.fill();
+
+  // Far mountains — 8px 계단형 픽셀 능선
+  ctx.fillStyle = t.far;
+  const N = _scn.far.length - 1;
+  for (let x = 0; x < CW; x += 8) {
+    const fi = (x / CW) * N, i0 = Math.floor(fi), k = fi - i0;
+    const h = _scn.far[i0] * (1-k) + _scn.far[Math.min(N,i0+1)] * k;
+    const y = Math.round((gY - h*CH) / 8) * 8;
+    ctx.fillRect(x, y, 8, gY - y);
+  }
+
+  // Near silhouette — 성탑 + 불 켜진 창(깜빡임)
+  _scn.near.forEach((tw, ti) => {
+    const w = tw.w*CW, x = tw.x*CW, h = tw.h*CH, y = gY - h;
+    ctx.fillStyle = t.near;
+    ctx.fillRect(x, y, w, h);
+    const bw = Math.max(4, w/5);
+    for (let i=0; i<5; i+=2) ctx.fillRect(x+i*bw, y-bw, bw, bw);   // 총안(battlement)
+    for (let i=0; i<tw.win; i++) {
+      const fl = .5 + .5*Math.sin(ts/420 + ti*2.1 + i*1.7);
+      ctx.fillStyle = hexA(t.glow, .25 + .45*fl);
+      ctx.fillRect(x + w*.5 - 3, y + h*(.3 + i*.3), 6, 9);
+    }
+  });
+
   // Ground
-  const gY = CH * GROUND_FRAC;
   const gg = ctx.createLinearGradient(0,gY,0,CH);
   gg.addColorStop(0,t.ground[0]); gg.addColorStop(1,t.ground[1]);
   ctx.fillStyle = gg; ctx.fillRect(0,gY,CW,CH-gY);
@@ -526,9 +602,13 @@ function drawBG(phase, ts) {
   ctx.fillRect(0, gY, CW, 3);
   ctx.globalAlpha = 1;
 
-  // Tile grid
-  ctx.strokeStyle = 'rgba(255,255,255,.04)'; ctx.lineWidth = 1;
-  for (let x=0; x<CW; x+=60) { ctx.beginPath(); ctx.moveTo(x,gY); ctx.lineTo(x,CH); ctx.stroke(); }
+  // Brick floor — 엇갈린 벽돌 패턴
+  ctx.fillStyle = 'rgba(0,0,0,.2)';
+  for (let y = gY+22; y < CH; y += 24) ctx.fillRect(0, y, CW, 2);
+  ctx.fillStyle = 'rgba(255,255,255,.04)';
+  for (let r = 0, y = gY+4; y < CH; r++, y += 24) {
+    for (let x = (r%2)*30; x < CW; x += 60) ctx.fillRect(x, y, 2, 18);
+  }
 
   // Phase-specific effects
   if (phase >= 1) {
@@ -562,10 +642,11 @@ const HERO_ASSETS = [
   { idle:'assets/fighters/hero/portrait.png',   atk:'', name:'⚔️ 문법 검사',   scale:1.16, glow:'rgba(250,204,21,.6)', tint:'saturate(1.18) brightness(1.06)' },
   { idle:'assets/fighters/knight/portrait.png', atk:'', name:'🏆 문법 용사',   scale:1.32, glow:'rgba(255,255,255,.75)', tint:'saturate(1.28) brightness(1.14)' },
 ];
+// 스테이지1 페이즈별 보스 — 색 필터 변신 대신 실제 다른 몬스터로 교체 (고블린→흑마도사→대마왕)
 const BOSS_ASSETS = [
-  { idle:'assets/fighters/wizard/portrait.png', hit:'', name:'🔮 문법 견습 마도사', cutName:'문법 견습 마도사', cutSub:'1단계 보스 등장!', glow:'rgba(168,85,247,.55)', scale:1.0,  tint:'' },
-  { idle:'assets/fighters/wizard/portrait.png', hit:'', name:'🧙 문법 흑마도사', cutName:'문법 흑마도사', cutSub:'2단계 각성! 마력이 폭주한다!', glow:'rgba(220,38,80,.6)', scale:1.28, tint:'hue-rotate(-35deg) saturate(1.35) brightness(1.05)' },
-  { idle:'assets/fighters/king/portrait.png',   hit:'', name:'👹 문법 대마왕', cutName:'문법 대마왕', cutSub:'최종 형태! 전력을 다해라!', glow:'rgba(239,68,68,.75)', scale:1.55, tint:'hue-rotate(-65deg) saturate(1.7) brightness(.92) contrast(1.1)' },
+  { idle:'assets/fighters/goblin/portrait.png', hit:'', name:'👺 문법 고블린', cutName:'문법 고블린', cutSub:'1단계 보스 등장!', glow:'rgba(74,222,128,.5)', scale:1.0,  tint:'' },
+  { idle:'assets/fighters/wizard/portrait.png', hit:'', name:'🧙 문법 흑마도사', cutName:'문법 흑마도사', cutSub:'2단계! 진짜 보스가 나타났다!', glow:'rgba(168,85,247,.6)', scale:1.15, tint:'' },
+  { idle:'assets/fighters/king/portrait.png',   hit:'', name:'👹 문법 대마왕', cutName:'문법 대마왕', cutSub:'최종 형태! 전력을 다해라!', glow:'rgba(239,68,68,.75)', scale:1.45, tint:'' },
 ];
 
 // ═══════════════════════════════════════════════════════════
@@ -578,8 +659,8 @@ const ATTACK_TYPES = [
 ];
 // 페이즈별 타이머 배율 (Phase0=1.0, Phase1=0.78, Phase2=0.58)
 const PHASE_TIME_SCALE = [1.0, 0.78, 0.58];
-// 페이즈별 보스 공격 딜레이 범위 [min, max] ms
-const PHASE_ATTACK_DELAY = [[4500, 7000], [3200, 5000], [2000, 3500]];
+// 페이즈별 보스 공격 딜레이 범위 [min, max] ms — 짧게 유지해 문제가 끊기지 않고 이어지게
+const PHASE_ATTACK_DELAY = [[2400, 3800], [1900, 3000], [1300, 2200]];
 const STATUS_FX = {
   BURN:   { icon:'🔥', label:'화염', color:'#ef4444', dur:18000, desc:'오답 2배 피해' },
   FREEZE: { icon:'🧊', label:'빙결', color:'#60a5fa', dur:14000, desc:'제한시간 절반' },
@@ -753,6 +834,7 @@ function paintBursts(now) {
 function loop(ts) {
   rafId = requestAnimationFrame(loop);
   const dt = Math.min(64, ts - _lastTs); _lastTs = ts;
+  syncGroundToFeet();   // 아레나 리프트 전환 중에도 바닥선이 캐릭터 발을 따라감
   drawBG(GS ? GS.bossPhase : 0, ts);
   heroFighter.update(dt); bossFighter.update(dt);
   paintBursts(ts);
@@ -855,15 +937,19 @@ const SPRITE_DEFS = {
     }},
 };
 const HERO_SPRITE = ['warrior', 'warrior', 'knight'];
-const BOSS_SPRITE = ['wizard',  'wizard',  'king'];
+const BOSS_SPRITE = ['goblin',  'wizard',  'king'];
 // 스테이지2+ 보스 로스터 (스테이지마다 다른 캐릭으로 순환)
 const BOSS_STAGE_ROSTER = ['goblin', 'mushroom', 'skeleton', 'flying_eye', 'king'];  // 스테이지1이 대마왕으로 끝나므로 2단계는 다른 캐릭부터
 const BOSS_STAGE_NAME   = { king:'👹 문법 대마왕', skeleton:'💀 문법 해골군주', goblin:'👺 문법 고블린', mushroom:'🍄 문법 버섯괴물', flying_eye:'👁️ 문법 마안' };
 let _heroKey = 'warrior', _bossKey = 'wizard';
+// 스테이지·페이즈 → 보스 스프라이트 키 (스테이지2+는 페이즈마다 다른 몬스터 순환)
+function bossKeyFor(st, phase) {
+  return (st >= 2) ? BOSS_STAGE_ROSTER[((st - 2) * 3 + phase) % BOSS_STAGE_ROSTER.length] : (BOSS_SPRITE[phase] || 'wizard');
+}
 
 // 화면 폭에 따른 스프라이트 축소 배율 — 좁은 화면(모바일)에서 두 캐릭터가 겹치지 않게.
 function viewScale() {
-  return Math.max(0.5, Math.min(1, window.innerWidth / 760));
+  return Math.max(0.68, Math.min(1, window.innerWidth / 760));
 }
 function makeFighter(el, defKey) {
   const def = SPRITE_DEFS[defKey];
@@ -944,8 +1030,7 @@ function setCharSprites(phase) {
   // 스테이지2+는 영웅=용사(기사) · 보스=대마왕(왕) 고정으로 시작부터 풀파워
   const st = GS ? GS.stage : 1;
   const hk = (st >= 2) ? 'knight' : (HERO_SPRITE[phase] || 'warrior');
-  // 스테이지2+는 페이즈마다 다른 몬스터로 교체 (한 보스가 색만 바뀌며 반복되던 느낌 제거)
-  const bk = (st >= 2) ? BOSS_STAGE_ROSTER[((st - 2) * 3 + phase) % BOSS_STAGE_ROSTER.length] : (BOSS_SPRITE[phase] || 'wizard');
+  const bk = bossKeyFor(st, phase);
   if (hk !== _heroKey) { heroFighter = makeFighter(heroImg, hk); _heroKey = hk; } else heroFighter.play('idle');
   if (bk !== _bossKey) { bossFighter = makeFighter(bossImg, bk); _bossKey = bk; } else bossFighter.play('idle');
   // 스테이지 올라갈수록 보스 더 크게 (보스다움 ↑, 최대 +40%)
@@ -985,6 +1070,13 @@ function heroAnim(type) {
     _heroTl = gsap.timeline()
       .to(heroWrap, { left: '17%', duration: .28, ease: 'power3.out' })
       .to(heroWrap, { left: '8%', duration: .45, ease: 'power2.in',
+          onComplete() { _heroTl = null; } });
+  } else if (type === 'crit') {
+    // 크리티컬 — 더 깊게 파고들며 다른 공격 모션
+    heroFighter.play('atk2');
+    _heroTl = gsap.timeline()
+      .to(heroWrap, { left: '24%', duration: .22, ease: 'power4.out' })
+      .to(heroWrap, { left: '8%', duration: .5, ease: 'power2.in',
           onComplete() { _heroTl = null; } });
   } else if (type === 'hurt') {
     heroFighter.play('hurt'); heroFighter.flash();
@@ -1112,8 +1204,8 @@ function startAttack() {
   }
   GS.attackType = chosen;
 
-  // Maybe apply status effect
-  if (Math.random() < 0.2 + GS.bossPhase * 0.1) {
+  // Maybe apply status effect (공격 빈도가 높아져 확률은 낮춤)
+  if (Math.random() < 0.12 + GS.bossPhase * 0.08) {
     const keys = Object.keys(STATUS_FX);
     applyStatusFx(keys[Math.floor(Math.random() * keys.length)]);
   }
@@ -1126,7 +1218,7 @@ function startAttack() {
   telFillEl.style.background = chosen.color;
   telFillEl.style.boxShadow = `0 0 10px ${chosen.color}`;
 
-  const DUR = 1600 + GS.bossPhase * 250;
+  const DUR = 950 + GS.bossPhase * 200;
   let elapsed = 0;
   telIv = setInterval(() => {
     elapsed += 50;
@@ -1206,6 +1298,7 @@ function showQuestion() {
   if (!GS.attackType) GS.attackType = ATTACK_TYPES[0];   // 연습 모드 등 보스공격 없이 문제 띄울 때 기본값
   let timeLimit = GS.attackType.time * (PHASE_TIME_SCALE[GS.bossPhase] || 1) * stageTimeMul() * (1 + (GS.upgrades.time || 0));
   if (GS.statusFx.FREEZE) timeLimit *= 0.5;
+  GS._qT0 = performance.now(); GS._qLimit = timeLimit;   // 크리티컬(빠른 정답) 판정용
 
   let opts = [...q.opts];
   if (GS.statusFx.SHOCK) opts = shuffle(opts);
@@ -1262,11 +1355,13 @@ function showQuestion() {
     qTimer = requestAnimationFrame(tickTimer);
   }
   document.getElementById('qpop').classList.add('show');
+  liftArenaForQpop();   // 캐릭터를 팝업 위로 — 문제 푸는 동안에도 전투가 보인다
 }
 
 function handleAnswer(chosen, correct, clickedBtn) {
   if (GS.phase !== 2) return;
   cancelAnimationFrame(qTimer); qTimer = null;
+  GS._ansFrac = Math.max(0, 1 - (performance.now() - GS._qT0) / 1000 / (GS._qLimit || 1));
   GS.phase = 3;
   const isCorrect = chosen === correct;
   document.querySelectorAll('.qopt').forEach(b => {
@@ -1286,7 +1381,7 @@ function handleAnswer(chosen, correct, clickedBtn) {
     setTimeout(() => practiceFinish(isCorrect), isCorrect ? 800 : 1500);
     return;
   }
-  fb.textContent = isCorrect ? '✅ 정답! 공격!' : '❌ 오답! 피격!';
+  fb.textContent = isCorrect ? (GS._ansFrac >= 0.55 ? '⚡ 빠른 정답! 크리티컬!' : '✅ 정답! 공격!') : '❌ 오답! 피격!';
   fb.className = 'qpop-fb ' + (isCorrect ? 'ok' : 'ng');
   setTimeout(() => finishQuestion(isCorrect), isCorrect ? 650 : 950);
 }
@@ -1294,6 +1389,7 @@ function handleAnswer(chosen, correct, clickedBtn) {
 function timeExpired(correct) {
   if (GS.phase !== 2) return;
   cancelAnimationFrame(qTimer); qTimer = null;
+  GS._ansFrac = 0;
   GS.phase = 3;
   document.querySelectorAll('.qopt').forEach(b => { b.disabled = true; if (b.textContent === correct) b.classList.add('reveal'); });
   const fb = document.getElementById('qpop-fb');
@@ -1305,8 +1401,11 @@ function timeExpired(correct) {
 
 function finishQuestion(isCorrect) {
   document.getElementById('qpop').classList.remove('show');
+  restoreArena();
   if (isCorrect) {
+    const crit = (GS._ansFrac || 0) >= 0.55;   // 남은 시간 55% 이상이면 크리티컬
     let dmg = 6 + GS.bossPhase * 2;
+    if (crit) dmg = Math.round(dmg * 1.5);
     if (GS.hasPower) { dmg = Math.round(dmg * 1.6); GS.hasPower = false; }
     dmg = Math.round(dmg * (GS.combo * .05 + .95) * (1 + (GS.upgrades.atk || 0)));
     GS.bossHP = Math.max(0, GS.bossHP - dmg);
@@ -1314,14 +1413,15 @@ function finishQuestion(isCorrect) {
     GS.maxCombo = Math.max(GS.maxCombo, GS.combo);
     GS.score += Math.round(dmg * GS.combo * (1 + (GS.upgrades.score || 0)));
     GS.correct++;
-    addSkillGauge(15);
-    heroAnim('atk'); bossAnim('hit');
-    showDmgFloat('-' + dmg, '#ef4444', 'right');
-    cameraShake(10 + GS.bossPhase * 4, .5);
-    spawnBurst(CW*.78, CH*.42, ['#fbbf24','#f97316','#ef4444','#fff','#fb7185'], 22+GS.bossPhase*5, 1.4+GS.bossPhase*.3);
-    spawnBurst(CW*.72, CH*.38, ['#fff','#fbbf24'], 8, .8);
+    addSkillGauge(crit ? 22 : 15);
+    heroAnim(crit ? 'crit' : 'atk'); bossAnim('hit');
+    showDmgFloat(crit ? '💢 CRITICAL -' + dmg : '-' + dmg, crit ? '#fde68a' : '#ef4444', 'right');
+    cameraShake((crit ? 16 : 10) + GS.bossPhase * 4, crit ? .65 : .5);
+    spawnBurst(CW*.78, CH*.42, ['#fbbf24','#f97316','#ef4444','#fff','#fb7185'], (crit?30:22)+GS.bossPhase*5, (crit?1.9:1.4)+GS.bossPhase*.3);
+    spawnBurst(CW*.72, CH*.38, ['#fff','#fbbf24'], crit ? 14 : 8, crit ? 1.2 : .8);
     _flashEl('ok-flash');
     playSfx('correct'); playSfx('slash'); setTimeout(() => playSfx('impact'), 150);
+    if (crit) setTimeout(() => playSfx('impact'), 290);
     checkBossPhase();
   } else {
     let dmg = ((GS.attackType && GS.attackType.damage) || 10) * stageDmgMul();
@@ -1366,11 +1466,13 @@ function triggerPhaseChange(newPhase) {
   cancelTimers();
   const b = BOSS_ASSETS[newPhase];
   const h = HERO_ASSETS[newPhase];
+  // 스테이지2+ 컷씬은 실제 등장하는 로스터 몬스터의 초상·이름을 보여준다
+  const st = GS.stage, bk = bossKeyFor(st, newPhase);
   document.getElementById('cut-phase').textContent = `PHASE ${newPhase + 1}`;
   document.getElementById('cut-hero-img').src = h.idle;
-  document.getElementById('cut-boss-img').src = b.idle;
-  document.getElementById('cut-name').textContent = b.cutName;
-  document.getElementById('cut-sub').textContent = b.cutSub;
+  document.getElementById('cut-boss-img').src = (st >= 2) ? `assets/fighters/${bk}/portrait.png` : b.idle;
+  document.getElementById('cut-name').textContent = (st >= 2) ? (BOSS_STAGE_NAME[bk] || '👹 보스') : b.cutName;
+  document.getElementById('cut-sub').textContent = (st >= 2) ? '더 강해진 보스가 나타났다!' : b.cutSub;
   // Flash
   const fl = document.getElementById('phase-flash');
   fl.className = ''; void fl.offsetWidth; fl.className = 'go';
@@ -1427,7 +1529,8 @@ function spawnDropIfNeeded() {
 }
 
 function randDropPos() {
-  return { x: CW * (.15 + Math.random() * .7), y: CH * (.38 + Math.random() * .22) };
+  // 문제 팝업(하단)과 안 겹치는 중상단 영역
+  return { x: CW * (.15 + Math.random() * .7), y: CH * (.3 + Math.random() * .18) };
 }
 
 function animateDrop(el) {
@@ -1524,7 +1627,19 @@ function showCardPick() {
   document.getElementById('card-pick').classList.add('show');
 }
 
+function saveBestRecord(win) {
+  if (!_unitKey) return;
+  try {
+    const k = 'g2boss-best-' + _unitKey;
+    const r = JSON.parse(localStorage.getItem(k) || '{}');
+    r.stage = Math.max(r.stage || 0, win ? GS.stage : GS.stage - 1);
+    r.score = Math.max(r.score || 0, GS.score);
+    localStorage.setItem(k, JSON.stringify(r));
+  } catch (e) {}
+}
+
 function showResult(win) {
+  saveBestRecord(win);
   // 등급(랭크) 계산 — 정답률·최대콤보 기반
   const acc = GS.correct / Math.max(1, GS.correct + wrongLog.length);
   let grade = 'C', stars = 0;
@@ -1536,7 +1651,7 @@ function showResult(win) {
   const card = document.querySelector('#result .result-card');
   if (card) { card.classList.remove('win','lose'); card.classList.add(win ? 'win' : 'lose'); }
   document.getElementById('result-grade').innerHTML =
-    `<span class="gr">RANK ${grade}</span><span class="stars">${'★'.repeat(stars)}${'☆'.repeat(3-stars)}</span>`;
+    `<span class="gr">RANK ${grade}</span><span class="stars">${'★'.repeat(stars)}<span style="opacity:.25">${'☆'.repeat(3-stars)}</span></span>`;
   document.getElementById('result-icon').textContent = win ? '🏆' : '💀';
   document.getElementById('result-title').textContent = win ? `STAGE ${GS.stage} 클리어!` : '패배...';
   document.getElementById('result-sub').textContent = win
@@ -1694,6 +1809,7 @@ function cancelTimers() {
   if (telIv) { clearInterval(telIv); telIv=null; }
   document.getElementById('tel').style.display='none';
   document.getElementById('qpop').classList.remove('show');
+  updateGround();   // 아레나 리프트 원위치
 }
 
 // ═══════════════════════════════════════════════════════════
@@ -1702,7 +1818,7 @@ function cancelTimers() {
 // 허브(game/index.html)에서 ?unit=KEY 로 진입 → 해당 단원 보스전 바로 시작.
 // param 없거나 잘못된 경우 게임 허브로 돌려보낸다(자체 단원 선택 화면 없음).
 const HUB_URL = '../game/index.html';
-let _pendingBattle = null;
+let _pendingBattle = null, _unitKey = '';
 // 허브에서 ?unit=KEY 로 진입 → 시작 게이트를 띄운다(전투 자동 시작 X).
 // 사용자가 '전투 시작' 버튼을 누르는 그 제스처 안에서 G.start→BGM.start 가 실행돼 음악이 바로 난다.
 function initFromParam() {
@@ -1715,7 +1831,15 @@ function initFromParam() {
   } else {
     location.replace(HUB_URL); return;
   }
+  _unitKey = unit;
   document.getElementById('boss-start-unit').textContent = _pendingBattle.label;
+  try {
+    const r = JSON.parse(localStorage.getItem('g2boss-best-' + unit) || '{}');
+    if (r.score || r.stage) {
+      document.getElementById('bs-record').textContent =
+        '🏆 최고 기록 — ' + (r.stage ? 'STAGE ' + r.stage + ' 클리어 · ' : '') + (r.score || 0) + '점';
+    }
+  } catch (e) {}
   document.getElementById('boss-start').style.display = 'flex';
 }
 document.getElementById('boss-start-btn').addEventListener('click', () => {

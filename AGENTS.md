@@ -21,9 +21,11 @@
    - 효과음: `.claude/skills/middle-grammar-sounds/SKILL.md`
    - 블로그: `.claude/skills/middle-grammar-blog/SKILL.md`
    - 블로그 이미지: `.claude/skills/blog-image-pencil/SKILL.md`
-   - 교사 관점 점검: `.claude/agents/teacher-review.md` 체크리스트
+   - 교사 관점 점검(워크시트): `.claude/agents/teacher-review.md` 체크리스트
+   - 학생 관점 점검(게임): `.claude/agents/student-review.md` 체크리스트
 3. 구현 후 변경 범위에 맞게 검증한다.
    - HTML 워크시트는 브라우저 콘솔 오류, 정답 처리, 빈 입력 방지, `sounds.js`/`score-popup.js` 로드 순서를 확인한다.
+   - 게임(`game2/`, `game/`, `whack-grammar/` 등)을 만들거나 크게 고친 뒤, 또는 "게임 점검" 요청 시에는 기술 검증과 함께 `student-review` 에이전트로 학생 플레이테스트를 함께 돌린다(재미·동기·체감 난이도·선택의 의미·온보딩).
    - 문서만 바꾼 경우에는 링크·경로·우선순위 문구가 모순되지 않는지 확인한다.
 4. Git 작업은 사용자의 현재 지시에 따른다.
    - 사용자가 pull/push/commit까지 맡기면 알아서 처리한다.

@@ -218,8 +218,8 @@ canvas#c{position:absolute;inset:0;width:100%;height:100%;}
 .wl-hint{color:#fde68a;font-size:.72rem;margin-top:4px;background:rgba(250,204,21,.08);border-radius:7px;padding:5px 8px;}
 
 /* ── 강화 카드 선택 ── */
-#card-pick{position:fixed;inset:0;z-index:95;display:none;align-items:center;justify-content:center;background:rgba(4,2,12,.93);backdrop-filter:blur(6px);}
-#card-pick.show{display:flex;}
+#card-pick,#node-pick{position:fixed;inset:0;z-index:95;display:none;align-items:center;justify-content:center;background:rgba(4,2,12,.93);backdrop-filter:blur(6px);}
+#card-pick.show,#node-pick.show{display:flex;}
 .card-pick-inner{text-align:center;width:94%;max-width:560px;animation:resultPop .5s cubic-bezier(.34,1.56,.64,1);}
 .card-pick-title{font-size:1.8rem;font-weight:900;color:#fde68a;text-shadow:0 0 18px rgba(251,191,36,.6);margin-bottom:4px;}
 .card-pick-sub{font-size:.9rem;color:#cbd5e1;margin-bottom:22px;}
@@ -231,6 +231,19 @@ canvas#c{position:absolute;inset:0;width:100%;height:100%;}
 .up-desc{font-size:.78rem;color:#cbd5e1;line-height:1.45;}
 .card-owned{margin-top:20px;font-size:.8rem;font-weight:800;color:#a5b4fc;}
 @media(max-width:520px){.up-card{width:31%;min-width:98px;min-height:152px;padding:14px 8px;gap:6px;}.up-icon{font-size:2.2rem;}.up-title{font-size:.84rem;}.up-desc{font-size:.66rem;}.card-pick-title{font-size:1.4rem;}}
+/* 정예 노드 카드 강조 */
+.up-card.elite{box-shadow:0 0 26px rgba(239,68,68,.5);}
+.up-card.elite::before{content:'위험·고보상';position:absolute;top:8px;right:8px;font-size:.56rem;font-weight:900;color:#fca5a5;background:rgba(239,68,68,.18);border:1px solid rgba(239,68,68,.4);border-radius:8px;padding:2px 6px;}
+.up-card{position:relative;}
+
+/* ── STANCE 바 (전투 능동 선택) ── */
+.stance-row{display:flex;align-items:center;gap:6px;margin-top:7px;pointer-events:all;}
+.stance-lbl{font-size:.62rem;font-weight:900;color:#a78bfa;white-space:nowrap;}
+.stance-btns{display:flex;gap:5px;flex:1;}
+.stance-btn{flex:1;border:1.5px solid rgba(255,255,255,.14);background:rgba(255,255,255,.06);color:#cbd5e1;font-family:inherit;font-size:.66rem;font-weight:900;border-radius:9px;padding:5px 4px;cursor:pointer;transition:.14s;-webkit-tap-highlight-color:transparent;line-height:1.15;white-space:nowrap;}
+.stance-btn .sb-sub{display:block;font-size:.54rem;font-weight:700;color:#94a3b8;margin-top:1px;}
+.stance-btn.on{color:#fff;border-color:var(--sc,#a855f7);background:color-mix(in srgb,var(--sc,#a855f7) 26%,transparent);box-shadow:0 0 12px color-mix(in srgb,var(--sc,#a855f7) 60%,transparent);}
+.stance-btn.on .sb-sub{color:#e2e8f0;}
 
 /* ── VICTORY CUTSCENE ── */
 #victory-cut{position:fixed;inset:0;z-index:85;display:none;align-items:center;justify-content:center;background:rgba(0,0,0,.93);}
@@ -300,6 +313,14 @@ canvas#c{position:absolute;inset:0;width:100%;height:100%;}
       <div class="skill-track"><div class="skill-fill-bar" id="skill-fill-bar"></div></div>
       <button class="skill-btn2" id="skill-btn2" onclick="castSkill()" disabled>준비중</button>
     </div>
+    <div class="stance-row" id="stance-row-ui">
+      <span class="stance-lbl">⚔️ 자세</span>
+      <div class="stance-btns">
+        <button class="stance-btn" data-stance="combo" style="--sc:#a855f7" onclick="setStance('combo')">🗡️ 연타<span class="sb-sub">콤보 쌓기</span></button>
+        <button class="stance-btn" data-stance="power" style="--sc:#ef4444" onclick="setStance('power')">💥 강타<span class="sb-sub">한 방 크게</span></button>
+        <button class="stance-btn" data-stance="guard" style="--sc:#38bdf8" onclick="setStance('guard')">🛡️ 수비<span class="sb-sub">피해↓·회복</span></button>
+      </div>
+    </div>
   </div>
 
   <!-- Status effects -->
@@ -335,6 +356,16 @@ canvas#c{position:absolute;inset:0;width:100%;height:100%;}
   <div id="ng-flash"></div>
   <!-- Ultimate flash -->
   <div id="ult-flash"></div>
+
+  <!-- 갈림길(로그라이크 경로 선택) -->
+  <div id="node-pick">
+    <div class="card-pick-inner">
+      <div class="card-pick-title">🗺️ 갈림길</div>
+      <div class="card-pick-sub">다음 길을 선택하세요</div>
+      <div id="node-slots" class="card-slots"></div>
+      <div id="node-depth" class="card-owned"></div>
+    </div>
+  </div>
 
   <!-- 스테이지 보상 카드 선택 -->
   <div id="card-pick">
@@ -705,6 +736,10 @@ function initGS(qs) {
     currentQ: null, attackType: null, drops: [], dropId: 0,
     upgrades: { atk:0, def:0, skill:0, time:0, score:0, startGauge:0 },
     practice: false, practiceTotal: 0, practiceDone: 0, practiceCorrect: 0,
+    // ── 로그라이크-라이트 ──
+    nodeKind: 'boss',   // 'boss'|'elite'|'rest' — 현재 노드 종류
+    nextNode: null,     // 갈림길에서 고른 다음 노드
+    stance: 'combo',    // 'combo'|'power'|'guard' — 전투 스탠스(능동 선택)
   };
 }
 // 스테이지 클리어 보상 카드 (랜덤 3장 중 1개 선택, 영구 누적)
@@ -721,6 +756,36 @@ function stageTimeMul()  { return Math.pow(0.9,  (GS ? GS.stage : 1) - 1); }  //
 function stageDmgMul()   { return 1 + 0.25 * ((GS ? GS.stage : 1) - 1); }      // 피격 데미지 증가
 function stageSpeedMul() { return Math.pow(0.85, (GS ? GS.stage : 1) - 1); }   // 보스 공격 간격 단축
 
+// ── 로그라이크 노드 종류 + 노드별 난이도 배율 ──
+const RUN_NODES = {
+  boss:     { icon:'⚔️', title:'일반 보스',  desc:'표준 전투\n강화카드 1장',        color:'#a855f7', cards:1 },
+  elite:    { icon:'💀', title:'정예 보스',  desc:'더 강하다!\n강화카드 2장',        color:'#ef4444', cards:2, elite:true },
+  rest:     { icon:'❤️', title:'안식처',     desc:'약한 적·체력 회복\n강화카드 1장',  color:'#22c55e', cards:1, easy:true },
+  treasure: { icon:'💰', title:'보물 수호자', desc:'약한 적\n레어 강화 2개',         color:'#fbbf24', cards:1, easy:true, treasure:true },
+};
+function nodeKind() { return GS ? GS.nodeKind : 'boss'; }
+function nodeDmgMul()   { return nodeKind()==='elite' ? 1.4 : (nodeKind()==='rest'||nodeKind()==='treasure') ? 0.6 : 1; }
+function nodeSpeedMul() { return nodeKind()==='elite' ? 0.7 : (nodeKind()==='rest'||nodeKind()==='treasure') ? 1.35 : 1; }
+function nodeTimeMul()  { return nodeKind()==='elite' ? 0.85 : (nodeKind()==='rest'||nodeKind()==='treasure') ? 1.25 : 1; }
+function isElite()      { return nodeKind()==='elite'; }
+
+// ── 전투 스탠스(능동 선택) ──
+const STANCES = {
+  combo: { dmg:1.0, comboGrow:1, heal:0, label:'🗡️ 연타' },   // 콤보 쌓기(기본)
+  power: { dmg:1.7, comboGrow:0, heal:0, label:'💥 강타' },   // 한 방 크게(콤보 성장 포기)
+  guard: { dmg:0.5, comboGrow:1, heal:6, label:'🛡️ 수비' },   // 피해 줄이고 회복
+};
+function setStance(s) {
+  if (!STANCES[s] || !GS) return;
+  GS.stance = s;
+  updateStanceUI();
+}
+function updateStanceUI() {
+  document.querySelectorAll('.stance-btn').forEach(b => {
+    b.classList.toggle('on', GS && b.dataset.stance === GS.stance);
+  });
+}
+
 // ═══════════════════════════════════════════════════════════
 //  GAME CONTROLLER
 // ═══════════════════════════════════════════════════════════
@@ -736,6 +801,7 @@ const G = {
     updateHUD();
     if (rafId) cancelAnimationFrame(rafId);
     rafId = requestAnimationFrame(loop);
+    updateStanceUI();
     scheduleBossAttack();
     scheduleDropSpawn();
   },
@@ -745,8 +811,14 @@ const G = {
     if (this._qs) this.start(this._qs, this._label);
   },
   nextStage() {
-    // 다음 스테이지 전 보상 카드 선택
-    showCardPick();
+    // 다음 스테이지 전 갈림길(로그라이크 경로 선택)
+    showNodeChoice();
+  },
+  pickNode(kind) {
+    const nd = RUN_NODES[kind]; if (!nd) return;
+    GS.nextNode = kind;
+    document.getElementById('node-pick').classList.remove('show');
+    showCardPick();   // 노드 선택 후 보상 카드
   },
   _advanceStage() {
     // 누적 점수/스테이지/강화 유지, 보스 새로, 영웅 풀피
@@ -755,29 +827,41 @@ const G = {
     document.getElementById('card-pick').classList.remove('show');
     const stage = GS.stage + 1, score = GS.score, maxCombo = GS.maxCombo, upgrades = GS.upgrades;
     const savedQuestions = GS.questions, savedQIdx = GS.qIdx;   // 문제 진행상황 유지 — 스테이지 넘어가도 본 문제 반복 안 함
+    const stance = GS.stance, kind = GS.nextNode || 'boss';
     GS = initGS(this._qs);
     GS.stage = stage; GS.score = score; GS.maxCombo = maxCombo; GS.upgrades = upgrades;
     GS.questions = savedQuestions; GS.qIdx = savedQIdx;   // 이어서 안 본 문제부터 출제
-    GS.heroHP = 100;            // 새 스테이지마다 풀피로 시작
+    GS.stance = stance;          // 스탠스 유지
+    GS.nodeKind = kind;          // 이번 스테이지 노드 종류
+    GS.heroHP = 100;             // 새 스테이지마다 풀피로 시작
     clearDropsDOM();   // 이전 스테이지 남은 아이템 DOM 제거 (보이는데 안 먹히던 버그)
     wrongLog = [];
     setCharSprites(0);
-    BGM.start(0);
+    BGM.start(isElite() ? 2 : 0);   // 정예는 격렬 트랙
     skillGauge = Math.min(SKILL_MAX, GS.upgrades.startGauge || 0); addSkillGauge(0);  // 시작 게이지 강화
     updateHUD();
+    updateStanceUI();
     if (rafId) cancelAnimationFrame(rafId);
     rafId = requestAnimationFrame(loop);
     // 스테이지 인트로 연출
     const fl = document.getElementById('phase-flash');
     fl.className = ''; void fl.offsetWidth; fl.className = 'go';
-    showFloating(`STAGE ${stage} 시작!`, '#fde68a');
-    cameraShake(10, .5);
+    const nd = RUN_NODES[kind];
+    showFloating(`${nd.icon} ${isElite() ? '정예전' : kind==='rest' ? '안식처' : kind==='treasure' ? '보물전' : 'STAGE ' + stage} 시작!`, nd.color);
+    cameraShake(isElite() ? 16 : 10, isElite() ? .7 : .5);
     setTimeout(() => { scheduleBossAttack(); scheduleDropSpawn(); }, 900);
   },
   pickCard(idx) {
     const card = _cardChoices[idx]; if (!card) return;
     GS.upgrades[card.stat] = (GS.upgrades[card.stat] || 0) + card.val;
     showFloating(card.icon + ' ' + card.title + ' 획득!', card.color);
+    // 정예/보물 노드 보너스: 두 번째 강화 자동 획득
+    const nd = RUN_NODES[GS.nextNode || 'boss'];
+    if (nd && nd.cards >= 2) {
+      const bonus = UPGRADE_CARDS[Math.floor(Math.random() * UPGRADE_CARDS.length)];
+      GS.upgrades[bonus.stat] = (GS.upgrades[bonus.stat] || 0) + bonus.val;
+      setTimeout(() => showFloating('🎁 보너스 ' + bonus.icon + ' ' + bonus.title + '!', '#fbbf24'), 700);
+    }
     this._advanceStage();
   },
   goHome() {
@@ -999,7 +1083,9 @@ function bossFilterStr(b) {
   const st = GS ? GS.stage : 1;
   const stageRed = st >= 2 ? ` saturate(${(1 + 0.25 * (st - 1)).toFixed(2)}) contrast(${(1 + 0.05 * (st - 1)).toFixed(2)})` : '';
   const glow = st >= 2 ? `rgba(239,68,68,${Math.min(0.92, 0.62 + 0.12 * (st - 1)).toFixed(2)})` : b.glow;
-  return `${b.tint || ''}${stageRed} drop-shadow(0 10px 28px ${glow})`;
+  // 정예 보스: 진홍 후광 + 채도/대비 강화로 챔피언 느낌
+  const elite = isElite() ? ' saturate(1.5) contrast(1.12) drop-shadow(0 0 22px rgba(239,68,68,.95)) drop-shadow(0 0 8px rgba(255,215,120,.7))' : '';
+  return `${b.tint || ''}${stageRed} drop-shadow(0 10px 28px ${glow})${elite}`;
 }
 
 // 영웅 승급 티어 (스테이지2+) — 용사 → 대용사 → 전설의 용사
@@ -1033,8 +1119,8 @@ function setCharSprites(phase) {
   const bk = bossKeyFor(st, phase);
   if (hk !== _heroKey) { heroFighter = makeFighter(heroImg, hk); _heroKey = hk; } else heroFighter.play('idle');
   if (bk !== _bossKey) { bossFighter = makeFighter(bossImg, bk); _bossKey = bk; } else bossFighter.play('idle');
-  // 스테이지 올라갈수록 보스 더 크게 (보스다움 ↑, 최대 +40%)
-  const bossStageScale = Math.min(1.4, 1 + 0.14 * (st - 1));
+  // 스테이지 올라갈수록 보스 더 크게 (보스다움 ↑, 최대 +40%). 정예는 챔피언이라 더 큼.
+  const bossStageScale = Math.min(1.4, 1 + 0.14 * (st - 1)) * (isElite() ? 1.22 : 1);
   const heroStageScale = Math.min(1.22, 1 + 0.045 * (st - 1));
   const _hScreen = (h.scale || 1) * heroStageScale;
   // 영웅도 보스와 동일하게 footPad(발밑 투명 여백, native px) 우선 적용해 발을 바닥에 정확히 붙임.
@@ -1055,12 +1141,16 @@ function setCharSprites(phase) {
   gsap.set(bossWrap, { right: '8%', clearProps: 'x,left' });
   syncGroundToFeet();   // 바닥선을 캐릭터 발에 맞춤
   document.getElementById('hero-name').textContent = (st >= 2) ? heroStageName(st) : h.name;
+  let bossName;
   if (st >= 2) {
     const cyc = Math.floor((st - 2) / BOSS_STAGE_ROSTER.length);
-    document.getElementById('boss-name').textContent = (BOSS_STAGE_NAME[bk] || '👹 보스') + (cyc > 0 ? ' ' + '⚡'.repeat(Math.min(3, cyc)) : '');
+    bossName = (BOSS_STAGE_NAME[bk] || '👹 보스') + (cyc > 0 ? ' ' + '⚡'.repeat(Math.min(3, cyc)) : '');
   } else {
-    document.getElementById('boss-name').textContent = b.name;
+    bossName = b.name;
   }
+  // 정예 노드: 왕관 + '정예' 칭호로 챔피언임을 표기
+  if (isElite()) bossName = '👑 정예 ' + bossName.replace(/^[^\s가-힣]+\s*/, '');
+  document.getElementById('boss-name').textContent = bossName;
 }
 
 function heroAnim(type) {
@@ -1187,7 +1277,7 @@ function castSkill() {
 function scheduleBossAttack() {
   if (bossTimer) clearTimeout(bossTimer);
   const [mn, mx] = PHASE_ATTACK_DELAY[GS ? GS.bossPhase : 0] || PHASE_ATTACK_DELAY[0];
-  const delay = (mn + Math.random() * (mx - mn)) * stageSpeedMul();
+  const delay = (mn + Math.random() * (mx - mn)) * stageSpeedMul() * nodeSpeedMul();
   bossTimer = setTimeout(startAttack, delay);
 }
 
@@ -1296,7 +1386,7 @@ function showQuestion() {
   GS.currentQ = q;
 
   if (!GS.attackType) GS.attackType = ATTACK_TYPES[0];   // 연습 모드 등 보스공격 없이 문제 띄울 때 기본값
-  let timeLimit = GS.attackType.time * (PHASE_TIME_SCALE[GS.bossPhase] || 1) * stageTimeMul() * (1 + (GS.upgrades.time || 0));
+  let timeLimit = GS.attackType.time * (PHASE_TIME_SCALE[GS.bossPhase] || 1) * stageTimeMul() * nodeTimeMul() * (1 + (GS.upgrades.time || 0));
   if (GS.statusFx.FREEZE) timeLimit *= 0.5;
   GS._qT0 = performance.now(); GS._qLimit = timeLimit;   // 크리티컬(빠른 정답) 판정용
 
@@ -1404,18 +1494,22 @@ function finishQuestion(isCorrect) {
   restoreArena();
   if (isCorrect) {
     const crit = (GS._ansFrac || 0) >= 0.55;   // 남은 시간 55% 이상이면 크리티컬
+    const stance = STANCES[GS.stance] || STANCES.combo;
     let dmg = 6 + GS.bossPhase * 2;
     if (crit) dmg = Math.round(dmg * 1.5);
     if (GS.hasPower) { dmg = Math.round(dmg * 1.6); GS.hasPower = false; }
-    dmg = Math.round(dmg * (GS.combo * .05 + .95) * (1 + (GS.upgrades.atk || 0)));
+    dmg = Math.round(dmg * stance.dmg * (GS.combo * .05 + .95) * (1 + (GS.upgrades.atk || 0)));
     GS.bossHP = Math.max(0, GS.bossHP - dmg);
-    GS.combo = Math.min(GS.combo + 1, 12);
+    GS.combo = Math.min(GS.combo + stance.comboGrow, 12);
     GS.maxCombo = Math.max(GS.maxCombo, GS.combo);
     GS.score += Math.round(dmg * GS.combo * (1 + (GS.upgrades.score || 0)));
     GS.correct++;
+    // 수비 스탠스: 정답 시 소량 회복
+    if (stance.heal) { GS.heroHP = Math.min(100, GS.heroHP + stance.heal); showFloating('🛡️ +' + stance.heal + 'HP', '#38bdf8'); }
     addSkillGauge(crit ? 22 : 15);
-    heroAnim(crit ? 'crit' : 'atk'); bossAnim('hit');
-    showDmgFloat(crit ? '💢 CRITICAL -' + dmg : '-' + dmg, crit ? '#fde68a' : '#ef4444', 'right');
+    heroAnim((crit || GS.stance === 'power') ? 'crit' : 'atk'); bossAnim('hit');
+    const dmgPrefix = crit ? '💢 CRITICAL ' : GS.stance === 'power' ? '💥 ' : '';
+    showDmgFloat(dmgPrefix + '-' + dmg, crit ? '#fde68a' : GS.stance === 'power' ? '#ef4444' : '#ef4444', 'right');
     cameraShake((crit ? 16 : 10) + GS.bossPhase * 4, crit ? .65 : .5);
     spawnBurst(CW*.78, CH*.42, ['#fbbf24','#f97316','#ef4444','#fff','#fb7185'], (crit?30:22)+GS.bossPhase*5, (crit?1.9:1.4)+GS.bossPhase*.3);
     spawnBurst(CW*.72, CH*.38, ['#fff','#fbbf24'], crit ? 14 : 8, crit ? 1.2 : .8);
@@ -1424,7 +1518,7 @@ function finishQuestion(isCorrect) {
     if (crit) setTimeout(() => playSfx('impact'), 290);
     checkBossPhase();
   } else {
-    let dmg = ((GS.attackType && GS.attackType.damage) || 10) * stageDmgMul();
+    let dmg = ((GS.attackType && GS.attackType.damage) || 10) * stageDmgMul() * nodeDmgMul();
     if (GS.statusFx.BURN) dmg *= 2;
     dmg = Math.round(dmg * (1 - (GS.upgrades.def || 0)));   // 방어력 강화로 피해 감소
     if (GS.hasShield) { dmg = 0; GS.hasShield = false; showFloating('🛡️ 보호막!', '#60a5fa'); }
@@ -1606,6 +1700,23 @@ function gameWin() {
   }, 3500);
 }
 function gameOver() { GS.phase=10; cancelTimers(); heroFighter.play('death'); setTimeout(()=>showResult(false), 700); }
+
+// ── 갈림길(로그라이크 경로 선택) ──
+function showNodeChoice() {
+  // 항상 일반·정예를 제공하고, 세 번째는 안식처/보물 교대
+  const third = (GS.stage % 3 === 0) ? 'treasure' : 'rest';
+  const kinds = ['boss', 'elite', third];
+  document.getElementById('node-slots').innerHTML = kinds.map(k => {
+    const nd = RUN_NODES[k];
+    return `<button class="up-card${nd.elite ? ' elite' : ''}" style="--cc:${nd.color}" onclick="G.pickNode('${k}')">
+       <div class="up-icon">${nd.icon}</div>
+       <div class="up-title">${nd.title}</div>
+       <div class="up-desc">${nd.desc.replace(/\n/g,'<br>')}</div>
+     </button>`;
+  }).join('');
+  document.getElementById('node-depth').textContent = '📜 ' + (GS.stage) + '층 돌파 — 다음은 ' + (GS.stage + 1) + '층';
+  document.getElementById('node-pick').classList.add('show');
+}
 
 let _cardChoices = [];
 function showCardPick() {

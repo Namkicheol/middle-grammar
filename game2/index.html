@@ -240,8 +240,15 @@ canvas#c{position:absolute;inset:0;width:100%;height:100%;}
 .stance-row{display:flex;align-items:center;gap:6px;margin-top:7px;pointer-events:all;}
 .stance-lbl{font-size:.62rem;font-weight:900;color:#a78bfa;white-space:nowrap;}
 .stance-btns{display:flex;gap:5px;flex:1;}
-.stance-btn{flex:1;border:1.5px solid rgba(255,255,255,.14);background:rgba(255,255,255,.06);color:#cbd5e1;font-family:inherit;font-size:.66rem;font-weight:900;border-radius:9px;padding:5px 4px;cursor:pointer;transition:.14s;-webkit-tap-highlight-color:transparent;line-height:1.15;white-space:nowrap;}
-.stance-btn .sb-sub{display:block;font-size:.54rem;font-weight:700;color:#94a3b8;margin-top:1px;}
+.stance-btn{flex:1;border:1.5px solid rgba(255,255,255,.14);background:rgba(255,255,255,.06);color:#cbd5e1;font-family:inherit;font-size:.78rem;font-weight:900;border-radius:9px;padding:6px 4px;cursor:pointer;transition:.14s;-webkit-tap-highlight-color:transparent;line-height:1.15;white-space:nowrap;}
+.stance-btn .sb-sub{display:block;font-size:.6rem;font-weight:700;color:#94a3b8;margin-top:1px;}
+/* 첫 전투: 자세 바로 시선 유도 */
+@keyframes stanceHint{0%,100%{box-shadow:0 0 0 0 rgba(167,139,250,0)}50%{box-shadow:0 0 0 3px rgba(167,139,250,.55)}}
+.stance-row.hint .stance-btn{animation:stanceHint 1s ease-in-out 3;}
+/* 온보딩 힌트 배너 */
+#tut-hint{position:absolute;left:50%;top:28%;transform:translateX(-50%) translateY(-10px);z-index:40;width:max-content;max-width:90%;background:linear-gradient(135deg,rgba(124,58,237,.96),rgba(168,85,247,.94));color:#fff;font-size:.82rem;font-weight:800;padding:11px 18px;border-radius:16px;box-shadow:0 10px 28px rgba(0,0,0,.55);opacity:0;pointer-events:none;transition:opacity .3s,transform .3s;text-align:center;line-height:1.6;border:1.5px solid rgba(255,255,255,.34);}
+#tut-hint.show{opacity:1;transform:translateX(-50%) translateY(0);}
+#tut-hint b{color:#fde68a;}
 .stance-btn.on{color:#fff;border-color:var(--sc,#a855f7);background:color-mix(in srgb,var(--sc,#a855f7) 26%,transparent);box-shadow:0 0 12px color-mix(in srgb,var(--sc,#a855f7) 60%,transparent);}
 .stance-btn.on .sb-sub{color:#e2e8f0;}
 
@@ -325,6 +332,9 @@ canvas#c{position:absolute;inset:0;width:100%;height:100%;}
 
   <!-- Status effects -->
   <div id="status-row"></div>
+
+  <!-- 온보딩 힌트 (첫 전투 1회) -->
+  <div id="tut-hint"></div>
 
   <!-- Telegraph -->
   <div id="tel">
@@ -771,15 +781,32 @@ function nodeTimeMul()  { return nodeKind()==='elite' ? 0.85 : (nodeKind()==='re
 function isElite()      { return nodeKind()==='elite'; }
 
 // ── 전투 스탠스(능동 선택) ──
+// 콤보 스케일링을 키워(combo*0.09+0.91 → 콤보12=1.99배) 연타와 강타가 진짜 트레이드오프가 되게:
+//  콤보 낮을 땐 강타(1.7 즉발)가 유리, 콤보 높을 땐 연타(최대 2배 램프)가 역전. 교차점이 생겨 선택이 의미를 가짐.
 const STANCES = {
-  combo: { dmg:1.0, comboGrow:1, heal:0, label:'🗡️ 연타' },   // 콤보 쌓기(기본)
-  power: { dmg:1.7, comboGrow:0, heal:0, label:'💥 강타' },   // 한 방 크게(콤보 성장 포기)
-  guard: { dmg:0.5, comboGrow:1, heal:6, label:'🛡️ 수비' },   // 피해 줄이고 회복
+  combo: { dmg:1.0,  comboGrow:1, heal:0, label:'🗡️ 연타' },   // 콤보 램프(많이 쌓으면 최강 DPS)
+  power: { dmg:1.7,  comboGrow:0, heal:0, label:'💥 강타' },   // 즉발 버스트(콤보 안 쌓음 — 콤보 낮을 때/마무리에 강함)
+  guard: { dmg:0.55, comboGrow:1, heal:8, label:'🛡️ 수비' },   // 생존(피해 줄이고 +8 회복 — HP 위험할 때)
 };
 function setStance(s) {
   if (!STANCES[s] || !GS) return;
   GS.stance = s;
   updateStanceUI();
+  // 자세를 한 번이라도 만지면 힌트는 역할을 다함
+  const h = document.getElementById('tut-hint'); if (h) h.classList.remove('show');
+  const sr = document.getElementById('stance-row-ui'); if (sr) sr.classList.remove('hint');
+}
+// 온보딩 힌트 — 페이지 로드 후 첫 전투에 1회만(재시작·다음스테이지엔 안 뜸)
+let _tutShown = false;
+function maybeShowTutorial() {
+  if (_tutShown) return;
+  _tutShown = true;
+  const h = document.getElementById('tut-hint');
+  if (!h) return;
+  h.innerHTML = '⚔️ 아래 <b>자세</b>로 공격 방식을 골라요 · 정답=공격, 오답=피격<br>⚡ 게이지가 차면 <b>필살기</b>를 눌러요!';
+  h.classList.add('show');
+  const sr = document.getElementById('stance-row-ui'); if (sr) sr.classList.add('hint');
+  setTimeout(() => { h.classList.remove('show'); if (sr) sr.classList.remove('hint'); }, 6500);
 }
 function updateStanceUI() {
   document.querySelectorAll('.stance-btn').forEach(b => {
@@ -795,6 +822,11 @@ const G = {
   start(qs, label) {
     this._qs = qs; this._label = label;
     GS = initGS(qs);
+    // 패배 후 재도전이면 직전 강화 절반 계승
+    if (_carryUpgrades) {
+      GS.upgrades = _carryUpgrades; _carryUpgrades = null;
+      setTimeout(() => showFloating('💪 이전 강화 절반 계승!', '#a78bfa'), 800);
+    }
     clearDropsDOM();   // 이전 판 남은 아이템 DOM 제거 (안 그러면 보이는데 안 먹힘)
     document.getElementById('game').style.display = 'block';
     BGM.start(0);
@@ -805,6 +837,7 @@ const G = {
     if (rafId) cancelAnimationFrame(rafId);
     rafId = requestAnimationFrame(loop);
     updateStanceUI();
+    maybeShowTutorial();
     scheduleBossAttack();
     scheduleDropSpawn();
   },
@@ -1533,7 +1566,7 @@ function finishQuestion(isCorrect) {
     let dmg = 6 + GS.bossPhase * 2;
     if (crit) dmg = Math.round(dmg * 1.5);
     if (GS.hasPower) { dmg = Math.round(dmg * 1.6); GS.hasPower = false; }
-    dmg = Math.round(dmg * stance.dmg * (GS.combo * .05 + .95) * (1 + (GS.upgrades.atk || 0)));
+    dmg = Math.round(dmg * stance.dmg * (GS.combo * .09 + .91) * (1 + (GS.upgrades.atk || 0)));
     GS.bossHP = Math.max(0, GS.bossHP - dmg);
     GS.combo = Math.min(GS.combo + stance.comboGrow, 12);
     GS.maxCombo = Math.max(GS.maxCombo, GS.combo);
@@ -1630,14 +1663,16 @@ function reviewAnswer(chosen, correct, btn) {
   document.querySelectorAll('.qopt').forEach(b => { b.disabled = true; if (b.textContent === correct) b.classList.add('ok'); });
   if (!isCorrect) btn.classList.add('ng');
   const fb = document.getElementById('qpop-fb');
-  fb.textContent = isCorrect ? '✅ 정답! 완벽 처치 +30점' : ('❌ 정답은 「' + correct + '」');
+  fb.textContent = isCorrect ? '💥 마무리 일격! +30점' : ('❌ 정답은 「' + correct + '」 — 다음엔 맞히자!');
   fb.className = 'qpop-fb ' + (isCorrect ? 'ok' : 'ng');
   if (isCorrect) {
     _wr.correct++;
     GS.score += 30;
     GS.heroHP = Math.min(100, GS.heroHP + 6);
-    heroAnim('crit');
-    spawnBurst(CW*.78, CH*.42, ['#fde68a','#fbbf24','#fff'], 18, 1.4);
+    heroAnim('crit'); bossAnim('hit');   // 쓰러진 보스를 한 번 더 후려패는 마무리 연출
+    showDmgFloat('💥 마무리!', '#fde68a', 'right');
+    cameraShake(14, .6);
+    spawnBurst(CW*.78, CH*.42, ['#fde68a','#fbbf24','#fff'], 24, 1.7);
     playSfx('correct'); playSfx('slash'); setTimeout(() => playSfx('impact'), 150);
     updateHUD();
   } else {
@@ -1792,7 +1827,7 @@ function spawnDrop() {
       GS && (GS.drops = GS.drops.filter(d => d.id !== id));
       el.remove();
     }});
-  }, 12000);
+  }, 16000);   // 문제 푸느라 못 줍는 일 줄이게 12→16s
 }
 
 function grabDrop(id, el) {
@@ -1832,7 +1867,19 @@ function gameWin() {
     showResult(true);
   }, 3500);
 }
-function gameOver() { GS.phase=10; cancelTimers(); heroFighter.play('death'); setTimeout(()=>showResult(false), 700); }
+// 패배 시 직전 런 강화의 절반을 보관 → 재도전(G.start)에서 계승. 모바일 로그라이크식 재도전 의욕↑.
+let _carryUpgrades = null;
+function halfUpgrades(u) {
+  const r = {};
+  for (const k in u) r[k] = (k === 'startGauge') ? Math.round((u[k] || 0) / 2) : +(((u[k] || 0) / 2).toFixed(3));
+  return r;
+}
+function gameOver() {
+  GS.phase = 10; cancelTimers(); heroFighter.play('death');
+  const hasUp = GS.upgrades && Object.values(GS.upgrades).some(v => v > 0);
+  _carryUpgrades = (GS.stage >= 2 && hasUp) ? halfUpgrades(GS.upgrades) : null;
+  setTimeout(() => showResult(false), 700);
+}
 
 // ── 갈림길(로그라이크 경로 선택) ──
 function showNodeChoice() {

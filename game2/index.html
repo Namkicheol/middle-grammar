@@ -740,6 +740,7 @@ function initGS(qs) {
     nodeKind: 'boss',   // 'boss'|'elite'|'rest' — 현재 노드 종류
     nextNode: null,     // 갈림길에서 고른 다음 노드
     stance: 'combo',    // 'combo'|'power'|'guard' — 전투 스탠스(능동 선택)
+    review: false,      // 약점 공략 라운드 진행 중
   };
 }
 // 스테이지 클리어 보상 카드 (랜덤 3장 중 1개 선택, 영구 누적)
@@ -1567,11 +1568,95 @@ function finishQuestion(isCorrect) {
     if (GS.heroHP <= 0) { setTimeout(gameOver, 350); return; }
   }
   updateHUD();
-  // 페이즈 전환/승리 컷씬(phase=10)이 시작됐으면 덮어쓰지 않음 (컷씬이 다음 턴을 예약)
-  if (GS.phase !== 10) {
+  // 페이즈 전환/승리/약점 라운드(phase=10 또는 review)면 덮어쓰지 않음 (각자 다음 턴을 예약)
+  if (GS.phase !== 10 && !GS.review) {
     GS.phase = 0;
     setTimeout(scheduleBossAttack, 600);
   }
+}
+
+// ═══════════════════════════════════════════════════════════
+//  약점 공략 라운드 (보스 격파 시 이번 판 틀린 문제 재출제 — 학습 강화)
+//  격리 구현: 보스 공격 루프/handleAnswer를 건드리지 않고 자체 핸들러로만 동작.
+// ═══════════════════════════════════════════════════════════
+let _wr = null;   // { list, idx, correct, onDone }
+function buildReviewList() {
+  const seen = new Set(), list = [];
+  for (const w of wrongLog) {
+    if (!w.eng || seen.has(w.eng)) continue;
+    seen.add(w.eng);
+    const q = (GS.questions || []).find(x => x.eng === w.eng);
+    if (q && q.opts) list.push(q);
+    if (list.length >= 3) break;   // 최대 3문제 — 흐름 안 끊기게
+  }
+  return list;
+}
+function startWeaknessRound(list, onDone) {
+  _wr = { list, idx: 0, correct: 0, onDone };
+  GS.review = true;
+  GS.phase = 10;   // finishQuestion이 '전투중'으로 오인해 보스공격 재예약하지 않도록 차단 phase 사용
+  showFloating('📚 약점 공략! 틀린 문제로 마무리 일격', '#fde68a');
+  cameraShake(8, .4);
+  setTimeout(reviewNext, 1150);
+}
+function reviewNext() {
+  if (!_wr) return;
+  if (_wr.idx >= _wr.list.length) { endWeaknessRound(); return; }
+  const q = _wr.list[_wr.idx];
+  GS.currentQ = q;
+  document.getElementById('qpop-atk-label').textContent = '📚 약점 복습 ' + (_wr.idx + 1) + '/' + _wr.list.length;
+  document.getElementById('qpop-atk-label').style.color = '#fde68a';
+  document.getElementById('qpop-atk-label').style.display = 'block';
+  document.getElementById('qpop-timer').textContent = '∞';
+  document.getElementById('qpop-timer').className = 'qpop-timer';
+  document.getElementById('timer-fill').style.width = '100%';
+  document.getElementById('timer-fill').style.background = '#fde68a';
+  document.getElementById('qpop-eng').textContent = q.eng;
+  document.getElementById('qpop-kor').textContent = q.kor;
+  const fb = document.getElementById('qpop-fb'); fb.textContent = ''; fb.className = 'qpop-fb';
+  const optsEl = document.getElementById('qpop-opts');
+  optsEl.innerHTML = '';
+  [...q.opts].forEach(opt => {   // 약점 라운드는 차분히 — SHOCK 섞기·타이머 없음
+    const btn = document.createElement('button');
+    btn.className = 'qopt'; btn.textContent = opt;
+    btn.onclick = () => reviewAnswer(opt, q.ans, btn);
+    optsEl.appendChild(btn);
+  });
+  document.getElementById('qpop').classList.add('show');
+  liftArenaForQpop();
+}
+function reviewAnswer(chosen, correct, btn) {
+  const isCorrect = chosen === correct;
+  document.querySelectorAll('.qopt').forEach(b => { b.disabled = true; if (b.textContent === correct) b.classList.add('ok'); });
+  if (!isCorrect) btn.classList.add('ng');
+  const fb = document.getElementById('qpop-fb');
+  fb.textContent = isCorrect ? '✅ 정답! 완벽 처치 +30점' : ('❌ 정답은 「' + correct + '」');
+  fb.className = 'qpop-fb ' + (isCorrect ? 'ok' : 'ng');
+  if (isCorrect) {
+    _wr.correct++;
+    GS.score += 30;
+    GS.heroHP = Math.min(100, GS.heroHP + 6);
+    heroAnim('crit');
+    spawnBurst(CW*.78, CH*.42, ['#fde68a','#fbbf24','#fff'], 18, 1.4);
+    playSfx('correct'); playSfx('slash'); setTimeout(() => playSfx('impact'), 150);
+    updateHUD();
+  } else {
+    playSfx('wrong');
+  }
+  _wr.idx++;
+  setTimeout(() => {
+    document.getElementById('qpop').classList.remove('show');
+    restoreArena();
+    setTimeout(reviewNext, 420);
+  }, isCorrect ? 950 : 1700);
+}
+function endWeaknessRound() {
+  const c = _wr ? _wr.correct : 0, t = _wr ? _wr.list.length : 0, onDone = _wr ? _wr.onDone : null;
+  GS.review = false; _wr = null;
+  document.getElementById('qpop').classList.remove('show');
+  updateGround();
+  showFloating('📚 약점 공략 ' + c + '/' + t + ' 정답!' + (c ? ' +' + (c * 30) + '점' : ''), '#fde68a');
+  setTimeout(() => { if (onDone) onDone(); }, 1300);
 }
 
 // ═══════════════════════════════════════════════════════════
@@ -1581,8 +1666,21 @@ function checkBossPhase() {
   const hp = GS.bossHP;
   const target = hp <= 0 ? 3 : hp <= 33 ? 2 : hp <= 66 ? 1 : 0;
   if (target > GS.bossPhase) {
-    if (target >= 3) { gameWin(); return; }
+    if (target >= 3) { onBossDefeated(); return; }
     triggerPhaseChange(target);
+  }
+}
+
+// 보스 격파 직전 — 이번 판 틀린 문제가 있으면 '마무리 일격' 약점 공략 라운드, 없으면 바로 승리
+function onBossDefeated() {
+  GS.phase = 10;
+  cancelTimers();
+  const review = buildReviewList();
+  if (review.length) {
+    bossFighter.play('hurt');   // 보스를 비틀거리게 두고 마무리
+    startWeaknessRound(review, gameWin);
+  } else {
+    gameWin();
   }
 }
 

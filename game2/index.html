@@ -797,7 +797,9 @@ const G = {
     clearDropsDOM();   // 이전 판 남은 아이템 DOM 제거 (안 그러면 보이는데 안 먹힘)
     document.getElementById('game').style.display = 'block';
     BGM.start(0);
+    _lastSigKey = '';
     setCharSprites(0);
+    announceBossSignature();
     updateHUD();
     if (rafId) cancelAnimationFrame(rafId);
     rafId = requestAnimationFrame(loop);
@@ -837,6 +839,7 @@ const G = {
     clearDropsDOM();   // 이전 스테이지 남은 아이템 DOM 제거 (보이는데 안 먹히던 버그)
     wrongLog = [];
     setCharSprites(0);
+    announceBossSignature();
     BGM.start(isElite() ? 2 : 0);   // 정예는 격렬 트랙
     skillGauge = Math.min(SKILL_MAX, GS.upgrades.startGauge || 0); addSkillGauge(0);  // 시작 게이지 강화
     updateHUD();
@@ -1281,24 +1284,55 @@ function scheduleBossAttack() {
   bossTimer = setTimeout(startAttack, delay);
 }
 
+// 보스별 시그니처 — 보스마다 고정 기믹으로 정체성+학습성 부여
+//  status: 고정 상태이상('ANY'=랜덤, null=거의 없음) / bias: 자주 쓰는 공격 타입 / tag: 등장 안내
+const BOSS_SIGNATURE = {
+  goblin:     { status:null,     bias:'jab',     tag:'⚡ 빠른 잽' },
+  mushroom:   { status:'BURN',   bias:null,      tag:'🔥 맹독 포자 — 오답 2배 피해' },
+  skeleton:   { status:null,     bias:'hook',    tag:'💀 강타 — 한 방이 무겁다' },
+  flying_eye: { status:'FREEZE', bias:null,      tag:'🧊 빙결의 시선 — 제한시간 절반' },
+  wizard:     { status:'SHOCK',  bias:null,      tag:'⚡ 혼란 마법 — 보기가 섞인다' },
+  king:       { status:'ANY',    bias:'special', tag:'👹 폭주 — 모든 기믹' },
+};
+function bossSig() { return BOSS_SIGNATURE[_bossKey] || { status:'ANY', bias:null }; }
+let _lastSigKey = '';
+function announceBossSignature() {
+  const sig = bossSig();
+  if (_bossKey === _lastSigKey || !sig.tag) return;
+  _lastSigKey = _bossKey;
+  setTimeout(() => { if (GS && GS.phase !== 10) showFloating(sig.tag, '#fca5a5'); }, 500);
+}
+
 function startAttack() {
   if (!GS || GS.phase !== 0) return;
   GS.phase = 1;
+  const sig = bossSig();
 
-  // Pick attack type
-  const roll = Math.random();
-  let cum = 0, chosen = ATTACK_TYPES[0];
-  for (const at of ATTACK_TYPES) {
-    cum += at.chance + (at.id === 'special' ? GS.bossPhase * .08 : 0);
-    if (roll < cum) { chosen = at; break; }
+  // Pick attack type (보스 시그니처 bias가 있으면 절반 확률로 그 공격을 씀)
+  let chosen;
+  if (sig.bias && Math.random() < 0.5) {
+    chosen = ATTACK_TYPES.find(a => a.id === sig.bias) || ATTACK_TYPES[0];
+  } else {
+    const roll = Math.random();
+    let cum = 0; chosen = ATTACK_TYPES[0];
+    for (const at of ATTACK_TYPES) {
+      cum += at.chance + (at.id === 'special' ? GS.bossPhase * .08 : 0);
+      if (roll < cum) { chosen = at; break; }
+    }
   }
   GS.attackType = chosen;
 
-  // Maybe apply status effect (공격 빈도가 높아져 확률은 낮춤)
-  if (Math.random() < 0.12 + GS.bossPhase * 0.08) {
-    const keys = Object.keys(STATUS_FX);
-    applyStatusFx(keys[Math.floor(Math.random() * keys.length)]);
+  // 상태이상: 보스 시그니처에 따라 결정 (정예는 빈도 ↑)
+  const sChance = (0.16 + GS.bossPhase * 0.08) * (isElite() ? 1.6 : 1);
+  if (sig.status === 'ANY') {
+    if (Math.random() < sChance) {
+      const keys = Object.keys(STATUS_FX);
+      applyStatusFx(keys[Math.floor(Math.random() * keys.length)]);
+    }
+  } else if (sig.status) {
+    if (Math.random() < sChance + 0.12) applyStatusFx(sig.status);
   }
+  // status:null 인 보스(고블린·해골)는 상태이상 없음 — 초반/강타형은 깔끔하게
 
   // Telegraph
   bossAnim('windup');
@@ -1578,6 +1612,7 @@ function triggerPhaseChange(newPhase) {
   setTimeout(() => {
     document.getElementById('cut').classList.remove('show');
     GS.phase = 0;
+    announceBossSignature();   // 새 페이즈 보스의 시그니처 안내
     scheduleBossAttack();
     scheduleDropSpawn();
   }, 2800);

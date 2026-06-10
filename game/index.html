@@ -1028,7 +1028,8 @@ function saveSpeedBest(unitKey, score, correct, total, streak) {
 }
 
 function bossBestKey(unitKey) {
-  return BOSS_BEST_PREFIX + unitKey + '_' + timeLimitSec;
+  // 보스전(문법보스전)은 game2가 관리. 시간제한 개념이 없으므로 단원 단위 단일 키.
+  return BOSS_BEST_PREFIX + unitKey;
 }
 
 function getBossBest(unitKey) {
@@ -1065,7 +1066,10 @@ function renderUnitBestBadges() {
         ? getBossBest(el.dataset.bestFor)
         : getBestOverall(el.dataset.bestFor);
     el.textContent = best
-      ? `최고 ${best.score.toLocaleString()}점` + (selectedMode === 'bubble' ? ` · ${best.stage || 1}단계` : '')
+      ? `최고 ${best.score.toLocaleString()}점` + (
+          selectedMode === 'bubble' ? ` · ${best.stage || 1}단계`
+          : selectedMode === 'boss' && best.stage ? ` · STAGE ${best.stage}${best.clear ? '✓' : ''}`
+          : '')
       : '';
   });
 }

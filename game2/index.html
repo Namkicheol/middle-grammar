@@ -939,8 +939,8 @@ const SPRITE_DEFS = {
 const HERO_SPRITE = ['warrior', 'warrior', 'knight'];
 const BOSS_SPRITE = ['goblin',  'wizard',  'king'];
 // 스테이지2+ 보스 로스터 (스테이지마다 다른 캐릭으로 순환)
-const BOSS_STAGE_ROSTER = ['goblin', 'mushroom', 'skeleton', 'flying_eye', 'king'];  // 스테이지1이 대마왕으로 끝나므로 2단계는 다른 캐릭부터
-const BOSS_STAGE_NAME   = { king:'👹 문법 대마왕', skeleton:'💀 문법 해골군주', goblin:'👺 문법 고블린', mushroom:'🍄 문법 버섯괴물', flying_eye:'👁️ 문법 마안' };
+const BOSS_STAGE_ROSTER = ['goblin', 'mushroom', 'skeleton', 'flying_eye', 'wizard', 'king'];  // 스테이지1이 대마왕으로 끝나므로 2단계는 다른 캐릭부터
+const BOSS_STAGE_NAME   = { king:'👹 문법 대마왕', skeleton:'💀 문법 해골군주', goblin:'👺 문법 고블린', mushroom:'🍄 문법 버섯괴물', flying_eye:'👁️ 문법 마안', wizard:'🧙 문법 흑마도사' };
 let _heroKey = 'warrior', _bossKey = 'wizard';
 // 스테이지·페이즈 → 보스 스프라이트 키 (스테이지2+는 페이즈마다 다른 몬스터 순환)
 function bossKeyFor(st, phase) {
@@ -1627,19 +1627,26 @@ function showCardPick() {
   document.getElementById('card-pick').classList.add('show');
 }
 
+// 허브(game/index.html)와 공유하는 키 — 보스 모드 카드 뱃지가 이 기록을 읽는다.
+const BOSS_BEST_KEY = u => 'mg_boss_best_v1_' + u;
 function saveBestRecord(win) {
-  if (!_unitKey) return;
+  if (!_unitKey) return false;
   try {
-    const k = 'g2boss-best-' + _unitKey;
+    const k = BOSS_BEST_KEY(_unitKey);
     const r = JSON.parse(localStorage.getItem(k) || '{}');
-    r.stage = Math.max(r.stage || 0, win ? GS.stage : GS.stage - 1);
+    const newStage = win ? GS.stage : GS.stage - 1;
+    const isNew = GS.score > (r.score || 0);
+    r.stage = Math.max(r.stage || 0, newStage);
     r.score = Math.max(r.score || 0, GS.score);
+    r.clear = r.clear || win;
+    r.date = new Date().toLocaleDateString('ko-KR');
     localStorage.setItem(k, JSON.stringify(r));
-  } catch (e) {}
+    return isNew && GS.score > 0;
+  } catch (e) { return false; }
 }
 
 function showResult(win) {
-  saveBestRecord(win);
+  const isNewRecord = saveBestRecord(win);
   // 등급(랭크) 계산 — 정답률·최대콤보 기반
   const acc = GS.correct / Math.max(1, GS.correct + wrongLog.length);
   let grade = 'C', stars = 0;
@@ -1654,8 +1661,10 @@ function showResult(win) {
     `<span class="gr">RANK ${grade}</span><span class="stars">${'★'.repeat(stars)}<span style="opacity:.25">${'☆'.repeat(3-stars)}</span></span>`;
   document.getElementById('result-icon').textContent = win ? '🏆' : '💀';
   document.getElementById('result-title').textContent = win ? `STAGE ${GS.stage} 클리어!` : '패배...';
-  document.getElementById('result-sub').textContent = win
-    ? `여기서 끝낼 거야? 더 센 보스가 기다린다! 💪` : `STAGE ${GS.stage}에서 쓰러졌다... 복수하러 가자!`;
+  const recBadge = isNewRecord
+    ? `<div style="display:inline-block;margin-bottom:8px;padding:5px 14px;border-radius:999px;font-size:.82rem;font-weight:900;color:#0b0712;background:linear-gradient(135deg,#fde68a,#fbbf24,#f59e0b);box-shadow:0 4px 14px rgba(251,191,36,.5);animation:resultIcon 1.2s ease-in-out infinite;">🎉 신기록 달성!</div><br>` : '';
+  document.getElementById('result-sub').innerHTML = recBadge + (win
+    ? `여기서 끝낼 거야? 더 센 보스가 기다린다! 💪` : `STAGE ${GS.stage}에서 쓰러졌다... 복수하러 가자!`);
   // 승리=다음 스테이지 / 패배=처음부터 다시
   document.getElementById('result-btns').innerHTML = win
     ? `<button class="btn-retry" onclick="G.nextStage()">🔥 더 센 보스에 도전!</button><button class="btn-home" onclick="G.goHome()">오늘은 여기까지</button>`
@@ -1834,10 +1843,10 @@ function initFromParam() {
   _unitKey = unit;
   document.getElementById('boss-start-unit').textContent = _pendingBattle.label;
   try {
-    const r = JSON.parse(localStorage.getItem('g2boss-best-' + unit) || '{}');
+    const r = JSON.parse(localStorage.getItem(BOSS_BEST_KEY(unit)) || '{}');
     if (r.score || r.stage) {
       document.getElementById('bs-record').textContent =
-        '🏆 최고 기록 — ' + (r.stage ? 'STAGE ' + r.stage + ' 클리어 · ' : '') + (r.score || 0) + '점';
+        '🏆 최고 기록 — ' + (r.stage ? 'STAGE ' + r.stage + (r.clear ? ' 클리어' : ' 도달') + ' · ' : '') + (r.score || 0) + '점';
     }
   } catch (e) {}
   document.getElementById('boss-start').style.display = 'flex';

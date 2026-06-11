@@ -4099,6 +4099,186 @@ const GAME_QUESTIONS = {
         ],
         "type": "ox",
         "level": 2
+      },
+      {
+        "id": "g1_l6_x1",
+        "kor": "새 운동화는 매우 편안하게 느껴진다.",
+        "eng": "My new sneakers feel very ___.",
+        "ans": "comfortable",
+        "opts": [
+          "comfortable",
+          "comfortably",
+          "comfort",
+          "comfortableness"
+        ],
+        "level": 1
+      },
+      {
+        "id": "g1_l6_x2",
+        "kor": "네 아이디어는 정말 멋지게 들린다.",
+        "eng": "Your idea sounds really ___.",
+        "ans": "great",
+        "opts": [
+          "great",
+          "greatly",
+          "greatness",
+          "greater"
+        ],
+        "level": 1
+      },
+      {
+        "id": "g1_l6_x3",
+        "kor": "무대 위의 그 가수는 천사처럼 보인다.",
+        "eng": "The singer on the stage looks ___ an angel.",
+        "ans": "like",
+        "opts": [
+          "like",
+          "very",
+          "so",
+          "really"
+        ],
+        "level": 1
+      },
+      {
+        "id": "g1_l6_x4",
+        "kor": "우리는 버스가 늦었기 때문에 학교에 지각했다.",
+        "eng": "We were late for school ___ the bus was late.",
+        "ans": "because",
+        "opts": [
+          "because",
+          "so",
+          "but",
+          "when"
+        ],
+        "level": 1
+      },
+      {
+        "id": "g1_l6_x5",
+        "kor": "이 신선한 딸기는 정말 달콤한 맛이 난다.",
+        "eng": "These fresh strawberries taste really ___.",
+        "ans": "sweet",
+        "opts": [
+          "sweet",
+          "sweetly",
+          "sweetness",
+          "sweeten"
+        ],
+        "level": 1
+      },
+      {
+        "id": "g1_l6_x6",
+        "kor": "저 강아지는 배고파 보인다.",
+        "eng": "다음 중 어법에 맞는 것을 고르세요.",
+        "ans": "That puppy looks hungry.",
+        "opts": [
+          "That puppy looks hungrily.",
+          "That puppy looks hungry.",
+          "That puppy looks hunger.",
+          "That puppy looking hungry."
+        ],
+        "level": 1
+      },
+      {
+        "id": "g1_l6_x7",
+        "kor": "Mia는 밖이 추웠기 때문에 코트를 입었다.",
+        "eng": "다음 중 어법에 맞는 것을 고르세요.",
+        "ans": "Mia wore a coat because it was cold outside.",
+        "opts": [
+          "Mia wore a coat because of it was cold outside.",
+          "Mia wore a coat so it was cold outside.",
+          "Mia wore a coat because it was cold outside.",
+          "Mia wore a coat but it was cold outside."
+        ],
+        "level": 1
+      },
+      {
+        "id": "g1_l6_x8",
+        "kor": "바다 옆 카페는 평화로워 보인다. — 맞으면 O · 틀리면 X",
+        "eng": "The cafe by the sea looks peacefully.",
+        "ans": "X",
+        "opts": [
+          "O",
+          "X"
+        ],
+        "type": "ox",
+        "level": 1
+      },
+      {
+        "id": "g1_l6_x9",
+        "kor": "그 오래된 성은 마치 동화 속 한 장면처럼 보였다.",
+        "eng": "The old castle looked ___ a scene from a fairy tale.",
+        "ans": "like",
+        "opts": [
+          "like",
+          "as",
+          "so",
+          "very"
+        ],
+        "level": 2
+      },
+      {
+        "id": "g1_l6_x10",
+        "kor": "폭우 때문에 야구 경기가 연기되었다.",
+        "eng": "The baseball game was delayed ___ the heavy rain.",
+        "ans": "because of",
+        "opts": [
+          "because of",
+          "because",
+          "so that",
+          "even though"
+        ],
+        "level": 2
+      },
+      {
+        "id": "g1_l6_x11",
+        "kor": "Natalie는 늦잠을 잤기 때문에 버스를 놓쳤다.",
+        "eng": "Natalie missed the bus ___ she woke up late.",
+        "ans": "because",
+        "opts": [
+          "because of",
+          "because",
+          "so",
+          "although"
+        ],
+        "level": 2
+      },
+      {
+        "id": "g1_l6_x12",
+        "kor": "이 수프는 맛있는 냄새가 난다.",
+        "eng": "다음 중 어법에 맞는 것을 고르세요.",
+        "ans": "This soup smells delicious.",
+        "opts": [
+          "This soup smells deliciously.",
+          "This soup smells delicious.",
+          "This soup smells deliciousness.",
+          "This soup smelling delicious."
+        ],
+        "level": 2
+      },
+      {
+        "id": "g1_l6_x13",
+        "kor": "우리는 폭풍 때문에 집에 있었다.",
+        "eng": "다음 중 어법에 맞는 것을 고르세요.",
+        "ans": "We stayed home because of the storm.",
+        "opts": [
+          "We stayed home because the storm.",
+          "We stayed home because of the storm was strong.",
+          "We stayed home because of the storm.",
+          "We stayed home so of the storm."
+        ],
+        "level": 2
+      },
+      {
+        "id": "g1_l6_x14",
+        "kor": "그녀는 중요한 시험이 있었기 때문에 늦게까지 공부했다. — 맞으면 O · 틀리면 X",
+        "eng": "She studied late because of she had an important test.",
+        "ans": "X",
+        "opts": [
+          "O",
+          "X"
+        ],
+        "type": "ox",
+        "level": 2
       }
     ]
   },
@@ -4506,6 +4686,250 @@ const GAME_QUESTIONS = {
         ],
         "type": "ox",
         "level": 2
+      },
+      {
+        "id": "g1_l7_x1",
+        "kor": "따뜻한 차 한 잔은 나를 차분하게 만든다.",
+        "eng": "A cup of warm tea makes me ___.",
+        "ans": "calm",
+        "opts": [
+          "calm",
+          "calmly",
+          "calmness",
+          "calming"
+        ],
+        "level": 1
+      },
+      {
+        "id": "g1_l7_x2",
+        "kor": "그 슬픈 영화는 우리 누나를 슬프게 만들었다.",
+        "eng": "The sad movie made my sister ___.",
+        "ans": "sad",
+        "opts": [
+          "sad",
+          "sadly",
+          "sadness",
+          "sadden"
+        ],
+        "level": 1
+      },
+      {
+        "id": "g1_l7_x3",
+        "kor": "화창한 아침은 마을 사람들을 기분 좋게 만든다.",
+        "eng": "A sunny morning makes the villagers ___.",
+        "ans": "cheerful",
+        "opts": [
+          "cheer",
+          "cheerfully",
+          "cheerful",
+          "cheerfulness"
+        ],
+        "level": 1
+      },
+      {
+        "id": "g1_l7_x4",
+        "kor": "갓 구운 쿠키 냄새가 그 소년을 배고프게 만들었다.",
+        "eng": "The smell of fresh cookies made the boy ___.",
+        "ans": "hungry",
+        "opts": [
+          "hunger",
+          "hungrily",
+          "hungering",
+          "hungry"
+        ],
+        "level": 1
+      },
+      {
+        "id": "g1_l7_x5",
+        "kor": "그 어려운 시험은 모든 학생을 불안하게 만들었다.",
+        "eng": "The hard exam made every student ___.",
+        "ans": "nervous",
+        "opts": [
+          "nervous",
+          "nervously",
+          "nervousness",
+          "to nervous"
+        ],
+        "level": 1
+      },
+      {
+        "id": "g1_l7_x6",
+        "kor": "폭신한 베개는 그 여행자를 편안하게 만든다.",
+        "eng": "A soft pillow makes the traveler ___.",
+        "ans": "comfortable",
+        "opts": [
+          "comfort",
+          "comfortable",
+          "comfortably",
+          "comforting"
+        ],
+        "level": 1
+      },
+      {
+        "id": "g1_l7_x7",
+        "kor": "나는 그녀가 곧 나아질 거라고 믿는다.",
+        "eng": "I believe ___ she will get better soon.",
+        "ans": "that",
+        "opts": [
+          "which",
+          "that",
+          "if",
+          "what"
+        ],
+        "level": 1
+      },
+      {
+        "id": "g1_l7_x8",
+        "kor": "우리 아빠는 우리가 멕시코로 여행 갈 거라고 말했다.",
+        "eng": "My dad said ___ we would travel to Mexico.",
+        "ans": "that",
+        "opts": [
+          "because",
+          "that",
+          "when",
+          "which"
+        ],
+        "level": 1
+      },
+      {
+        "id": "g1_l7_x9",
+        "kor": "Sarah는 노력이 성공으로 이어진다고 믿는다.",
+        "eng": "Sarah believes ___ hard work leads to success.",
+        "ans": "that",
+        "opts": [
+          "what",
+          "that",
+          "which",
+          "how"
+        ],
+        "level": 1
+      },
+      {
+        "id": "g1_l7_x10",
+        "kor": "나는 그가 정직하다고 믿는다.",
+        "eng": "I believe that he ___ honest.",
+        "ans": "is",
+        "opts": [
+          "is",
+          "be",
+          "being",
+          "to be"
+        ],
+        "level": 1
+      },
+      {
+        "id": "g1_l7_x11",
+        "kor": "우리는 그 답이 틀렸다고 생각했다.",
+        "eng": "We thought ___ the answer was wrong.",
+        "ans": "that",
+        "opts": [
+          "that",
+          "what",
+          "which",
+          "if"
+        ],
+        "level": 1
+      },
+      {
+        "id": "g1_l7_x12",
+        "kor": "그 시끄러운 소리는 아기를 무섭게 만들었다.",
+        "eng": "다음 중 어법에 맞는 것을 고르세요.",
+        "ans": "The loud noise made the baby afraid.",
+        "opts": [
+          "The loud noise made the baby afraidly.",
+          "The loud noise made the baby afraid.",
+          "The loud noise made the baby afraidness.",
+          "The loud noise maked the baby afraid."
+        ],
+        "level": 1
+      },
+      {
+        "id": "g1_l7_x13",
+        "kor": "나는 그가 새 자전거를 샀다고 들었다. — 맞으면 O · 틀리면 X",
+        "eng": "I heard that he bought a new bike.",
+        "ans": "O",
+        "opts": [
+          "O",
+          "X"
+        ],
+        "type": "ox",
+        "level": 1
+      },
+      {
+        "id": "g1_l7_x14",
+        "kor": "그 신나는 경기는 팬들을 미치도록 흥분하게 만들었다.",
+        "eng": "The exciting game made the fans go ___.",
+        "ans": "wild",
+        "opts": [
+          "wild",
+          "wildly",
+          "wildness",
+          "wilder"
+        ],
+        "level": 2
+      },
+      {
+        "id": "g1_l7_x15",
+        "kor": "Jake는 자신과 Ella가 같은 반이었다는 것을 기억하지 못했다.",
+        "eng": "Jake didn't remember ___ he and Ella were in the same class.",
+        "ans": "that",
+        "opts": [
+          "which",
+          "that",
+          "because",
+          "what"
+        ],
+        "level": 2
+      },
+      {
+        "id": "g1_l7_x16",
+        "kor": "좋은 코치는 선수들을 자신감 있게 만들고, 나는 그들이 이길 거라고 생각한다.",
+        "eng": "다음 중 어법에 맞는 것을 고르세요.",
+        "ans": "The good coach makes the players confident, and I think that they will win.",
+        "opts": [
+          "The good coach makes the players confidently, and I think that they will win.",
+          "The good coach makes the players confident, and I think that they will win.",
+          "The good coach makes the players confident, and I think which they will win.",
+          "The good coach makes the players confidence, and I think that they will win."
+        ],
+        "level": 2
+      },
+      {
+        "id": "g1_l7_x17",
+        "kor": "그들은 자신들의 선생님이 벌써 쉰 살이라는 것을 몰랐다.",
+        "eng": "다음 중 어법에 맞는 것을 고르세요.",
+        "ans": "They didn't know that their teacher was already fifty.",
+        "opts": [
+          "They didn't know what their teacher was already fifty.",
+          "They didn't know that their teacher was already fifty.",
+          "They didn't knew that their teacher was already fifty.",
+          "They didn't know because their teacher was already fifty."
+        ],
+        "level": 2
+      },
+      {
+        "id": "g1_l7_x18",
+        "kor": "그 지루한 강의는 청중을 졸리게 만들었다. — 맞으면 O · 틀리면 X",
+        "eng": "The boring lecture made the audience sleepily.",
+        "ans": "X",
+        "opts": [
+          "O",
+          "X"
+        ],
+        "type": "ox",
+        "level": 2
+      },
+      {
+        "id": "g1_l7_x19",
+        "kor": "나는 노력이 우리를 더 강하게 만든다고 생각한다. — 맞으면 O · 틀리면 X",
+        "eng": "I think that hard work makes us stronger.",
+        "ans": "O",
+        "opts": [
+          "O",
+          "X"
+        ],
+        "type": "ox",
+        "level": 2
       }
     ]
   },
@@ -4881,6 +5305,275 @@ const GAME_QUESTIONS = {
         "kor": "이것은 정말 흥미로운 이야기구나! — 맞으면 O · 틀리면 X",
         "eng": "How an interesting story this is!",
         "ans": "X",
+        "opts": [
+          "O",
+          "X"
+        ],
+        "type": "ox",
+        "level": 2
+      },
+      {
+        "id": "g1_l8_x1",
+        "kor": "정말 신나는 콘서트구나!",
+        "eng": "___ an exciting concert it is!",
+        "ans": "What",
+        "opts": [
+          "What",
+          "How",
+          "Very",
+          "So"
+        ],
+        "level": 1
+      },
+      {
+        "id": "g1_l8_x2",
+        "kor": "그 강은 정말 깊구나!",
+        "eng": "___ deep the river is!",
+        "ans": "How",
+        "opts": [
+          "How",
+          "What",
+          "Very",
+          "A"
+        ],
+        "level": 1
+      },
+      {
+        "id": "g1_l8_x3",
+        "kor": "네 강아지는 정말 귀엽구나!",
+        "eng": "___ cute your puppy is!",
+        "ans": "How",
+        "opts": [
+          "What",
+          "How",
+          "So",
+          "A"
+        ],
+        "level": 1
+      },
+      {
+        "id": "g1_l8_x4",
+        "kor": "정말 멋진 그림이구나!",
+        "eng": "___ a wonderful painting this is!",
+        "ans": "What",
+        "opts": [
+          "How",
+          "What",
+          "Very",
+          "A"
+        ],
+        "level": 1
+      },
+      {
+        "id": "g1_l8_x5",
+        "kor": "그 주자는 정말 빠르구나!",
+        "eng": "___ fast the runner is!",
+        "ans": "How",
+        "opts": [
+          "How",
+          "What",
+          "Very",
+          "A"
+        ],
+        "level": 1
+      },
+      {
+        "id": "g1_l8_x6",
+        "kor": "우리는 시장에서 신선한 무언가를 샀다.",
+        "eng": "We bought ___ at the market.",
+        "ans": "something fresh",
+        "opts": [
+          "fresh something",
+          "something freshly",
+          "a fresh",
+          "something fresh"
+        ],
+        "level": 1
+      },
+      {
+        "id": "g1_l8_x7",
+        "kor": "이 가방 안에 특이한 게 있니?",
+        "eng": "Is there ___ in this bag?",
+        "ans": "anything unusual",
+        "opts": [
+          "anything unusual",
+          "unusual anything",
+          "an unusual",
+          "anything unusually"
+        ],
+        "level": 1
+      },
+      {
+        "id": "g1_l8_x8",
+        "kor": "그 아이는 따뜻한 무언가를 입고 있었다.",
+        "eng": "The child was wearing ___.",
+        "ans": "something warm",
+        "opts": [
+          "warm something",
+          "something warm",
+          "something warmly",
+          "a warm"
+        ],
+        "level": 1
+      },
+      {
+        "id": "g1_l8_x9",
+        "kor": "정말 길고 지루한 영화였구나!",
+        "eng": "___ a boring movie it was!",
+        "ans": "What",
+        "opts": [
+          "What",
+          "How",
+          "Very",
+          "So"
+        ],
+        "level": 1
+      },
+      {
+        "id": "g1_l8_x10",
+        "kor": "그 가수는 정말 아름답게 노래하는구나!",
+        "eng": "___ beautifully the singer sings!",
+        "ans": "How",
+        "opts": [
+          "What",
+          "A",
+          "How",
+          "Very"
+        ],
+        "level": 1
+      },
+      {
+        "id": "g1_l8_x11",
+        "kor": "정말 똑똑한 개구나!",
+        "eng": "다음 중 어법에 맞는 것을 고르세요.",
+        "ans": "What a smart dog it is!",
+        "opts": [
+          "How a smart dog it is!",
+          "What smart dog it is!",
+          "What a smart dog it is!",
+          "How smart dog it is!"
+        ],
+        "level": 1
+      },
+      {
+        "id": "g1_l8_x12",
+        "kor": "나는 손에 부드러운 무언가가 느껴졌다.",
+        "eng": "다음 중 어법에 맞는 것을 고르세요.",
+        "ans": "I felt something soft on my hand.",
+        "opts": [
+          "I felt soft something on my hand.",
+          "I felt something soft on my hand.",
+          "I felt a soft on my hand.",
+          "I felt something softly on my hand."
+        ],
+        "level": 1
+      },
+      {
+        "id": "g1_l8_x13",
+        "kor": "그 호수는 정말 넓구나! — 맞으면 O · 틀리면 X",
+        "eng": "How wide the lake is!",
+        "ans": "O",
+        "opts": [
+          "O",
+          "X"
+        ],
+        "type": "ox",
+        "level": 1
+      },
+      {
+        "id": "g1_l8_x14",
+        "kor": "정말 용감한 소방관이구나!",
+        "eng": "___ a brave firefighter she is!",
+        "ans": "What",
+        "opts": [
+          "How",
+          "What",
+          "Very",
+          "A"
+        ],
+        "level": 2
+      },
+      {
+        "id": "g1_l8_x15",
+        "kor": "그 산은 정말 높이 솟아 있구나!",
+        "eng": "___ high the mountain rises!",
+        "ans": "How",
+        "opts": [
+          "What",
+          "A",
+          "Very",
+          "How"
+        ],
+        "level": 2
+      },
+      {
+        "id": "g1_l8_x16",
+        "kor": "정말 어려운 퍼즐이구나!",
+        "eng": "다음 중 어법에 맞는 것을 고르세요.",
+        "ans": "What a difficult puzzle this is!",
+        "opts": [
+          "How a difficult puzzle this is!",
+          "What difficult puzzle this is!",
+          "What a difficult puzzle this is!",
+          "How difficult puzzle this is!"
+        ],
+        "level": 2
+      },
+      {
+        "id": "g1_l8_x17",
+        "kor": "Mike는 어제 나에게 놀라운 무언가를 보여 주었다.",
+        "eng": "다음 중 어법에 맞는 것을 고르세요.",
+        "ans": "Mike showed me something amazing yesterday.",
+        "opts": [
+          "Mike showed me amazing something yesterday.",
+          "Mike showed me something amazingly yesterday.",
+          "Mike showed me something amazing yesterday.",
+          "Mike showed me an amazing yesterday."
+        ],
+        "level": 2
+      },
+      {
+        "id": "g1_l8_x18",
+        "kor": "그녀는 부모님께 특별한 무언가를 준비했다.",
+        "eng": "She prepared ___ for her parents.",
+        "ans": "something special",
+        "opts": [
+          "special something",
+          "a special",
+          "something specially",
+          "something special"
+        ],
+        "level": 2
+      },
+      {
+        "id": "g1_l8_x19",
+        "kor": "정말 똑똑한 학생이구나! — 맞으면 O · 틀리면 X",
+        "eng": "How a clever student you are!",
+        "ans": "X",
+        "opts": [
+          "O",
+          "X"
+        ],
+        "type": "ox",
+        "level": 2
+      },
+      {
+        "id": "g1_l8_x20",
+        "kor": "그들은 신선한 무언가를 마시고 싶어 한다. — 맞으면 O · 틀리면 X",
+        "eng": "They want to drink fresh something.",
+        "ans": "X",
+        "opts": [
+          "O",
+          "X"
+        ],
+        "type": "ox",
+        "level": 2
+      },
+      {
+        "id": "g1_l8_x21",
+        "kor": "그 음악은 정말 시끄러웠구나! — 맞으면 O · 틀리면 X",
+        "eng": "How loud the music was!",
+        "ans": "O",
         "opts": [
           "O",
           "X"
@@ -7936,6 +8629,392 @@ const GAME_QUESTIONS = {
         ],
         "type": "ox",
         "level": 1
+      },
+      {
+        "id": "g2_l5_x1",
+        "kor": "감독은 배우들에게 천천히 말하라고 요청했다.",
+        "eng": "The director asked the actors ___ slowly.",
+        "ans": "to speak",
+        "opts": [
+          "to speak",
+          "speak",
+          "speaking",
+          "spoke"
+        ],
+        "level": 1
+      },
+      {
+        "id": "g2_l5_x2",
+        "kor": "엄마는 내가 방을 깨끗하게 유지하기를 원하신다.",
+        "eng": "My mom wants me ___ my room clean.",
+        "ans": "to keep",
+        "opts": [
+          "keep",
+          "to keep",
+          "keeping",
+          "kept"
+        ],
+        "level": 1
+      },
+      {
+        "id": "g2_l5_x3",
+        "kor": "경찰관은 운전자들에게 멈추라고 명령했다.",
+        "eng": "The police officer ordered the drivers ___.",
+        "ans": "to stop",
+        "opts": [
+          "stop",
+          "stopping",
+          "to stop",
+          "stopped"
+        ],
+        "level": 1
+      },
+      {
+        "id": "g2_l5_x4",
+        "kor": "의사는 그에게 물을 더 많이 마시라고 조언했다.",
+        "eng": "The doctor advised him ___ more water.",
+        "ans": "to drink",
+        "opts": [
+          "drinking",
+          "to drink",
+          "drink",
+          "drinks"
+        ],
+        "level": 1
+      },
+      {
+        "id": "g2_l5_x5",
+        "kor": "우리는 그 가게가 9시에 문 열기를 기대한다.",
+        "eng": "We expect the store ___ at nine.",
+        "ans": "to open",
+        "opts": [
+          "to open",
+          "open",
+          "opening",
+          "opened"
+        ],
+        "level": 1
+      },
+      {
+        "id": "g2_l5_x6",
+        "kor": "이것은 내가 도서관에서 빌린 소설이다.",
+        "eng": "This is the novel ___ I borrowed from the library.",
+        "ans": "which",
+        "opts": [
+          "who",
+          "whose",
+          "which",
+          "what"
+        ],
+        "level": 1
+      },
+      {
+        "id": "g2_l5_x7",
+        "kor": "그는 모든 학생들이 존경하는 선생님이다.",
+        "eng": "He is the teacher ___ all the students respect.",
+        "ans": "whom",
+        "opts": [
+          "who",
+          "whom",
+          "whose",
+          "which"
+        ],
+        "level": 1
+      },
+      {
+        "id": "g2_l5_x8",
+        "kor": "내가 어제 잃어버린 지갑을 그녀가 찾았다.",
+        "eng": "She found the wallet ___ I lost yesterday.",
+        "ans": "that",
+        "opts": [
+          "who",
+          "that",
+          "whose",
+          "what"
+        ],
+        "level": 1
+      },
+      {
+        "id": "g2_l5_x9",
+        "kor": "가이드는 우리에게 무리에서 떨어지지 말라고 말했다.",
+        "eng": "다음 중 어법에 맞는 것을 고르세요.",
+        "ans": "The guide told us to stay with the group.",
+        "opts": [
+          "The guide told to us stay with the group.",
+          "The guide told us staying with the group.",
+          "The guide told us to stay with the group.",
+          "The guide told us stay with the group."
+        ],
+        "level": 1
+      },
+      {
+        "id": "g2_l5_x10",
+        "kor": "이 카페는 손님들이 노트북을 사용하는 것을 허락한다.",
+        "eng": "다음 중 어법에 맞는 것을 고르세요.",
+        "ans": "This cafe allows guests to use laptops.",
+        "opts": [
+          "This cafe allows to guests use laptops.",
+          "This cafe allows guests use laptops.",
+          "This cafe allows guests using laptops.",
+          "This cafe allows guests to use laptops."
+        ],
+        "level": 1
+      },
+      {
+        "id": "g2_l5_x11",
+        "kor": "내가 공항에서 만난 그 남자는 매우 친절했다.",
+        "eng": "The man ___ I met at the airport was very kind.",
+        "ans": "whom",
+        "opts": [
+          "whom",
+          "which",
+          "whose",
+          "what"
+        ],
+        "level": 1
+      },
+      {
+        "id": "g2_l5_x12",
+        "kor": "그녀가 정원에서 키우는 꽃들은 아름답다.",
+        "eng": "The flowers ___ she grows in the garden are beautiful.",
+        "ans": "which",
+        "opts": [
+          "who",
+          "whom",
+          "which",
+          "whose"
+        ],
+        "level": 1
+      },
+      {
+        "id": "g2_l5_x13",
+        "kor": "선생님은 내가 제시간에 오라고 요청하셨다. — 맞으면 O · 틀리면 X",
+        "eng": "My teacher asked me to come on time.",
+        "ans": "O",
+        "opts": [
+          "O",
+          "X"
+        ],
+        "type": "ox",
+        "level": 1
+      },
+      {
+        "id": "g2_l5_x14",
+        "kor": "이것은 그가 파리에서 찍은 사진이다. — 맞으면 O · 틀리면 X",
+        "eng": "This is the photo who he took in Paris.",
+        "ans": "X",
+        "opts": [
+          "O",
+          "X"
+        ],
+        "type": "ox",
+        "level": 1
+      },
+      {
+        "id": "g2_l5_x15",
+        "kor": "코치는 선수들에게 경기 전에 늦게까지 깨어 있지 말라고 조언했다.",
+        "eng": "The coach advised the players ___ up late before the match.",
+        "ans": "not to stay",
+        "opts": [
+          "not to stay",
+          "not staying",
+          "staying not",
+          "don't stay"
+        ],
+        "level": 2
+      },
+      {
+        "id": "g2_l5_x16",
+        "kor": "네가 지난 여름에 나에게 추천한 그 식당은 아직도 인기가 많다.",
+        "eng": "The restaurant ___ you recommended to me last summer is still popular.",
+        "ans": "that",
+        "opts": [
+          "that",
+          "who",
+          "whose",
+          "what"
+        ],
+        "level": 2
+      },
+      {
+        "id": "g2_l5_x17",
+        "kor": "우리 부모님은 내가 주말에 친구들과 캠핑 가는 것을 허락하셨다.",
+        "eng": "My parents allowed me ___ camping with my friends on the weekend.",
+        "ans": "to go",
+        "opts": [
+          "go",
+          "going",
+          "to go",
+          "went"
+        ],
+        "level": 2
+      },
+      {
+        "id": "g2_l5_x18",
+        "kor": "경찰이 쫓던 그 도둑은 결국 달아났다.",
+        "eng": "The thief ___ the police chased finally ran away.",
+        "ans": "whom",
+        "opts": [
+          "which",
+          "whom",
+          "whose",
+          "what"
+        ],
+        "level": 2
+      },
+      {
+        "id": "g2_l5_x19",
+        "kor": "그 요리사가 특별한 재료로 만든 요리는 정말 맛있었다.",
+        "eng": "The dish ___ the chef made with special ingredients was really delicious.",
+        "ans": "which",
+        "opts": [
+          "who",
+          "whom",
+          "which",
+          "whose"
+        ],
+        "level": 2
+      },
+      {
+        "id": "g2_l5_x20",
+        "kor": "매니저는 직원들에게 회의 전에 보고서를 끝내라고 말했다.",
+        "eng": "The manager told the staff ___ the report before the meeting.",
+        "ans": "to finish",
+        "opts": [
+          "finish",
+          "to finish",
+          "finishing",
+          "finished"
+        ],
+        "level": 2
+      },
+      {
+        "id": "g2_l5_x21",
+        "kor": "리사는 나에게 우산을 챙기라고 조언했다.",
+        "eng": "다음 중 어법에 맞는 것을 고르세요.",
+        "ans": "Lisa advised me to bring an umbrella.",
+        "opts": [
+          "Lisa advised me bring an umbrella.",
+          "Lisa advised to me bring an umbrella.",
+          "Lisa advised me to bring an umbrella.",
+          "Lisa advised me bringing an umbrella."
+        ],
+        "level": 2
+      },
+      {
+        "id": "g2_l5_x22",
+        "kor": "내가 지난주에 산 그 시계는 벌써 멈춰 버렸다.",
+        "eng": "다음 중 어법에 맞는 것을 고르세요.",
+        "ans": "The watch that I bought last week already stopped.",
+        "opts": [
+          "The watch who I bought last week already stopped.",
+          "The watch that I bought it last week already stopped.",
+          "The watch what I bought last week already stopped.",
+          "The watch that I bought last week already stopped."
+        ],
+        "level": 2
+      },
+      {
+        "id": "g2_l5_x23",
+        "kor": "그는 많은 청소년들이 우러러보는 작가이다.",
+        "eng": "He is a writer ___ many teenagers look up to.",
+        "ans": "whom",
+        "opts": [
+          "whom",
+          "which",
+          "whose",
+          "what"
+        ],
+        "level": 2
+      },
+      {
+        "id": "g2_l5_x24",
+        "kor": "선생님은 우리가 실험 중에 안전 장갑을 끼기를 기대하신다.",
+        "eng": "The teacher expects us ___ safety gloves during the experiment.",
+        "ans": "to wear",
+        "opts": [
+          "wear",
+          "wearing",
+          "to wear",
+          "wore"
+        ],
+        "level": 2
+      },
+      {
+        "id": "g2_l5_x25",
+        "kor": "네가 어제 빌려준 그 만화책을 나는 이미 다 읽었다.",
+        "eng": "I already finished the comic book ___ you lent me yesterday.",
+        "ans": "which",
+        "opts": [
+          "who",
+          "whom",
+          "which",
+          "whose"
+        ],
+        "level": 2
+      },
+      {
+        "id": "g2_l5_x26",
+        "kor": "코치는 선수들에게 마지막 라운드에서 포기하지 말라고 말했다.",
+        "eng": "다음 중 어법에 맞는 것을 고르세요.",
+        "ans": "The coach told the players not to give up in the last round.",
+        "opts": [
+          "The coach told the players to not give up in the last round.",
+          "The coach told the players don't give up in the last round.",
+          "The coach told the players not giving up in the last round.",
+          "The coach told the players not to give up in the last round."
+        ],
+        "level": 2
+      },
+      {
+        "id": "g2_l5_x27",
+        "kor": "우리가 박물관에서 본 그 그림은 100년이 넘었다.",
+        "eng": "The painting ___ we saw at the museum is over a hundred years old.",
+        "ans": "that",
+        "opts": [
+          "that",
+          "who",
+          "whose",
+          "what"
+        ],
+        "level": 2
+      },
+      {
+        "id": "g2_l5_x28",
+        "kor": "부장님은 신입 사원들에게 첫날 일찍 도착하라고 요청했다.",
+        "eng": "The boss asked the new employees ___ early on the first day.",
+        "ans": "to arrive",
+        "opts": [
+          "arrive",
+          "arriving",
+          "to arrive",
+          "arrived"
+        ],
+        "level": 2
+      },
+      {
+        "id": "g2_l5_x29",
+        "kor": "내가 캠프에서 만난 그 소녀는 이제 나의 가장 친한 친구이다. — 맞으면 O · 틀리면 X",
+        "eng": "The girl whom I met at the camp is now my best friend.",
+        "ans": "O",
+        "opts": [
+          "O",
+          "X"
+        ],
+        "type": "ox",
+        "level": 2
+      },
+      {
+        "id": "g2_l5_x30",
+        "kor": "엄마는 내가 그 새 게임을 해 보는 것을 허락하셨다. — 맞으면 O · 틀리면 X",
+        "eng": "My mom allowed me trying the new game.",
+        "ans": "X",
+        "opts": [
+          "O",
+          "X"
+        ],
+        "type": "ox",
+        "level": 2
       }
     ]
   },
@@ -8843,6 +9922,365 @@ const GAME_QUESTIONS = {
         ],
         "type": "ox",
         "level": 1
+      },
+      {
+        "id": "g2_l7_x1",
+        "kor": "천둥소리는 모든 아이들이 집 안에 머물게 만들었다.",
+        "eng": "The thunder made all the kids ___ inside the house.",
+        "ans": "stay",
+        "opts": [
+          "stay",
+          "to stay",
+          "staying",
+          "stays"
+        ],
+        "level": 1
+      },
+      {
+        "id": "g2_l7_x2",
+        "kor": "경비원은 우리가 옥상에 올라가지 못하게 했다.",
+        "eng": "The guard didn't let us ___ up to the rooftop.",
+        "ans": "go",
+        "opts": [
+          "to go",
+          "going",
+          "go",
+          "goes"
+        ],
+        "level": 1
+      },
+      {
+        "id": "g2_l7_x3",
+        "kor": "사장님은 비서가 아침에 그 고객에게 전화하게 했다.",
+        "eng": "The boss had his assistant ___ the client in the morning.",
+        "ans": "call",
+        "opts": [
+          "to call",
+          "calls",
+          "call",
+          "calling"
+        ],
+        "level": 1
+      },
+      {
+        "id": "g2_l7_x4",
+        "kor": "그의 농담은 반 전체를 크게 웃게 만들었다.",
+        "eng": "His joke made the whole class ___ out loud.",
+        "ans": "laugh",
+        "opts": [
+          "laughing",
+          "laugh",
+          "to laugh",
+          "laughs"
+        ],
+        "level": 1
+      },
+      {
+        "id": "g2_l7_x5",
+        "kor": "우리 아빠는 주말마다 내가 차를 닦게 하신다.",
+        "eng": "My dad has me ___ the car every weekend.",
+        "ans": "wash",
+        "opts": [
+          "wash",
+          "washes",
+          "to wash",
+          "washing"
+        ],
+        "level": 1
+      },
+      {
+        "id": "g2_l7_x6",
+        "kor": "그녀의 새 자전거는 내 것만큼 가볍다.",
+        "eng": "Her new bike is as ___ as mine.",
+        "ans": "light",
+        "opts": [
+          "lightest",
+          "more light",
+          "light",
+          "lighter"
+        ],
+        "level": 1
+      },
+      {
+        "id": "g2_l7_x7",
+        "kor": "Emma는 자기 언니만큼 또렷하게 말한다.",
+        "eng": "Emma speaks as ___ as her older sister.",
+        "ans": "clearly",
+        "opts": [
+          "more clearly",
+          "clearly",
+          "clearer",
+          "most clearly"
+        ],
+        "level": 1
+      },
+      {
+        "id": "g2_l7_x8",
+        "kor": "오늘 아침 공기는 얼음만큼 차갑다.",
+        "eng": "The air this morning is as ___ as ice.",
+        "ans": "cold",
+        "opts": [
+          "colder",
+          "coldest",
+          "more cold",
+          "cold"
+        ],
+        "level": 1
+      },
+      {
+        "id": "g2_l7_x9",
+        "kor": "선생님은 우리가 도서관에서 점심을 먹게 해 주셨다.",
+        "eng": "다음 중 어법에 맞는 것을 고르세요.",
+        "ans": "The teacher let us eat lunch in the library.",
+        "opts": [
+          "The teacher let us to eat lunch in the library.",
+          "The teacher let us eat lunch in the library.",
+          "The teacher let us eating lunch in the library.",
+          "The teacher let us eats lunch in the library."
+        ],
+        "level": 1
+      },
+      {
+        "id": "g2_l7_x10",
+        "kor": "그 코미디 쇼는 관객 모두를 미소 짓게 만들었다.",
+        "eng": "다음 중 어법에 맞는 것을 고르세요.",
+        "ans": "The comedy show made everyone smile.",
+        "opts": [
+          "The comedy show made everyone to smile.",
+          "The comedy show made everyone smiles.",
+          "The comedy show made everyone smile.",
+          "The comedy show made everyone smiling."
+        ],
+        "level": 1
+      },
+      {
+        "id": "g2_l7_x11",
+        "kor": "내 신발은 네 것만큼 새것이다. — 맞으면 O · 틀리면 X",
+        "eng": "My shoes are as new as yours.",
+        "ans": "O",
+        "opts": [
+          "O",
+          "X"
+        ],
+        "type": "ox",
+        "level": 1
+      },
+      {
+        "id": "g2_l7_x12",
+        "kor": "그는 동생이 설거지를 하게 했다. — 맞으면 O · 틀리면 X",
+        "eng": "He had his brother to do the dishes.",
+        "ans": "X",
+        "opts": [
+          "O",
+          "X"
+        ],
+        "type": "ox",
+        "level": 1
+      },
+      {
+        "id": "g2_l7_x13",
+        "kor": "매니저는 모든 직원이 다섯 시까지 보고서를 제출하게 했다.",
+        "eng": "The manager had every worker ___ the report by five o'clock.",
+        "ans": "submit",
+        "opts": [
+          "submits",
+          "to submit",
+          "submit",
+          "submitting"
+        ],
+        "level": 2
+      },
+      {
+        "id": "g2_l7_x14",
+        "kor": "그 다큐멘터리는 관객들이 환경에 대해 더 깊이 생각하게 만들었다.",
+        "eng": "The documentary made the viewers ___ about the environment more deeply.",
+        "ans": "think",
+        "opts": [
+          "thinking",
+          "to think",
+          "thinks",
+          "think"
+        ],
+        "level": 2
+      },
+      {
+        "id": "g2_l7_x15",
+        "kor": "우리 삼촌은 내가 어릴 때 트럭을 운전해 보게 해 주셨다.",
+        "eng": "My uncle let me ___ his truck when I was young.",
+        "ans": "drive",
+        "opts": [
+          "to drive",
+          "driving",
+          "drove",
+          "drive"
+        ],
+        "level": 2
+      },
+      {
+        "id": "g2_l7_x16",
+        "kor": "이 산길은 우리가 어제 오른 길만큼 가파르지는 않다.",
+        "eng": "This mountain trail is not as ___ as the one we climbed yesterday.",
+        "ans": "steep",
+        "opts": [
+          "steep",
+          "steeper",
+          "steepest",
+          "more steep"
+        ],
+        "level": 2
+      },
+      {
+        "id": "g2_l7_x17",
+        "kor": "새로 산 노트북은 내 예전 것만큼 빠르게 작동한다.",
+        "eng": "My new laptop runs as ___ as my old one did.",
+        "ans": "fast",
+        "opts": [
+          "faster",
+          "fast",
+          "fastest",
+          "more fast"
+        ],
+        "level": 2
+      },
+      {
+        "id": "g2_l7_x18",
+        "kor": "그 소설은 영화만큼 흥미진진하지 않았다.",
+        "eng": "The novel was not as ___ as the movie.",
+        "ans": "exciting",
+        "opts": [
+          "more exciting",
+          "exciting",
+          "most exciting",
+          "excitingly"
+        ],
+        "level": 2
+      },
+      {
+        "id": "g2_l7_x19",
+        "kor": "그녀의 목소리는 가수만큼 아름답게 들렸다.",
+        "eng": "Her voice sounded as ___ as a professional singer's.",
+        "ans": "beautiful",
+        "opts": [
+          "beautifully",
+          "more beautiful",
+          "beautiful",
+          "most beautiful"
+        ],
+        "level": 2
+      },
+      {
+        "id": "g2_l7_x20",
+        "kor": "부모님은 시험 전날 우리가 늦게까지 깨어 있게 해 주셨다.",
+        "eng": "Our parents let us ___ up late the night before the exam.",
+        "ans": "stay",
+        "opts": [
+          "to stay",
+          "stays",
+          "staying",
+          "stay"
+        ],
+        "level": 2
+      },
+      {
+        "id": "g2_l7_x21",
+        "kor": "코치는 선수들이 경기 후 운동장을 두 바퀴 달리게 했다.",
+        "eng": "The coach made the players ___ two laps around the field after the match.",
+        "ans": "run",
+        "opts": [
+          "ran",
+          "to run",
+          "run",
+          "running"
+        ],
+        "level": 2
+      },
+      {
+        "id": "g2_l7_x22",
+        "kor": "이 태블릿은 그녀의 것만큼 비싸다.",
+        "eng": "다음 중 어법에 맞는 것을 고르세요.",
+        "ans": "This tablet is as expensive as hers.",
+        "opts": [
+          "This tablet is as expensive than hers.",
+          "This tablet is as more expensive as hers.",
+          "This tablet is as expensive as hers.",
+          "This tablet is so expensive as hers."
+        ],
+        "level": 2
+      },
+      {
+        "id": "g2_l7_x23",
+        "kor": "선생님은 우리에게 짧은 보고서를 쓰게 하셨다.",
+        "eng": "다음 중 어법에 맞는 것을 고르세요.",
+        "ans": "The teacher made us write a short report.",
+        "opts": [
+          "The teacher made us to write a short report.",
+          "The teacher made us writing a short report.",
+          "The teacher made us wrote a short report.",
+          "The teacher made us write a short report."
+        ],
+        "level": 2
+      },
+      {
+        "id": "g2_l7_x24",
+        "kor": "그들은 무용수들만큼 우아하게 춤을 췄다.",
+        "eng": "다음 중 어법에 맞는 것을 고르세요.",
+        "ans": "They danced as gracefully as professional dancers.",
+        "opts": [
+          "They danced as more gracefully as professional dancers.",
+          "They danced as gracefully as professional dancers.",
+          "They danced so gracefully as professional dancers.",
+          "They danced as gracefully than professional dancers."
+        ],
+        "level": 2
+      },
+      {
+        "id": "g2_l7_x25",
+        "kor": "그 호텔은 우리가 묵었던 곳만큼 크다.",
+        "eng": "다음 중 어법에 맞는 것을 고르세요.",
+        "ans": "The hotel is as big as the one we stayed at.",
+        "opts": [
+          "The hotel is as big than the one we stayed at.",
+          "The hotel is bigger as the one we stayed at.",
+          "The hotel is as big as the one we stayed at.",
+          "The hotel is as bigger as the one we stayed at."
+        ],
+        "level": 2
+      },
+      {
+        "id": "g2_l7_x26",
+        "kor": "그 영화는 책만큼 슬프지는 않았다. — 맞으면 O · 틀리면 X",
+        "eng": "The film was not as sad as the book.",
+        "ans": "O",
+        "opts": [
+          "O",
+          "X"
+        ],
+        "type": "ox",
+        "level": 2
+      },
+      {
+        "id": "g2_l7_x27",
+        "kor": "사장님은 비서가 회의 일정을 잡게 했다. — 맞으면 O · 틀리면 X",
+        "eng": "The boss had his assistant schedule the meeting.",
+        "ans": "O",
+        "opts": [
+          "O",
+          "X"
+        ],
+        "type": "ox",
+        "level": 2
+      },
+      {
+        "id": "g2_l7_x28",
+        "kor": "그녀의 정원은 공원만큼 넓다. — 맞으면 O · 틀리면 X",
+        "eng": "Her garden is as wide as a park.",
+        "ans": "O",
+        "opts": [
+          "O",
+          "X"
+        ],
+        "type": "ox",
+        "level": 2
       }
     ]
   },
@@ -9159,6 +10597,338 @@ const GAME_QUESTIONS = {
         ],
         "type": "ox",
         "level": 1
+      },
+      {
+        "id": "g2_l8_x1",
+        "kor": "외국어를 배우는 것은 흥미롭다.",
+        "eng": "___ is interesting to learn foreign languages.",
+        "ans": "It",
+        "opts": [
+          "It",
+          "There",
+          "That",
+          "This"
+        ],
+        "level": 1
+      },
+      {
+        "id": "g2_l8_x2",
+        "kor": "규칙적으로 손을 씻는 것은 중요하다.",
+        "eng": "It is important ___ your hands regularly.",
+        "ans": "to wash",
+        "opts": [
+          "to wash",
+          "wash",
+          "washing",
+          "washed"
+        ],
+        "level": 1
+      },
+      {
+        "id": "g2_l8_x3",
+        "kor": "별을 보는 것은 매우 흥미진진하다.",
+        "eng": "It is very exciting ___ at the stars.",
+        "ans": "to look",
+        "opts": [
+          "look",
+          "looks",
+          "to look",
+          "looked"
+        ],
+        "level": 1
+      },
+      {
+        "id": "g2_l8_x4",
+        "kor": "매일 일기를 쓰는 것은 도움이 된다.",
+        "eng": "It is helpful ___ a diary every day.",
+        "ans": "to keep",
+        "opts": [
+          "keep",
+          "keeps",
+          "kept",
+          "to keep"
+        ],
+        "level": 1
+      },
+      {
+        "id": "g2_l8_x5",
+        "kor": "그녀는 케이크를 어떻게 장식하는지 배우는 중이다.",
+        "eng": "She is learning ___ to decorate a cake.",
+        "ans": "how",
+        "opts": [
+          "how",
+          "what",
+          "where",
+          "why"
+        ],
+        "level": 1
+      },
+      {
+        "id": "g2_l8_x6",
+        "kor": "우리는 주말에 무엇을 할지 정하지 못했다.",
+        "eng": "We couldn't decide ___ to do on the weekend.",
+        "ans": "what",
+        "opts": [
+          "what",
+          "where",
+          "when",
+          "how"
+        ],
+        "level": 1
+      },
+      {
+        "id": "g2_l8_x7",
+        "kor": "저에게 표를 어디서 사야 할지 알려 주세요.",
+        "eng": "Please tell me ___ to buy the tickets.",
+        "ans": "where",
+        "opts": [
+          "where",
+          "what",
+          "how",
+          "why"
+        ],
+        "level": 1
+      },
+      {
+        "id": "g2_l8_x8",
+        "kor": "나는 그 약을 언제 먹어야 할지 모르겠다.",
+        "eng": "I don't know ___ to take the medicine.",
+        "ans": "when",
+        "opts": [
+          "when",
+          "what",
+          "where",
+          "why"
+        ],
+        "level": 1
+      },
+      {
+        "id": "g2_l8_x9",
+        "kor": "건강을 유지하는 것은 모두에게 좋다. — 맞으면 O · 틀리면 X",
+        "eng": "It is good for everyone to stay healthy.",
+        "ans": "O",
+        "opts": [
+          "O",
+          "X"
+        ],
+        "type": "ox",
+        "level": 1
+      },
+      {
+        "id": "g2_l8_x10",
+        "kor": "그는 우산을 어디에 두어야 할지 몰랐다. — 맞으면 O · 틀리면 X",
+        "eng": "He didn't know where put the umbrella.",
+        "ans": "X",
+        "opts": [
+          "O",
+          "X"
+        ],
+        "type": "ox",
+        "level": 1
+      },
+      {
+        "id": "g2_l8_x11",
+        "kor": "이 오래된 시계를 고치는 것은 그에게 어렵다.",
+        "eng": "It is difficult ___ him to fix this old clock.",
+        "ans": "for",
+        "opts": [
+          "for",
+          "of",
+          "to",
+          "with"
+        ],
+        "level": 2
+      },
+      {
+        "id": "g2_l8_x12",
+        "kor": "밤에 혼자 산길을 걷는 것은 그에게 위험하다.",
+        "eng": "It is dangerous ___ him to walk on the mountain path alone at night.",
+        "ans": "for",
+        "opts": [
+          "for",
+          "of",
+          "to",
+          "with"
+        ],
+        "level": 2
+      },
+      {
+        "id": "g2_l8_x13",
+        "kor": "낯선 도시에서 길을 찾는 것은 쉽지 않다.",
+        "eng": "It is not easy ___ the way in an unfamiliar city.",
+        "ans": "to find",
+        "opts": [
+          "to find",
+          "find",
+          "finding",
+          "found"
+        ],
+        "level": 2
+      },
+      {
+        "id": "g2_l8_x14",
+        "kor": "그녀는 면접에서 무엇을 입어야 할지 확신이 없었다.",
+        "eng": "She wasn't sure ___ to wear for the interview.",
+        "ans": "what",
+        "opts": [
+          "what",
+          "where",
+          "when",
+          "why"
+        ],
+        "level": 2
+      },
+      {
+        "id": "g2_l8_x15",
+        "kor": "그 코치는 우리에게 이 무거운 공을 어떻게 던지는지 보여 주었다.",
+        "eng": "The coach showed us ___ to throw this heavy ball.",
+        "ans": "how",
+        "opts": [
+          "how",
+          "what",
+          "where",
+          "when"
+        ],
+        "level": 2
+      },
+      {
+        "id": "g2_l8_x16",
+        "kor": "우리는 그 깜짝 파티를 언제 시작할지 함께 정해야 한다.",
+        "eng": "We need to decide ___ to start the surprise party together.",
+        "ans": "when",
+        "opts": [
+          "when",
+          "what",
+          "where",
+          "why"
+        ],
+        "level": 2
+      },
+      {
+        "id": "g2_l8_x17",
+        "kor": "그는 그 새 컴퓨터를 어떻게 설치하는지 잘 모르겠다.",
+        "eng": "He is not sure how ___ the new computer.",
+        "ans": "to set up",
+        "opts": [
+          "to set up",
+          "set up",
+          "setting up",
+          "sets up"
+        ],
+        "level": 2
+      },
+      {
+        "id": "g2_l8_x18",
+        "kor": "나는 이 소포를 어디로 보내야 할지 잊어버렸다.",
+        "eng": "I forgot where ___ this package.",
+        "ans": "to send",
+        "opts": [
+          "to send",
+          "send",
+          "sending",
+          "sent"
+        ],
+        "level": 2
+      },
+      {
+        "id": "g2_l8_x19",
+        "kor": "새로운 친구들을 사귀는 것은 항상 신난다.",
+        "eng": "다음 중 어법에 맞는 것을 고르세요.",
+        "ans": "It is always exciting to make new friends.",
+        "opts": [
+          "It is always exciting make new friends.",
+          "It is always exciting to make new friends.",
+          "That is always exciting to make new friends.",
+          "It is always exciting making new friends."
+        ],
+        "level": 2
+      },
+      {
+        "id": "g2_l8_x20",
+        "kor": "그녀는 그 낡은 라디오를 어떻게 고치는지 내게 가르쳐 주었다.",
+        "eng": "다음 중 어법에 맞는 것을 고르세요.",
+        "ans": "She taught me how to repair the old radio.",
+        "opts": [
+          "She taught me how repair the old radio.",
+          "She taught me what to repair the old radio.",
+          "She taught me how to repair the old radio.",
+          "She taught me how repairing the old radio."
+        ],
+        "level": 2
+      },
+      {
+        "id": "g2_l8_x21",
+        "kor": "많은 사람들 앞에서 노래하는 것은 그에게 쉽지 않다.",
+        "eng": "다음 중 어법에 맞는 것을 고르세요.",
+        "ans": "It is not easy for him to sing in front of many people.",
+        "opts": [
+          "It is not easy of him to sing in front of many people.",
+          "It is not easy for him sing in front of many people.",
+          "It is not easy for him to sing in front of many people.",
+          "That is not easy for him to sing in front of many people."
+        ],
+        "level": 2
+      },
+      {
+        "id": "g2_l8_x22",
+        "kor": "너는 캠핑에 무엇을 가져가야 할지 알고 있니?",
+        "eng": "다음 중 어법에 맞는 것을 고르세요.",
+        "ans": "Do you know what to bring to the camping trip?",
+        "opts": [
+          "Do you know what bring to the camping trip?",
+          "Do you know what to bring to the camping trip?",
+          "Do you know to what bring to the camping trip?",
+          "Do you know what bringing to the camping trip?"
+        ],
+        "level": 2
+      },
+      {
+        "id": "g2_l8_x23",
+        "kor": "제시간에 그 숙제를 끝내는 것은 중요하다. — 맞으면 O · 틀리면 X",
+        "eng": "It is important to finish the homework on time.",
+        "ans": "O",
+        "opts": [
+          "O",
+          "X"
+        ],
+        "type": "ox",
+        "level": 2
+      },
+      {
+        "id": "g2_l8_x24",
+        "kor": "그들은 그 회의를 어디서 열지 정하지 못했다.",
+        "eng": "They couldn't decide where to hold the meeting.",
+        "ans": "O",
+        "opts": [
+          "O",
+          "X"
+        ],
+        "type": "ox",
+        "level": 2
+      },
+      {
+        "id": "g2_l8_x25",
+        "kor": "매일 책을 읽는 것은 좋은 습관이다. — 맞으면 O · 틀리면 X",
+        "eng": "It is a good habit read books every day.",
+        "ans": "X",
+        "opts": [
+          "O",
+          "X"
+        ],
+        "type": "ox",
+        "level": 2
+      },
+      {
+        "id": "g2_l8_x26",
+        "kor": "많은 사람들은 흥미로운 책을 어떻게 찾는지 모른다. — 맞으면 O · 틀리면 X",
+        "eng": "Many people don't know how finding interesting books.",
+        "ans": "X",
+        "opts": [
+          "O",
+          "X"
+        ],
+        "type": "ox",
+        "level": 2
       }
     ]
   },

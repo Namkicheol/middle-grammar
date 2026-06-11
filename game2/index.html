@@ -698,10 +698,10 @@ const ATTACK_TYPES = [
   { id:'hook',    label:'💥 훅!',      time:9,   damage:20, chance:.30, color:'#ef4444' },
   { id:'special', label:'☄️ 필살기!', time:5,   damage:30, chance:.20, color:'#a855f7' },
 ];
-// 페이즈별 타이머 배율 (Phase0=1.0, Phase1=0.78, Phase2=0.58)
-const PHASE_TIME_SCALE = [1.0, 0.78, 0.58];
-// 페이즈별 보스 공격 딜레이 범위 [min, max] ms — 짧게 유지해 문제가 끊기지 않고 이어지게
-const PHASE_ATTACK_DELAY = [[2400, 3800], [1900, 3000], [1300, 2200]];
+// 페이즈별 타이머 배율 (Phase0=1.0, Phase1=0.84, Phase2=0.70) — 최종 페이즈가 너무 촉박하지 않게 완화
+const PHASE_TIME_SCALE = [1.0, 0.84, 0.70];
+// 페이즈별 보스 공격 딜레이 범위 [min, max] ms — 최종 페이즈 과속 완화(1300→1700)
+const PHASE_ATTACK_DELAY = [[2400, 3800], [2100, 3200], [1700, 2600]];
 const STATUS_FX = {
   BURN:   { icon:'🔥', label:'화염', color:'#ef4444', dur:18000, desc:'오답 2배 피해' },
   FREEZE: { icon:'🧊', label:'빙결', color:'#60a5fa', dur:14000, desc:'제한시간 절반' },
@@ -763,9 +763,9 @@ const UPGRADE_CARDS = [
   { icon:'🔋', title:'시작 게이지 +30%', desc:'스테이지 시작 시 필살기 충전', stat:'startGauge', val:30, color:'#22d3ee' },
 ];
 // 스테이지별 난이도 배율 (stage 1=기본, 이후 점점 빡세짐)
-function stageTimeMul()  { return Math.pow(0.9,  (GS ? GS.stage : 1) - 1); }  // 제한시간 감소
+function stageTimeMul()  { return Math.max(0.80, Math.pow(0.94, (GS ? GS.stage : 1) - 1)); }  // 제한시간 감소(완만 + 하한 0.80)
 function stageDmgMul()   { return 1 + 0.25 * ((GS ? GS.stage : 1) - 1); }      // 피격 데미지 증가
-function stageSpeedMul() { return Math.pow(0.85, (GS ? GS.stage : 1) - 1); }   // 보스 공격 간격 단축
+function stageSpeedMul() { return Math.max(0.78, Math.pow(0.92, (GS ? GS.stage : 1) - 1)); }   // 보스 공격 간격 단축(완만 + 하한 0.78)
 
 // ── 로그라이크 노드 종류 + 노드별 난이도 배율 ──
 const RUN_NODES = {

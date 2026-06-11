@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Unit 03 · be동사 과거형 (was/were)</title>
+<title>Unit 03 · 과거형 &amp; 시간 접속사 when</title>
 <link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@400;600;700;800&family=Noto+Sans+KR:wght@400;500;700&display=swap" rel="stylesheet">
 <style>:root{--sky:#e0f2fe;--blue:#0ea5e9;--dark:#0c4a6e;--green:#22c55e;--red:#ef4444;--purple:#8b5cf6;--bg:#f0f9ff;--white:#fff;--gray:#94a3b8;}
 *{margin:0;padding:0;box-sizing:border-box;}
@@ -78,8 +78,8 @@ body{font-family:'Baloo 2','Noto Sans KR',sans-serif;background:var(--bg);paddin
 <div id="toast"></div>
 <div class="header">
   <div class="hbadge">📝 Unit 03 Grammar</div>
-  <h1>be동사 과거형</h1>
-  <p>was / were 선택 · 부정문 · 의문문 · 총 45문제</p>
+  <h1>과거형 &amp; 시간 접속사 when</h1>
+  <p>be·일반동사 과거 · 부정/의문 · when절 · 총 45문제</p>
 </div>
 <div class="scoreboard">
   <div class="sc t"><div class="n" id="sc-t">0</div><div class="l">완료</div></div>
@@ -91,14 +91,15 @@ body{font-family:'Baloo 2','Noto Sans KR',sans-serif;background:var(--bg);paddin
   <div class="pbg"><div class="pfill" id="pf" style="width:0%"></div></div>
 </div>
 <div class="tabs">
-  <button class="tab active" onclick="sw(0,this)">📌 was/were (20문제)</button>
-  <button class="tab" onclick="sw(1,this)">📌 부정문·의문문 (20문제)</button>
-  <button class="tab" onclick="sw(2,this)">🔀 단어 배열 (5문제)</button>
+  <button class="tab active" onclick="sw(0,this)">📌 be동사 과거 (15)</button>
+  <button class="tab" onclick="sw(1,this)">🏃 일반동사 과거 (15)</button>
+  <button class="tab" onclick="sw(2,this)">🔗 when 접속사 (10)</button>
+  <button class="tab" onclick="sw(3,this)">🔀 단어 배열 (5)</button>
 </div>
 
-<!-- ── Section A: was / were ── -->
+<!-- ── Section A: be동사 과거 was/were ── -->
 <div class="sec show" id="s0">
-  <div class="sec-hdr"><div class="lbl">Point A · 20문제</div><h2>be동사 과거형 — was / were</h2><div class="desc">선택형(1–10) + 빈칸(11–20)</div></div>
+  <div class="sec-hdr"><div class="lbl">Point A · 15문제</div><h2>be동사 과거형 — was / were</h2><div class="desc">선택형(1–10) + 빈칸(11–15) · 긍정·부정·의문</div></div>
 
   <div class='question-card' id='qc-a1'><span class='q-num'>1</span>
     <div class='q-text'>I <em>___</em> ten years old last year.</div>
@@ -117,323 +118,328 @@ body{font-family:'Baloo 2','Noto Sans KR',sans-serif;background:var(--bg);paddin
   </div>
 
   <div class='question-card' id='qc-a3'><span class='q-num'>3</span>
-    <div class='q-text'>She <em>___</em> tired after school.</div>
-    <div class='q-kor'>그녀는 방과 후 피곤했다.</div>
+    <div class='q-text'>The math test <em>___</em> very difficult.</div>
+    <div class='q-kor'>그 수학 시험은 매우 어려웠다.</div>
     <div class='choices' data-qid='a3' data-ans='was'><button class="choice" onclick="pickChoice(this)">was</button><button class="choice" onclick="pickChoice(this)">were</button><button class="choice" onclick="pickChoice(this)">is</button><button class="choice" onclick="pickChoice(this)">be</button></div>
-    <div class='answer-hint' id='ah-a3'>💡 정답: <strong>was</strong> — She(3인칭 단수, 과거) → was<br>📝 해석: 그녀는 방과 후 피곤했다.</div>
+    <div class='answer-hint' id='ah-a3'>💡 정답: <strong>was</strong> — The math test(단수, 과거) → was<br>📝 해석: 그 수학 시험은 매우 어려웠다.</div>
     <button class='hint-btn' onclick="showHint('a3')">💡 힌트 보기</button>
   </div>
 
   <div class='question-card' id='qc-a4'><span class='q-num'>4</span>
-    <div class='q-text'>We <em>___</em> late for the party.</div>
-    <div class='q-kor'>우리는 파티에 늦었다.</div>
-    <div class='choices' data-qid='a4' data-ans='were'><button class="choice" onclick="pickChoice(this)">was</button><button class="choice" onclick="pickChoice(this)">were</button><button class="choice" onclick="pickChoice(this)">is</button><button class="choice" onclick="pickChoice(this)">am</button></div>
-    <div class='answer-hint' id='ah-a4'>💡 정답: <strong>were</strong> — We(복수, 과거) → were<br>📝 해석: 우리는 파티에 늦었다.</div>
+    <div class='q-text'>Tom and Jina <em>___</em> in the same class last year.</div>
+    <div class='q-kor'>Tom과 Jina는 작년에 같은 반이었다.</div>
+    <div class='choices' data-qid='a4' data-ans='were'><button class="choice" onclick="pickChoice(this)">was</button><button class="choice" onclick="pickChoice(this)">were</button><button class="choice" onclick="pickChoice(this)">is</button><button class="choice" onclick="pickChoice(this)">are</button></div>
+    <div class='answer-hint' id='ah-a4'>💡 정답: <strong>were</strong> — Tom and Jina(복수, 과거) → were<br>📝 해석: Tom과 Jina는 작년에 같은 반이었다.</div>
     <button class='hint-btn' onclick="showHint('a4')">💡 힌트 보기</button>
   </div>
 
   <div class='question-card' id='qc-a5'><span class='q-num'>5</span>
-    <div class='q-text'>The test <em>___</em> very hard.</div>
-    <div class='q-kor'>시험은 매우 어려웠다.</div>
+    <div class='q-text'>It <em>___</em> cold and snowy last winter.</div>
+    <div class='q-kor'>지난 겨울은 춥고 눈이 많이 왔다.</div>
     <div class='choices' data-qid='a5' data-ans='was'><button class="choice" onclick="pickChoice(this)">was</button><button class="choice" onclick="pickChoice(this)">were</button><button class="choice" onclick="pickChoice(this)">are</button><button class="choice" onclick="pickChoice(this)">be</button></div>
-    <div class='answer-hint' id='ah-a5'>💡 정답: <strong>was</strong> — The test(단수, 과거) → was<br>📝 해석: 시험은 매우 어려웠다.</div>
+    <div class='answer-hint' id='ah-a5'>💡 정답: <strong>was</strong> — It(단수, 과거) → was<br>📝 해석: 지난 겨울은 춥고 눈이 많이 왔다.</div>
     <button class='hint-btn' onclick="showHint('a5')">💡 힌트 보기</button>
   </div>
 
   <div class='question-card' id='qc-a6'><span class='q-num'>6</span>
-    <div class='q-text'>Tom and Jina <em>___</em> in the same class last year.</div>
-    <div class='q-kor'>Tom과 Jina는 작년에 같은 반이었다.</div>
-    <div class='choices' data-qid='a6' data-ans='were'><button class="choice" onclick="pickChoice(this)">was</button><button class="choice" onclick="pickChoice(this)">were</button><button class="choice" onclick="pickChoice(this)">is</button><button class="choice" onclick="pickChoice(this)">are</button></div>
-    <div class='answer-hint' id='ah-a6'>💡 정답: <strong>were</strong> — Tom and Jina(복수, 과거) → were<br>📝 해석: Tom과 Jina는 작년에 같은 반이었다.</div>
+    <div class='q-text'>You and I <em>___</em> partners for the science project.</div>
+    <div class='q-kor'>너와 나는 과학 프로젝트의 파트너였다.</div>
+    <div class='choices' data-qid='a6' data-ans='were'><button class="choice" onclick="pickChoice(this)">was</button><button class="choice" onclick="pickChoice(this)">were</button><button class="choice" onclick="pickChoice(this)">am</button><button class="choice" onclick="pickChoice(this)">is</button></div>
+    <div class='answer-hint' id='ah-a6'>💡 정답: <strong>were</strong> — You and I(복수, 과거) → were<br>📝 해석: 너와 나는 과학 프로젝트의 파트너였다.</div>
     <button class='hint-btn' onclick="showHint('a6')">💡 힌트 보기</button>
   </div>
 
   <div class='question-card' id='qc-a7'><span class='q-num'>7</span>
-    <div class='q-text'>You <em>___</em> at home this morning.</div>
-    <div class='q-kor'>너는 오늘 아침에 집에 있었다.</div>
-    <div class='choices' data-qid='a7' data-ans='were'><button class="choice" onclick="pickChoice(this)">was</button><button class="choice" onclick="pickChoice(this)">were</button><button class="choice" onclick="pickChoice(this)">am</button><button class="choice" onclick="pickChoice(this)">is</button></div>
-    <div class='answer-hint' id='ah-a7'>💡 정답: <strong>were</strong> — You(과거) → were<br>📝 해석: 너는 오늘 아침에 집에 있었다.</div>
+    <div class='q-text'>He <em>___</em> at school yesterday. He was at home.</div>
+    <div class='q-kor'>그는 어제 학교에 없었다. 그는 집에 있었다.</div>
+    <div class='choices' data-qid='a7' data-ans='was not'><button class="choice" onclick="pickChoice(this)">was not</button><button class="choice" onclick="pickChoice(this)">were not</button><button class="choice" onclick="pickChoice(this)">not was</button><button class="choice" onclick="pickChoice(this)">is not</button></div>
+    <div class='answer-hint' id='ah-a7'>💡 정답: <strong>was not</strong> — He(단수, 과거 부정) → was not / wasn't도 정답<br>📝 해석: 그는 어제 학교에 없었다. 그는 집에 있었다.</div>
     <button class='hint-btn' onclick="showHint('a7')">💡 힌트 보기</button>
   </div>
 
   <div class='question-card' id='qc-a8'><span class='q-num'>8</span>
-    <div class='q-text'>My dog <em>___</em> sick yesterday.</div>
-    <div class='q-kor'>내 강아지는 어제 아팠다.</div>
-    <div class='choices' data-qid='a8' data-ans='was'><button class="choice" onclick="pickChoice(this)">was</button><button class="choice" onclick="pickChoice(this)">were</button><button class="choice" onclick="pickChoice(this)">are</button><button class="choice" onclick="pickChoice(this)">be</button></div>
-    <div class='answer-hint' id='ah-a8'>💡 정답: <strong>was</strong> — My dog(단수, 과거) → was<br>📝 해석: 내 강아지는 어제 아팠다.</div>
+    <div class='q-text'>The children <em>___</em> quiet in the museum.</div>
+    <div class='q-kor'>아이들은 박물관에서 조용하지 않았다.</div>
+    <div class='choices' data-qid='a8' data-ans='were not'><button class="choice" onclick="pickChoice(this)">was not</button><button class="choice" onclick="pickChoice(this)">were not</button><button class="choice" onclick="pickChoice(this)">not were</button><button class="choice" onclick="pickChoice(this)">are not</button></div>
+    <div class='answer-hint' id='ah-a8'>💡 정답: <strong>were not</strong> — The children(복수, 과거 부정) → were not / weren't도 정답<br>📝 해석: 아이들은 박물관에서 조용하지 않았다.</div>
     <button class='hint-btn' onclick="showHint('a8')">💡 힌트 보기</button>
   </div>
 
   <div class='question-card' id='qc-a9'><span class='q-num'>9</span>
-    <div class='q-text'>The books <em>___</em> on the desk.</div>
-    <div class='q-kor'>그 책들은 책상 위에 있었다.</div>
-    <div class='choices' data-qid='a9' data-ans='were'><button class="choice" onclick="pickChoice(this)">was</button><button class="choice" onclick="pickChoice(this)">were</button><button class="choice" onclick="pickChoice(this)">is</button><button class="choice" onclick="pickChoice(this)">am</button></div>
-    <div class='answer-hint' id='ah-a9'>💡 정답: <strong>were</strong> — The books(복수, 과거) → were<br>📝 해석: 그 책들은 책상 위에 있었다.</div>
+    <div class='q-text'><em>___</em> you at the library this afternoon? Yes, I was.</div>
+    <div class='q-kor'>너는 오늘 오후에 도서관에 있었니? 응, 있었어.</div>
+    <div class='choices' data-qid='a9' data-ans='Were'><button class="choice" onclick="pickChoice(this)">Was</button><button class="choice" onclick="pickChoice(this)">Were</button><button class="choice" onclick="pickChoice(this)">Is</button><button class="choice" onclick="pickChoice(this)">Are</button></div>
+    <div class='answer-hint' id='ah-a9'>💡 정답: <strong>Were</strong> — You(과거 의문문) → Were<br>📝 해석: 너는 오늘 오후에 도서관에 있었니? 응, 있었어.</div>
     <button class='hint-btn' onclick="showHint('a9')">💡 힌트 보기</button>
   </div>
 
   <div class='question-card' id='qc-a10'><span class='q-num'>10</span>
-    <div class='q-text'>It <em>___</em> cold and snowy last winter. <span class="ex">(be)</span></div>
-    <div class='q-kor'>지난 겨울은 춥고 눈이 많이 왔다.</div>
-    <div class='choices' data-qid='a10' data-ans='was'><button class="choice" onclick="pickChoice(this)">was</button><button class="choice" onclick="pickChoice(this)">were</button><button class="choice" onclick="pickChoice(this)">are</button><button class="choice" onclick="pickChoice(this)">be</button></div>
-    <div class='answer-hint' id='ah-a10'>💡 정답: <strong>was</strong> — It(단수, 과거) → was<br>📝 해석: 지난 겨울은 춥고 눈이 많이 왔다.</div>
+    <div class='q-text'><em>___</em> the test difficult? No, it wasn't.</div>
+    <div class='q-kor'>시험이 어려웠니? 아니, 어렵지 않았어.</div>
+    <div class='choices' data-qid='a10' data-ans='Was'><button class="choice" onclick="pickChoice(this)">Was</button><button class="choice" onclick="pickChoice(this)">Were</button><button class="choice" onclick="pickChoice(this)">Is</button><button class="choice" onclick="pickChoice(this)">Are</button></div>
+    <div class='answer-hint' id='ah-a10'>💡 정답: <strong>Was</strong> — The test(단수, 과거 의문문) → Was<br>📝 해석: 시험이 어려웠니? 아니, 어렵지 않았어.</div>
     <button class='hint-btn' onclick="showHint('a10')">💡 힌트 보기</button>
   </div>
 
   <div class='question-card' id='qc-a11'><span class='q-num'>11</span>
-    <div class='q-text'>I <input class="blank" id="bi-a11" placeholder="___" data-ans="was" autocomplete="off" style="min-width:90px"> happy to see you again. <span class="ex">(be)</span></div>
-    <div class='q-kor'>나는 너를 다시 만나서 기뻤다.</div>
+    <div class='q-text'>My parents <input class="blank" id="bi-a11" placeholder="___" data-ans="were" autocomplete="off" style="min-width:90px"> at work all day. <span class="ex">(be)</span></div>
+    <div class='q-kor'>나의 부모님은 하루 종일 직장에 계셨다.</div>
     <button class='check-btn' onclick="checkBlank('a11')">✔ 확인</button>
-    <div class='answer-hint' id='ah-a11'>💡 정답: <strong>was</strong> — I(1인칭 단수, 과거) → was<br>📝 해석: 나는 너를 다시 만나서 기뻤다.</div>
+    <div class='answer-hint' id='ah-a11'>💡 정답: <strong>were</strong> — My parents(복수, 과거) → were<br>📝 해석: 나의 부모님은 하루 종일 직장에 계셨다.</div>
     <button class='hint-btn' onclick="showHint('a11')">💡 힌트 보기</button>
   </div>
 
   <div class='question-card' id='qc-a12'><span class='q-num'>12</span>
-    <div class='q-text'>My parents <input class="blank" id="bi-a12" placeholder="___" data-ans="were" autocomplete="off" style="min-width:90px"> at work all day. <span class="ex">(be)</span></div>
-    <div class='q-kor'>나의 부모님은 하루 종일 직장에 계셨다.</div>
+    <div class='q-text'>The movie <input class="blank" id="bi-a12" placeholder="___" data-ans="was" autocomplete="off" style="min-width:90px"> very boring. <span class="ex">(be)</span></div>
+    <div class='q-kor'>그 영화는 매우 지루했다.</div>
     <button class='check-btn' onclick="checkBlank('a12')">✔ 확인</button>
-    <div class='answer-hint' id='ah-a12'>💡 정답: <strong>were</strong> — My parents(복수, 과거) → were<br>📝 해석: 나의 부모님은 하루 종일 직장에 계셨다.</div>
+    <div class='answer-hint' id='ah-a12'>💡 정답: <strong>was</strong> — The movie(단수, 과거) → was<br>📝 해석: 그 영화는 매우 지루했다.</div>
     <button class='hint-btn' onclick="showHint('a12')">💡 힌트 보기</button>
   </div>
 
   <div class='question-card' id='qc-a13'><span class='q-num'>13</span>
-    <div class='q-text'>The movie <input class="blank" id="bi-a13" placeholder="___" data-ans="was" autocomplete="off" style="min-width:90px"> very boring. <span class="ex">(be)</span></div>
-    <div class='q-kor'>그 영화는 매우 지루했다.</div>
+    <div class='q-text'>Kate <input class="blank" id="bi-a13" placeholder="___" data-ans="was not" autocomplete="off" style="min-width:110px"> at home. She was at school. <span class='ex'>(be, 부정형)</span></div>
+    <div class='q-kor'>Kate는 집에 없었다. 그녀는 학교에 있었다.</div>
     <button class='check-btn' onclick="checkBlank('a13')">✔ 확인</button>
-    <div class='answer-hint' id='ah-a13'>💡 정답: <strong>was</strong> — The movie(단수, 과거) → was<br>📝 해석: 그 영화는 매우 지루했다.</div>
+    <div class='answer-hint' id='ah-a13'>💡 정답: <strong>was not</strong> — Kate(단수, 과거 부정) → was not / wasn't도 정답<br>📝 해석: Kate는 집에 없었다. 그녀는 학교에 있었다.</div>
     <button class='hint-btn' onclick="showHint('a13')">💡 힌트 보기</button>
   </div>
 
   <div class='question-card' id='qc-a14'><span class='q-num'>14</span>
-    <div class='q-text'>Jack and his brother <input class="blank" id="bi-a14" placeholder="___" data-ans="were" autocomplete="off" style="min-width:90px"> at the swimming pool. <span class="ex">(be)</span></div>
-    <div class='q-kor'>Jack과 그의 형(동생)은 수영장에 있었다.</div>
+    <div class='q-text'><input class="blank" id="bi-a14" placeholder="___" data-ans="Was" autocomplete="off" style="min-width:90px"> it sunny yesterday? Yes, it was. <span class='ex'>(의문문 완성)</span></div>
+    <div class='q-kor'>어제 화창했니? 응, 화창했어.</div>
     <button class='check-btn' onclick="checkBlank('a14')">✔ 확인</button>
-    <div class='answer-hint' id='ah-a14'>💡 정답: <strong>were</strong> — Jack and his brother(복수, 과거) → were<br>📝 해석: Jack과 그의 형(동생)은 수영장에 있었다.</div>
+    <div class='answer-hint' id='ah-a14'>💡 정답: <strong>Was</strong> — It(단수, 과거 의문문) → Was<br>📝 해석: 어제 화창했니? 응, 화창했어.</div>
     <button class='hint-btn' onclick="showHint('a14')">💡 힌트 보기</button>
   </div>
 
   <div class='question-card' id='qc-a15'><span class='q-num'>15</span>
-    <div class='q-text'>It <input class="blank" id="bi-a15" placeholder="___" data-ans="was" autocomplete="off" style="min-width:90px"> quiet in the classroom. <span class="ex">(be)</span></div>
-    <div class='q-kor'>교실은 조용했다.</div>
-    <button class='check-btn' onclick="checkBlank('a15')">✔ 확인</button>
-    <div class='answer-hint' id='ah-a15'>💡 정답: <strong>was</strong> — It(단수, 과거) → was<br>📝 해석: 교실은 조용했다.</div>
-    <button class='hint-btn' onclick="showHint('a15')">💡 힌트 보기</button>
-  </div>
-
-  <div class='question-card' id='qc-a16'><span class='q-num'>16</span>
-    <div class='q-text'>We <input class="blank" id="bi-a16" placeholder="___" data-ans="were" autocomplete="off" style="min-width:90px"> good friends in elementary school. <span class="ex">(be)</span></div>
+    <div class='q-text'>We <input class="blank" id="bi-a15" placeholder="___" data-ans="were" autocomplete="off" style="min-width:90px"> good friends in elementary school. <span class="ex">(be)</span></div>
     <div class='q-kor'>우리는 초등학교 때 좋은 친구였다.</div>
-    <button class='check-btn' onclick="checkBlank('a16')">✔ 확인</button>
-    <div class='answer-hint' id='ah-a16'>💡 정답: <strong>were</strong> — We(복수, 과거) → were<br>📝 해석: 우리는 초등학교 때 좋은 친구였다.</div>
-    <button class='hint-btn' onclick="showHint('a16')">💡 힌트 보기</button>
-  </div>
-
-  <div class='question-card' id='qc-a17'><span class='q-num'>17</span>
-    <div class='q-text'>The food <input class="blank" id="bi-a17" placeholder="___" data-ans="was" autocomplete="off" style="min-width:90px"> delicious! <span class="ex">(be)</span></div>
-    <div class='q-kor'>그 음식은 맛있었다!</div>
-    <button class='check-btn' onclick="checkBlank('a17')">✔ 확인</button>
-    <div class='answer-hint' id='ah-a17'>💡 정답: <strong>was</strong> — The food(단수, 과거) → was<br>📝 해석: 그 음식은 맛있었다!</div>
-    <button class='hint-btn' onclick="showHint('a17')">💡 힌트 보기</button>
-  </div>
-
-  <div class='question-card' id='qc-a18'><span class='q-num'>18</span>
-    <div class='q-text'>The students <input class="blank" id="bi-a18" placeholder="___" data-ans="were" autocomplete="off" style="min-width:90px"> excited about the field trip. <span class="ex">(be)</span></div>
-    <div class='q-kor'>학생들은 현장학습에 신이 났다.</div>
-    <button class='check-btn' onclick="checkBlank('a18')">✔ 확인</button>
-    <div class='answer-hint' id='ah-a18'>💡 정답: <strong>were</strong> — The students(복수, 과거) → were<br>📝 해석: 학생들은 현장학습에 신이 났다.</div>
-    <button class='hint-btn' onclick="showHint('a18')">💡 힌트 보기</button>
-  </div>
-
-  <div class='question-card' id='qc-a19'><span class='q-num'>19</span>
-    <div class='q-text'>Lisa <input class="blank" id="bi-a19" placeholder="___" data-ans="was" autocomplete="off" style="min-width:90px"> a great singer when she was young. <span class="ex">(be)</span></div>
-    <div class='q-kor'>Lisa는 어렸을 때 훌륭한 가수였다.</div>
-    <button class='check-btn' onclick="checkBlank('a19')">✔ 확인</button>
-    <div class='answer-hint' id='ah-a19'>💡 정답: <strong>was</strong> — Lisa(3인칭 단수, 과거) → was<br>📝 해석: Lisa는 어렸을 때 훌륭한 가수였다.</div>
-    <button class='hint-btn' onclick="showHint('a19')">💡 힌트 보기</button>
-  </div>
-
-  <div class='question-card' id='qc-a20'><span class='q-num'>20</span>
-    <div class='q-text'>You and I <input class="blank" id="bi-a20" placeholder="___" data-ans="were" autocomplete="off" style="min-width:90px"> partners for the science project. <span class="ex">(be)</span></div>
-    <div class='q-kor'>너와 나는 과학 프로젝트의 파트너였다.</div>
-    <button class='check-btn' onclick="checkBlank('a20')">✔ 확인</button>
-    <div class='answer-hint' id='ah-a20'>💡 정답: <strong>were</strong> — You and I(복수, 과거) → were<br>📝 해석: 너와 나는 과학 프로젝트의 파트너였다.</div>
-    <button class='hint-btn' onclick="showHint('a20')">💡 힌트 보기</button>
+    <button class='check-btn' onclick="checkBlank('a15')">✔ 확인</button>
+    <div class='answer-hint' id='ah-a15'>💡 정답: <strong>were</strong> — We(복수, 과거) → were<br>📝 해석: 우리는 초등학교 때 좋은 친구였다.</div>
+    <button class='hint-btn' onclick="showHint('a15')">💡 힌트 보기</button>
   </div>
 </div>
 
-<!-- ── Section B: 부정문·의문문 ── -->
+<!-- ── Section B: 일반동사 과거 ── -->
 <div class="sec" id="s1">
-  <div class="sec-hdr"><div class="lbl">Point B · 20문제</div><h2>부정문 &amp; 의문문</h2><div class="desc">선택형(1–10) + 빈칸(11–20) / 20번은 was/were 긍정형 종합 복습</div></div>
+  <div class="sec-hdr"><div class="lbl">Point B · 15문제</div><h2>일반동사 과거형</h2><div class="desc">규칙·불규칙(1–6) · 부정 didn't·의문 Did(7–10) · 빈칸(11–15)</div></div>
 
   <div class='question-card' id='qc-b1'><span class='q-num'>1</span>
-    <div class='q-text'>He <em>___</em> at school yesterday. He was at home.</div>
-    <div class='q-kor'>그는 어제 학교에 없었다. 그는 집에 있었다.</div>
-    <div class='choices' data-qid='b1' data-ans='was not'><button class="choice" onclick="pickChoice(this)">was not</button><button class="choice" onclick="pickChoice(this)">were not</button><button class="choice" onclick="pickChoice(this)">not was</button><button class="choice" onclick="pickChoice(this)">is not</button></div>
-    <div class='answer-hint' id='ah-b1'>💡 정답: <strong>was not</strong> — He(단수, 과거 부정) → was not / wasn't도 정답<br>📝 해석: 그는 어제 학교에 없었다. 그는 집에 있었다.</div>
+    <div class='q-text'>I <em>___</em> soccer with my friends yesterday.</div>
+    <div class='q-kor'>나는 어제 친구들과 축구를 했다.</div>
+    <div class='choices' data-qid='b1' data-ans='played'><button class="choice" onclick="pickChoice(this)">played</button><button class="choice" onclick="pickChoice(this)">play</button><button class="choice" onclick="pickChoice(this)">plays</button><button class="choice" onclick="pickChoice(this)">playing</button></div>
+    <div class='answer-hint' id='ah-b1'>💡 정답: <strong>played</strong> — 규칙 변화 play → played (yesterday: 과거)<br>📝 해석: 나는 어제 친구들과 축구를 했다.</div>
     <button class='hint-btn' onclick="showHint('b1')">💡 힌트 보기</button>
   </div>
 
   <div class='question-card' id='qc-b2'><span class='q-num'>2</span>
-    <div class='q-text'>The children <em>___</em> quiet in the museum.</div>
-    <div class='q-kor'>아이들은 박물관에서 조용하지 않았다.</div>
-    <div class='choices' data-qid='b2' data-ans='were not'><button class="choice" onclick="pickChoice(this)">was not</button><button class="choice" onclick="pickChoice(this)">were not</button><button class="choice" onclick="pickChoice(this)">not were</button><button class="choice" onclick="pickChoice(this)">are not</button></div>
-    <div class='answer-hint' id='ah-b2'>💡 정답: <strong>were not</strong> — The children(복수, 과거 부정) → were not / weren't도 정답<br>📝 해석: 아이들은 박물관에서 조용하지 않았다.</div>
+    <div class='q-text'>She <em>___</em> to the market and bought some fruit.</div>
+    <div class='q-kor'>그녀는 시장에 가서 과일을 좀 샀다.</div>
+    <div class='choices' data-qid='b2' data-ans='went'><button class="choice" onclick="pickChoice(this)">went</button><button class="choice" onclick="pickChoice(this)">goed</button><button class="choice" onclick="pickChoice(this)">go</button><button class="choice" onclick="pickChoice(this)">goes</button></div>
+    <div class='answer-hint' id='ah-b2'>💡 정답: <strong>went</strong> — 불규칙 변화 go → went<br>📝 해석: 그녀는 시장에 가서 과일을 좀 샀다.</div>
     <button class='hint-btn' onclick="showHint('b2')">💡 힌트 보기</button>
   </div>
 
   <div class='question-card' id='qc-b3'><span class='q-num'>3</span>
-    <div class='q-text'>The weather <em>___</em> nice. It was rainy and windy.</div>
-    <div class='q-kor'>날씨가 좋지 않았다. 비가 오고 바람이 불었다.</div>
-    <div class='choices' data-qid='b3' data-ans='was not'><button class="choice" onclick="pickChoice(this)">was not</button><button class="choice" onclick="pickChoice(this)">were not</button><button class="choice" onclick="pickChoice(this)">is not</button><button class="choice" onclick="pickChoice(this)">are not</button></div>
-    <div class='answer-hint' id='ah-b3'>💡 정답: <strong>was not</strong> — The weather(단수, 과거 부정) → was not / wasn't도 정답<br>📝 해석: 날씨가 좋지 않았다. 비가 오고 바람이 불었다.</div>
+    <div class='q-text'>We <em>___</em> a movie at home last night.</div>
+    <div class='q-kor'>우리는 어젯밤 집에서 영화를 봤다.</div>
+    <div class='choices' data-qid='b3' data-ans='watched'><button class="choice" onclick="pickChoice(this)">watched</button><button class="choice" onclick="pickChoice(this)">watch</button><button class="choice" onclick="pickChoice(this)">watches</button><button class="choice" onclick="pickChoice(this)">watching</button></div>
+    <div class='answer-hint' id='ah-b3'>💡 정답: <strong>watched</strong> — 규칙 변화 watch → watched (last night: 과거)<br>📝 해석: 우리는 어젯밤 집에서 영화를 봤다.</div>
     <button class='hint-btn' onclick="showHint('b3')">💡 힌트 보기</button>
   </div>
 
   <div class='question-card' id='qc-b4'><span class='q-num'>4</span>
-    <div class='q-text'>I <em>___</em> nervous before the test. I was excited!</div>
-    <div class='q-kor'>나는 시험 전에 긴장하지 않았다. 나는 신이 났다!</div>
-    <div class='choices' data-qid='b4' data-ans='was not'><button class="choice" onclick="pickChoice(this)">was not</button><button class="choice" onclick="pickChoice(this)">were not</button><button class="choice" onclick="pickChoice(this)">am not</button><button class="choice" onclick="pickChoice(this)">is not</button></div>
-    <div class='answer-hint' id='ah-b4'>💡 정답: <strong>was not</strong> — I(1인칭 단수, 과거 부정) → was not / wasn't도 정답<br>📝 해석: 나는 시험 전에 긴장하지 않았다. 나는 신이 났다!</div>
+    <div class='q-text'>Jaeho <em>___</em> a letter to his grandmother.</div>
+    <div class='q-kor'>재호는 할머니께 편지를 썼다.</div>
+    <div class='choices' data-qid='b4' data-ans='wrote'><button class="choice" onclick="pickChoice(this)">wrote</button><button class="choice" onclick="pickChoice(this)">writed</button><button class="choice" onclick="pickChoice(this)">write</button><button class="choice" onclick="pickChoice(this)">writes</button></div>
+    <div class='answer-hint' id='ah-b4'>💡 정답: <strong>wrote</strong> — 불규칙 변화 write → wrote<br>📝 해석: 재호는 할머니께 편지를 썼다.</div>
     <button class='hint-btn' onclick="showHint('b4')">💡 힌트 보기</button>
   </div>
 
   <div class='question-card' id='qc-b5'><span class='q-num'>5</span>
-    <div class='q-text'><em>___</em> you at the library this afternoon? Yes, I was.</div>
-    <div class='q-kor'>너는 오늘 오후에 도서관에 있었니? 응, 있었어.</div>
-    <div class='choices' data-qid='b5' data-ans='Were'><button class="choice" onclick="pickChoice(this)">Was</button><button class="choice" onclick="pickChoice(this)">Were</button><button class="choice" onclick="pickChoice(this)">Is</button><button class="choice" onclick="pickChoice(this)">Are</button></div>
-    <div class='answer-hint' id='ah-b5'>💡 정답: <strong>Were</strong> — You(과거 의문문) → Were<br>📝 해석: 너는 오늘 오후에 도서관에 있었니? 응, 있었어.</div>
+    <div class='q-text'>My mom <em>___</em> English when she was young.</div>
+    <div class='q-kor'>나의 엄마는 어렸을 때 영어를 공부했다.</div>
+    <div class='choices' data-qid='b5' data-ans='studied'><button class="choice" onclick="pickChoice(this)">studied</button><button class="choice" onclick="pickChoice(this)">studyed</button><button class="choice" onclick="pickChoice(this)">study</button><button class="choice" onclick="pickChoice(this)">studies</button></div>
+    <div class='answer-hint' id='ah-b5'>💡 정답: <strong>studied</strong> — 「자음 + y」는 y를 i로 바꾸고 ed: study → studied<br>📝 해석: 나의 엄마는 어렸을 때 영어를 공부했다.</div>
     <button class='hint-btn' onclick="showHint('b5')">💡 힌트 보기</button>
   </div>
 
   <div class='question-card' id='qc-b6'><span class='q-num'>6</span>
-    <div class='q-text'><em>___</em> she happy with the result? No, she wasn't.</div>
-    <div class='q-kor'>그녀는 결과에 만족했니? 아니, 만족하지 않았어.</div>
-    <div class='choices' data-qid='b6' data-ans='Was'><button class="choice" onclick="pickChoice(this)">Was</button><button class="choice" onclick="pickChoice(this)">Were</button><button class="choice" onclick="pickChoice(this)">Is</button><button class="choice" onclick="pickChoice(this)">Are</button></div>
-    <div class='answer-hint' id='ah-b6'>💡 정답: <strong>Was</strong> — She(단수, 과거 의문문) → Was<br>📝 해석: 그녀는 결과에 만족했니? 아니, 만족하지 않았어.</div>
+    <div class='q-text'>The bus <em>___</em> in front of the school.</div>
+    <div class='q-kor'>버스가 학교 앞에 멈췄다.</div>
+    <div class='choices' data-qid='b6' data-ans='stopped'><button class="choice" onclick="pickChoice(this)">stopped</button><button class="choice" onclick="pickChoice(this)">stoped</button><button class="choice" onclick="pickChoice(this)">stop</button><button class="choice" onclick="pickChoice(this)">stops</button></div>
+    <div class='answer-hint' id='ah-b6'>💡 정답: <strong>stopped</strong> — 「단모음 + 단자음」은 자음을 한 번 더 쓰고 ed: stop → stopped<br>📝 해석: 버스가 학교 앞에 멈췄다.</div>
     <button class='hint-btn' onclick="showHint('b6')">💡 힌트 보기</button>
   </div>
 
   <div class='question-card' id='qc-b7'><span class='q-num'>7</span>
-    <div class='q-text'><em>___</em> the test difficult? No, it wasn't.</div>
-    <div class='q-kor'>시험이 어려웠니? 아니, 어렵지 않았어.</div>
-    <div class='choices' data-qid='b7' data-ans='Was'><button class="choice" onclick="pickChoice(this)">Was</button><button class="choice" onclick="pickChoice(this)">Were</button><button class="choice" onclick="pickChoice(this)">Is</button><button class="choice" onclick="pickChoice(this)">Are</button></div>
-    <div class='answer-hint' id='ah-b7'>💡 정답: <strong>Was</strong> — The test(단수, 과거 의문문) → Was<br>📝 해석: 시험이 어려웠니? 아니, 어렵지 않았어.</div>
+    <div class='q-text'>I <em>___</em> my homework last night. I watched TV instead.</div>
+    <div class='q-kor'>나는 어젯밤 숙제를 하지 않았다. 대신 TV를 봤다.</div>
+    <div class='choices' data-qid='b7' data-ans="didn't do"><button class="choice" onclick="pickChoice(this)">didn't do</button><button class="choice" onclick="pickChoice(this)">don't do</button><button class="choice" onclick="pickChoice(this)">wasn't do</button><button class="choice" onclick="pickChoice(this)">didn't did</button></div>
+    <div class='answer-hint' id='ah-b7'>💡 정답: <strong>didn't do</strong> — 일반동사 과거 부정: didn't + 동사원형(do)<br>📝 해석: 나는 어젯밤 숙제를 하지 않았다. 대신 TV를 봤다.</div>
     <button class='hint-btn' onclick="showHint('b7')">💡 힌트 보기</button>
   </div>
 
   <div class='question-card' id='qc-b8'><span class='q-num'>8</span>
-    <div class='q-text'><em>___</em> they your classmates last year? Yes, they were.</div>
-    <div class='q-kor'>그들은 작년에 너의 반 친구였니? 응, 맞아.</div>
-    <div class='choices' data-qid='b8' data-ans='Were'><button class="choice" onclick="pickChoice(this)">Was</button><button class="choice" onclick="pickChoice(this)">Were</button><button class="choice" onclick="pickChoice(this)">Is</button><button class="choice" onclick="pickChoice(this)">Are</button></div>
-    <div class='answer-hint' id='ah-b8'>💡 정답: <strong>Were</strong> — They(복수, 과거 의문문) → Were<br>📝 해석: 그들은 작년에 너의 반 친구였니? 응, 맞아.</div>
+    <div class='q-text'>She <em>___</em> to school yesterday because she was sick.</div>
+    <div class='q-kor'>그녀는 아파서 어제 학교에 오지 않았다.</div>
+    <div class='choices' data-qid='b8' data-ans="didn't come"><button class="choice" onclick="pickChoice(this)">didn't come</button><button class="choice" onclick="pickChoice(this)">didn't came</button><button class="choice" onclick="pickChoice(this)">wasn't come</button><button class="choice" onclick="pickChoice(this)">doesn't come</button></div>
+    <div class='answer-hint' id='ah-b8'>💡 정답: <strong>didn't come</strong> — didn't 뒤에는 동사원형(come). came(X)<br>📝 해석: 그녀는 아파서 어제 학교에 오지 않았다.</div>
     <button class='hint-btn' onclick="showHint('b8')">💡 힌트 보기</button>
   </div>
 
   <div class='question-card' id='qc-b9'><span class='q-num'>9</span>
-    <div class='q-text'>My grandfather <em>___</em> a farmer. He was a doctor.</div>
-    <div class='q-kor'>나의 할아버지는 농부가 아니었다. 그는 의사였다.</div>
-    <div class='choices' data-qid='b9' data-ans='was not'><button class="choice" onclick="pickChoice(this)">was not</button><button class="choice" onclick="pickChoice(this)">were not</button><button class="choice" onclick="pickChoice(this)">is not</button><button class="choice" onclick="pickChoice(this)">are not</button></div>
-    <div class='answer-hint' id='ah-b9'>💡 정답: <strong>was not</strong> — My grandfather(단수, 과거 부정) → was not / wasn't도 정답<br>📝 해석: 나의 할아버지는 농부가 아니었다. 그는 의사였다.</div>
+    <div class='q-text'><em>___</em> you see the new movie? Yes, I did.</div>
+    <div class='q-kor'>너는 그 새 영화를 봤니? 응, 봤어.</div>
+    <div class='choices' data-qid='b9' data-ans='Did'><button class="choice" onclick="pickChoice(this)">Did</button><button class="choice" onclick="pickChoice(this)">Was</button><button class="choice" onclick="pickChoice(this)">Were</button><button class="choice" onclick="pickChoice(this)">Do</button></div>
+    <div class='answer-hint' id='ah-b9'>💡 정답: <strong>Did</strong> — 일반동사 과거 의문문: Did + 주어 + 동사원형<br>📝 해석: 너는 그 새 영화를 봤니? 응, 봤어.</div>
     <button class='hint-btn' onclick="showHint('b9')">💡 힌트 보기</button>
   </div>
 
   <div class='question-card' id='qc-b10'><span class='q-num'>10</span>
-    <div class='q-text'>The apples <em>___</em> fresh. They were very old. <span class="ex">(be, 부정형)</span></div>
-    <div class='q-kor'>그 사과들은 신선하지 않았다. 그것들은 매우 오래되었다.</div>
-    <div class='choices' data-qid='b10' data-ans='were not'><button class="choice" onclick="pickChoice(this)">was not</button><button class="choice" onclick="pickChoice(this)">were not</button><button class="choice" onclick="pickChoice(this)">is not</button><button class="choice" onclick="pickChoice(this)">are not</button></div>
-    <div class='answer-hint' id='ah-b10'>💡 정답: <strong>were not</strong> — The apples(복수, 과거 부정) → were not / weren't도 정답<br>📝 해석: 그 사과들은 신선하지 않았다. 그것들은 매우 오래되었다.</div>
+    <div class='q-text'>Did he <em>___</em> his homework before dinner?</div>
+    <div class='q-kor'>그는 저녁 식사 전에 숙제를 끝냈니?</div>
+    <div class='choices' data-qid='b10' data-ans='finish'><button class="choice" onclick="pickChoice(this)">finish</button><button class="choice" onclick="pickChoice(this)">finished</button><button class="choice" onclick="pickChoice(this)">finishes</button><button class="choice" onclick="pickChoice(this)">finishing</button></div>
+    <div class='answer-hint' id='ah-b10'>💡 정답: <strong>finish</strong> — Did + 주어 뒤에는 동사원형(finish). finished(X)<br>📝 해석: 그는 저녁 식사 전에 숙제를 끝냈니?</div>
     <button class='hint-btn' onclick="showHint('b10')">💡 힌트 보기</button>
   </div>
 
   <div class='question-card' id='qc-b11'><span class='q-num'>11</span>
-    <div class='q-text'>Kate <input class="blank" id="bi-b11" placeholder="___" data-ans="was not" autocomplete="off" style="min-width:110px"> at home. She was at school. <span class='ex'>(be, 부정형)</span></div>
-    <div class='q-kor'>Kate는 집에 없었다. 그녀는 학교에 있었다.</div>
+    <div class='q-text'>We <input class="blank" id="bi-b11" placeholder="___" data-ans="visited" autocomplete="off" style="min-width:100px"> our grandparents last weekend. <span class="ex">(visit)</span></div>
+    <div class='q-kor'>우리는 지난 주말에 조부모님을 방문했다.</div>
     <button class='check-btn' onclick="checkBlank('b11')">✔ 확인</button>
-    <div class='answer-hint' id='ah-b11'>💡 정답: <strong>was not</strong> — Kate(단수, 과거 부정) → was not / wasn't도 정답<br>📝 해석: Kate는 집에 없었다. 그녀는 학교에 있었다.</div>
+    <div class='answer-hint' id='ah-b11'>💡 정답: <strong>visited</strong> — 규칙 변화 visit → visited<br>📝 해석: 우리는 지난 주말에 조부모님을 방문했다.</div>
     <button class='hint-btn' onclick="showHint('b11')">💡 힌트 보기</button>
   </div>
 
   <div class='question-card' id='qc-b12'><span class='q-num'>12</span>
-    <div class='q-text'>We <input class="blank" id="bi-b12" placeholder="___" data-ans="were not" autocomplete="off" style="min-width:110px"> busy yesterday. We had a lot of free time. <span class='ex'>(be, 부정형)</span></div>
-    <div class='q-kor'>우리는 어제 바쁘지 않았다. 우리는 여가 시간이 많았다.</div>
+    <div class='q-text'>He <input class="blank" id="bi-b12" placeholder="___" data-ans="bought" autocomplete="off" style="min-width:100px"> a new bike yesterday. <span class="ex">(buy)</span></div>
+    <div class='q-kor'>그는 어제 새 자전거를 샀다.</div>
     <button class='check-btn' onclick="checkBlank('b12')">✔ 확인</button>
-    <div class='answer-hint' id='ah-b12'>💡 정답: <strong>were not</strong> — We(복수, 과거 부정) → were not / weren't도 정답<br>📝 해석: 우리는 어제 바쁘지 않았다. 우리는 여가 시간이 많았다.</div>
+    <div class='answer-hint' id='ah-b12'>💡 정답: <strong>bought</strong> — 불규칙 변화 buy → bought<br>📝 해석: 그는 어제 새 자전거를 샀다.</div>
     <button class='hint-btn' onclick="showHint('b12')">💡 힌트 보기</button>
   </div>
 
   <div class='question-card' id='qc-b13'><span class='q-num'>13</span>
-    <div class='q-text'>Sam and Jay <input class="blank" id="bi-b13" placeholder="___" data-ans="were not" autocomplete="off" style="min-width:110px"> late for school today. <span class='ex'>(be, 부정형)</span></div>
-    <div class='q-kor'>Sam과 Jay는 오늘 학교에 지각하지 않았다.</div>
+    <div class='q-text'>I <input class="blank" id="bi-b13" placeholder="___" data-ans="didn't eat" autocomplete="off" style="min-width:120px"> breakfast this morning. <span class="ex">(not / eat)</span></div>
+    <div class='q-kor'>나는 오늘 아침에 아침을 먹지 않았다.</div>
     <button class='check-btn' onclick="checkBlank('b13')">✔ 확인</button>
-    <div class='answer-hint' id='ah-b13'>💡 정답: <strong>were not</strong> — Sam and Jay(복수, 과거 부정) → were not / weren't도 정답<br>📝 해석: Sam과 Jay는 오늘 학교에 지각하지 않았다.</div>
+    <div class='answer-hint' id='ah-b13'>💡 정답: <strong>didn't eat</strong> (또는 did not eat) — 과거 부정: didn't + 동사원형(eat)<br>📝 해석: 나는 오늘 아침에 아침을 먹지 않았다.</div>
     <button class='hint-btn' onclick="showHint('b13')">💡 힌트 보기</button>
   </div>
 
   <div class='question-card' id='qc-b14'><span class='q-num'>14</span>
-    <div class='q-text'>The museum <input class="blank" id="bi-b14" placeholder="___" data-ans="was not" autocomplete="off" style="min-width:110px"> open on Mondays. It was closed. <span class='ex'>(be, 부정형)</span></div>
-    <div class='q-kor'>박물관은 월요일에 열지 않았다. 문을 닫았다.</div>
+    <div class='q-text'><input class="blank" id="bi-b14" placeholder="___" data-ans="Did" autocomplete="off" style="min-width:80px"> she call you last night? <span class="ex">(의문문)</span></div>
+    <div class='q-kor'>그녀가 어젯밤에 너에게 전화했니?</div>
     <button class='check-btn' onclick="checkBlank('b14')">✔ 확인</button>
-    <div class='answer-hint' id='ah-b14'>💡 정답: <strong>was not</strong> — The museum(단수, 과거 부정) → was not / wasn't도 정답<br>📝 해석: 박물관은 월요일에 열지 않았다. 문을 닫았다.</div>
+    <div class='answer-hint' id='ah-b14'>💡 정답: <strong>Did</strong> — 일반동사 과거 의문문: Did + 주어 + 동사원형(call)<br>📝 해석: 그녀가 어젯밤에 너에게 전화했니?</div>
     <button class='hint-btn' onclick="showHint('b14')">💡 힌트 보기</button>
   </div>
 
   <div class='question-card' id='qc-b15'><span class='q-num'>15</span>
-    <div class='q-text'>The soup <input class="blank" id="bi-b15" placeholder="___" data-ans="was not" autocomplete="off" style="min-width:110px"> hot. It was cold. <span class='ex'>(be, 부정형)</span></div>
-    <div class='q-kor'>수프는 뜨겁지 않았다. 차가웠다.</div>
+    <div class='q-text'>They <input class="blank" id="bi-b15" placeholder="___" data-ans="ate" autocomplete="off" style="min-width:90px"> pizza for dinner last Friday. <span class="ex">(eat)</span></div>
+    <div class='q-kor'>그들은 지난 금요일 저녁으로 피자를 먹었다.</div>
     <button class='check-btn' onclick="checkBlank('b15')">✔ 확인</button>
-    <div class='answer-hint' id='ah-b15'>💡 정답: <strong>was not</strong> — The soup(단수, 과거 부정) → was not / wasn't도 정답<br>📝 해석: 수프는 뜨겁지 않았다. 차가웠다.</div>
+    <div class='answer-hint' id='ah-b15'>💡 정답: <strong>ate</strong> — 불규칙 변화 eat → ate<br>📝 해석: 그들은 지난 금요일 저녁으로 피자를 먹었다.</div>
     <button class='hint-btn' onclick="showHint('b15')">💡 힌트 보기</button>
-  </div>
-
-  <div class='question-card' id='qc-b16'><span class='q-num'>16</span>
-    <div class='q-text'><input class="blank" id="bi-b16" placeholder="___" data-ans="Were" autocomplete="off" style="min-width:90px"> you born in Seoul? No, I wasn't. <span class='ex'>(의문문 완성)</span></div>
-    <div class='q-kor'>너는 서울에서 태어났니? 아니, 아니야.</div>
-    <button class='check-btn' onclick="checkBlank('b16')">✔ 확인</button>
-    <div class='answer-hint' id='ah-b16'>💡 정답: <strong>Were</strong> — You(과거 의문문) → Were<br>📝 해석: 너는 서울에서 태어났니? 아니, 아니야.</div>
-    <button class='hint-btn' onclick="showHint('b16')">💡 힌트 보기</button>
-  </div>
-
-  <div class='question-card' id='qc-b17'><span class='q-num'>17</span>
-    <div class='q-text'><input class="blank" id="bi-b17" placeholder="___" data-ans="Was" autocomplete="off" style="min-width:90px"> it sunny yesterday? Yes, it was. <span class='ex'>(의문문 완성)</span></div>
-    <div class='q-kor'>어제 화창했니? 응, 화창했어.</div>
-    <button class='check-btn' onclick="checkBlank('b17')">✔ 확인</button>
-    <div class='answer-hint' id='ah-b17'>💡 정답: <strong>Was</strong> — It(단수, 과거 의문문) → Was<br>📝 해석: 어제 화창했니? 응, 화창했어.</div>
-    <button class='hint-btn' onclick="showHint('b17')">💡 힌트 보기</button>
-  </div>
-
-  <div class='question-card' id='qc-b18'><span class='q-num'>18</span>
-    <div class='q-text'><input class="blank" id="bi-b18" placeholder="___" data-ans="Was" autocomplete="off" style="min-width:90px"> your father a teacher? No, he wasn't. <span class='ex'>(의문문 완성)</span></div>
-    <div class='q-kor'>너의 아버지는 선생님이었니? 아니, 아니었어.</div>
-    <button class='check-btn' onclick="checkBlank('b18')">✔ 확인</button>
-    <div class='answer-hint' id='ah-b18'>💡 정답: <strong>Was</strong> — Your father(단수, 과거 의문문) → Was<br>📝 해석: 너의 아버지는 선생님이었니? 아니, 아니었어.</div>
-    <button class='hint-btn' onclick="showHint('b18')">💡 힌트 보기</button>
-  </div>
-
-  <div class='question-card' id='qc-b19'><span class='q-num'>19</span>
-    <div class='q-text'><input class="blank" id="bi-b19" placeholder="___" data-ans="Were" autocomplete="off" style="min-width:90px"> the children good in the classroom? Yes, they were. <span class='ex'>(의문문 완성)</span></div>
-    <div class='q-kor'>아이들은 교실에서 착했니? 응, 착했어.</div>
-    <button class='check-btn' onclick="checkBlank('b19')">✔ 확인</button>
-    <div class='answer-hint' id='ah-b19'>💡 정답: <strong>Were</strong> — The children(복수, 과거 의문문) → Were<br>📝 해석: 아이들은 교실에서 착했니? 응, 착했어.</div>
-    <button class='hint-btn' onclick="showHint('b19')">💡 힌트 보기</button>
-  </div>
-
-  <div class='question-card' id='qc-b20'><span class='q-num'>20</span>
-    <div class='q-text'>I <input class="blank" id="bi-b20" placeholder="___" data-ans="was" autocomplete="off" style="min-width:90px"> ready for the test. I studied very hard. <span class="ex">(be)</span></div>
-    <div class='q-kor'>나는 시험 준비가 되어 있었다. 나는 매우 열심히 공부했다.</div>
-    <button class='check-btn' onclick="checkBlank('b20')">✔ 확인</button>
-    <div class='answer-hint' id='ah-b20'>💡 정답: <strong>was</strong> — I(1인칭 단수, 과거 긍정형) → was ← 긍정형 총정리 문제<br>📝 해석: 나는 시험 준비가 되어 있었다. 나는 매우 열심히 공부했다.</div>
-    <button class='hint-btn' onclick="showHint('b20')">💡 힌트 보기</button>
   </div>
 </div>
 
-<!-- ── Section C: 단어 배열 ── -->
+<!-- ── Section C: 시간 접속사 when ── -->
 <div class="sec" id="s2">
-  <div class="sec-hdr"><div class="lbl">혼합 · 5문제</div><h2>단어 배열하기</h2><div class="desc">단어 칩 클릭 → 문장 완성! (다시 클릭하면 취소)</div></div>
-  <div class='question-card' id='qc-c1'><span class='q-num'>1</span><div class='q-text'>📌 나는 축구 경기 후에 매우 피곤했어요.</div><div class='word-pool' id='pool-c1'><button class="chip pool-chip" id="wc-c1-0" onclick="moveWord('c1',0,this)">I</button><button class="chip pool-chip" id="wc-c1-1" onclick="moveWord('c1',1,this)">the</button><button class="chip pool-chip" id="wc-c1-2" onclick="moveWord('c1',2,this)">soccer</button><button class="chip pool-chip" id="wc-c1-3" onclick="moveWord('c1',3,this)">was</button><button class="chip pool-chip" id="wc-c1-4" onclick="moveWord('c1',4,this)">after</button><button class="chip pool-chip" id="wc-c1-5" onclick="moveWord('c1',5,this)">game</button><button class="chip pool-chip" id="wc-c1-6" onclick="moveWord('c1',6,this)">very</button><button class="chip pool-chip" id="wc-c1-7" onclick="moveWord('c1',7,this)">tired</button></div><div class='answer-area' id='area-c1'><span class='area-ph'>여기에 단어를 놓으세요 →</span></div><button class='check-btn' data-qid='c1' data-ans='I was very tired after the soccer game' onclick="checkArrange(this)">✔ 확인</button><div class='answer-hint' id='ah-c1'>💡 정답: <strong>I was very tired after the soccer game</strong><br>📝 해석: 나는 축구 경기 후에 매우 피곤했다.</div><button class='hint-btn' onclick="showHint('c1')">💡 힌트 보기</button></div>
-  <div class='question-card' id='qc-c2'><span class='q-num'>2</span><div class='q-text'>📌 너는 어제 도서관에 있었나요?</div><div class='word-pool' id='pool-c2'><button class="chip pool-chip" id="wc-c2-0" onclick="moveWord('c2',0,this)">you</button><button class="chip pool-chip" id="wc-c2-1" onclick="moveWord('c2',1,this)">the</button><button class="chip pool-chip" id="wc-c2-2" onclick="moveWord('c2',2,this)">Were</button><button class="chip pool-chip" id="wc-c2-3" onclick="moveWord('c2',3,this)">yesterday</button><button class="chip pool-chip" id="wc-c2-4" onclick="moveWord('c2',4,this)">at</button><button class="chip pool-chip" id="wc-c2-5" onclick="moveWord('c2',5,this)">library</button></div><div class='answer-area' id='area-c2'><span class='area-ph'>여기에 단어를 놓으세요 →</span></div><button class='check-btn' data-qid='c2' data-ans='Were you at the library yesterday' onclick="checkArrange(this)">✔ 확인</button><div class='answer-hint' id='ah-c2'>💡 정답: <strong>Were you at the library yesterday</strong><br>📝 해석: 너는 어제 도서관에 있었니?</div><button class='hint-btn' onclick="showHint('c2')">💡 힌트 보기</button></div>
-  <div class='question-card' id='qc-c3'><span class='q-num'>3</span><div class='q-text'>📌 그들은 작년에 같은 반이 아니었어요.</div><div class='word-pool' id='pool-c3'><button class="chip pool-chip" id="wc-c3-0" onclick="moveWord('c3',0,this)">They</button><button class="chip pool-chip" id="wc-c3-1" onclick="moveWord('c3',1,this)">class</button><button class="chip pool-chip" id="wc-c3-2" onclick="moveWord('c3',2,this)">the</button><button class="chip pool-chip" id="wc-c3-3" onclick="moveWord('c3',3,this)">not</button><button class="chip pool-chip" id="wc-c3-4" onclick="moveWord('c3',4,this)">same</button><button class="chip pool-chip" id="wc-c3-5" onclick="moveWord('c3',5,this)">were</button><button class="chip pool-chip" id="wc-c3-6" onclick="moveWord('c3',6,this)">last</button><button class="chip pool-chip" id="wc-c3-7" onclick="moveWord('c3',7,this)">year</button><button class="chip pool-chip" id="wc-c3-8" onclick="moveWord('c3',8,this)">in</button></div><div class='answer-area' id='area-c3'><span class='area-ph'>여기에 단어를 놓으세요 →</span></div><button class='check-btn' data-qid='c3' data-ans='They were not in the same class last year' onclick="checkArrange(this)">✔ 확인</button><div class='answer-hint' id='ah-c3'>💡 정답: <strong>They were not in the same class last year</strong><br>📝 해석: 그들은 작년에 같은 반이 아니었다.</div><button class='hint-btn' onclick="showHint('c3')">💡 힌트 보기</button></div>
-  <div class='question-card' id='qc-c4'><span class='q-num'>4</span><div class='q-text'>📌 시험이 어려웠나요?</div><div class='word-pool' id='pool-c4'><button class="chip pool-chip" id="wc-c4-0" onclick="moveWord('c4',0,this)">the</button><button class="chip pool-chip" id="wc-c4-1" onclick="moveWord('c4',1,this)">Was</button><button class="chip pool-chip" id="wc-c4-2" onclick="moveWord('c4',2,this)">difficult</button><button class="chip pool-chip" id="wc-c4-3" onclick="moveWord('c4',3,this)">test</button></div><div class='answer-area' id='area-c4'><span class='area-ph'>여기에 단어를 놓으세요 →</span></div><button class='check-btn' data-qid='c4' data-ans='Was the test difficult' onclick="checkArrange(this)">✔ 확인</button><div class='answer-hint' id='ah-c4'>💡 정답: <strong>Was the test difficult</strong><br>📝 해석: 시험이 어려웠니?</div><button class='hint-btn' onclick="showHint('c4')">💡 힌트 보기</button></div>
-  <div class='question-card' id='qc-c5'><span class='q-num'>5</span><div class='q-text'>📌 나의 부모님은 훌륭한 선생님이었어요.</div><div class='word-pool' id='pool-c5'><button class="chip pool-chip" id="wc-c5-0" onclick="moveWord('c5',0,this)">great</button><button class="chip pool-chip" id="wc-c5-1" onclick="moveWord('c5',1,this)">were</button><button class="chip pool-chip" id="wc-c5-2" onclick="moveWord('c5',2,this)">parents</button><button class="chip pool-chip" id="wc-c5-3" onclick="moveWord('c5',3,this)">My</button><button class="chip pool-chip" id="wc-c5-4" onclick="moveWord('c5',4,this)">teachers</button></div><div class='answer-area' id='area-c5'><span class='area-ph'>여기에 단어를 놓으세요 →</span></div><button class='check-btn' data-qid='c5' data-ans='My parents were great teachers' onclick="checkArrange(this)">✔ 확인</button><div class='answer-hint' id='ah-c5'>💡 정답: <strong>My parents were great teachers</strong><br>📝 해석: 나의 부모님은 훌륭한 선생님이셨다.</div><button class='hint-btn' onclick="showHint('c5')">💡 힌트 보기</button></div>
+  <div class="sec-hdr"><div class="lbl">Point C · 10문제</div><h2>시간 접속사 when</h2><div class="desc">「when + 주어 + 과거동사」 · 선택형(1–5) + 빈칸(6–10)</div></div>
+
+  <div class='question-card' id='qc-c1'><span class='q-num'>1</span>
+    <div class='q-text'><em>___</em> Paul came home, his sister was watching TV.</div>
+    <div class='q-kor'>Paul이 집에 왔을 때, 그의 여동생은 TV를 보고 있었다.</div>
+    <div class='choices' data-qid='c1' data-ans='When'><button class="choice" onclick="pickChoice(this)">When</button><button class="choice" onclick="pickChoice(this)">What</button><button class="choice" onclick="pickChoice(this)">Who</button><button class="choice" onclick="pickChoice(this)">Why</button></div>
+    <div class='answer-hint' id='ah-c1'>💡 정답: <strong>When</strong> — 「~할 때」: 시간 접속사 when<br>📝 해석: Paul이 집에 왔을 때, 그의 여동생은 TV를 보고 있었다.</div>
+    <button class='hint-btn' onclick="showHint('c1')">💡 힌트 보기</button>
+  </div>
+
+  <div class='question-card' id='qc-c2'><span class='q-num'>2</span>
+    <div class='q-text'>When it started to rain, we <em>___</em> in the park.</div>
+    <div class='q-kor'>비가 내리기 시작했을 때, 우리는 공원에서 놀고 있었다.</div>
+    <div class='choices' data-qid='c2' data-ans='were playing'><button class="choice" onclick="pickChoice(this)">were playing</button><button class="choice" onclick="pickChoice(this)">play</button><button class="choice" onclick="pickChoice(this)">plays</button><button class="choice" onclick="pickChoice(this)">are playing</button></div>
+    <div class='answer-hint' id='ah-c2'>💡 정답: <strong>were playing</strong> — 주절도 과거(과거진행): we + were playing<br>📝 해석: 비가 내리기 시작했을 때, 우리는 공원에서 놀고 있었다.</div>
+    <button class='hint-btn' onclick="showHint('c2')">💡 힌트 보기</button>
+  </div>
+
+  <div class='question-card' id='qc-c3'><span class='q-num'>3</span>
+    <div class='q-text'>When I <em>___</em> young, I lived in Busan.</div>
+    <div class='q-kor'>내가 어렸을 때, 나는 부산에 살았다.</div>
+    <div class='choices' data-qid='c3' data-ans='was'><button class="choice" onclick="pickChoice(this)">was</button><button class="choice" onclick="pickChoice(this)">were</button><button class="choice" onclick="pickChoice(this)">am</button><button class="choice" onclick="pickChoice(this)">is</button></div>
+    <div class='answer-hint' id='ah-c3'>💡 정답: <strong>was</strong> — when절도 과거: I(단수) + was<br>📝 해석: 내가 어렸을 때, 나는 부산에 살았다.</div>
+    <button class='hint-btn' onclick="showHint('c3')">💡 힌트 보기</button>
+  </div>
+
+  <div class='question-card' id='qc-c4'><span class='q-num'>4</span>
+    <div class='q-text'>We were having dinner <em>___</em> the lights went out.</div>
+    <div class='q-kor'>우리가 저녁을 먹고 있을 때 불이 나갔다.</div>
+    <div class='choices' data-qid='c4' data-ans='when'><button class="choice" onclick="pickChoice(this)">when</button><button class="choice" onclick="pickChoice(this)">what</button><button class="choice" onclick="pickChoice(this)">which</button><button class="choice" onclick="pickChoice(this)">who</button></div>
+    <div class='answer-hint' id='ah-c4'>💡 정답: <strong>when</strong> — when절은 문장 뒤에도 올 수 있다(쉼표 없이)<br>📝 해석: 우리가 저녁을 먹고 있을 때 불이 나갔다.</div>
+    <button class='hint-btn' onclick="showHint('c4')">💡 힌트 보기</button>
+  </div>
+
+  <div class='question-card' id='qc-c5'><span class='q-num'>5</span>
+    <div class='q-text'>When the bell rang, the students <em>___</em> the classroom.</div>
+    <div class='q-kor'>종이 울렸을 때, 학생들은 교실로 들어갔다.</div>
+    <div class='choices' data-qid='c5' data-ans='entered'><button class="choice" onclick="pickChoice(this)">entered</button><button class="choice" onclick="pickChoice(this)">enter</button><button class="choice" onclick="pickChoice(this)">enters</button><button class="choice" onclick="pickChoice(this)">entering</button></div>
+    <div class='answer-hint' id='ah-c5'>💡 정답: <strong>entered</strong> — when절·주절 모두 과거: enter → entered<br>📝 해석: 종이 울렸을 때, 학생들은 교실로 들어갔다.</div>
+    <button class='hint-btn' onclick="showHint('c5')">💡 힌트 보기</button>
+  </div>
+
+  <div class='question-card' id='qc-c6'><span class='q-num'>6</span>
+    <div class='q-text'><input class="blank" id="bi-c6" placeholder="___" data-ans="When" autocomplete="off" style="min-width:90px"> I woke up, the sun was already up. <span class="ex">(접속사)</span></div>
+    <div class='q-kor'>내가 일어났을 때, 해는 이미 떠 있었다.</div>
+    <button class='check-btn' onclick="checkBlank('c6')">✔ 확인</button>
+    <div class='answer-hint' id='ah-c6'>💡 정답: <strong>When</strong> — 「~했을 때」: 문장 맨 앞의 시간 접속사 When<br>📝 해석: 내가 일어났을 때, 해는 이미 떠 있었다.</div>
+    <button class='hint-btn' onclick="showHint('c6')">💡 힌트 보기</button>
+  </div>
+
+  <div class='question-card' id='qc-c7'><span class='q-num'>7</span>
+    <div class='q-text'>When she heard the news, she <input class="blank" id="bi-c7" placeholder="___" data-ans="cried" autocomplete="off" style="min-width:90px">. <span class="ex">(cry)</span></div>
+    <div class='q-kor'>그녀는 그 소식을 들었을 때 울었다.</div>
+    <button class='check-btn' onclick="checkBlank('c7')">✔ 확인</button>
+    <div class='answer-hint' id='ah-c7'>💡 정답: <strong>cried</strong> — 「자음 + y」는 y를 i로 바꾸고 ed: cry → cried<br>📝 해석: 그녀는 그 소식을 들었을 때 울었다.</div>
+    <button class='hint-btn' onclick="showHint('c7')">💡 힌트 보기</button>
+  </div>
+
+  <div class='question-card' id='qc-c8'><span class='q-num'>8</span>
+    <div class='q-text'>He was sleeping <input class="blank" id="bi-c8" placeholder="___" data-ans="when" autocomplete="off" style="min-width:90px"> his phone rang. <span class="ex">(접속사)</span></div>
+    <div class='q-kor'>그의 전화가 울렸을 때 그는 자고 있었다.</div>
+    <button class='check-btn' onclick="checkBlank('c8')">✔ 확인</button>
+    <div class='answer-hint' id='ah-c8'>💡 정답: <strong>when</strong> — 주절 뒤에 오는 시간 접속사 when (쉼표 없음)<br>📝 해석: 그의 전화가 울렸을 때 그는 자고 있었다.</div>
+    <button class='hint-btn' onclick="showHint('c8')">💡 힌트 보기</button>
+  </div>
+
+  <div class='question-card' id='qc-c9'><span class='q-num'>9</span>
+    <div class='q-text'>When the movie ended, we <input class="blank" id="bi-c9" placeholder="___" data-ans="went" autocomplete="off" style="min-width:90px"> home. <span class="ex">(go)</span></div>
+    <div class='q-kor'>영화가 끝났을 때, 우리는 집에 갔다.</div>
+    <button class='check-btn' onclick="checkBlank('c9')">✔ 확인</button>
+    <div class='answer-hint' id='ah-c9'>💡 정답: <strong>went</strong> — 불규칙 변화 go → went (when절·주절 모두 과거)<br>📝 해석: 영화가 끝났을 때, 우리는 집에 갔다.</div>
+    <button class='hint-btn' onclick="showHint('c9')">💡 힌트 보기</button>
+  </div>
+
+  <div class='question-card' id='qc-c10'><span class='q-num'>10</span>
+    <div class='q-text'>When I was a child, I <input class="blank" id="bi-c10" placeholder="___" data-ans="was" autocomplete="off" style="min-width:90px"> afraid of dogs. <span class="ex">(be)</span></div>
+    <div class='q-kor'>내가 어린아이였을 때, 나는 개를 무서워했다.</div>
+    <button class='check-btn' onclick="checkBlank('c10')">✔ 확인</button>
+    <div class='answer-hint' id='ah-c10'>💡 정답: <strong>was</strong> — when절·주절 모두 과거: I(단수) + was<br>📝 해석: 내가 어린아이였을 때, 나는 개를 무서워했다.</div>
+    <button class='hint-btn' onclick="showHint('c10')">💡 힌트 보기</button>
+  </div>
+</div>
+
+<!-- ── Section D: 단어 배열 ── -->
+<div class="sec" id="s3">
+  <div class="sec-hdr"><div class="lbl">혼합 · 5문제</div><h2>단어 배열하기</h2><div class="desc">be·일반동사 과거 + when절 종합! 단어 칩 클릭 → 문장 완성 (다시 클릭하면 취소)</div></div>
+  <div class='question-card' id='qc-d1'><span class='q-num'>1</span><div class='q-text'>📌 너는 어제 도서관에 있었니?</div><div class='word-pool' id='pool-d1'><button class="chip pool-chip" id="wc-d1-0" onclick="moveWord('d1',0,this)">you</button><button class="chip pool-chip" id="wc-d1-1" onclick="moveWord('d1',1,this)">the</button><button class="chip pool-chip" id="wc-d1-2" onclick="moveWord('d1',2,this)">Were</button><button class="chip pool-chip" id="wc-d1-3" onclick="moveWord('d1',3,this)">yesterday</button><button class="chip pool-chip" id="wc-d1-4" onclick="moveWord('d1',4,this)">at</button><button class="chip pool-chip" id="wc-d1-5" onclick="moveWord('d1',5,this)">library</button></div><div class='answer-area' id='area-d1'><span class='area-ph'>여기에 단어를 놓으세요 →</span></div><button class='check-btn' data-qid='d1' data-ans='Were you at the library yesterday' onclick="checkArrange(this)">✔ 확인</button><div class='answer-hint' id='ah-d1'>💡 정답: <strong>Were you at the library yesterday</strong><br>📝 해석: 너는 어제 도서관에 있었니?</div><button class='hint-btn' onclick="showHint('d1')">💡 힌트 보기</button></div>
+  <div class='question-card' id='qc-d2'><span class='q-num'>2</span><div class='q-text'>📌 그녀는 어제 도서관에 가서 책을 읽었다.</div><div class='word-pool' id='pool-d2'><button class="chip pool-chip" id="wc-d2-0" onclick="moveWord('d2',0,this)">read</button><button class="chip pool-chip" id="wc-d2-1" onclick="moveWord('d2',1,this)">the</button><button class="chip pool-chip" id="wc-d2-2" onclick="moveWord('d2',2,this)">went</button><button class="chip pool-chip" id="wc-d2-3" onclick="moveWord('d2',3,this)">to</button><button class="chip pool-chip" id="wc-d2-4" onclick="moveWord('d2',4,this)">She</button><button class="chip pool-chip" id="wc-d2-5" onclick="moveWord('d2',5,this)">library</button><button class="chip pool-chip" id="wc-d2-6" onclick="moveWord('d2',6,this)">and</button><button class="chip pool-chip" id="wc-d2-7" onclick="moveWord('d2',7,this)">a</button><button class="chip pool-chip" id="wc-d2-8" onclick="moveWord('d2',8,this)">book</button></div><div class='answer-area' id='area-d2'><span class='area-ph'>여기에 단어를 놓으세요 →</span></div><button class='check-btn' data-qid='d2' data-ans='She went to the library and read a book' onclick="checkArrange(this)">✔ 확인</button><div class='answer-hint' id='ah-d2'>💡 정답: <strong>She went to the library and read a book</strong><br>📝 해석: 그녀는 도서관에 가서 책을 읽었다. (read의 과거형은 형태가 같다)</div><button class='hint-btn' onclick="showHint('d2')">💡 힌트 보기</button></div>
+  <div class='question-card' id='qc-d3'><span class='q-num'>3</span><div class='q-text'>📌 그는 오늘 아침에 아침을 먹지 않았다.</div><div class='word-pool' id='pool-d3'><button class="chip pool-chip" id="wc-d3-0" onclick="moveWord('d3',0,this)">breakfast</button><button class="chip pool-chip" id="wc-d3-1" onclick="moveWord('d3',1,this)">eat</button><button class="chip pool-chip" id="wc-d3-2" onclick="moveWord('d3',2,this)">He</button><button class="chip pool-chip" id="wc-d3-3" onclick="moveWord('d3',3,this)">morning</button><button class="chip pool-chip" id="wc-d3-4" onclick="moveWord('d3',4,this)">didn't</button><button class="chip pool-chip" id="wc-d3-5" onclick="moveWord('d3',5,this)">this</button></div><div class='answer-area' id='area-d3'><span class='area-ph'>여기에 단어를 놓으세요 →</span></div><button class='check-btn' data-qid='d3' data-ans="He didn't eat breakfast this morning" onclick="checkArrange(this)">✔ 확인</button><div class='answer-hint' id='ah-d3'>💡 정답: <strong>He didn't eat breakfast this morning</strong><br>📝 해석: 그는 오늘 아침에 아침을 먹지 않았다. (didn't + 동사원형 eat)</div><button class='hint-btn' onclick="showHint('d3')">💡 힌트 보기</button></div>
+  <div class='question-card' id='qc-d4'><span class='q-num'>4</span><div class='q-text'>📌 내가 집에 왔을 때, 엄마는 저녁을 만들고 계셨다.</div><div class='word-pool' id='pool-d4'><button class="chip pool-chip" id="wc-d4-0" onclick="moveWord('d4',0,this)">making</button><button class="chip pool-chip" id="wc-d4-1" onclick="moveWord('d4',1,this)">When</button><button class="chip pool-chip" id="wc-d4-2" onclick="moveWord('d4',2,this)">home</button><button class="chip pool-chip" id="wc-d4-3" onclick="moveWord('d4',3,this)">my</button><button class="chip pool-chip" id="wc-d4-4" onclick="moveWord('d4',4,this)">I</button><button class="chip pool-chip" id="wc-d4-5" onclick="moveWord('d4',5,this)">was</button><button class="chip pool-chip" id="wc-d4-6" onclick="moveWord('d4',6,this)">came</button><button class="chip pool-chip" id="wc-d4-7" onclick="moveWord('d4',7,this)">mom</button><button class="chip pool-chip" id="wc-d4-8" onclick="moveWord('d4',8,this)">dinner</button></div><div class='answer-area' id='area-d4'><span class='area-ph'>여기에 단어를 놓으세요 →</span></div><button class='check-btn' data-qid='d4' data-ans='When I came home my mom was making dinner' onclick="checkArrange(this)">✔ 확인</button><div class='answer-hint' id='ah-d4'>💡 정답: <strong>When I came home, my mom was making dinner</strong><br>📝 해석: 내가 집에 왔을 때, 엄마는 저녁을 만들고 계셨다.</div><button class='hint-btn' onclick="showHint('d4')">💡 힌트 보기</button></div>
+  <div class='question-card' id='qc-d5'><span class='q-num'>5</span><div class='q-text'>📌 너는 숙제를 끝냈니?</div><div class='word-pool' id='pool-d5'><button class="chip pool-chip" id="wc-d5-0" onclick="moveWord('d5',0,this)">your</button><button class="chip pool-chip" id="wc-d5-1" onclick="moveWord('d5',1,this)">finish</button><button class="chip pool-chip" id="wc-d5-2" onclick="moveWord('d5',2,this)">Did</button><button class="chip pool-chip" id="wc-d5-3" onclick="moveWord('d5',3,this)">homework</button><button class="chip pool-chip" id="wc-d5-4" onclick="moveWord('d5',4,this)">you</button></div><div class='answer-area' id='area-d5'><span class='area-ph'>여기에 단어를 놓으세요 →</span></div><button class='check-btn' data-qid='d5' data-ans='Did you finish your homework' onclick="checkArrange(this)">✔ 확인</button><div class='answer-hint' id='ah-d5'>💡 정답: <strong>Did you finish your homework</strong><br>📝 해석: 너는 숙제를 끝냈니? (Did + 주어 + 동사원형 finish)</div><button class='hint-btn' onclick="showHint('d5')">💡 힌트 보기</button></div>
 </div>
 
 <div id="result">
@@ -450,8 +456,8 @@ body{font-family:'Baloo 2','Noto Sans KR',sans-serif;background:var(--bg);paddin
 </div>
 
 <script>
-var TOTAL=45,SECTOTALS={a:20,b:20,c:5},secC={a:0,b:0,c:0},secW={a:0,b:0,c:0};
-var placed={"c1":[],"c2":[],"c3":[],"c4":[],"c5":[]},answered={},correct=0,wrong=0;
+var TOTAL=45,SECTOTALS={a:15,b:15,c:10,d:5},secC={a:0,b:0,c:0,d:0},secW={a:0,b:0,c:0,d:0};
+var placed={"d1":[],"d2":[],"d3":[],"d4":[],"d5":[]},answered={},correct=0,wrong=0;
 
 function norm(s){
   s=s.trim().toLowerCase().replace(/\s+/g,' ');
@@ -559,8 +565,9 @@ function mark(k,got,my,right){
     (function(p,sc){
       setTimeout(function(){
         var opts={};
-        if(p==='a') opts={nextText:'부정문·의문문 탭으로 →',onNextClick:function(){var ol=document.getElementById('sp-overlay');if(ol)ol.remove();sw(1,document.querySelectorAll('.tab')[1]);}};
-        else if(p==='b') opts={nextText:'단어 배열 탭으로 →',onNextClick:function(){var ol=document.getElementById('sp-overlay');if(ol)ol.remove();sw(2,document.querySelectorAll('.tab')[2]);}};
+        if(p==='a') opts={nextText:'일반동사 과거 탭으로 →',onNextClick:function(){var ol=document.getElementById('sp-overlay');if(ol)ol.remove();sw(1,document.querySelectorAll('.tab')[1]);}};
+        else if(p==='b') opts={nextText:'when 접속사 탭으로 →',onNextClick:function(){var ol=document.getElementById('sp-overlay');if(ol)ol.remove();sw(2,document.querySelectorAll('.tab')[2]);}};
+        else if(p==='c') opts={nextText:'단어 배열 탭으로 →',onNextClick:function(){var ol=document.getElementById('sp-overlay');if(ol)ol.remove();sw(3,document.querySelectorAll('.tab')[3]);}};
         showScorePopup(sc,SECTOTALS[p],opts);
       },800);
     })(pre,secC[pre]);
@@ -595,40 +602,40 @@ function toast(msg,type){
 </script>
 <script>
 var vocabData={
-  'a2':[{w:'park',k:'공원'},{w:'yesterday',k:'어제'}],
-  'a3':[{w:'tired',k:'피곤한'}],
-  'a4':[{w:'late',k:'늦은'},{w:'party',k:'파티'}],
-  'a5':[{w:'test',k:'시험'},{w:'hard',k:'어려운'}],
-  'a6':[{w:'same',k:'같은'},{w:'last year',k:'작년'}],
-  'a7':[{w:'this morning',k:'오늘 아침'}],
-  'a8':[{w:'sick',k:'아픈'}],
-  'a9':[{w:'desk',k:'책상'}],
-  'a10':[{w:'cold',k:'추운'},{w:'snowy',k:'눈이 오는'},{w:'winter',k:'겨울'}],
-  'a11':[{w:'again',k:'다시'}],
-  'a12':[{w:'parents',k:'부모님'},{w:'all day',k:'하루 종일'}],
-  'a13':[{w:'boring',k:'지루한'}],
-  'a14':[{w:'swimming pool',k:'수영장'}],
-  'a15':[{w:'quiet',k:'조용한'},{w:'classroom',k:'교실'}],
-  'a16':[{w:'elementary school',k:'초등학교'}],
-  'a17':[{w:'delicious',k:'맛있는'}],
-  'a18':[{w:'excited',k:'신이 난'},{w:'field trip',k:'현장학습'}],
-  'a19':[{w:'great',k:'훌륭한'},{w:'singer',k:'가수'},{w:'young',k:'어린, 젊은'}],
-  'a20':[{w:'partner',k:'파트너, 짝'},{w:'science project',k:'과학 프로젝트'}],
-  'b2':[{w:'museum',k:'박물관'}],
-  'b3':[{w:'rainy',k:'비 오는'},{w:'windy',k:'바람 부는'}],
-  'b4':[{w:'nervous',k:'긴장한'},{w:'excited',k:'신이 난'}],
-  'b5':[{w:'library',k:'도서관'},{w:'this afternoon',k:'오늘 오후'}],
-  'b6':[{w:'result',k:'결과'}],
-  'b7':[{w:'difficult',k:'어려운'}],
-  'b8':[{w:'classmate',k:'반 친구'}],
-  'b9':[{w:'grandfather',k:'할아버지'},{w:'farmer',k:'농부'}],
-  'b10':[{w:'fresh',k:'신선한'},{w:'old',k:'오래된'}],
-  'b12':[{w:'busy',k:'바쁜'},{w:'free time',k:'여가 시간'}],
-  'b14':[{w:'museum',k:'박물관'},{w:'open',k:'열려 있는'},{w:'closed',k:'문을 닫은'}],
-  'b15':[{w:'soup',k:'수프'},{w:'hot',k:'뜨거운'}],
-  'b16':[{w:'born',k:'태어난'}],
-  'b17':[{w:'sunny',k:'화창한'}],
-  'b20':[{w:'ready',k:'준비된'}]
+  'a3':[{w:'difficult',k:'어려운'}],
+  'a4':[{w:'same',k:'같은'},{w:'last year',k:'작년'}],
+  'a5':[{w:'cold',k:'추운'},{w:'snowy',k:'눈이 오는'},{w:'winter',k:'겨울'}],
+  'a6':[{w:'partner',k:'파트너, 짝'},{w:'science project',k:'과학 프로젝트'}],
+  'a8':[{w:'museum',k:'박물관'},{w:'quiet',k:'조용한'}],
+  'a11':[{w:'parents',k:'부모님'},{w:'all day',k:'하루 종일'}],
+  'a12':[{w:'boring',k:'지루한'}],
+  'a14':[{w:'sunny',k:'화창한'}],
+  'a15':[{w:'elementary school',k:'초등학교'}],
+  'b1':[{w:'play',k:'(운동을) 하다'}],
+  'b2':[{w:'market',k:'시장'},{w:'fruit',k:'과일'}],
+  'b3':[{w:'movie',k:'영화'},{w:'last night',k:'어젯밤'}],
+  'b4':[{w:'write',k:'(글을) 쓰다'},{w:'grandmother',k:'할머니'}],
+  'b5':[{w:'study',k:'공부하다'}],
+  'b6':[{w:'stop',k:'멈추다'},{w:'in front of',k:'~앞에'}],
+  'b7':[{w:'homework',k:'숙제'},{w:'instead',k:'대신에'}],
+  'b8':[{w:'sick',k:'아픈'}],
+  'b9':[{w:'see',k:'보다'}],
+  'b10':[{w:'finish',k:'끝내다'},{w:'before',k:'~전에'}],
+  'b11':[{w:'visit',k:'방문하다'},{w:'grandparents',k:'조부모님'}],
+  'b12':[{w:'buy',k:'사다'},{w:'bike',k:'자전거'}],
+  'b13':[{w:'breakfast',k:'아침 식사'}],
+  'b14':[{w:'call',k:'전화하다'}],
+  'b15':[{w:'eat',k:'먹다'}],
+  'c1':[{w:'come home',k:'집에 오다'},{w:'watch',k:'보다'}],
+  'c2':[{w:'start',k:'시작하다'},{w:'rain',k:'비가 오다'}],
+  'c3':[{w:'young',k:'어린'},{w:'live',k:'살다'}],
+  'c4':[{w:'have dinner',k:'저녁을 먹다'},{w:'go out',k:'(불이) 꺼지다'}],
+  'c5':[{w:'bell',k:'종'},{w:'ring',k:'울리다'},{w:'enter',k:'들어가다'}],
+  'c6':[{w:'wake up',k:'깨다'},{w:'already',k:'이미'}],
+  'c7':[{w:'hear',k:'듣다'},{w:'news',k:'소식'},{w:'cry',k:'울다'}],
+  'c8':[{w:'sleep',k:'자다'},{w:'phone',k:'전화'}],
+  'c9':[{w:'end',k:'끝나다'}],
+  'c10':[{w:'child',k:'어린아이'},{w:'afraid of',k:'~을 무서워하는'}]
 };
 document.addEventListener('DOMContentLoaded',function(){
   var st=document.createElement('style');

@@ -1595,11 +1595,11 @@ const GAME_QUESTIONS = {
     ]
   },
   "g1-l3": {
-    "label": "중1 L3 · be동사 과거형",
+    "label": "중1 L3 · be·일반동사 과거형 & when",
     "color": "#22c55e",
     "questions": [
       {
-        "id": "g1_l3_past_be_a1",
+        "id": "g1_l3_be_1",
         "kor": "나는 작년에 열 살이었다.",
         "eng": "I ___ ten years old last year.",
         "ans": "was",
@@ -1612,49 +1612,10 @@ const GAME_QUESTIONS = {
         "level": 1
       },
       {
-        "id": "g1_l3_past_be_a2",
+        "id": "g1_l3_be_2",
         "kor": "그들은 어제 공원에 있었다.",
         "eng": "They ___ in the park yesterday.",
         "ans": "were",
-        "opts": [
-          "was",
-          "are",
-          "be",
-          "were"
-        ],
-        "level": 1
-      },
-      {
-        "id": "g1_l3_past_be_a3",
-        "kor": "그녀는 방과 후 피곤했다.",
-        "eng": "She ___ tired after school.",
-        "ans": "was",
-        "opts": [
-          "is",
-          "be",
-          "was",
-          "were"
-        ],
-        "level": 1
-      },
-      {
-        "id": "g1_l3_past_be_a4",
-        "kor": "우리는 파티에 늦었다.",
-        "eng": "We ___ late for the party.",
-        "ans": "were",
-        "opts": [
-          "am",
-          "were",
-          "was",
-          "is"
-        ],
-        "level": 1
-      },
-      {
-        "id": "g1_l3_past_be_a5",
-        "kor": "시험은 매우 어려웠다.",
-        "eng": "The test ___ very hard.",
-        "ans": "was",
         "opts": [
           "was",
           "were",
@@ -1664,202 +1625,33 @@ const GAME_QUESTIONS = {
         "level": 1
       },
       {
-        "id": "g1_l3_past_be_a6",
+        "id": "g1_l3_be_3",
+        "kor": "그 수학 시험은 매우 어려웠다.",
+        "eng": "The math test ___ very difficult.",
+        "ans": "was",
+        "opts": [
+          "was",
+          "were",
+          "is",
+          "be"
+        ],
+        "level": 1
+      },
+      {
+        "id": "g1_l3_be_4",
         "kor": "Tom과 Jina는 작년에 같은 반이었다.",
         "eng": "Tom and Jina ___ in the same class last year.",
         "ans": "were",
         "opts": [
           "was",
-          "is",
-          "are",
-          "were"
-        ],
-        "level": 1
-      },
-      {
-        "id": "g1_l3_past_be_a7",
-        "kor": "너는 오늘 아침에 집에 있었다.",
-        "eng": "You ___ at home this morning.",
-        "ans": "were",
-        "opts": [
-          "am",
-          "is",
           "were",
-          "was"
-        ],
-        "level": 1
-      },
-      {
-        "id": "g1_l3_past_be_a8",
-        "kor": "내 강아지는 어제 아팠다.",
-        "eng": "My dog ___ sick yesterday.",
-        "ans": "was",
-        "opts": [
-          "be",
-          "was",
-          "were",
+          "is",
           "are"
         ],
         "level": 1
       },
       {
-        "id": "g1_l3_past_be_a9",
-        "kor": "그 책들은 책상 위에 있었다.",
-        "eng": "The books ___ on the desk.",
-        "ans": "were",
-        "opts": [
-          "were",
-          "was",
-          "is",
-          "am"
-        ],
-        "level": 1
-      },
-      {
-        "id": "g1_l3_past_be_a10",
-        "kor": "지난 겨울은 춥고 눈이 많이 왔다.",
-        "eng": "It ___ cold and snowy last winter.",
-        "ans": "was",
-        "opts": [
-          "were",
-          "are",
-          "be",
-          "was"
-        ],
-        "level": 1
-      },
-      {
-        "id": "g1_l3_past_be_a11",
-        "kor": "나는 너를 다시 만나서 기뻤다.",
-        "eng": "I ___ happy to see you again.",
-        "ans": "was",
-        "opts": [
-          "weren",
-          "Was he",
-          "was",
-          "were"
-        ],
-        "level": 1
-      },
-      {
-        "id": "g1_l3_past_be_a12",
-        "kor": "나의 부모님은 하루 종일 직장에 계셨다.",
-        "eng": "My parents ___ at work all day.",
-        "ans": "were",
-        "opts": [
-          "Was he",
-          "were",
-          "was",
-          "weren"
-        ],
-        "level": 1
-      },
-      {
-        "id": "g1_l3_past_be_a13",
-        "kor": "그 영화는 매우 지루했다.",
-        "eng": "The movie ___ very boring.",
-        "ans": "was",
-        "opts": [
-          "was",
-          "were",
-          "weren",
-          "Was he"
-        ],
-        "level": 1
-      },
-      {
-        "id": "g1_l3_past_be_a14",
-        "kor": "Jack과 그의 형(동생)은 수영장에 있었다.",
-        "eng": "Jack and his brother ___ at the swimming pool.",
-        "ans": "were",
-        "opts": [
-          "was",
-          "weren",
-          "Was he",
-          "were"
-        ],
-        "level": 1
-      },
-      {
-        "id": "g1_l3_past_be_a15",
-        "kor": "교실은 조용했다.",
-        "eng": "It ___ quiet in the classroom.",
-        "ans": "was",
-        "opts": [
-          "weren",
-          "Was he",
-          "was",
-          "were"
-        ],
-        "level": 1
-      },
-      {
-        "id": "g1_l3_past_be_a16",
-        "kor": "우리는 초등학교 때 좋은 친구였다.",
-        "eng": "We ___ good friends in elementary school.",
-        "ans": "were",
-        "opts": [
-          "Was he",
-          "were",
-          "was",
-          "weren"
-        ],
-        "level": 1
-      },
-      {
-        "id": "g1_l3_past_be_a17",
-        "kor": "그 음식은 맛있었다!",
-        "eng": "The food ___ delicious!",
-        "ans": "was",
-        "opts": [
-          "was",
-          "were",
-          "weren",
-          "Was he"
-        ],
-        "level": 1
-      },
-      {
-        "id": "g1_l3_past_be_a18",
-        "kor": "학생들은 현장학습에 신이 났다.",
-        "eng": "The students ___ excited about the field trip.",
-        "ans": "were",
-        "opts": [
-          "was",
-          "weren",
-          "Was he",
-          "were"
-        ],
-        "level": 1
-      },
-      {
-        "id": "g1_l3_past_be_a19",
-        "kor": "Lisa는 어렸을 때 훌륭한 가수였다.",
-        "eng": "Lisa ___ a great singer when she was young.",
-        "ans": "was",
-        "opts": [
-          "weren",
-          "Was he",
-          "was",
-          "were"
-        ],
-        "level": 1
-      },
-      {
-        "id": "g1_l3_past_be_a20",
-        "kor": "너와 나는 과학 프로젝트의 파트너였다.",
-        "eng": "You and I ___ partners for the science project.",
-        "ans": "were",
-        "opts": [
-          "Was he",
-          "were",
-          "was",
-          "weren"
-        ],
-        "level": 1
-      },
-      {
-        "id": "g1_l3_past_be_b1",
+        "id": "g1_l3_be_5",
         "kor": "그는 어제 학교에 없었다. 그는 집에 있었다.",
         "eng": "He ___ at school yesterday. He was at home.",
         "ans": "was not",
@@ -1872,46 +1664,20 @@ const GAME_QUESTIONS = {
         "level": 1
       },
       {
-        "id": "g1_l3_past_be_b2",
+        "id": "g1_l3_be_6",
         "kor": "아이들은 박물관에서 조용하지 않았다.",
         "eng": "The children ___ quiet in the museum.",
         "ans": "were not",
         "opts": [
           "was not",
-          "not were",
-          "are not",
-          "were not"
-        ],
-        "level": 1
-      },
-      {
-        "id": "g1_l3_past_be_b3",
-        "kor": "날씨가 좋지 않았다. 비가 오고 바람이 불었다.",
-        "eng": "The weather ___ nice. It was rainy and windy.",
-        "ans": "was not",
-        "opts": [
-          "is not",
-          "are not",
-          "was not",
-          "were not"
-        ],
-        "level": 1
-      },
-      {
-        "id": "g1_l3_past_be_b4",
-        "kor": "나는 시험 전에 긴장하지 않았다. 나는 신이 났다!",
-        "eng": "I ___ nervous before the test. I was excited!",
-        "ans": "was not",
-        "opts": [
-          "is not",
-          "was not",
           "were not",
-          "am not"
+          "not were",
+          "are not"
         ],
         "level": 1
       },
       {
-        "id": "g1_l3_past_be_b5",
+        "id": "g1_l3_be_7",
         "kor": "너는 오늘 오후에 도서관에 있었니? 응, 있었어.",
         "eng": "___ you at the library this afternoon? Yes, I was.",
         "ans": "Were",
@@ -1924,475 +1690,46 @@ const GAME_QUESTIONS = {
         "level": 1
       },
       {
-        "id": "g1_l3_past_be_b6",
-        "kor": "그녀는 결과에 만족했니? 아니, 만족하지 않았어.",
-        "eng": "___ she happy with the result? No, she wasn't.",
-        "ans": "Was",
-        "opts": [
-          "Were",
-          "Is",
-          "Are",
-          "Was"
-        ],
-        "level": 1
-      },
-      {
-        "id": "g1_l3_past_be_b7",
+        "id": "g1_l3_be_8",
         "kor": "시험이 어려웠니? 아니, 어렵지 않았어.",
         "eng": "___ the test difficult? No, it wasn't.",
         "ans": "Was",
         "opts": [
+          "Was",
+          "Were",
           "Is",
-          "Are",
-          "Was",
-          "Were"
+          "Are"
         ],
         "level": 1
       },
       {
-        "id": "g1_l3_past_be_b8",
-        "kor": "그들은 작년에 너의 반 친구였니? 응, 맞아.",
-        "eng": "___ they your classmates last year? Yes, they were.",
-        "ans": "Were",
-        "opts": [
-          "Are",
-          "Were",
-          "Was",
-          "Is"
-        ],
-        "level": 1
-      },
-      {
-        "id": "g1_l3_past_be_b9",
-        "kor": "나의 할아버지는 농부가 아니었다. 그는 의사였다.",
-        "eng": "My grandfather ___ a farmer. He was a doctor.",
-        "ans": "was not",
-        "opts": [
-          "was not",
-          "were not",
-          "is not",
-          "are not"
-        ],
-        "level": 1
-      },
-      {
-        "id": "g1_l3_past_be_b10",
-        "kor": "그 사과들은 신선하지 않았다. 그것들은 매우 오래되었다.",
-        "eng": "The apples ___ fresh. They were very old.",
-        "ans": "were not",
-        "opts": [
-          "was not",
-          "is not",
-          "are not",
-          "were not"
-        ],
-        "level": 1
-      },
-      {
-        "id": "g1_l3_past_be_b11",
-        "kor": "Kate는 집에 없었다. 그녀는 학교에 있었다.",
-        "eng": "Kate ___ at home. She was at school.",
-        "ans": "was not",
-        "opts": [
-          "Was he",
-          "weren",
-          "was not",
-          "were not"
-        ],
-        "level": 1
-      },
-      {
-        "id": "g1_l3_past_be_b12",
-        "kor": "우리는 어제 바쁘지 않았다. 우리는 여가 시간이 많았다.",
-        "eng": "We ___ busy yesterday. We had a lot of free time.",
-        "ans": "were not",
-        "opts": [
-          "weren",
-          "were not",
-          "was not",
-          "Was he"
-        ],
-        "level": 1
-      },
-      {
-        "id": "g1_l3_past_be_b13",
-        "kor": "Sam과 Jay는 오늘 학교에 지각하지 않았다.",
-        "eng": "Sam and Jay ___ late for school today.",
-        "ans": "were not",
-        "opts": [
-          "were not",
-          "was not",
-          "Was he",
-          "weren"
-        ],
-        "level": 1
-      },
-      {
-        "id": "g1_l3_past_be_b14",
-        "kor": "박물관은 월요일에 열지 않았다. 문을 닫았다.",
-        "eng": "The museum ___ open on Mondays. It was closed.",
-        "ans": "was not",
-        "opts": [
-          "were not",
-          "Was he",
-          "weren",
-          "was not"
-        ],
-        "level": 1
-      },
-      {
-        "id": "g1_l3_past_be_b15",
-        "kor": "수프는 뜨겁지 않았다. 차가웠다.",
-        "eng": "The soup ___ hot. It was cold.",
-        "ans": "was not",
-        "opts": [
-          "Was he",
-          "weren",
-          "was not",
-          "were not"
-        ],
-        "level": 1
-      },
-      {
-        "id": "g1_l3_past_be_b16",
-        "kor": "너는 서울에서 태어났니? 아니, 아니야.",
-        "eng": "___ you born in Seoul? No, I wasn't.",
-        "ans": "Were",
-        "opts": [
-          "Was he",
-          "Were",
-          "was",
-          "weren"
-        ],
-        "level": 1
-      },
-      {
-        "id": "g1_l3_past_be_b17",
-        "kor": "어제 화창했니? 응, 화창했어.",
-        "eng": "___ it sunny yesterday? Yes, it was.",
-        "ans": "Was",
-        "opts": [
-          "Was",
-          "were",
-          "weren",
-          "Was he"
-        ],
-        "level": 1
-      },
-      {
-        "id": "g1_l3_past_be_b18",
-        "kor": "너의 아버지는 선생님이었니? 아니, 아니었어.",
-        "eng": "___ your father a teacher? No, he wasn't.",
-        "ans": "Was",
-        "opts": [
-          "were",
-          "weren",
-          "Was he",
-          "Was"
-        ],
-        "level": 1
-      },
-      {
-        "id": "g1_l3_past_be_b19",
-        "kor": "아이들은 교실에서 착했니? 응, 착했어.",
-        "eng": "___ the children good in the classroom? Yes, they were.",
-        "ans": "Were",
-        "opts": [
-          "weren",
-          "Was he",
-          "Were",
-          "was"
-        ],
-        "level": 1
-      },
-      {
-        "id": "g1_l3_past_be_b20",
-        "kor": "나는 시험 준비가 되어 있었다. 나는 매우 열심히 공부했다.",
-        "eng": "I ___ ready for the test. I studied very hard.",
-        "ans": "was",
-        "opts": [
-          "Was he",
-          "was",
-          "were",
-          "weren"
-        ],
-        "level": 1
-      },
-      {
-        "id": "g1_l3_past_be_hard_a1",
-        "kor": "선반 위의 상자는 비어 있었다. 나는 쿠키를 찾을 수 없었다.",
-        "eng": "The box on the shelf ___ empty. I couldn't find the cookies.",
+        "id": "g1_l3_be_9",
+        "kor": "지난 겨울은 춥고 눈이 많이 왔다.",
+        "eng": "It ___ cold and snowy last winter.",
         "ans": "was",
         "opts": [
           "was",
           "were",
-          "wasn't",
-          "weren't"
+          "are",
+          "be"
         ],
-        "level": 2
+        "level": 1
       },
       {
-        "id": "g1_l3_past_be_hard_a2",
-        "kor": "Mia와 언니는 어제 오후에 도서관에 있었다.",
-        "eng": "Mia and her sister ___ at the library yesterday afternoon.",
-        "ans": "were",
-        "opts": [
-          "was",
-          "weren't",
-          "wasn't",
-          "were"
-        ],
-        "level": 2
-      },
-      {
-        "id": "g1_l3_past_be_hard_a3",
-        "kor": "수프가 너무 짜서 나는 많이 먹지 못했다.",
-        "eng": "The soup ___ too salty, so I couldn't eat much of it.",
-        "ans": "was",
-        "opts": [
-          "were",
-          "wasn't",
-          "was",
-          "weren't"
-        ],
-        "level": 2
-      },
-      {
-        "id": "g1_l3_past_be_hard_a4",
-        "kor": "내 친구들은 어젯밤 집에 없었다. 그들은 콘서트에 갔다.",
-        "eng": "My friends ___ not at home last night. They went to a concert.",
-        "ans": "were",
-        "opts": [
-          "weren't",
-          "were",
-          "was",
-          "wasn't"
-        ],
-        "level": 2
-      },
-      {
-        "id": "g1_l3_past_be_hard_a9",
-        "kor": "그 아이들은 어제 놀이터에 있었다.",
-        "eng": "원문: The kids are in the playground now. → (과거형으로) The kids ___ in the playground yesterday.",
+        "id": "g1_l3_be_10",
+        "kor": "우리는 초등학교 때 좋은 친구였다.",
+        "eng": "We ___ good friends in elementary school.",
         "ans": "were",
         "opts": [
           "were",
           "was",
-          "weren",
-          "Was he"
+          "are",
+          "am"
         ],
-        "level": 2
+        "level": 1
       },
       {
-        "id": "g1_l3_past_be_hard_a10",
-        "kor": "민정이는 연극 동아리 회원이 아니었다.",
-        "eng": "원문: Minjeong was a member of the drama club. → (부정문으로) Minjeong ___ a member of the drama club.",
-        "ans": "was not",
-        "opts": [
-          "were not",
-          "Was he",
-          "weren",
-          "was not"
-        ],
-        "level": 2
-      },
-      {
-        "id": "g1_l3_past_be_hard_a11",
-        "kor": "너의 부모님은 학교 축제에 계셨니?",
-        "eng": "원문: Your parents were at the school festival. → (의문문으로) ___ at the school festival?",
-        "ans": "Were your parents",
-        "opts": [
-          "was not",
-          "Was he",
-          "Were your parents",
-          "were not"
-        ],
-        "level": 2
-      },
-      {
-        "id": "g1_l3_past_be_hard_a12",
-        "kor": "어제 날씨는 매우 추웠다.",
-        "eng": "The weather ___ very cold yesterday.",
-        "ans": "was",
-        "opts": [
-          "Was he",
-          "was",
-          "were",
-          "weren"
-        ],
-        "level": 2
-      },
-      {
-        "id": "g1_l3_past_be_hard_a13",
-        "kor": "우리는 지난 주말에 집에 있지 않았다.",
-        "eng": "We ___ at home last weekend.",
-        "ans": "were not",
-        "opts": [
-          "were not",
-          "was not",
-          "Was he",
-          "weren"
-        ],
-        "level": 2
-      },
-      {
-        "id": "g1_l3_past_be_hard_a14",
-        "kor": "그는 지난 달에 아팠니?",
-        "eng": "그는 지난 달에 아팠니? ___ sick last month?",
-        "ans": "Was he",
-        "opts": [
-          "was not",
-          "weren",
-          "were",
-          "Was he"
-        ],
-        "level": 2
-      },
-      {
-        "id": "g1_l3_past_be_hard_a15",
-        "kor": "그 신발들은 우리 형의 것이었다.",
-        "eng": "The shoes ___ my brother's.",
-        "ans": "were",
-        "opts": [
-          "weren",
-          "Was he",
-          "were",
-          "was"
-        ],
-        "level": 2
-      },
-      {
-        "id": "g1_l3_past_be_hard_b1",
-        "kor": "지난 일요일은 소풍을 가기에 완벽한 날이었다.",
-        "eng": "Last Sunday ___ a perfect day for a picnic.",
-        "ans": "was",
-        "opts": [
-          "Was he",
-          "was",
-          "were",
-          "weren"
-        ],
-        "level": 2
-      },
-      {
-        "id": "g1_l3_past_be_hard_b2",
-        "kor": "내 남동생과 나는 매우 신이 나 있었다.",
-        "eng": "My brother and I ___ very excited.",
-        "ans": "were",
-        "opts": [
-          "were",
-          "was",
-          "weren",
-          "Was he"
-        ],
-        "level": 2
-      },
-      {
-        "id": "g1_l3_past_be_hard_b3",
-        "kor": "하늘은 맑고 푸르렀다.",
-        "eng": "The sky ___ clear and blue.",
-        "ans": "was",
-        "opts": [
-          "were",
-          "weren",
-          "Was he",
-          "was"
-        ],
-        "level": 2
-      },
-      {
-        "id": "g1_l3_past_be_hard_b4",
-        "kor": "그런데 샌드위치는 신선하지 않았다 — 엄마가 새 빵을 쓰는 걸 깜빡하셨다!",
-        "eng": "But the sandwiches ___ fresh — my mom forgot to use new bread!",
-        "ans": "weren",
-        "opts": [
-          "Was he",
-          "was",
-          "weren",
-          "were"
-        ],
-        "level": 2
-      },
-      {
-        "id": "g1_l3_past_be_hard_b5",
-        "kor": "그래도 그날 하루 전체가 멋진 추억이었다.",
-        "eng": "Still, the whole day ___ a wonderful memory.",
-        "ans": "was",
-        "opts": [
-          "Was he",
-          "was",
-          "were",
-          "weren"
-        ],
-        "level": 2
-      },
-      {
-        "id": "g1_l3_past_be_hard_b6",
-        "kor": "너는 어젯밤 재호네 집에 있었니?",
-        "eng": "___ you at Jaeho's house last night?",
-        "ans": "Were",
-        "opts": [
-          "Were",
-          "was",
-          "weren",
-          "Was he"
-        ],
-        "level": 2
-      },
-      {
-        "id": "g1_l3_past_be_hard_b7",
-        "kor": "내가 너에게 전화했는데, 너는 집에 없었다.",
-        "eng": "I called you, but you ___ at home.",
-        "ans": "weren",
-        "opts": [
-          "were",
-          "Was he",
-          "was",
-          "weren"
-        ],
-        "level": 2
-      },
-      {
-        "id": "g1_l3_past_be_hard_b8",
-        "kor": "재호의 부모님은 여행 중이셨다.",
-        "eng": "Jaeho's parents ___ on a trip.",
-        "ans": "were",
-        "opts": [
-          "weren",
-          "Was he",
-          "were",
-          "was"
-        ],
-        "level": 2
-      },
-      {
-        "id": "g1_l3_past_be_hard_b9",
-        "kor": "그래서 오직 그와 그의 강아지만 그곳에 있었다.",
-        "eng": "…so only he and his dog ___ there.",
-        "ans": "were",
-        "opts": [
-          "Was he",
-          "were",
-          "was",
-          "weren"
-        ],
-        "level": 2
-      },
-      {
-        "id": "g1_l3_past_be_hard_b10",
-        "kor": "거실은 피자와 보드게임으로 가득했다!",
-        "eng": "The living room ___ full of pizza and board games!",
-        "ans": "was",
-        "opts": [
-          "was",
-          "were",
-          "weren",
-          "Was he"
-        ],
-        "level": 2
-      },
-      {
-        "id": "g1_l3_ox_1",
+        "id": "g1_l3_be_ox1",
         "kor": "우리는 지난 주말에 해변에 있었다. — 맞으면 O · 틀리면 X",
         "eng": "We were at the beach last weekend.",
         "ans": "O",
@@ -2404,7 +1741,7 @@ const GAME_QUESTIONS = {
         "level": 1
       },
       {
-        "id": "g1_l3_ox_2",
+        "id": "g1_l3_be_ox2",
         "kor": "그녀는 여행 후에 피곤했다. — 맞으면 O · 틀리면 X",
         "eng": "She were tired after the trip.",
         "ans": "X",
@@ -2416,9 +1753,254 @@ const GAME_QUESTIONS = {
         "level": 1
       },
       {
-        "id": "g1_l3_ox_3",
-        "kor": "그 영화는 정말 흥미진진했다. — 맞으면 O · 틀리면 X",
-        "eng": "The movie was really exciting.",
+        "id": "g1_l3_gv_1",
+        "kor": "나는 어제 친구들과 축구를 했다.",
+        "eng": "I ___ soccer with my friends yesterday.",
+        "ans": "played",
+        "opts": [
+          "played",
+          "play",
+          "plays",
+          "playing"
+        ],
+        "level": 1
+      },
+      {
+        "id": "g1_l3_gv_2",
+        "kor": "그녀는 시장에 가서 과일을 좀 샀다.",
+        "eng": "She ___ to the market and bought some fruit.",
+        "ans": "went",
+        "opts": [
+          "went",
+          "goed",
+          "go",
+          "goes"
+        ],
+        "level": 1
+      },
+      {
+        "id": "g1_l3_gv_3",
+        "kor": "우리는 어젯밤 집에서 영화를 봤다.",
+        "eng": "We ___ a movie at home last night.",
+        "ans": "watched",
+        "opts": [
+          "watched",
+          "watch",
+          "watches",
+          "watching"
+        ],
+        "level": 1
+      },
+      {
+        "id": "g1_l3_gv_4",
+        "kor": "재호는 할머니께 편지를 썼다.",
+        "eng": "Jaeho ___ a letter to his grandmother.",
+        "ans": "wrote",
+        "opts": [
+          "wrote",
+          "writed",
+          "write",
+          "writes"
+        ],
+        "level": 1
+      },
+      {
+        "id": "g1_l3_gv_5",
+        "kor": "나의 엄마는 어렸을 때 영어를 공부했다.",
+        "eng": "My mom ___ English when she was young.",
+        "ans": "studied",
+        "opts": [
+          "studied",
+          "studyed",
+          "study",
+          "studies"
+        ],
+        "level": 2
+      },
+      {
+        "id": "g1_l3_gv_6",
+        "kor": "버스가 학교 앞에 멈췄다.",
+        "eng": "The bus ___ in front of the school.",
+        "ans": "stopped",
+        "opts": [
+          "stopped",
+          "stoped",
+          "stop",
+          "stops"
+        ],
+        "level": 2
+      },
+      {
+        "id": "g1_l3_gv_7",
+        "kor": "나는 어젯밤 숙제를 하지 않았다. 대신 TV를 봤다.",
+        "eng": "I ___ my homework last night. I watched TV instead.",
+        "ans": "didn't do",
+        "opts": [
+          "didn't do",
+          "don't do",
+          "wasn't do",
+          "didn't did"
+        ],
+        "level": 2
+      },
+      {
+        "id": "g1_l3_gv_8",
+        "kor": "그녀는 아파서 어제 학교에 오지 않았다.",
+        "eng": "She ___ to school yesterday because she was sick.",
+        "ans": "didn't come",
+        "opts": [
+          "didn't come",
+          "didn't came",
+          "wasn't come",
+          "doesn't come"
+        ],
+        "level": 2
+      },
+      {
+        "id": "g1_l3_gv_9",
+        "kor": "너는 그 새 영화를 봤니? 응, 봤어.",
+        "eng": "___ you see the new movie? Yes, I did.",
+        "ans": "Did",
+        "opts": [
+          "Did",
+          "Was",
+          "Were",
+          "Do"
+        ],
+        "level": 1
+      },
+      {
+        "id": "g1_l3_gv_10",
+        "kor": "그는 저녁 식사 전에 숙제를 끝냈니?",
+        "eng": "Did he ___ his homework before dinner?",
+        "ans": "finish",
+        "opts": [
+          "finish",
+          "finished",
+          "finishes",
+          "finishing"
+        ],
+        "level": 2
+      },
+      {
+        "id": "g1_l3_gv_11",
+        "kor": "그는 어제 새 자전거를 샀다.",
+        "eng": "He ___ a new bike yesterday.",
+        "ans": "bought",
+        "opts": [
+          "bought",
+          "buyed",
+          "buy",
+          "buys"
+        ],
+        "level": 1
+      },
+      {
+        "id": "g1_l3_gv_ox1",
+        "kor": "그들은 파티 후에 집에 갔다. — 맞으면 O · 틀리면 X",
+        "eng": "They goed home after the party.",
+        "ans": "X",
+        "opts": [
+          "O",
+          "X"
+        ],
+        "type": "ox",
+        "level": 1
+      },
+      {
+        "id": "g1_l3_gv_ox2",
+        "kor": "우리는 어젯밤 축구 경기를 봤다. — 맞으면 O · 틀리면 X",
+        "eng": "We watched the soccer game last night.",
+        "ans": "O",
+        "opts": [
+          "O",
+          "X"
+        ],
+        "type": "ox",
+        "level": 1
+      },
+      {
+        "id": "g1_l3_when_1",
+        "kor": "Paul이 집에 왔을 때, 그의 여동생은 TV를 보고 있었다.",
+        "eng": "___ Paul came home, his sister was watching TV.",
+        "ans": "When",
+        "opts": [
+          "When",
+          "What",
+          "Who",
+          "Why"
+        ],
+        "level": 1
+      },
+      {
+        "id": "g1_l3_when_2",
+        "kor": "내가 어렸을 때, 나는 부산에 살았다.",
+        "eng": "When I ___ young, I lived in Busan.",
+        "ans": "was",
+        "opts": [
+          "was",
+          "were",
+          "am",
+          "is"
+        ],
+        "level": 1
+      },
+      {
+        "id": "g1_l3_when_3",
+        "kor": "우리가 저녁을 먹고 있을 때 불이 나갔다.",
+        "eng": "We were having dinner ___ the lights went out.",
+        "ans": "when",
+        "opts": [
+          "when",
+          "what",
+          "which",
+          "who"
+        ],
+        "level": 2
+      },
+      {
+        "id": "g1_l3_when_4",
+        "kor": "종이 울렸을 때, 학생들은 교실로 들어갔다.",
+        "eng": "When the bell rang, the students ___ the classroom.",
+        "ans": "entered",
+        "opts": [
+          "entered",
+          "enter",
+          "enters",
+          "entering"
+        ],
+        "level": 2
+      },
+      {
+        "id": "g1_l3_when_5",
+        "kor": "영화가 끝났을 때, 우리는 집에 갔다.",
+        "eng": "When the movie ended, we ___ home.",
+        "ans": "went",
+        "opts": [
+          "went",
+          "goed",
+          "go",
+          "goes"
+        ],
+        "level": 1
+      },
+      {
+        "id": "g1_l3_when_6",
+        "kor": "그녀는 그 소식을 들었을 때 울었다.",
+        "eng": "When she heard the news, she ___.",
+        "ans": "cried",
+        "opts": [
+          "cried",
+          "cryed",
+          "cry",
+          "cries"
+        ],
+        "level": 2
+      },
+      {
+        "id": "g1_l3_when_ox1",
+        "kor": "내가 일어났을 때, 해는 이미 떠 있었다. — 맞으면 O · 틀리면 X",
+        "eng": "When I woke up, the sun was already up.",
         "ans": "O",
         "opts": [
           "O",

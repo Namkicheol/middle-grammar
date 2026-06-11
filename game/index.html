@@ -3402,9 +3402,18 @@ function elapsedSec() {
 }
 
 function resizeCanvas() {
-  const maxW = Math.min(window.innerWidth, 480);
-  CW = maxW;
-  CH = Math.round(maxW * (640/480));
+  // 캔버스가 뷰포트를 넘으면 페이지가 스크롤돼 상단 HUD(점수·시간)가 잘린다.
+  // HUD·하강바 높이를 빼고 남는 세로 공간에 맞춰 캔버스를 제한한다(가로:세로=480:640 비율 유지).
+  const hudEl = document.getElementById('hud');
+  const dropEl = document.getElementById('drop-meter');
+  const chromeH = (hudEl && hudEl.offsetHeight ? hudEl.offsetHeight : 50)
+                + (dropEl && dropEl.offsetHeight ? dropEl.offsetHeight : 18);
+  const availH = Math.max(320, window.innerHeight - chromeH - 4);
+  let cw = Math.min(window.innerWidth, 480);
+  let ch = cw * (640/480);
+  if (ch > availH) { ch = availH; cw = ch * (480/640); }
+  CW = Math.round(cw);
+  CH = Math.round(ch);
   const dpr = window.devicePixelRatio || 1;
   canvas.width = CW * dpr;
   canvas.height = CH * dpr;

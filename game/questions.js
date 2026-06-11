@@ -2008,6 +2008,237 @@ const GAME_QUESTIONS = {
         ],
         "type": "ox",
         "level": 1
+      },
+      {
+        "id": "g1_l3_x1",
+        "kor": "민호는 오늘 아침에 버스를 놓쳤다.",
+        "eng": "Minho ___ the bus this morning.",
+        "ans": "missed",
+        "opts": [
+          "missed",
+          "miss",
+          "misses",
+          "missing"
+        ],
+        "level": 1
+      },
+      {
+        "id": "g1_l3_x2",
+        "kor": "그 회의는 한 시간 전에 시작했다.",
+        "eng": "The meeting ___ an hour ago.",
+        "ans": "started",
+        "opts": [
+          "started",
+          "start",
+          "starts",
+          "starting"
+        ],
+        "level": 1
+      },
+      {
+        "id": "g1_l3_x3",
+        "kor": "그 슈퍼마켓은 어제 문을 열지 않았다. — 맞으면 O · 틀리면 X",
+        "eng": "The supermarket wasn't open yesterday.",
+        "ans": "O",
+        "opts": [
+          "O",
+          "X"
+        ],
+        "type": "ox",
+        "level": 1
+      },
+      {
+        "id": "g1_l3_x4",
+        "kor": "우리는 동물원에서 호랑이와 기린을 봤다.",
+        "eng": "We ___ tigers and giraffes at the zoo.",
+        "ans": "saw",
+        "opts": [
+          "saw",
+          "seed",
+          "see",
+          "sees"
+        ],
+        "level": 1
+      },
+      {
+        "id": "g1_l3_x5",
+        "kor": "콘서트에 사람들이 많이 있었다.",
+        "eng": "There ___ many people at the concert.",
+        "ans": "were",
+        "opts": [
+          "were",
+          "was",
+          "are",
+          "is"
+        ],
+        "level": 1
+      },
+      {
+        "id": "g1_l3_x6",
+        "kor": "그녀는 친구에게 짧은 메시지를 남겼다.",
+        "eng": "다음 중 어법에 맞는 것을 고르세요.",
+        "ans": "She left a short message for her friend.",
+        "opts": [
+          "She leaved a short message for her friend.",
+          "She left a short message for her friend.",
+          "She did left a short message for her friend.",
+          "She leave a short message for her friend."
+        ],
+        "level": 1
+      },
+      {
+        "id": "g1_l3_x7",
+        "kor": "지호는 시험을 위해 주말 동안 열심히 공부했다.",
+        "eng": "Jiho ___ hard during the weekend for the exam.",
+        "ans": "studied",
+        "opts": [
+          "studied",
+          "studyed",
+          "study",
+          "studies"
+        ],
+        "level": 2
+      },
+      {
+        "id": "g1_l3_x8",
+        "kor": "그들은 세 시간 동안 테니스를 쳐서 매우 피곤했다.",
+        "eng": "They ___ tennis for three hours, so they were very tired.",
+        "ans": "played",
+        "opts": [
+          "played",
+          "play",
+          "did play",
+          "playing"
+        ],
+        "level": 2
+      },
+      {
+        "id": "g1_l3_x9",
+        "kor": "나는 지난여름에 바다에 가지 않았다.",
+        "eng": "I ___ to the sea last summer.",
+        "ans": "didn't go",
+        "opts": [
+          "didn't go",
+          "didn't went",
+          "wasn't go",
+          "don't go"
+        ],
+        "level": 2
+      },
+      {
+        "id": "g1_l3_x10",
+        "kor": "너는 어제 진찰을 받았니? 응, 받았어.",
+        "eng": "___ you see a doctor yesterday? Yes, I did.",
+        "ans": "Did",
+        "opts": [
+          "Did",
+          "Were",
+          "Was",
+          "Do"
+        ],
+        "level": 2
+      },
+      {
+        "id": "g1_l3_x11",
+        "kor": "그녀는 지난 주말에 새 스마트폰을 샀니?",
+        "eng": "다음 중 어법에 맞는 것을 고르세요.",
+        "ans": "Did she buy a new smartphone last weekend?",
+        "opts": [
+          "Did she bought a new smartphone last weekend?",
+          "Did she buy a new smartphone last weekend?",
+          "Was she buy a new smartphone last weekend?",
+          "Did she buys a new smartphone last weekend?"
+        ],
+        "level": 2
+      },
+      {
+        "id": "g1_l3_x12",
+        "kor": "나는 자유 시간이 있을 때, 그림을 그린다.",
+        "eng": "___ I have free time, I draw pictures.",
+        "ans": "When",
+        "opts": [
+          "When",
+          "What",
+          "Where",
+          "Because"
+        ],
+        "level": 2
+      },
+      {
+        "id": "g1_l3_x13",
+        "kor": "Tom은 매운 국을 먹을 때 땀을 많이 흘린다.",
+        "eng": "Tom sweats a lot ___ he eats hot soup.",
+        "ans": "when",
+        "opts": [
+          "when",
+          "what",
+          "which",
+          "who"
+        ],
+        "level": 2
+      },
+      {
+        "id": "g1_l3_x14",
+        "kor": "비가 오고 있었을 때, Sarah는 우산이 없었다.",
+        "eng": "When it was raining, Sarah ___ have an umbrella.",
+        "ans": "didn't",
+        "opts": [
+          "didn't",
+          "wasn't",
+          "isn't",
+          "doesn't"
+        ],
+        "level": 2
+      },
+      {
+        "id": "g1_l3_x15",
+        "kor": "그 유명한 배우가 들어왔을 때, 우리는 식당에서 밥을 먹고 있었다.",
+        "eng": "___ the famous actor came in, we were eating at the restaurant.",
+        "ans": "When",
+        "opts": [
+          "When",
+          "Who",
+          "Why",
+          "Which"
+        ],
+        "level": 2
+      },
+      {
+        "id": "g1_l3_x16",
+        "kor": "Abigail은 23살이었을 때 유럽을 여행했다.",
+        "eng": "When Abigail was 23, she ___ to Europe.",
+        "ans": "traveled",
+        "opts": [
+          "traveled",
+          "travels",
+          "travel",
+          "traveling"
+        ],
+        "level": 2
+      },
+      {
+        "id": "g1_l3_x17",
+        "kor": "그녀는 어렸을 때 화가가 되고 싶어 했다. — 맞으면 O · 틀리면 X",
+        "eng": "She wanted to become an artist when she was young.",
+        "ans": "O",
+        "opts": [
+          "O",
+          "X"
+        ],
+        "type": "ox",
+        "level": 2
+      },
+      {
+        "id": "g1_l3_x18",
+        "kor": "우리는 어제 그 박물관을 방문하지 않았다. — 맞으면 O · 틀리면 X",
+        "eng": "We didn't visited the museum yesterday.",
+        "ans": "X",
+        "opts": [
+          "O",
+          "X"
+        ],
+        "type": "ox",
+        "level": 2
       }
     ]
   },

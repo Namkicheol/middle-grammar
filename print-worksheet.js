@@ -13,25 +13,24 @@
     '@media print {' +
     '  @page { margin: 11mm 10mm; }' +
     '  html, body { background: #fff !important; }' +
-    '  /* 화면 전용 UI 숨김 */' +
+    '  /* 화면 전용 UI·단어보기 힌트 숨김 */' +
     '  #egm-print-bar, .tabs, .dashboard, .scoreboard, #egm-result, #result, #toast,' +
-    '  .check-btn, .hint-btn, .r-btn, .reset-btn, .grade-btn { display: none !important; }' +
+    '  .check-btn, .hint-btn, .r-btn, .reset-btn, .grade-btn,' +
+    '  .vocab-toggle, .vocab, .hint-box { display: none !important; }' +
     '  /* 헤더 잉크 절약 + 컴팩트 */' +
     '  .header { background: #fff !important; color: #0f172a !important; border-bottom: 2px solid #0f172a !important;' +
     '    border-radius: 0 !important; box-shadow: none !important; padding: 0 0 7px !important; margin-bottom: 10px !important; }' +
     '  .header h1 { color: #0f172a !important; font-size: 1.4rem !important; margin: 0 !important; }' +
     '  .header p { color: #475569 !important; font-size: .85rem !important; }' +
     '  .badge-top { background: none !important; color: #475569 !important; padding: 0 !important; font-size: .72rem !important; margin: 0 !important; }' +
-    '  /* ▼ 2단 그리드 — 한 장에 더 많은 문제 (종이 절약). multicol의 빈 페이지 버그 회피 */' +
-    '  .sec { display: grid !important; grid-template-columns: 1fr 1fr !important;' +
-    '    gap: 7px 12px !important; align-items: start !important;' +
-    '    max-width: 100% !important; padding: 0 !important; animation: none !important; }' +
-    '  /* 섹션 제목은 2단 전체 너비로 */' +
-    '  .sec-hdr, .egm-print-sec-title { grid-column: 1 / -1 !important; break-after: avoid; break-inside: avoid; }' +
+    '  /* ▼ 2단 — 제목은 일반 블록(전체너비), 문제만 multicol 래퍼로 감싸 페이지 분할 안정화 */' +
+    '  .sec { display: block !important; max-width: 100% !important; padding: 0 !important; animation: none !important; }' +
+    '  .sec-hdr, .egm-print-sec-title { break-after: avoid; break-inside: avoid; }' +
     '  .egm-print-sec-title { display: block; font-size: 1rem; font-weight: 800; color: #0f172a;' +
     '    margin: 6px 0 4px; padding-bottom: 4px; border-bottom: 1.5px solid #cbd5e1; }' +
-    '  /* 문제 블록: 페이지 경계에서 통째로 (클래스명 무관, 섹션 직계 자식) */' +
-    '  .sec > * { break-inside: avoid; margin-bottom: 0 !important; }' +
+    '  .egm-print-cols { columns: 2 !important; column-gap: 12px !important; }' +
+    '  .egm-print-cols > * { break-inside: avoid; margin: 0 0 7px !important;' +
+    '    -webkit-column-break-inside: avoid; display: block; }' +
     '  /* 문제 카드 컴팩트 (클래스명 변형 모두 커버) */' +
     '  .q-card, .question-card, .q-item, .qbox { break-inside: avoid; box-shadow: none !important;' +
     '    border: 1px solid #cbd5e1 !important; border-radius: 8px !important;' +
@@ -63,18 +62,34 @@
   // 인쇄는 교사 전용 — 워크시트 화면엔 버튼을 노출하지 않는다.
   // 1) 허브에서 ?print=1 로 열면 자동 인쇄  2) 그 외엔 교사가 Ctrl/Cmd+P 사용
 
-  // 섹션 제목이 없는 계열(egm/탭형)엔 탭 라벨을 각 섹션 위에 헤딩으로 복사
+  function isHdr(el) {
+    return el.nodeType === 1 && (el.classList.contains('sec-hdr') || el.classList.contains('egm-print-sec-title'));
+  }
+  // 인쇄 준비: ① 제목 없는 계열엔 탭 라벨 헤딩 주입 ② 문제 카드들을 multicol 래퍼로 감싼다
   function preparePrint() {
     var secs = document.querySelectorAll('.sec');
     if (!secs.length) return;
     var tabs = document.querySelectorAll('.tabs .tab-btn, .tabs button');
     secs.forEach(function (sec, i) {
-      if (sec.querySelector('.sec-hdr') || sec.querySelector('.egm-print-sec-title')) return;
-      if (!tabs[i]) return;
-      var h = document.createElement('div');
-      h.className = 'egm-print-sec-title';
-      h.textContent = tabs[i].textContent.trim();
-      sec.insertBefore(h, sec.firstChild);
+      // 제목 주입
+      if (!sec.querySelector('.sec-hdr') && !sec.querySelector('.egm-print-sec-title') && tabs[i]) {
+        var h = document.createElement('div');
+        h.className = 'egm-print-sec-title';
+        h.textContent = tabs[i].textContent.trim();
+        sec.insertBefore(h, sec.firstChild);
+      }
+      // 이미 감쌌으면 skip (멱등)
+      if (sec.querySelector(':scope > .egm-print-cols')) return;
+      // 제목은 그대로 두고, 연속된 비-제목 노드들을 래퍼로 묶는다
+      var kids = [].slice.call(sec.childNodes);
+      var wrap = null;
+      kids.forEach(function (node) {
+        if (isHdr(node)) { wrap = null; return; }            // 제목 만나면 래퍼 끊기(전체너비 유지)
+        if (node.nodeType === 1 || (node.nodeType === 3 && node.textContent.trim())) {
+          if (!wrap) { wrap = document.createElement('div'); wrap.className = 'egm-print-cols'; sec.insertBefore(wrap, node); }
+          wrap.appendChild(node);
+        }
+      });
     });
   }
 

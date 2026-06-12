@@ -79,10 +79,37 @@ button{font-family:inherit;}
 @keyframes hRun {from{background-position-x:0}to{background-position-x:-800px}}
 @keyframes hHurt{from{background-position-x:0}to{background-position-x:-300px}}
 @keyframes hDeath{from{background-position-x:0}to{background-position-x:-1000px}}
+@keyframes hAtk {from{background-position-x:0}to{background-position-x:-600px}}
+#hero.atk  {background-image:url('assets/huntress/Attack.png');  animation:hAtk .5s steps(6) 1 forwards;}
 #hero.idle {background-image:url('assets/huntress/Idle.png');    animation:hIdle 1.1s steps(10) infinite;}
 #hero.run  {background-image:url('assets/huntress/Run.png');     animation:hRun .6s steps(8) infinite;}
 #hero.hurt {background-image:url('assets/huntress/Take_hit.png');animation:hHurt .32s steps(3) 1 forwards;}
 #hero.death{background-image:url('assets/huntress/Death.png');   animation:hDeath 1.2s steps(10) 1 forwards;}
+
+/* 몬스터 (이벤트층 — game2 CC0 몬스터 재활용) */
+#mon{position:absolute;right:6%;bottom:calc(8% + 16px - 88px);width:150px;height:150px;
+  background-repeat:no-repeat;image-rendering:pixelated;
+  transform:scaleX(-1) scale(1.8);transform-origin:bottom center;display:none;
+  filter:drop-shadow(0 8px 22px rgba(239,68,68,.5));}
+@keyframes mIdle4{from{background-position-x:0}to{background-position-x:-600px}}
+@keyframes mIdle8{from{background-position-x:0}to{background-position-x:-1200px}}
+@keyframes mDeath4{from{background-position-x:0}to{background-position-x:-600px}}
+#mon.i4{animation:mIdle4 .55s steps(4) infinite;}
+#mon.i8{animation:mIdle8 .8s steps(8) infinite;}
+#mon.die{animation:mDeath4 .5s steps(4) 1 forwards;}
+#mon-name{position:absolute;right:6%;bottom:calc(8% + 16px + 84px);background:rgba(0,0,0,.6);border:1.5px solid rgba(239,68,68,.5);border-radius:9px;padding:3px 10px;font-size:.72rem;font-weight:900;color:#fca5a5;display:none;}
+
+/* 이벤트층 배너 칩 */
+#evt-chip{display:none;margin-bottom:8px;font-size:.78rem;font-weight:900;border-radius:10px;padding:6px 12px;text-align:center;}
+#evt-chip.monster{display:block;background:rgba(239,68,68,.16);border:1.5px solid rgba(239,68,68,.55);color:#fca5a5;}
+#evt-chip.treasure{display:block;background:rgba(251,191,36,.14);border:1.5px solid rgba(251,191,36,.55);color:#fde68a;}
+
+/* 아이템 슬롯 */
+#items{position:relative;z-index:5;display:flex;gap:8px;justify-content:center;margin:0 auto 8px;}
+.item-btn{font-size:1.3rem;background:rgba(255,255,255,.07);border:2px solid rgba(167,139,250,.45);border-radius:12px;padding:7px 12px;cursor:pointer;transition:transform .12s;position:relative;}
+.item-btn:active{transform:scale(.92);}
+.item-btn .it-label{display:block;font-size:.56rem;font-weight:800;color:#c4b5fd;}
+.item-btn.flash{animation:pulse2 .6s 2;}
 
 /* 휴식층 배너 */
 #rest-banner{position:absolute;left:50%;top:34%;transform:translateX(-50%) scale(.7);z-index:30;background:linear-gradient(135deg,rgba(34,197,94,.95),rgba(16,185,129,.92));padding:13px 26px;border-radius:16px;font-weight:900;font-size:1.05rem;box-shadow:0 10px 30px rgba(0,0,0,.55);opacity:0;pointer-events:none;transition:opacity .3s,transform .3s;border:1.5px solid rgba(255,255,255,.4);}
@@ -190,9 +217,13 @@ button{font-family:inherit;}
   <div id="arena">
     <div id="ledge"></div>
     <div id="hero" class="idle"></div>
+    <div id="mon"></div>
+    <div id="mon-name"></div>
     <div id="rest-banner">🛏️ 휴식층! ❤️ +1</div>
   </div>
+  <div id="items"></div>
   <div id="qcard">
+    <div id="evt-chip"></div>
     <div id="timer-track"><div id="timer-fill"></div></div>
     <span id="q-unit"></span>
     <div id="q-eng"></div>
@@ -328,10 +359,55 @@ function syncBgmBtn(){document.getElementById('bgm-btn').textContent=bgmOn?'🔊
 function bgmPlay(){if(bgmOn){bgm.volume=.32;bgm.play().catch(()=>{});}}
 function bgmStop(){bgm.pause();bgm.currentTime=0;}
 
+// ── 이벤트층 & 아이템 ──
+const MONSTERS=[
+  {key:'goblin',    name:'👺 문법 고블린',   idleN:4,base:'../game2/assets/fighters/goblin/'},
+  {key:'mushroom',  name:'🍄 문법 버섯괴물', idleN:4,base:'../game2/assets/fighters/mushroom/'},
+  {key:'skeleton',  name:'💀 문법 해골군주', idleN:4,base:'../game2/assets/fighters/skeleton/'},
+  {key:'flying_eye',name:'👁️ 문법 마안',    idleN:8,base:'../game2/assets/fighters/flying_eye/'},
+];
+const ITEM_DEFS={
+  shield:   {emoji:'🛡️',label:'방패',  desc:'오답 1회 방어 (자동)'},
+  hourglass:{emoji:'⏳',label:'+7초', desc:'탭하면 시간 +7초'},
+  wing:     {emoji:'🪽',label:'스킵',  desc:'탭하면 한 층 무료 등반'},
+};
+function eventFor(f,rng){ // 층 f의 이벤트: 3층 이전·휴식층 제외, 13% 몬스터·12% 보물
+  if(f<4||f%10===0)return null;
+  const r=rng();
+  if(r<.13)return 'monster';
+  if(r<.25)return 'treasure';
+  return null;
+}
+function addItem(kind){
+  const g=GS;
+  if(g.items.length>=3)return false;
+  g.items.push(kind);renderItems();
+  return true;
+}
+function renderItems(){
+  const box=$('items');box.innerHTML='';
+  GS.items.forEach((k,i)=>{
+    const d=ITEM_DEFS[k];
+    const b=document.createElement('button');
+    b.className='item-btn';b.title=d.desc;
+    b.innerHTML=d.emoji+'<span class="it-label">'+d.label+'</span>';
+    b.onclick=()=>useItem(i);
+    box.appendChild(b);
+  });
+}
+function useItem(i){
+  const g=GS;if(!g||g.over||g.locked)return;
+  const k=g.items[i];
+  if(k==='shield')return; // 방패는 자동 발동
+  if(k==='hourglass'){g.items.splice(i,1);extendTimer(7000);sfx.heal();}
+  else if(k==='wing'){g.items.splice(i,1);sfx.climb();skipClimb();}
+  renderItems();
+}
+
 // ── 게임 상태 ──
 let GS=null;
 const $=id=>document.getElementById(id);
-const hero=$('hero'),wall=$('wall');
+const hero=$('hero'),wall=$('wall'),mon=$('mon');
 let wallY=0,heroT=null;
 
 function setHero(state,backToIdleMs){
@@ -350,13 +426,16 @@ function startRun(mode){
     seqL1:shuffled(pool.l1,rng),seqL2:shuffled(pool.l2,rng),i1:0,i2:0,
     poolL1:pool.l1,poolL2:pool.l2,
     floor:0,hearts:3,streak:0,maxStreak:0,wrongs:[],
+    items:[],event:null,eventFloor:-1,monster:null,
     over:false,locked:false,timerT:null,
   };
+  renderItems();
   wallY=0;wall.style.transition='none';wall.style.backgroundPositionY='0px';
   void wall.offsetWidth;wall.style.transition='';
   $('gate').style.display='none';$('result').style.display='none';$('game').style.display='flex';
   drawSky(0);
   setHero('idle');
+  setMonster(null);
   bgmPlay();
   updateHud();
   const best=loadRec(bestKeyFor(mode,unit));
@@ -378,10 +457,46 @@ function pickQuestion(){
   return q;
 }
 
+function setMonster(m){
+  const g=GS;g.monster=m;
+  const nameEl=$('mon-name');
+  if(!m){mon.style.display='none';nameEl.style.display='none';return;}
+  mon.style.backgroundImage="url('"+m.base+"Idle.png')";
+  mon.className=m.idleN===8?'i8':'i4';
+  mon.style.display='block';
+  nameEl.textContent=m.name;nameEl.style.display='block';
+}
+function syncEvent(){
+  const g=GS,target=g.floor+1;
+  if(g.eventFloor!==target){ // 새 목표 층 — 이벤트 추첨
+    g.eventFloor=target;
+    g.event=eventFor(target,g.rng);
+    if(g.event==='monster')setMonster(MONSTERS[Math.floor(g.rng()*MONSTERS.length)]);
+    else setMonster(null);
+  }
+  const chip=$('evt-chip');
+  chip.className=g.event||'';
+  if(g.event==='monster')chip.textContent='👹 몬스터층! 시간이 짧다 — 이기면 2층 점프!';
+  else if(g.event==='treasure')chip.textContent='💰 보물층! 맞히면 아이템 획득!';
+}
+function skipClimb(){ // 🪽 날개: 문제를 건너뛰고 한 층 등반 (연속 기록은 유지만)
+  const g=GS;if(!g||g.over||g.locked)return;
+  g.locked=true;
+  clearTimeout(g.timerT);clearTimeout(g.critT);
+  $('timer-fill').style.transition='none';
+  g.floor++;
+  setHero('run',560);
+  wallY+=160;wall.style.backgroundPositionY=wallY+'px';
+  const tier=Math.floor(g.floor/10);
+  if(tier!==_bgTier)drawSky(tier);
+  updateHud();
+  setTimeout(nextQuestion,620);
+}
 function nextQuestion(){
   const g=GS;if(!g||g.over)return;
   g.locked=false;
   $('fb').classList.remove('show');
+  syncEvent();
   const q=pickQuestion();
   g.cur=q;
   $('q-unit').textContent=q.unitLabel.split('·')[0].trim();
@@ -396,18 +511,34 @@ function nextQuestion(){
     b.onclick=()=>answer(b,o);
     box.appendChild(b);
   });
-  startTimer(timeFor(g.floor));
+  // 몬스터층은 시간 압박 — 60%로 단축
+  startTimer(timeFor(g.floor)*(g.event==='monster'?0.6:1));
 }
 
 function startTimer(sec){
   const g=GS,fill=$('timer-fill');
-  clearTimeout(g.timerT);
+  clearTimeout(g.timerT);clearTimeout(g.critT);
+  g.timerTotal=sec*1000;g.timerEnd=Date.now()+g.timerTotal;
   fill.classList.remove('crit');
   fill.style.transition='none';fill.style.width='100%';
   void fill.offsetWidth;
   fill.style.transition='width '+sec+'s linear';fill.style.width='0%';
   g.critT=setTimeout(()=>fill.classList.add('crit'),Math.max(0,(sec-3)*1000));
   g.timerT=setTimeout(()=>{if(!g.locked)answer(null,null);},sec*1000);
+}
+function extendTimer(ms){ // ⏳ 모래시계 — 남은 시간에 +ms
+  const g=GS;if(!g||g.locked)return;
+  const rem=Math.max(0,g.timerEnd-Date.now())+ms;
+  g.timerEnd=Date.now()+rem;
+  g.timerTotal=Math.max(g.timerTotal,rem);
+  const fill=$('timer-fill');
+  clearTimeout(g.timerT);clearTimeout(g.critT);
+  fill.classList.remove('crit');
+  fill.style.transition='none';fill.style.width=Math.min(100,rem/g.timerTotal*100)+'%';
+  void fill.offsetWidth;
+  fill.style.transition='width '+(rem/1000)+'s linear';fill.style.width='0%';
+  g.critT=setTimeout(()=>fill.classList.add('crit'),Math.max(0,rem-3000));
+  g.timerT=setTimeout(()=>{if(!g.locked)answer(null,null);},rem);
 }
 
 function answer(btn,val){
@@ -425,25 +556,49 @@ function answer(btn,val){
   if(correct)onCorrect();else onWrong(val);
 }
 
+function banner(txt){
+  const rb=$('rest-banner');
+  rb.textContent=txt;rb.classList.add('show');
+  clearTimeout(banner._t);banner._t=setTimeout(()=>rb.classList.remove('show'),1500);
+}
+function randItem(){const ks=Object.keys(ITEM_DEFS);return ks[Math.floor(GS.rng()*ks.length)];}
+
 function onCorrect(){
   const g=GS;
-  g.floor++;g.streak++;g.maxStreak=Math.max(g.maxStreak,g.streak);
+  const ev=g.event;
+  const climbN=ev==='monster'?2:1;   // 몬스터 처치 보상: 2층 점프
+  const prevFloor=g.floor;
+  g.floor+=climbN;g.streak++;g.maxStreak=Math.max(g.maxStreak,g.streak);
   sfx.ok();sfx.climb();
-  setHero('run',560);
-  wallY+=160;wall.style.backgroundPositionY=wallY+'px';
+  let delay=620;
+  if(ev==='monster'){
+    setHero('atk',700);
+    mon.classList.remove('i4','i8');mon.classList.add('die');
+    setTimeout(()=>setMonster(null),550);
+    banner('⚔️ 몬스터 처치! 2층 점프!');delay=1150;
+  }else{
+    setHero('run',560);
+  }
+  if(ev==='treasure'){
+    const got=randItem();
+    banner(addItem(got)?'💰 '+ITEM_DEFS[got].emoji+' '+ITEM_DEFS[got].label+' 획득!':'💰 가방이 가득! (최대 3개)');
+    delay=1150;
+  }
+  // 콤보 보상: 5연속마다 아이템
+  if(g.streak%5===0){
+    const got=randItem();
+    if(addItem(got)){banner('🔥 '+g.streak+'연속! '+ITEM_DEFS[got].emoji+' '+ITEM_DEFS[got].label+' 획득!');delay=Math.max(delay,1150);}
+  }
+  wallY+=160*climbN;wall.style.backgroundPositionY=wallY+'px';
   const tier=Math.floor(g.floor/10);
   if(tier!==_bgTier)drawSky(tier);
-  // 휴식층: 10층마다 ❤️ +1
-  let delay=620;
-  if(g.floor%10===0){
+  // 휴식층: 10층 경계를 지나면 ❤️ +1 (2층 점프로 건너뛰어도 적용)
+  if(Math.floor(g.floor/10)>Math.floor(prevFloor/10)){
     const healed=g.hearts<3;
     if(healed)g.hearts++;
     sfx.heal();
-    const rb=$('rest-banner');
-    rb.textContent='🛏️ '+g.floor+'층 휴식층! '+(healed?'❤️ +1':'❤️ 가득!');
-    rb.classList.add('show');
-    setTimeout(()=>rb.classList.remove('show'),1400);
-    delay=1100;
+    banner('🛏️ 휴식층! '+(healed?'❤️ +1':'❤️ 가득!'));
+    delay=1200;
   }
   updateHud();
   setTimeout(nextQuestion,delay);
@@ -451,8 +606,22 @@ function onCorrect(){
 
 function onWrong(picked){
   const g=GS;
-  g.hearts--;g.streak=0;
   g.wrongs.push({eng:g.cur.eng,kor:g.cur.kor,ans:g.cur.ans,picked});
+  // 🛡️ 방패 자동 발동 — 하트 보호 (연속 기록은 끊김)
+  const si=g.items.indexOf('shield');
+  if(si>=0){
+    g.items.splice(si,1);renderItems();
+    g.streak=0;
+    banner('🛡️ 방패가 막아줬다!');
+    sfx.ng();
+    updateHud();
+    const mine0=picked===null?'⏰ 시간 초과':'내 답: '+picked;
+    $('fb-txt').innerHTML='정답은 <b>'+g.cur.ans+'</b> <span class="fb-mine">('+mine0+')</span>';
+    $('fb').classList.add('show');
+    setTimeout(nextQuestion,2400);
+    return;
+  }
+  g.hearts--;g.streak=0;
   sfx.ng();
   setHero('hurt',420);
   updateHud();

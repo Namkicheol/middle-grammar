@@ -308,7 +308,7 @@ const GAME_QUESTIONS = {
       {
         "id": "g1_l1_be_verb_b4",
         "kor": "나는 지금 인천에 살지 않는다. 나는 수원에 산다.",
-        "eng": "I ___ in Incheon now. I live in Suwon.",
+        "eng": "I ___ live in Incheon now. I live in Suwon.",
         "ans": "don't",
         "opts": [
           "eat",
@@ -334,7 +334,7 @@ const GAME_QUESTIONS = {
       {
         "id": "g1_l1_be_verb_b6",
         "kor": "Christina는 고기를 먹지 않는다. 그녀는 채식주의자이다.",
-        "eng": "Christina ___ meat. She is a vegetarian.",
+        "eng": "Christina ___ eat meat. She is a vegetarian.",
         "ans": "doesn't",
         "opts": [
           "takes",
@@ -490,7 +490,7 @@ const GAME_QUESTIONS = {
       {
         "id": "g1_l1_be_verb_b18",
         "kor": "그는 축구를 하지 않는다. 그는 야구를 좋아한다.",
-        "eng": "He ___ soccer. He likes baseball.",
+        "eng": "He ___ play soccer. He likes baseball.",
         "ans": "doesn't",
         "opts": [
           "takes",
@@ -594,7 +594,7 @@ const GAME_QUESTIONS = {
       {
         "id": "g1_l1_general_verb_hard_a10",
         "kor": "그들은 일요일에 테니스를 치지 않는다.",
-        "eng": "원문: They play tennis on Sundays. → (부정문으로) They ___ tennis on Sundays.",
+        "eng": "원문: They play tennis on Sundays. → (부정문으로) They ___ play tennis on Sundays.",
         "ans": "don't",
         "opts": [
           "are",
@@ -607,7 +607,7 @@ const GAME_QUESTIONS = {
       {
         "id": "g1_l1_general_verb_hard_a11",
         "kor": "내 언니는 주말마다 자기 방을 청소하지 않는다.",
-        "eng": "원문: My sister cleans her room every weekend. → (부정문으로) My sister ___ her room every weekend.",
+        "eng": "원문: My sister cleans her room every weekend. → (부정문으로) My sister ___ clean her room every weekend.",
         "ans": "doesn't",
         "opts": [
           "study",
@@ -633,7 +633,7 @@ const GAME_QUESTIONS = {
       {
         "id": "g1_l1_general_verb_hard_a13",
         "kor": "나는 주말에 수학 숙제를 좋아하지 않는다.",
-        "eng": "I ___ math homework on weekends.",
+        "eng": "I ___ like math homework on weekends.",
         "ans": "don't",
         "opts": [
           "don't",
@@ -659,7 +659,7 @@ const GAME_QUESTIONS = {
       {
         "id": "g1_l1_general_verb_hard_a15",
         "kor": "우리는 주말에 수업이 없다.",
-        "eng": "We ___ classes on weekends.",
+        "eng": "We ___ have classes on weekends.",
         "ans": "don't",
         "opts": [
           "has",
@@ -711,7 +711,7 @@ const GAME_QUESTIONS = {
       {
         "id": "g1_l1_general_verb_hard_b4",
         "kor": "Amy는 달콤한 음료를 좋아하지 않는다 — 그녀는 항상 물을 가져온다.",
-        "eng": "Amy ___ sweet drinks — she always brings water instead.",
+        "eng": "Amy ___ like sweet drinks — she always brings water instead.",
         "ans": "doesn't",
         "opts": [
           "study",
@@ -763,7 +763,7 @@ const GAME_QUESTIONS = {
       {
         "id": "g1_l1_general_verb_hard_b8",
         "kor": "그의 엄마는 커피를 마시지 않는다 — 그녀는 차를 더 좋아한다.",
-        "eng": "His mom ___ coffee — she prefers tea.",
+        "eng": "His mom ___ drink coffee — she prefers tea.",
         "ans": "doesn't",
         "opts": [
           "study",

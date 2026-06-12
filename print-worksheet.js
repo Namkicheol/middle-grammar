@@ -45,6 +45,12 @@
     '  .q-input { border: none !important; border-bottom: 1.2px solid #475569 !important;' +
     '    background: none !important; min-width: 90px; }' +
     '  .chip { font-size: .78rem !important; padding: 3px 7px !important; }' +
+    '  /* 📝 해설 버전(ans=1): 정답·해석 노출 */' +
+    '  .answer-hint { display: none; }' +
+    '  html.egm-ans .answer-hint { display: block !important; margin-top: 5px !important;' +
+    '    padding: 5px 8px !important; background: #f0fdf4 !important; border: 1px solid #86efac !important;' +
+    '    border-radius: 6px !important; font-size: .72rem !important; line-height: 1.4 !important; color: #166534 !important; }' +
+    '  html.egm-ans .answer-hint strong { color: #047857 !important; }' +
     '}';
 
   function injectStyle() {
@@ -77,7 +83,9 @@
   window.addEventListener('beforeprint', preparePrint);
 
   // 허브에서 ?print=1 로 진입하면 문항 렌더 후 자동으로 인쇄 대화상자를 띄운다
+  // &ans=1 이면 해설(정답·해석) 포함 버전
   function maybeAutoPrint() {
+    if (/[?&]ans=1\b/.test(location.search)) document.documentElement.classList.add('egm-ans');
     if (!/[?&]print=1\b/.test(location.search)) return;
     var fire = function () { setTimeout(egmPrint, 400); };  // 문항 빌드 여유
     if (document.readyState === 'complete') fire();

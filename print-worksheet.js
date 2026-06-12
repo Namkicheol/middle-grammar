@@ -1,55 +1,48 @@
 /* =========================================================
-   print-worksheet.js — 워크시트 공통 인쇄/PDF 저장
-   - "🖨️ 인쇄 / PDF 저장" 버튼을 우하단에 띄운다
-   - 인쇄 시: 모든 섹션 펼침, 인터랙티브 UI 숨김, 잉크 절약 흑백 레이아웃
-   - 두 계열 모두 대응: .sec.active+.tabs(egm) / .sec.show+.sec-hdr(일반)
-   - 화면 표시에는 전혀 영향 없음(@media print 전용 + 버튼만 추가)
+   print-worksheet.js — 워크시트 → 진짜 학습지(텍스트) 인쇄/PDF
+   - 화려한 카드를 그대로 인쇄하면 페이지 분할이 깨져 빈 페이지가 생김.
+   - 그래서 인쇄 시 문항 데이터를 추출해 plain 텍스트 학습지로 새로 조판한다.
+     (일반 블록 흐름 → 페이지가 깔끔히 넘어가고 빈 페이지가 없음)
+   - 교사 전용: 화면엔 버튼 없음. 허브에서 ?print=1(문제만) / ?print=1&ans=1(해설) 로 진입.
    ========================================================= */
 (function () {
   if (window.__egmPrintReady) return;
   window.__egmPrintReady = true;
 
+  var CIRC = '①②③④⑤⑥⑦⑧';
+
   var css = '' +
+    '#egm-print-sheet { display: none; }' +
     '@media print {' +
-    '  @page { margin: 11mm 10mm; }' +
+    '  @page { margin: 12mm 11mm; }' +
     '  html, body { background: #fff !important; }' +
-    '  /* 화면 전용 UI·단어보기 힌트 숨김 */' +
-    '  #egm-print-bar, .tabs, .dashboard, .scoreboard, #egm-result, #result, #toast,' +
-    '  .check-btn, .hint-btn, .r-btn, .reset-btn, .grade-btn,' +
-    '  .vocab-toggle, .vocab, .hint-box { display: none !important; }' +
-    '  /* 헤더 잉크 절약 + 컴팩트 */' +
-    '  .header { background: #fff !important; color: #0f172a !important; border-bottom: 2px solid #0f172a !important;' +
-    '    border-radius: 0 !important; box-shadow: none !important; padding: 0 0 7px !important; margin-bottom: 10px !important; }' +
-    '  .header h1 { color: #0f172a !important; font-size: 1.4rem !important; margin: 0 !important; }' +
-    '  .header p { color: #475569 !important; font-size: .85rem !important; }' +
-    '  .badge-top { background: none !important; color: #475569 !important; padding: 0 !important; font-size: .72rem !important; margin: 0 !important; }' +
-    '  /* ▼ 2단 — 제목은 일반 블록(전체너비), 문제만 multicol 래퍼로 감싸 페이지 분할 안정화 */' +
-    '  .sec { display: block !important; max-width: 100% !important; padding: 0 !important; animation: none !important; }' +
-    '  .sec-hdr, .egm-print-sec-title { break-after: avoid; break-inside: avoid; }' +
-    '  .egm-print-sec-title { display: block; font-size: 1rem; font-weight: 800; color: #0f172a;' +
-    '    margin: 6px 0 4px; padding-bottom: 4px; border-bottom: 1.5px solid #cbd5e1; }' +
-    '  .egm-print-cols { columns: 2 !important; column-gap: 12px !important; }' +
-    '  .egm-print-cols > * { break-inside: avoid; margin: 0 0 7px !important;' +
-    '    -webkit-column-break-inside: avoid; display: block; }' +
-    '  /* 문제 카드 컴팩트 (클래스명 변형 모두 커버) */' +
-    '  .q-card, .question-card, .q-item, .qbox { break-inside: avoid; box-shadow: none !important;' +
-    '    border: 1px solid #cbd5e1 !important; border-radius: 8px !important;' +
-    '    padding: 7px 9px !important; margin: 0 0 7px !important; font-size: .82rem !important; }' +
-    '  .q-card .vw { font-size: .68rem !important; }' +
-    '  /* 객관식 보기 — 컴팩트 외곽선 */' +
-    '  .choice, .choice-btn { background: #fff !important; color: #0f172a !important;' +
-    '    border: 1px solid #94a3b8 !important; box-shadow: none !important;' +
-    '    padding: 4px 7px !important; margin: 3px 0 !important; font-size: .8rem !important; min-height: 0 !important; }' +
-    '  /* 주관식 입력칸 → 빈 밑줄 */' +
-    '  .q-input { border: none !important; border-bottom: 1.2px solid #475569 !important;' +
-    '    background: none !important; min-width: 90px; }' +
-    '  .chip { font-size: .78rem !important; padding: 3px 7px !important; }' +
-    '  /* 📝 해설 버전(ans=1): 정답·해석 노출 */' +
-    '  .answer-hint { display: none; }' +
-    '  html.egm-ans .answer-hint { display: block !important; margin-top: 5px !important;' +
-    '    padding: 5px 8px !important; background: #f0fdf4 !important; border: 1px solid #86efac !important;' +
-    '    border-radius: 6px !important; font-size: .72rem !important; line-height: 1.4 !important; color: #166534 !important; }' +
-    '  html.egm-ans .answer-hint strong { color: #047857 !important; }' +
+    '  body > *:not(#egm-print-sheet) { display: none !important; }' +
+    '  #egm-print-sheet { display: block !important; color: #111;' +
+    "    font-family: 'Pretendard','Noto Sans KR',-apple-system,sans-serif; }" +
+    '  #egm-print-sheet .ps-title { font-size: 1.3rem; font-weight: 800; text-align: center; margin: 0; }' +
+    '  #egm-print-sheet .ps-title .tag { font-size: .8rem; color: #047857; font-weight: 800; }' +
+    '  #egm-print-sheet .ps-sub { text-align: center; font-size: .82rem; color: #555;' +
+    '    margin: 2px 0 0; padding-bottom: 9px; border-bottom: 2px solid #111; }' +
+    '  #egm-print-sheet .ps-meta { display: flex; justify-content: space-between; font-size: .8rem;' +
+    '    color: #444; margin: 7px 0 10px; }' +
+    '  #egm-print-sheet .ps-body { columns: 2; column-gap: 16px; }' +
+    '  #egm-print-sheet .ps-h { -webkit-column-break-inside: avoid; break-inside: avoid; break-after: avoid;' +
+    '    font-weight: 800; font-size: .92rem; color: #1e3a8a; margin: 11px 0 6px; padding-bottom: 3px;' +
+    '    border-bottom: 1.5px solid #94a3b8; }' +
+    '  #egm-print-sheet .ps-passage { -webkit-column-break-inside: avoid; break-inside: avoid;' +
+    '    background: #f6f7f9; border: 1px solid #d8dee8; border-radius: 6px; padding: 8px 11px;' +
+    '    font-size: .82rem; line-height: 1.75; margin: 0 0 8px; color: #1f2937; }' +
+    '  #egm-print-sheet .ps-passage b { color: #b45309; }' +
+    '  #egm-print-sheet .ps-q { -webkit-column-break-inside: avoid; break-inside: avoid;' +
+    '    margin: 0 0 8px; font-size: .85rem; line-height: 1.5; }' +
+    '  #egm-print-sheet .ps-n { font-weight: 800; margin-right: 2px; }' +
+    '  #egm-print-sheet .ps-ex { color: #6b7280; font-size: .92em; }' +
+    '  #egm-print-sheet .ps-kor { display: block; color: #6b7280; font-size: .78rem; margin: 1px 0; }' +
+    '  #egm-print-sheet .ps-o { display: block; margin-top: 2px; }' +
+    '  #egm-print-sheet .ps-o .opt { margin-right: 12px; white-space: nowrap; display: inline-block; }' +
+    '  #egm-print-sheet .ps-bank { display: block; margin-top: 3px; color: #374151; font-size: .8rem;' +
+    '    background: #f3f4f6; border-radius: 5px; padding: 3px 7px; }' +
+    '  #egm-print-sheet .ps-a { display: inline-block; margin-top: 2px; color: #047857; font-weight: 800; font-size: .82rem; }' +
     '}';
 
   function injectStyle() {
@@ -59,50 +52,175 @@
     document.head.appendChild(s);
   }
 
-  // 인쇄는 교사 전용 — 워크시트 화면엔 버튼을 노출하지 않는다.
-  // 1) 허브에서 ?print=1 로 열면 자동 인쇄  2) 그 외엔 교사가 Ctrl/Cmd+P 사용
-
-  function isHdr(el) {
-    return el.nodeType === 1 && (el.classList.contains('sec-hdr') || el.classList.contains('egm-print-sec-title'));
+  function esc(t) {
+    return String(t == null ? '' : t).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
   }
-  // 인쇄 준비: ① 제목 없는 계열엔 탭 라벨 헤딩 주입 ② 문제 카드들을 multicol 래퍼로 감싼다
-  function preparePrint() {
-    var secs = document.querySelectorAll('.sec');
-    if (!secs.length) return;
+  function clean(t) { return String(t || '').replace(/\s+/g, ' ').trim(); }
+
+  // 섹션 내 패시지·문제 카드를 DOM 순서대로 수집 (중첩 래퍼 대응)
+  function collectItems(sec) {
+    var items = [];
+    (function walk(el) {
+      [].forEach.call(el.children, function (c) {
+        if (!c.classList) return;
+        if (c.classList.contains('passage')) items.push({ t: 'p', el: c });
+        else if (c.classList.contains('question-card') || c.classList.contains('q-card')) items.push({ t: 'q', el: c });
+        else walk(c);
+      });
+    })(sec);
+    return items;
+  }
+
+  function getAnswer(card) {
+    var inp = card.querySelector('input.blank[data-ans], .q-input[data-ans], input[data-ans]');
+    if (inp) return inp.getAttribute('data-ans');
+    var dz = card.querySelector('[data-ans]');
+    if (dz) return dz.getAttribute('data-ans');
+    var btn = card.querySelector('.choice-btn[onclick], .check-btn[onclick]');
+    if (btn) {
+      var m = (btn.getAttribute('onclick') || '').match(/h(?:MCQ|Inp)\(this,\s*'([^']*)'/);
+      if (m) return m[1];
+    }
+    var st = card.querySelector('.answer-hint strong');
+    if (st) return clean(st.textContent);
+    return '';
+  }
+
+  function stemHtml(card) {
+    var qt = card.querySelector('.q-text, .q-eng');
+    if (!qt) return '';
+    var clone = qt.cloneNode(true);
+    // 입력칸 → 밑줄, 보기/힌트 버튼·단어목록 제거
+    [].forEach.call(clone.querySelectorAll('input'), function (i) { i.replaceWith(document.createTextNode(' ________ ')); });
+    [].forEach.call(clone.querySelectorAll('.vocab, .vocab-toggle, .hint-btn, .check-btn, button'), function (b) { b.remove(); });
+    // (be), (eat, 부정형) 같은 힌트는 살린다 (.ex)
+    return esc(clean(clone.textContent));
+  }
+
+  function passageHtml(el) {
+    var clone = el.cloneNode(true);
+    [].forEach.call(clone.querySelectorAll('.num'), function (n) {
+      n.replaceWith(document.createTextNode(' (' + clean(n.textContent) + ') '));
+    });
+    var title = clone.querySelector('.ptitle');
+    var tHtml = title ? '<b>' + esc(clean(title.textContent)) + '</b><br>' : '';
+    if (title) title.remove();
+    return '<div class="ps-passage">' + tHtml + esc(clean(clone.textContent)) + '</div>';
+  }
+
+  function qHtml(card, num, ans) {
+    var stem = stemHtml(card);
+    var opts = [].map.call(card.querySelectorAll('.choice, .choice-btn'), function (b) { return clean(b.textContent); });
+    var pool = card.querySelector('.word-pool, .word-bank');
+    var bank = pool ? [].map.call(pool.querySelectorAll('.chip, .pool-chip, button'), function (b) { return clean(b.textContent); }) : null;
+    var korEl = card.querySelector('.q-kor');
+    var kor = korEl ? clean(korEl.textContent) : '';
+
+    var h = '<div class="ps-q"><span class="ps-n">' + num + '.</span> ' + stem;
+    if (kor && kor !== stem) h += '<span class="ps-kor">' + esc(kor) + '</span>';
+    if (opts.length) {
+      h += '<span class="ps-o">' + opts.map(function (o, i) {
+        return '<span class="opt">' + (CIRC[i] || (i + 1) + '.') + ' ' + esc(o) + '</span>';
+      }).join('') + '</span>';
+    }
+    if (bank && bank.length) h += '<span class="ps-bank">[보기] ' + bank.map(esc).join(' &nbsp;/&nbsp; ') + '</span>';
+    if (ans) {
+      var a = getAnswer(card);
+      if (a) h += '<span class="ps-a">✔ 정답: ' + esc(a) + '</span>';
+    }
+    h += '</div>';
+    return h;
+  }
+
+  // 문항 데이터를 추출해 텍스트 학습지(#egm-print-sheet)를 만든다
+  function buildSheet() {
+    var old = document.getElementById('egm-print-sheet');
+    if (old) old.remove();
+    var ans = document.documentElement.classList.contains('egm-ans');
+
+    var titleEl = document.querySelector('.header h1, #egm-app-root h1, h1, .sel-title');
+    var title = clean(titleEl ? titleEl.textContent : document.title);
+    var subEl = document.querySelector('.header p, .sel-sub, #egm-app-root .header p');
+    var sub = clean(subEl ? subEl.textContent : '');
+
+    var html = '<div class="ps-title">' + esc(title) + (ans ? ' <span class="tag">[정답·해설]</span>' : '') + '</div>';
+    if (sub) html += '<div class="ps-sub">' + esc(sub) + '</div>';
+    html += '<div class="ps-meta"><span>이름: ______________</span><span>점수: ______ / ______</span></div>';
+    html += '<div class="ps-body">';
+
     var tabs = document.querySelectorAll('.tabs .tab-btn, .tabs button');
-    secs.forEach(function (sec, i) {
-      // 제목 주입
-      if (!sec.querySelector('.sec-hdr') && !sec.querySelector('.egm-print-sec-title') && tabs[i]) {
-        var h = document.createElement('div');
-        h.className = 'egm-print-sec-title';
-        h.textContent = tabs[i].textContent.trim();
-        sec.insertBefore(h, sec.firstChild);
-      }
-      // 이미 감쌌으면 skip (멱등)
-      if (sec.querySelector(':scope > .egm-print-cols')) return;
-      // 제목은 그대로 두고, 연속된 비-제목 노드들을 래퍼로 묶는다
-      var kids = [].slice.call(sec.childNodes);
-      var wrap = null;
-      kids.forEach(function (node) {
-        if (isHdr(node)) { wrap = null; return; }            // 제목 만나면 래퍼 끊기(전체너비 유지)
-        if (node.nodeType === 1 || (node.nodeType === 3 && node.textContent.trim())) {
-          if (!wrap) { wrap = document.createElement('div'); wrap.className = 'egm-print-cols'; sec.insertBefore(wrap, node); }
-          wrap.appendChild(node);
-        }
+    var secs = document.querySelectorAll('.sec');
+    var nrun = 0;
+    if (!secs.length) return false;
+
+    secs.forEach(function (sec, si) {
+      var hd = '';
+      var sh = sec.querySelector('.sec-hdr');
+      if (sh) {
+        var lbl = clean((sh.querySelector('.lbl') || {}).textContent);
+        var h2 = clean((sh.querySelector('h2') || {}).textContent);
+        hd = (lbl ? lbl + ' · ' : '') + h2;
+      } else if (tabs[si]) hd = clean(tabs[si].textContent);
+      if (hd) html += '<div class="ps-h">' + esc(hd) + '</div>';
+
+      collectItems(sec).forEach(function (it) {
+        if (it.t === 'p') html += passageHtml(it.el);
+        else { nrun++; html += qHtml(it.el, nrun, ans); }
       });
     });
+    html += '</div>';
+
+    var sheet = document.createElement('div');
+    sheet.id = 'egm-print-sheet';
+    sheet.innerHTML = html;
+    document.body.appendChild(sheet);
+    return true;
   }
 
-  function egmPrint() { preparePrint(); window.print(); }
+  function egmPrint() { buildSheet(); window.print(); }
   window.egmPrint = egmPrint;
-  window.addEventListener('beforeprint', preparePrint);
+  window.addEventListener('beforeprint', buildSheet);
 
-  // 허브에서 ?print=1 로 진입하면 문항 렌더 후 자동으로 인쇄 대화상자를 띄운다
-  // &ans=1 이면 해설(정답·해석) 포함 버전
+  // 한글(HWPX)·워드용 .doc 다운로드 — 텍스트 학습지를 Word-openable HTML로 내보낸다.
+  // (한컴오피스·MS Word 둘 다 .doc HTML을 열며, 거기서 .hwpx로 저장 가능)
+  function downloadDoc() {
+    if (!buildSheet()) return;
+    var sheet = document.getElementById('egm-print-sheet');
+    var ans = document.documentElement.classList.contains('egm-ans');
+    var styles =
+      'body{font-family:"Malgun Gothic","Noto Sans KR",sans-serif;color:#111;font-size:11pt;line-height:1.5;}' +
+      '.ps-title{font-size:16pt;font-weight:bold;text-align:center;margin:0;}' +
+      '.ps-title .tag{font-size:11pt;color:#047857;}' +
+      '.ps-sub{text-align:center;font-size:10pt;color:#555;border-bottom:1.5pt solid #111;padding-bottom:6pt;margin-bottom:4pt;}' +
+      '.ps-meta{margin:6pt 0 10pt;}.ps-meta span{margin-right:30pt;}' +
+      '.ps-body{}' +
+      '.ps-h{font-weight:bold;color:#1e3a8a;border-bottom:1pt solid #999;margin:13pt 0 6pt;padding-bottom:2pt;}' +
+      '.ps-passage{background:#f5f6f8;border:1pt solid #ddd;padding:6pt 9pt;margin:0 0 7pt;font-size:10.5pt;}' +
+      '.ps-passage b{color:#b45309;}' +
+      '.ps-q{margin:0 0 8pt;}.ps-n{font-weight:bold;}' +
+      '.ps-kor{display:block;color:#666;font-size:9pt;}' +
+      '.ps-o{display:block;}.ps-o .opt{margin-right:16pt;}' +
+      '.ps-bank{display:block;background:#f3f4f6;padding:2pt 6pt;font-size:10pt;}' +
+      '.ps-a{display:inline-block;color:#047857;font-weight:bold;}';
+    var doc = '<html xmlns:o="urn:schemas-microsoft-com:office:office" xmlns:w="urn:schemas-microsoft-com:office:word">' +
+      '<head><meta charset="utf-8"><title>worksheet</title><style>' + styles + '</style></head>' +
+      '<body>' + sheet.innerHTML + '</body></html>';
+    var blob = new Blob(['﻿', doc], { type: 'application/msword' });
+    var url = URL.createObjectURL(blob);
+    var a = document.createElement('a');
+    var nm = clean((document.querySelector('.header h1, h1, .sel-title') || {}).textContent || document.title);
+    a.href = url;
+    a.download = nm.replace(/[^\w가-힣]+/g, '_').replace(/^_+|_+$/g, '') + (ans ? '_해설' : '') + '.doc';
+    document.body.appendChild(a); a.click(); a.remove();
+    setTimeout(function () { URL.revokeObjectURL(url); }, 2000);
+  }
+  window.egmDownloadDoc = downloadDoc;
+
   function maybeAutoPrint() {
     if (/[?&]ans=1\b/.test(location.search)) document.documentElement.classList.add('egm-ans');
-    if (!/[?&]print=1\b/.test(location.search)) return;
-    var fire = function () { setTimeout(egmPrint, 400); };  // 문항 빌드 여유
+    var doc = /[?&]doc=1\b/.test(location.search);
+    if (!doc && !/[?&]print=1\b/.test(location.search)) return;
+    var fire = function () { setTimeout(doc ? downloadDoc : egmPrint, 450); };
     if (document.readyState === 'complete') fire();
     else window.addEventListener('load', fire);
   }

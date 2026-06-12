@@ -1260,13 +1260,20 @@ body{
 .pm-search .si { position: absolute; left: 14px; top: 50%; transform: translateY(-50%); font-size: 15px; color: #94a3b8; }
 .pm-list { overflow-y: auto; padding: 12px 22px 8px; flex: 1; }
 .pm-grp { font-size: .72rem; font-weight: 800; color: #94a3b8; letter-spacing: .06em; margin: 12px 0 7px; }
-.pm-item { display: flex; align-items: center; gap: 10px; padding: 9px 0; border-bottom: 1px solid #f1f5f9; }
+.pm-item { display: flex; align-items: center; gap: 7px; padding: 9px 0 9px 9px; border-bottom: 1px solid #f1f5f9;
+  border-left: 3px solid transparent; }
+.pm-item.lv-basic { border-left-color: #38bdf8; }
+.pm-item.lv-hard { border-left-color: #fbbf24; }
 .pm-item .pm-name { flex: 1; font-size: .9rem; font-weight: 700; color: #1e293b; line-height: 1.35; }
 .pm-item .pm-name small { display: block; font-weight: 600; color: #94a3b8; font-size: .74rem; }
-.pm-btn { border: none; border-radius: 9px; padding: 8px 11px; font-size: .78rem; font-weight: 800;
+.pm-badge { display: inline-block; font-size: .66rem; font-weight: 800; border-radius: 5px; padding: 1px 6px; margin-right: 5px; vertical-align: middle; }
+.pm-badge.b { background: #e0f2fe; color: #0369a1; }
+.pm-badge.h { background: #fef3c7; color: #b45309; }
+.pm-btn { border: none; border-radius: 8px; padding: 7px 9px; font-size: .73rem; font-weight: 800;
   cursor: pointer; white-space: nowrap; font-family: inherit; }
 .pm-btn.q { background: #eef2ff; color: #4338ca; }
 .pm-btn.a { background: #0f172a; color: #fbbf24; }
+.pm-btn.d { background: #ecfdf5; color: #047857; border: 1px solid #a7f3d0; }
 .pm-btn:hover { filter: brightness(1.05); transform: translateY(-1px); }
 .pm-empty { text-align: center; color: #94a3b8; font-size: .9rem; padding: 24px 0; font-weight: 600; }
 .pm-foot { padding: 11px 22px; border-top: 1px solid #eef2f7; font-size: .76rem; color: #94a3b8; font-weight: 600; text-align: center; }
@@ -1284,7 +1291,7 @@ body{
       <input id="pm-q" type="text" placeholder="단원·워크시트 검색 (예: 동명사, be동사, 수동태)" autocomplete="off">
     </div>
     <div class="pm-list" id="pm-list"></div>
-    <div class="pm-foot">📄 문제만 = 빈 문제지 · 📝 해설 포함 = 정답·해석 답안지</div>
+    <div class="pm-foot">📄 문제 PDF · 📝 해설 PDF(정답·해석) · 📝 한글 = 워드/한글 편집용(.doc, hwpx로 저장 가능)</div>
   </div>
 </div>
 
@@ -1300,12 +1307,13 @@ body{
       var name = (btn.querySelector('.ws-name') || {}).textContent || title;
       var url = m[1];
       var grade = /(^|\/)g2-/.test(url) ? '중2' : '중1';
-      items.push({ url: url, title: title.trim(), name: name.trim(), grade: grade });
+      var level = (/-hard\b|hard\//.test(url) || /심화/.test(name)) ? 'hard' : 'basic';
+      items.push({ url: url, title: title.trim(), name: name.trim(), grade: grade, level: level });
     });
   });
 
-  function openUrl(url, ans) {
-    var q = url + (url.indexOf('?') > -1 ? '&' : '?') + 'print=1' + (ans ? '&ans=1' : '');
+  function openUrl(url, ans, doc) {
+    var q = url + (url.indexOf('?') > -1 ? '&' : '?') + (doc ? 'doc=1' : 'print=1') + (ans ? '&ans=1' : '');
     window.open(q, '_blank');
   }
 
@@ -1323,17 +1331,20 @@ body{
       html += '<div class="pm-grp">' + g + '</div>';
       grp.forEach(function (it) {
         var idx = items.indexOf(it);
-        html += '<div class="pm-item">' +
-          '<div class="pm-name">' + it.title + '<small>' + it.name + '</small></div>' +
-          '<button class="pm-btn q" data-i="' + idx + '" data-ans="0">📄 문제만</button>' +
-          '<button class="pm-btn a" data-i="' + idx + '" data-ans="1">📝 해설</button>' +
+        var bd = it.level === 'hard' ? '<span class="pm-badge h">심화</span>' : '<span class="pm-badge b">기초</span>';
+        html += '<div class="pm-item lv-' + it.level + '">' +
+          '<div class="pm-name">' + bd + it.title + '<small>' + it.name + '</small></div>' +
+          '<button class="pm-btn q" data-i="' + idx + '" data-m="p0" title="문제만 PDF">📄 문제</button>' +
+          '<button class="pm-btn a" data-i="' + idx + '" data-m="p1" title="해설 포함 PDF">📝 해설</button>' +
+          '<button class="pm-btn d" data-i="' + idx + '" data-m="d0" title="한글/워드용 파일 (.doc)">📝 한글</button>' +
           '</div>';
       });
     });
     list.innerHTML = html;
     list.querySelectorAll('.pm-btn').forEach(function (b) {
       b.addEventListener('click', function () {
-        openUrl(items[+b.dataset.i].url, b.dataset.ans === '1');
+        var mode = b.dataset.m;
+        openUrl(items[+b.dataset.i].url, mode === 'p1', mode === 'd0');
       });
     });
   }

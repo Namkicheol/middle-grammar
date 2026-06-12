@@ -1191,5 +1191,35 @@ body{
 <div class="footer">중학 영어 문법 워크시트 · Grammar Practice for Middle School</div>
 <div style="text-align:right;padding:0 28px 24px;font-size:13px;font-weight:700;letter-spacing:.5px;color:#94a3b8;">made by Kicheol Nam</div>
 
+<!-- 교사용: 각 워크시트 버튼에 인쇄(PDF) 단추 주입 — 클릭 시 인쇄 모드로 새 탭 열기 -->
+<style>
+.ws-btn { position: relative; padding-right: 46px; }
+.ws-print { position: absolute; top: 50%; right: 9px; transform: translateY(-50%); z-index: 5;
+  width: 32px; height: 32px; border: none; border-radius: 9px; background: #0f172a; color: #fbbf24;
+  cursor: pointer; font-size: 15px; line-height: 1; display: flex; align-items: center; justify-content: center;
+  box-shadow: 0 2px 8px rgba(15,23,42,.25); opacity: .9; transition: .15s; }
+.ws-print:hover { opacity: 1; transform: translateY(-50%) scale(1.1); }
+</style>
+<script>
+(function () {
+  document.querySelectorAll('.ws-btn').forEach(function (btn) {
+    var oc = btn.getAttribute('onclick') || '';
+    var m = oc.match(/location\.href=['"]([^'"]+)['"]/);
+    if (!m) return;
+    var url = m[1];
+    var p = document.createElement('button');
+    p.type = 'button';
+    p.className = 'ws-print';
+    p.textContent = '🖨️';
+    p.title = '인쇄용 PDF (교사용)';
+    p.addEventListener('click', function (e) {
+      e.stopPropagation(); e.preventDefault();
+      window.open(url + (url.indexOf('?') > -1 ? '&' : '?') + 'print=1', '_blank');
+    });
+    btn.appendChild(p);
+  });
+})();
+</script>
+
 </body>
 </html>

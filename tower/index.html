@@ -118,9 +118,27 @@ button{font-family:inherit;}
 #evt-chip.boss{display:block;background:linear-gradient(135deg,rgba(239,68,68,.22),rgba(251,191,36,.18));border:1.5px solid rgba(250,204,21,.7);color:#fde68a;animation:pulse2 .9s infinite;}
 #evt-chip.wind{display:block;background:rgba(34,211,238,.13);border:1.5px solid rgba(34,211,238,.5);color:#a5f3fc;}
 #evt-chip.fog{display:block;background:rgba(148,163,184,.14);border:1.5px solid rgba(148,163,184,.5);color:#cbd5e1;}
+#evt-chip.rush{display:block;background:rgba(168,85,247,.16);border:1.5px solid rgba(192,132,252,.6);color:#e9d5ff;}
 #q-kor.fogged{filter:blur(7px);user-select:none;}
 #streak-chip.fever{background:linear-gradient(135deg,rgba(251,191,36,.35),rgba(239,68,68,.25));border-color:#fbbf24;color:#fff;animation:pulse2 .7s infinite;}
 .opt.dimmed{opacity:.25;pointer-events:none;}
+
+/* 👻 유령 / 🐦 새 — 텍스트 위를 슬라이드로 지나가며 가린다 */
+#disturb{position:absolute;inset:0;z-index:8;pointer-events:none;overflow:hidden;border-radius:20px;}
+#disturb span{position:absolute;display:flex;align-items:center;justify-content:center;opacity:0;}
+#disturb span::after{font-size:2.7rem;line-height:1;}
+@keyframes passR{0%{left:-22%;opacity:0}9%{opacity:1}91%{opacity:1}100%{left:112%;opacity:0}}
+@keyframes passL{0%{left:112%;opacity:0}9%{opacity:1}91%{opacity:1}100%{left:-22%;opacity:0}}
+#disturb.ghost span{width:126px;height:92px;border-radius:50%;background:radial-gradient(circle,rgba(226,232,240,.95),rgba(203,213,225,.55) 58%,transparent);backdrop-filter:blur(5px);}
+#disturb.ghost span::after{content:'👻';}
+#disturb.ghost .d1{top:52%;animation:passR 3.4s linear infinite;}
+#disturb.ghost .d2{top:70%;animation:passR 4.3s linear infinite 1.4s;}
+#disturb.ghost .d3{top:86%;animation:passR 3.9s linear infinite .7s;}
+#disturb.bird span{width:96px;height:60px;border-radius:42%;background:radial-gradient(circle,rgba(20,12,38,.9),transparent 72%);backdrop-filter:blur(4px);}
+#disturb.bird span::after{content:'🐦';transform:scaleX(-1);}
+#disturb.bird .d1{top:26%;animation:passL 2.7s linear infinite;}
+#disturb.bird .d2{top:40%;animation:passL 3.3s linear infinite 1s;}
+#disturb.bird .d3{top:20%;animation:passL 3.0s linear infinite 1.9s;}
 
 /* 아이템 슬롯 */
 #items{position:relative;z-index:5;display:flex;gap:8px;justify-content:center;margin:0 auto 8px;}
@@ -196,7 +214,7 @@ button{font-family:inherit;}
 <div id="gate">
   <img class="gate-hero" src="assets/huntress/portrait.png" alt="huntress">
   <div class="gate-title">🗼 문법 무한의 탑</div>
-  <div class="gate-sub">한 문제 = 한 층. 목숨 3개로 어디까지 올라갈까?<br>10층마다 휴식층에서 ❤️ 회복!</div>
+  <div class="gate-sub">한 문제 = 한 층. 목숨 3개로 어디까지 올라갈까?<br>10층마다 보스 관문 · 몬스터·보물·유령·새·돌풍·안개 변수층 + 아이템!</div>
   <div class="mode-cards">
     <button class="mode-card on" id="card-daily">
       <div class="mc-icon">🗓️</div>
@@ -242,6 +260,7 @@ button{font-family:inherit;}
   </div>
   <div id="items"></div>
   <div id="qcard">
+    <div id="disturb"><span class="d1"></span><span class="d2"></span><span class="d3"></span></div>
     <div id="evt-chip"></div>
     <div id="timer-track"><div id="timer-fill"></div></div>
     <span id="q-unit"></span>
@@ -387,20 +406,27 @@ const MONSTERS=[
 ];
 const BOSS_MON={key:'king',name:'👹 탑의 수문장 대마왕',cls:'ik boss',die:'kdie boss',w:160,h:111,pad:16,base:'../game2/assets/fighters/king/'};
 const ITEM_DEFS={
-  shield:   {emoji:'🛡️',label:'방패',  desc:'오답 1회 방어 (자동)'},
-  hourglass:{emoji:'⏳',label:'+7초', desc:'탭하면 시간 +7초'},
-  wing:     {emoji:'🪽',label:'스킵',  desc:'탭하면 한 층 무료 등반'},
-  fifty:    {emoji:'🔍',label:'반반',  desc:'탭하면 오답 2개 제거'},
+  shield:   {emoji:'🛡️',label:'방패',  desc:'오답 1회 방어 (자동)',     w:5},
+  hourglass:{emoji:'⏳',label:'+7초', desc:'탭하면 시간 +7초',          w:5},
+  fifty:    {emoji:'🔍',label:'반반',  desc:'탭하면 오답 2개 제거',       w:5},
+  lantern:  {emoji:'🏮',label:'등불',  desc:'탭하면 현재 방해 효과 해제', w:4},
+  wing:     {emoji:'🪽',label:'스킵',  desc:'탭하면 한 층 무료 등반',     w:2},
+  potion:   {emoji:'❤️',label:'물약',  desc:'탭하면 하트 +1 (최대 3)',    w:2},
 };
-function eventFor(f,rng){ // 층 f의 이벤트: 보스(25층마다) > 휴식층 > 랜덤 변수층
+// 방해/패널티 층 — 등불·일반층 판정에 사용
+const DISTURB=['wind','fog','ghost','bird','rush'];
+function eventFor(f,rng){ // 보스(10층마다) > 4층 이전 없음 > 가중 추첨
   if(f<4)return null;
-  if(f%25===0)return 'boss';
-  if(f%10===0)return null;
+  if(f%10===0)return 'boss';
   const r=rng();
-  if(r<.11)return 'monster';
-  if(r<.21)return 'treasure';
-  if(r<.29)return 'wind';
-  if(r<.36)return 'fog';
+  // 누적 확률 — 약 55% 일반, 45% 이벤트
+  if(r<.10)return 'monster';
+  if(r<.19)return 'treasure';
+  if(r<.27)return 'wind';
+  if(r<.34)return 'fog';
+  if(r<.41)return 'ghost';
+  if(r<.48)return 'bird';
+  if(r<.55)return 'rush';
   return null;
 }
 function addItem(kind){
@@ -420,12 +446,27 @@ function renderItems(){
     box.appendChild(b);
   });
 }
+function clearDisturb(){ // 현재 문제의 방해 효과를 모두 해제
+  const g=GS;
+  clearInterval(g.windIv);
+  $('q-kor').classList.remove('fogged');
+  $('disturb').className='';   // 유령·새 애니 정지
+  g.activeDisturb=null;
+}
 function useItem(i){
   const g=GS;if(!g||g.over||g.locked)return;
   const k=g.items[i];
   if(k==='shield')return; // 방패는 자동 발동
   if(k==='hourglass'){g.items.splice(i,1);extendTimer(7000);sfx.heal();}
   else if(k==='wing'){g.items.splice(i,1);sfx.climb();skipClimb();}
+  else if(k==='potion'){
+    if(g.hearts>=3){banner('❤️ 하트가 이미 가득!');return;}
+    g.items.splice(i,1);g.hearts++;updateHud();sfx.heal();banner('❤️ 하트 +1!');
+  }
+  else if(k==='lantern'){
+    if(!g.activeDisturb){banner('🏮 지금은 방해가 없어요');return;}
+    g.items.splice(i,1);clearDisturb();sfx.ok();banner('🏮 등불! 방해를 걷어냈다');
+  }
   else if(k==='fifty'){
     const live=[...document.querySelectorAll('.opt')].filter(b=>!b.disabled&&!b.classList.contains('dimmed'));
     const wrongs=live.filter(b=>b.textContent!==g.cur.ans);
@@ -459,7 +500,7 @@ function startRun(mode){
     seqL1:shuffled(pool.l1,rng),seqL2:shuffled(pool.l2,rng),i1:0,i2:0,
     poolL1:pool.l1,poolL2:pool.l2,
     floor:0,hearts:3,streak:0,maxStreak:0,wrongs:[],
-    items:[],event:null,eventFloor:-1,monster:null,fever:0,windIv:null,
+    items:[],event:null,eventFloor:-1,monster:null,fever:0,windIv:null,activeDisturb:null,
     over:false,locked:false,timerT:null,
   };
   renderItems();
@@ -514,9 +555,12 @@ function syncEvent(){
   const chip=$('evt-chip');
   chip.className=g.event||'';
   if(g.event==='monster')chip.textContent='👹 몬스터층! 시간이 짧다 — 이기면 2층 점프!';
-  else if(g.event==='boss')chip.textContent='👑 '+target+'층 보스! 이기면 3층 점프 + 보물!';
+  else if(g.event==='boss')chip.textContent='👑 '+target+'층 보스! 이기면 ❤️회복 + 3층 점프 + 보물!';
   else if(g.event==='wind')chip.textContent='🌪️ 돌풍층! 선택지가 계속 뒤바뀐다!';
   else if(g.event==='fog')chip.textContent='🌫️ 안개층! 해석이 가려졌다 — 영어만 보고 풀어라!';
+  else if(g.event==='ghost')chip.textContent='👻 유령층! 유령이 선택지를 가리며 지나간다!';
+  else if(g.event==='bird')chip.textContent='🐦 새떼층! 새가 문제를 가리며 날아간다!';
+  else if(g.event==='rush')chip.textContent='⚡ 가속층! 시간이 평소보다 빠르게 흐른다!';
 }
 function skipClimb(){ // 🪽 날개: 문제를 건너뛰고 한 층 등반 (연속 기록은 유지만)
   const g=GS;if(!g||g.over||g.locked)return;
@@ -542,7 +586,13 @@ function nextQuestion(){
   $('q-unit').style.background=q.unitColor?q.unitColor+'33':'';
   $('q-eng').innerHTML=q.eng.replace(/_{2,}/g,'<b>____</b>');
   $('q-kor').textContent=q.kor;
-  $('q-kor').classList.toggle('fogged',g.event==='fog');   // 🌫️ 안개층: 해석 가림
+  // 방해 효과 초기화
+  clearInterval(g.windIv);
+  $('q-kor').classList.remove('fogged');
+  $('disturb').className='';
+  g.activeDisturb=DISTURB.includes(g.event)?g.event:null;
+  // 🌫️ 안개층: 해석 가림
+  if(g.event==='fog')$('q-kor').classList.add('fogged');
   const opts=shuffled(q.opts,g.rng);
   const box=$('opts');box.innerHTML='';
   opts.forEach(o=>{
@@ -552,15 +602,18 @@ function nextQuestion(){
     box.appendChild(b);
   });
   // 🌪️ 돌풍층: 2.8초마다 선택지 위치가 뒤바뀐다
-  clearInterval(g.windIv);
   if(g.event==='wind'){
     g.windIv=setInterval(()=>{
       if(g.locked){clearInterval(g.windIv);return;}
       [...box.children].sort(()=>Math.random()-.5).forEach(b=>box.appendChild(b));
     },2800);
   }
-  // 몬스터층 60% / 보스층 70%로 시간 단축
-  startTimer(timeFor(g.floor)*(g.event==='monster'?0.6:g.event==='boss'?0.7:1));
+  // 👻 유령 / 🐦 새: 슬라이드 애니메이션이 텍스트 위를 반복해 지나가며 가림
+  if(g.event==='ghost')$('disturb').className='ghost';
+  else if(g.event==='bird')$('disturb').className='bird';
+  // 시간 단축: 몬스터 60% / 보스 70% / ⚡가속 55%
+  const tScale=g.event==='monster'?0.6:g.event==='boss'?0.7:g.event==='rush'?0.55:1;
+  startTimer(timeFor(g.floor)*tScale);
 }
 
 function startTimer(sec){
@@ -593,6 +646,7 @@ function answer(btn,val){
   const g=GS;if(!g||g.locked||g.over)return;
   g.locked=true;
   clearTimeout(g.timerT);clearTimeout(g.critT);clearInterval(g.windIv);
+  $('disturb').className='';   // 유령·새 정지
   $('timer-fill').style.transition='none';
   const correct=val!==null&&val===g.cur.ans;
   // 정답 표시
@@ -609,16 +663,24 @@ function banner(txt){
   rb.textContent=txt;rb.classList.add('show');
   clearTimeout(banner._t);banner._t=setTimeout(()=>rb.classList.remove('show'),1500);
 }
-function randItem(){const ks=Object.keys(ITEM_DEFS);return ks[Math.floor(GS.rng()*ks.length)];}
+function randItem(){ // 가중치 기반 — 반반 편중 해소
+  const ks=Object.keys(ITEM_DEFS);
+  const tot=ks.reduce((s,k)=>s+ITEM_DEFS[k].w,0);
+  let r=GS.rng()*tot;
+  for(const k of ks){ r-=ITEM_DEFS[k].w; if(r<0)return k; }
+  return ks[0];
+}
 
 function onCorrect(){
   const g=GS;
   const ev=g.event;
   let climbN=ev==='monster'?2:ev==='boss'?3:1;   // 몬스터 +2 / 보스 +3
-  const feverBonus=g.fever>0?1:0;                 // 🔥 피버: 정답마다 +1층 추가
-  climbN+=feverBonus;
-  if(g.fever>0)g.fever--;
-  const prevFloor=g.floor;
+  if(g.fever>0){climbN+=1;g.fever--;}            // 🔥 피버: 정답마다 +1층
+  // 점프(몬스터·피버)가 다음 보스층(10의 배수)을 건너뛰지 않도록 보스 직전에서 멈춤
+  if(ev!=='boss'){
+    const ceil=Math.floor(g.floor/10)*10+9;      // 9,19,29… = 보스 직전 층
+    if(g.floor+climbN>ceil)climbN=Math.max(1,ceil-g.floor);
+  }
   g.floor+=climbN;g.streak++;g.maxStreak=Math.max(g.maxStreak,g.streak);
   sfx.ok();sfx.climb();
   let delay=620;
@@ -629,17 +691,26 @@ function onCorrect(){
       mon.className=g.monster.die;
     }
     setTimeout(()=>setMonster(null),ev==='boss'?750:550);
-    banner(ev==='boss'?'👑 보스 격파!! 3층 점프!':'⚔️ 몬스터 처치! 2층 점프!');delay=1150;
   }else{
     setHero('run',560);
   }
-  if(ev==='treasure'||ev==='boss'){
+  // 보스 격파 = 관문 돌파: ❤️회복 + 보물 + 연출
+  if(ev==='boss'){
+    const healed=g.hearts<3;if(healed)g.hearts++;
+    sfx.heal();
+    const got=randItem();const gotTxt=addItem(got)?ITEM_DEFS[got].emoji+ITEM_DEFS[got].label:'';
+    banner('👑 보스 격파!! '+(healed?'❤️+1 ':'')+'3층 점프'+(gotTxt?' + '+gotTxt:''));
+    delay=1300;
+  }else if(ev==='monster'){
+    banner('⚔️ 몬스터 처치! 2층 점프!');delay=1150;
+  }
+  if(ev==='treasure'){
     const got=randItem();
-    banner(addItem(got)?(ev==='boss'?'👑 보스의 보물! ':'💰 ')+ITEM_DEFS[got].emoji+' '+ITEM_DEFS[got].label+' 획득!':'💰 가방이 가득! (최대 3개)');
+    banner(addItem(got)?'💰 '+ITEM_DEFS[got].emoji+' '+ITEM_DEFS[got].label+' 획득!':'💰 가방이 가득! (최대 3개)');
     delay=1150;
   }
   // 콤보 보상: 5연속마다 아이템, 7연속 도달 시 피버(5문제 동안 +1층)
-  if(g.streak%5===0){
+  if(ev!=='boss'&&g.streak%5===0){
     const got=randItem();
     if(addItem(got)){banner('🔥 '+g.streak+'연속! '+ITEM_DEFS[got].emoji+' '+ITEM_DEFS[got].label+' 획득!');delay=Math.max(delay,1150);}
   }
@@ -650,14 +721,6 @@ function onCorrect(){
   wallY+=160*climbN;wall.style.backgroundPositionY=wallY+'px';
   const tier=Math.floor(g.floor/10);
   if(tier!==_bgTier)drawSky(tier);
-  // 휴식층: 10층 경계를 지나면 ❤️ +1 (2층 점프로 건너뛰어도 적용)
-  if(Math.floor(g.floor/10)>Math.floor(prevFloor/10)){
-    const healed=g.hearts<3;
-    if(healed)g.hearts++;
-    sfx.heal();
-    banner('🛏️ 휴식층! '+(healed?'❤️ +1':'❤️ 가득!'));
-    delay=1200;
-  }
   updateHud();
   setTimeout(nextQuestion,delay);
 }

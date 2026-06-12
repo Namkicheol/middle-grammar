@@ -7337,7 +7337,7 @@ const GAME_QUESTIONS = {
       {
         "id": "g2_l3_g2_to_if_basic_b11",
         "kor": "아침을 먹지 않으면, 학교에서 피곤할 것이다.",
-        "eng": "If you ___ breakfast, you'll feel tired at school.",
+        "eng": "If you ___ eat breakfast, you'll feel tired at school.",
         "ans": "don't",
         "opts": [
           "don't",

@@ -6,6 +6,6 @@
   Can be used in commercial and non-commercial projects."
 - 입수: github.com/Wenilyks/Crystal-Caverns (LFS) 미러
 
-BGM — "Happy Adventure Loop" (CC0) from OpenGameArt.org
-- https://opengameart.org/content/happy-adventure-loop
-- 파일: bgm/climb-theme.mp3
+BGM — "Determined Pursuit (Epic Orchestra Loop)" (CC0) from OpenGameArt.org
+- https://opengameart.org/content/determined-pursuit-epic-orchestra-loop
+- 파일: bgm/climb-epic.mp3 (128kbps 재인코딩)

@@ -26,7 +26,9 @@ button{font-family:inherit;}
 #unit-pick{display:none;margin-top:16px;max-width:560px;width:100%;}
 #unit-pick.show{display:block;}
 #unit-pick .up-title{font-size:.78rem;color:#a78bfa;font-weight:800;margin-bottom:8px;text-align:center;}
-#unit-pick .up-grid{display:flex;flex-wrap:wrap;gap:7px;justify-content:center;}
+.up-row{display:flex;align-items:flex-start;gap:10px;margin-bottom:9px;}
+.up-label{flex-shrink:0;width:58px;text-align:right;font-size:.74rem;font-weight:900;color:#fde68a;padding-top:9px;}
+#unit-pick .up-grid{display:flex;flex-wrap:wrap;gap:7px;flex:1;}
 .uchip{border:1.5px solid rgba(167,139,250,.4);background:rgba(255,255,255,.05);color:#ddd6fe;border-radius:99px;padding:7px 13px;font-size:.78rem;font-weight:800;cursor:pointer;transition:all .12s;}
 .uchip.on{background:linear-gradient(135deg,#7c3aed,#a855f7);border-color:#a855f7;color:#fff;box-shadow:0 3px 12px rgba(124,58,237,.5);}
 #gate-go{margin-top:22px;font-size:1.2rem;font-weight:900;color:#fff;background:linear-gradient(135deg,#7c3aed,#a855f7);border:none;border-radius:16px;padding:16px 52px;box-shadow:0 12px 32px rgba(124,58,237,.6);cursor:pointer;transition:transform .12s;}
@@ -59,12 +61,19 @@ button{font-family:inherit;}
 
 /* 탑 뷰포트 (영웅) */
 #arena{position:relative;flex:1;z-index:3;min-height:120px;}
-#ledge{position:absolute;left:8%;bottom:8%;width:170px;height:10px;background:linear-gradient(90deg,#3a4a56,#243039);border-top:2px solid rgba(45,212,191,.4);border-radius:4px;box-shadow:0 4px 12px rgba(0,0,0,.6);}
-/* Huntress 2 (LuizMelo, CC-0) — 프레임 100×100 */
-#hero{position:absolute;left:8%;bottom:calc(8% - 20px);width:100px;height:100px;
+/* 석조 발코니 — 탑 벽에서 튀어나온 바닥 (떠 있는 발판 느낌 제거) */
+#ledge{position:absolute;left:0;bottom:8%;width:calc(min(30%,240px) + 84px);height:16px;
+  background:
+    repeating-linear-gradient(90deg, rgba(0,0,0,.25) 0 3px, transparent 3px 46px),
+    linear-gradient(180deg,#3a4a56,#243039);
+  border-top:3px solid rgba(45,212,191,.45);border-radius:0 6px 6px 0;box-shadow:0 6px 14px rgba(0,0,0,.65);}
+#ledge::after{content:'';position:absolute;right:14px;top:16px;border-left:16px solid transparent;border-right:0 solid transparent;border-top:14px solid #1c262e;}
+/* Huntress 2 (LuizMelo, CC-0) — 프레임 100×100, 캐릭터 발은 프레임 바닥에서 33px 위
+   (투명 여백). scale 2.6 기준 33×2.6≈86px 내려서 발이 발코니(8%+16px)에 닿게 한다. */
+#hero{position:absolute;left:8%;bottom:calc(8% + 16px - 86px);width:100px;height:100px;
   background-image:url('assets/huntress/Idle.png');
   background-repeat:no-repeat;image-rendering:pixelated;
-  transform:scale(2.1);transform-origin:bottom center;
+  transform:scale(2.6);transform-origin:bottom center;
   filter:drop-shadow(0 8px 20px rgba(45,212,191,.45));}
 @keyframes hIdle{from{background-position-x:0}to{background-position-x:-1000px}}
 @keyframes hRun {from{background-position-x:0}to{background-position-x:-800px}}
@@ -102,8 +111,6 @@ button{font-family:inherit;}
 #fb .fb-txt{flex:1;min-width:180px;font-size:.88rem;line-height:1.55;}
 #fb .fb-txt b{color:#4ade80;font-size:1rem;}
 #fb .fb-txt .fb-mine{color:#fca5a5;}
-#fb-next{border:none;border-radius:11px;padding:11px 20px;font-size:.92rem;font-weight:900;color:#fff;background:linear-gradient(135deg,#8b5cf6,#7c3aed);cursor:pointer;box-shadow:0 4px 14px rgba(124,58,237,.5);}
-#fb-next:active{transform:scale(.96);}
 
 /* 결과 */
 #result{position:fixed;inset:0;z-index:60;display:none;align-items:center;justify-content:center;background:rgba(4,2,12,.92);}
@@ -131,7 +138,7 @@ button{font-family:inherit;}
 .rv-mine{font-size:.76rem;color:#fca5a5;margin-top:3px;}
 
 @media (max-width:560px){
-  #hero{transform:scale(1.55);}
+  #hero{transform:scale(2);bottom:calc(8% + 16px - 66px);}
   #floor-chip{font-size:1.6rem;}
   #q-eng{font-size:1rem;}
   .mode-card{width:100%;max-width:320px;}
@@ -160,8 +167,10 @@ button{font-family:inherit;}
     </button>
   </div>
   <div id="unit-pick">
-    <div class="up-title">등반할 단원을 고르세요</div>
-    <div class="up-grid" id="up-grid"></div>
+    <div class="up-title">등반할 범위를 고르세요</div>
+    <div class="up-row"><span class="up-label">🎲 랜덤</span><div class="up-grid" id="up-grid-rand"></div></div>
+    <div class="up-row"><span class="up-label">중1</span><div class="up-grid" id="up-grid-g1"></div></div>
+    <div class="up-row"><span class="up-label">중2</span><div class="up-grid" id="up-grid-g2"></div></div>
   </div>
   <button id="gate-go">🧗 등반 시작!</button>
   <a class="gate-back" href="../game/index.html">← 목록</a>
@@ -191,7 +200,6 @@ button{font-family:inherit;}
     <div id="opts"></div>
     <div id="fb">
       <div class="fb-txt" id="fb-txt"></div>
-      <button id="fb-next">계속 ▶</button>
     </div>
   </div>
 </div>
@@ -212,7 +220,7 @@ button{font-family:inherit;}
   </div>
 </div>
 
-<audio id="bgm" src="assets/bgm/climb-theme.mp3" loop preload="none"></audio>
+<audio id="bgm" src="assets/bgm/climb-epic.mp3" loop preload="none"></audio>
 <script src="../game/questions.js?v=questions-20260602j"></script>
 <script>
 'use strict';
@@ -290,8 +298,10 @@ const params=new URLSearchParams(location.search);
 const UNIT_KEYS=Object.keys(GAME_QUESTIONS).filter(k=>k!=='all');
 const _u=params.get('unit');
 const unitParam=(_u&&_u!=='all'&&GAME_QUESTIONS[_u])?_u:null;
-function buildPool(unitKey){ // unitKey 없으면 전 단원
-  const keys=unitKey?[unitKey]:UNIT_KEYS;
+function buildPool(scope){ // null/'all'=전 단원, 'g1'/'g2'=학년 전체, 그 외=단원 키
+  let keys=UNIT_KEYS;
+  if(scope==='g1'||scope==='g2')keys=UNIT_KEYS.filter(k=>k.startsWith(scope+'-'));
+  else if(scope)keys=[scope];
   const l1=[],l2=[];
   keys.forEach(k=>{const u=GAME_QUESTIONS[k];if(!u)return;u.questions.forEach(q=>{
     const item={...q,unitLabel:u.label,unitColor:u.color};
@@ -451,12 +461,11 @@ function onWrong(picked){
     g.over=true;
     setTimeout(()=>{setHero('death');sfx.over();},420);
   }
-  // 오답 확인: 정답을 읽고 직접 '계속'을 눌러야 진행 (자동 넘김 없음)
+  // 오답 확인: 정답을 몇 초 보여주고 자동 진행 (다른 게임들과 동일)
   const mine=picked===null?'⏰ 시간 초과':'내 답: '+picked;
   $('fb-txt').innerHTML='정답은 <b>'+g.cur.ans+'</b> <span class="fb-mine">('+mine+')</span>';
-  $('fb-next').textContent=dead?'결과 보기 ▶':'계속 ▶';
-  $('fb-next').onclick=()=>{ if(dead)showResult();else nextQuestion(); };
   $('fb').classList.add('show');
+  setTimeout(()=>{ if(dead)showResult();else nextQuestion(); },2400);
 }
 
 function updateHud(){
@@ -481,7 +490,8 @@ function showResult(){
   }
   $('res-floor').textContent=g.floor;
   $('res-icon').textContent=g.floor>=30?'🏆':g.floor>=15?'🗼':'⛰️';
-  $('res-sub').textContent=(g.mode==='daily'?'오늘의 탑 '+todayStr():'자유 등반'+(g.unit?' · '+(GAME_QUESTIONS[g.unit]||{}).label:''))+' · 🔥최대 '+g.maxStreak+'연속';
+  const scopeTxt=g.unit?(SCOPE_LABEL[g.unit]||(GAME_QUESTIONS[g.unit]||{}).label||''):'';
+  $('res-sub').textContent=(g.mode==='daily'?'오늘의 탑 '+todayStr():'자유 등반'+(scopeTxt?' · '+scopeTxt:''))+' · 🔥최대 '+g.maxStreak+'연속';
   $('res-new-wrap').innerHTML=isNew&&g.floor>0?'<div class="res-new">🎉 신기록!</div>':'';
   const best=loadRec(bKey);
   $('res-best').textContent='내 최고 기록: '+(best?best.floor+'층 ('+best.date+')':'-');
@@ -511,17 +521,21 @@ syncBgmBtn();
 let gateMode='daily';
 let gateUnit=unitParam||'all';   // 자유 등반 단원 (all=전 단원)
 function buildUnitChips(){
-  const grid=$('up-grid');
-  const mk=(key,label)=>{
+  const mk=(grid,key,label)=>{
     const b=document.createElement('button');
     b.className='uchip'+(gateUnit===key?' on':'');
     b.textContent=label;b.dataset.key=key;
     b.onclick=()=>{gateUnit=key;gateMode='free';refreshGate();};
     grid.appendChild(b);
   };
-  mk('all','🎲 전체');
-  UNIT_KEYS.forEach(k=>mk(k,GAME_QUESTIONS[k].label.split('·')[0].trim()));
+  const rand=$('up-grid-rand');
+  mk(rand,'all','전체');mk(rand,'g1','중1 전체');mk(rand,'g2','중2 전체');
+  UNIT_KEYS.forEach(k=>{
+    const grid=k.startsWith('g1')?$('up-grid-g1'):$('up-grid-g2');
+    mk(grid,k,GAME_QUESTIONS[k].label.split('·')[0].trim().replace(/^중[12]\s*/,''));
+  });
 }
+const SCOPE_LABEL={all:'전 단원 랜덤',g1:'중1 전체 랜덤',g2:'중2 전체 랜덤'};
 function refreshGate(){
   $('card-daily').classList.toggle('on',gateMode==='daily');
   $('card-free').classList.toggle('on',gateMode==='free');
@@ -533,7 +547,7 @@ function refreshGate(){
   const sel=gateUnit!=='all'?gateUnit:null;
   const fb=loadRec(bestKeyFor('free',sel));
   $('best-free').textContent=fb?'최고 '+fb.floor+'층':'';
-  $('free-desc').textContent=sel?GAME_QUESTIONS[sel].label+' 문제로 등반 연습.':'원하는 단원만 골라서 등반 연습.';
+  $('free-desc').textContent=SCOPE_LABEL[gateUnit]?SCOPE_LABEL[gateUnit]+' 등반 연습.':GAME_QUESTIONS[gateUnit].label+' 문제로 등반 연습.';
 }
 $('card-daily').onclick=()=>{gateMode='daily';refreshGate();};
 $('card-free').onclick=()=>{gateMode='free';refreshGate();};

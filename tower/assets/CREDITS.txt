@@ -1,0 +1,11 @@
+무한의 탑 에셋 출처 (모두 CC0 / public domain)
+
+캐릭터 — Huntress 2 by LuizMelo (CC-0)
+- https://luizmelo.itch.io/huntress-2
+- License.txt 원문: "This pack - Huntress 2 is Creative Commons Zero (CC-0).
+  Can be used in commercial and non-commercial projects."
+- 입수: github.com/Wenilyks/Crystal-Caverns (LFS) 미러
+
+BGM — "Happy Adventure Loop" (CC0) from OpenGameArt.org
+- https://opengameart.org/content/happy-adventure-loop
+- 파일: bgm/climb-theme.mp3

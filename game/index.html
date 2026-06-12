@@ -680,6 +680,10 @@ body{
           <strong>보글보글</strong>
           <span>정답을 맞히고 버블 발사</span>
         </button>
+        <button class="mode-btn" data-mode="tower">
+          <strong>무한의 탑</strong>
+          <span>목숨 3개 등반 · 오늘의 탑 층수 경쟁</span>
+        </button>
       </div>
     </div>
   </div>
@@ -1166,6 +1170,7 @@ function startSelectedGame(unitKey) {
     location.href = '../game2/?unit=' + encodeURIComponent(unitKey);
   } else if (selectedMode === 'speed') startSpeedQuiz(unitKey);
   else if (selectedMode === 'whack') location.href = '../whack-grammar/?unit=' + encodeURIComponent(unitKey);
+  else if (selectedMode === 'tower') location.href = '../tower/?unit=' + encodeURIComponent(unitKey);
   else startGame(unitKey);
 }
 

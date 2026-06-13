@@ -1246,13 +1246,13 @@ function buildPieceDocx(idx, mode) {
       const blanks = state.blanks?.get(s.id) || [];
       const enBlank = (!isStudent || state.blankType === 'en');
       const enRuns = enBlank ? _docxEnRuns(s.en, blanks, isStudent) : _wRun(s.en);
-      // 넉넉한 줄간격(끊어읽기 표시 공간) — 글 적어도 페이지가 널널하게 차게
-      inner += _wPara(enRuns, { after: s.ko ? 40 : 100, sz: 20, line: 360 });
+      // 적당한 줄간격(끊어읽기 표시 공간) — 너무 비지도, 문법 여러 개 시 넘치지도 않게
+      inner += _wPara(enRuns, { after: s.ko ? 30 : 60, sz: 20, line: 300 });
       // 한글 줄: ko-빈칸 모드 학생 → 어절 빈칸 / 그 외 → 전체
       if (isStudent && state.blankType === 'ko') {
-        if (s.ko) inner += _wPara(_docxKoRuns(s.ko, state.koBlanks?.get(s.id)), { after: 100, line: 300 });
+        if (s.ko) inner += _wPara(_docxKoRuns(s.ko, state.koBlanks?.get(s.id)), { after: 60, line: 276 });
       } else if (s.ko) {
-        inner += _wPara(_wRun(s.ko, { i: true, color: '5D544A', sz: 17 }), { after: 100, line: 300 });
+        inner += _wPara(_wRun(s.ko, { i: true, color: '5D544A', sz: 17 }), { after: 60, line: 276 });
       }
       const hits = state.grammarMap?.get(s.id);
       if (!isStudent && hits && hits.length) inner += _wPara(_wRun('→ ' + (hits[0].explain || ''), { sz: 15, color: '0F1D6B' }), { after: 60 });

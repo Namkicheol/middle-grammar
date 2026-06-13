@@ -1248,8 +1248,21 @@ body{
 #print-modal { position: fixed; inset: 0; z-index: 9000; display: none; align-items: center; justify-content: center;
   background: rgba(15,23,42,.55); backdrop-filter: blur(3px); padding: 20px; }
 #print-modal.show { display: flex; }
-.pm-card { background: #fff; border-radius: 22px; width: 100%; max-width: 520px; max-height: 86vh;
+.pm-card { background: #fff; border-radius: 22px; width: 100%; max-width: 940px; max-height: 88vh;
   display: flex; flex-direction: column; box-shadow: 0 24px 60px rgba(15,23,42,.35); overflow: hidden; }
+.pm-main { display: flex; gap: 0; flex: 1; min-height: 0; }
+.pm-left { flex: 0 0 380px; display: flex; flex-direction: column; min-height: 0; border-right: 1px solid #eef2f7; }
+.pm-right { flex: 1; min-width: 0; background: #f1f5f9; padding: 12px; }
+.pm-right iframe { width: 100%; height: 100%; border: none; border-radius: 12px; background: #fff;
+  box-shadow: 0 4px 16px rgba(15,23,42,.1); display: none; }
+.pm-prev-empty { height: 100%; display: flex; flex-direction: column; align-items: center; justify-content: center;
+  color: #94a3b8; font-weight: 700; font-size: .95rem; text-align: center; line-height: 1.7; }
+.pm-prev-empty { font-size: 1.4rem; }
+@media (max-width: 720px) {
+  .pm-main { flex-direction: column; }
+  .pm-left { flex: 1 1 auto; border-right: none; }
+  .pm-right { display: none; }
+}
 .pm-head { padding: 20px 22px 14px; border-bottom: 1px solid #eef2f7; }
 .pm-head h3 { margin: 0 0 3px; font-size: 1.25rem; font-weight: 800; color: #0f172a; }
 .pm-head p { margin: 0; font-size: .82rem; color: #64748b; font-weight: 600; }
@@ -1268,6 +1281,9 @@ body{
 .pm-grp { font-size: .72rem; font-weight: 800; color: #94a3b8; letter-spacing: .06em; margin: 12px 0 7px; }
 .pm-item { display: flex; align-items: center; gap: 7px; padding: 9px 0 9px 9px; border-bottom: 1px solid #f1f5f9;
   border-left: 3px solid transparent; }
+.pm-item { cursor: pointer; }
+.pm-item:hover { background: #f8fafc; }
+.pm-item.sel { background: #eef2ff; }
 .pm-item.lv-basic { border-left-color: #38bdf8; }
 .pm-item.lv-hard { border-left-color: #fbbf24; }
 .pm-item .pm-name { flex: 1; font-size: .9rem; font-weight: 700; color: #1e293b; line-height: 1.35; }
@@ -1303,11 +1319,19 @@ body{
         <button data-v="a">해설 포함</button>
       </div>
     </div>
-    <div class="pm-search">
-      <span class="si">🔍</span>
-      <input id="pm-q" type="text" placeholder="단원·워크시트 검색 (예: 동명사, be동사, 수동태)" autocomplete="off">
+    <div class="pm-main">
+      <div class="pm-left">
+        <div class="pm-search">
+          <span class="si">🔍</span>
+          <input id="pm-q" type="text" placeholder="단원·워크시트 검색" autocomplete="off">
+        </div>
+        <div class="pm-list" id="pm-list"></div>
+      </div>
+      <div class="pm-right">
+        <div class="pm-prev-empty" id="pm-prev-empty">👁<br>워크시트를 누르면<br>미리보기가 나와요</div>
+        <iframe id="pm-preview" title="미리보기"></iframe>
+      </div>
     </div>
-    <div class="pm-list" id="pm-list"></div>
     <div class="pm-foot">📄 PDF 바로 인쇄 · 📝 워드(DOCX) 워드·한글 편집 · 📗 한글(HWPX) 베타 — 안 열리면 워드로 받아 한글에서 여세요</div>
   </div>
 </div>
@@ -1329,13 +1353,23 @@ body{
     });
   });
 
-  var state = { fmt: 'print', ver: 'q' };
+  var state = { fmt: 'print', ver: 'q', preview: null };
 
   function go(url) {
     var ans = state.ver === 'a';
     var param = state.fmt === 'docx' ? 'docx=1' : (state.fmt === 'hwpx' ? 'hwpx=1' : 'print=1');
     var q = url + (url.indexOf('?') > -1 ? '&' : '?') + param + (ans ? '&ans=1' : '');
     window.open(q, '_blank');
+  }
+
+  function loadPreview(idx) {
+    state.preview = idx;
+    var it = items[idx];
+    var src = it.url + (it.url.indexOf('?') > -1 ? '&' : '?') + 'preview=1' + (state.ver === 'a' ? '&ans=1' : '');
+    var ifr = document.getElementById('pm-preview');
+    ifr.src = src; ifr.style.display = 'block';
+    document.getElementById('pm-prev-empty').style.display = 'none';
+    document.querySelectorAll('.pm-item').forEach(function (el) { el.classList.toggle('sel', +el.dataset.i === idx); });
   }
 
   function render(filter) {
@@ -1354,15 +1388,18 @@ body{
       grp.forEach(function (it) {
         var idx = items.indexOf(it);
         var bd = it.level === 'hard' ? '<span class="pm-badge h">심화</span>' : '<span class="pm-badge b">기초</span>';
-        html += '<div class="pm-item lv-' + it.level + '">' +
+        html += '<div class="pm-item lv-' + it.level + '" data-i="' + idx + '">' +
           '<div class="pm-name">' + bd + it.title + '<small>' + it.name + '</small></div>' +
           '<button class="pm-btn a" data-i="' + idx + '">⬇ ' + label + '</button>' +
           '</div>';
       });
     });
     list.innerHTML = html;
+    list.querySelectorAll('.pm-item').forEach(function (row) {
+      row.addEventListener('click', function () { loadPreview(+row.dataset.i); });
+    });
     list.querySelectorAll('.pm-btn').forEach(function (b) {
-      b.addEventListener('click', function () { go(items[+b.dataset.i].url); });
+      b.addEventListener('click', function (e) { e.stopPropagation(); go(items[+b.dataset.i].url); });
     });
   }
 
@@ -1373,6 +1410,7 @@ body{
         this.classList.add('on');
         state[key] = this.dataset.v;
         render(document.getElementById('pm-q').value);
+        if (state.preview != null) loadPreview(state.preview);  // 버전 바뀌면 미리보기 갱신
       });
     });
   }

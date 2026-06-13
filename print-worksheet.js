@@ -90,15 +90,9 @@
     return data;
   }
 
-  /* ---------- PDF (화면 인쇄용 텍스트 학습지) ---------- */
-  var css = '' +
-    '#egm-print-sheet { display: none; }' +
-    '@media print {' +
-    '  @page { margin: 12mm 11mm; }' +
-    '  html, body { background: #fff !important; }' +
-    '  body > *:not(#egm-print-sheet) { display: none !important; }' +
-    '  #egm-print-sheet { display: block !important; color: #111;' +
-    "    font-family: 'Pretendard','Noto Sans KR',-apple-system,sans-serif; }" +
+  /* ---------- 학습지 레이아웃 (인쇄·미리보기 공용) ---------- */
+  var SHEET = '' +
+    "  #egm-print-sheet { color: #111; font-family: 'Pretendard','Noto Sans KR',-apple-system,sans-serif; }" +
     '  #egm-print-sheet .ps-title { font-size: 1.3rem; font-weight: 800; text-align: center; margin: 0; }' +
     '  #egm-print-sheet .ps-title .tag { font-size: .8rem; color: #047857; font-weight: 800; }' +
     '  #egm-print-sheet .ps-sub { text-align: center; font-size: .82rem; color: #555; margin: 2px 0 0;' +
@@ -117,8 +111,18 @@
     '  #egm-print-sheet .ps-o .opt { margin-right: 16px; white-space: nowrap; }' +
     '  #egm-print-sheet .ps-bank { margin-top: 4px; color: #374151; font-size: .86rem; background: #f3f4f6; border-radius: 5px; padding: 4px 8px; }' +
     '  #egm-print-sheet .ps-a { margin-top: 4px; color: #047857; font-weight: 700; font-size: .84rem;' +
-    '    background: #f0fdf4; border-left: 2px solid #22c55e; padding: 4px 8px; line-height: 1.5; }' +
-    '}';
+    '    background: #f0fdf4; border-left: 2px solid #22c55e; padding: 4px 8px; line-height: 1.5; }';
+  var css = '#egm-print-sheet { display: none; }' + SHEET +
+    '@media print {' +
+    '  @page { margin: 12mm 11mm; }' +
+    '  html, body { background: #fff !important; }' +
+    '  body > *:not(#egm-print-sheet) { display: none !important; }' +
+    '  #egm-print-sheet { display: block !important; }' +
+    '}' +
+    /* 미리보기: 화면에서 학습지만 표시 */
+    '  html.egm-preview body > *:not(#egm-print-sheet) { display: none !important; }' +
+    '  html.egm-preview #egm-print-sheet { display: block !important; max-width: 860px; margin: 0 auto;' +
+    '    padding: 16px 20px 40px; background: #fff; }';
   function injectStyle() { var s = document.createElement('style'); s.id = 'egm-print-style'; s.textContent = css; document.head.appendChild(s); }
 
   function buildSheet() {
@@ -330,14 +334,16 @@
   window.egmDownloadHwpx = downloadHwpx;
 
   /* ---------- 진입 처리 ---------- */
+  function showPreview() { buildSheet(); document.documentElement.classList.add('egm-preview'); }
   function maybeAuto() {
     if (/[?&]ans=1\b/.test(location.search)) document.documentElement.classList.add('egm-ans');
+    var preview = /[?&]preview=1\b/.test(location.search);
     var docx = /[?&]docx=1\b/.test(location.search);
     var hwpx = /[?&]hwpx=1\b/.test(location.search);
     var print = /[?&]print=1\b/.test(location.search);
-    if (!docx && !hwpx && !print) return;
-    var fn = hwpx ? downloadHwpx : (docx ? downloadDocx : egmPrint);
-    var fire = function () { setTimeout(fn, 450); };
+    if (!preview && !docx && !hwpx && !print) return;
+    var fn = preview ? showPreview : (hwpx ? downloadHwpx : (docx ? downloadDocx : egmPrint));
+    var fire = function () { setTimeout(fn, preview ? 250 : 450); };
     if (document.readyState === 'complete') fire();
     else window.addEventListener('load', fire);
   }

@@ -296,8 +296,8 @@ function viewBlanks() {
         : state.grammarCandidates
           ? renderGrammarCandidates()
           : `<div class="claude-panel-row" style="flex-direction:column;align-items:flex-start;gap:6px;">
-               <button class="btn btn-primary" id="run-ai-full">🤖 AI로 채우기 — 단어 뜻·번역·문법</button>
-               <span style="font-family:var(--font-mono);font-size:.72rem;color:var(--ink-3);">버튼을 눌러야 AI가 실행됩니다 (자동 실행 안 함 · API 절약)</span>
+               <button class="btn btn-primary" id="run-ai">✨ AI로 문법·질문 더 추가</button>
+               <span style="font-family:var(--font-mono);font-size:.72rem;color:var(--ink-3);">단어 뜻·해석·질문 1개·문법 1개는 <b>자동 생성</b>됩니다. 이 버튼은 AI가 <b>문법 포인트를 더 뽑아</b> 선택지로 추가합니다.</span>
              </div>`}
     </div>
 
@@ -500,6 +500,7 @@ function pipeline() {
     state.vocabByPiece[i] = deduped;
   }
   state.grammarMap = detectAll(state.sentences);
+  trimAutoGrammar(); // 자동 문법은 조각당 1개만 (나머지는 AI 버튼으로 추가)
   state.blanks = new Map();
   for (const s of state.sentences) {
     if (s.isHeading || !s.en) continue;
@@ -507,6 +508,26 @@ function pipeline() {
     if (sug.length) state.blanks.set(s.id, sug);
   }
   state.selectedPiece = 0;
+}
+
+// 자동(규칙) 문법은 조각당 1개만 유지. AI 문법(label 'AI')은 그대로 둠.
+function trimAutoGrammar() {
+  for (const p of state.pieces) {
+    let kept = false;
+    for (let i = p.range[0]; i < p.range[1]; i++) {
+      const s = state.sentences[i];
+      if (!s || s.isHeading) continue;
+      const hits = state.grammarMap.get(s.id);
+      if (!hits || !hits.length) continue;
+      const ai = hits.filter(h => h.label === 'AI');
+      const auto = hits.filter(h => h.label !== 'AI');
+      let keepAuto = [];
+      if (!kept && auto.length) { keepAuto = [auto[0]]; kept = true; }
+      const merged = [...ai, ...keepAuto];
+      if (merged.length) state.grammarMap.set(s.id, merged);
+      else state.grammarMap.delete(s.id);
+    }
+  }
 }
 
 // ───── Wiring ─────
@@ -777,9 +798,8 @@ async function runAIEnrich(applySplit = false) {
     const result = await enrichWithAI(state);
     applyAIResult(result, applySplit);
     renderEdit(); renderPrev(); persist();
-    // Phase 1.5 + Phase 2 병렬 실행
+    // 번역만 자동. 문법 추가(runGrammarExtract)는 버튼으로만.
     runTranslate();
-    runGrammarExtract();
   } catch (e) {
     showAIError(e.message);
   } finally {
@@ -830,11 +850,11 @@ async function runGrammarExtract() {
   try {
     const result = await extractGrammarCandidates(state);
     state.grammarCandidates = result;
-    // 기본값: 조각당 첫 후보 1개만 선택, 나머지는 비움(사용자가 원하는 것만 체크)
+    // AI 문법은 '추가' 후보 — 기본 모두 해제. 자동 문법 1개는 detectAll이 이미 제공.
     state.grammarSelected = {};
     (result.pieces || []).forEach(pc =>
       (pc.candidates || []).forEach((_, ci) => {
-        state.grammarSelected[`${pc.label}-${ci}`] = (ci === 0);
+        state.grammarSelected[`${pc.label}-${ci}`] = false;
       })
     );
     renderEdit();
@@ -994,7 +1014,9 @@ async function submitSource() {
   }
   pipeline();
   go(2);
-  // AI 자동 실행 안 함 — 사용자가 '빈칸·문법' 단계에서 [AI로 채우기] 버튼을 눌러야 실행(API 절약)
+  // 자동: 단어뜻·해석(번역)·질문 1개. 문법 1개는 detectAll(규칙)로 자동.
+  // (AI 문법 추가는 빈칸·문법 단계의 버튼으로 별도 실행)
+  runAIEnrich(true);
 }
 
 async function loadSample() {

@@ -44,9 +44,15 @@ export function resetHpid(){ _hpid=0; }
 export function hwpxPara(text, charId, paraId, pageBreak){
   return '<hp:p id="'+(_hpid++)+'" paraPrIDRef="'+(paraId||0)+'" styleIDRef="0" pageBreak="'+(pageBreak?1:0)+'" columnBreak="0" merged="0"><hp:run charPrIDRef="'+(charId||0)+'"><hp:t>'+escXmlHwpx(text)+'</hp:t></hp:run></hp:p>';
 }
-// 첫 문단: 검증된 secPr(HWPX_CHROME) + 제목(charId 7)
+// 검증된 secPr에서 워크시트용 2단(colCount=2 + 구분선)만 단일 단으로 교체.
+// 나머지(페이지크기·여백 등)는 그대로 유지 → 직소는 한 단 전폭.
+var HWPX_CHROME_1COL = HWPX_CHROME
+  .replace(/colCount="\d+"/, 'colCount="1"')
+  .replace(/<hp:colLine\b[^>]*\/>/g, '')
+  .replace(/<hp:colLine\b[^>]*>[\s\S]*?<\/hp:colLine>/g, '');
+// 첫 문단: 단일 단 secPr + 제목(charId 7)
 export function hwpxFirstPara(titleText){
-  return '<hp:p id="'+(_hpid++)+'" paraPrIDRef="0" styleIDRef="0" pageBreak="0" columnBreak="0" merged="0">'+HWPX_CHROME+'<hp:run charPrIDRef="7"><hp:t>'+escXmlHwpx(titleText)+'</hp:t></hp:run></hp:p>';
+  return '<hp:p id="'+(_hpid++)+'" paraPrIDRef="0" styleIDRef="0" pageBreak="0" columnBreak="0" merged="0">'+HWPX_CHROME_1COL+'<hp:run charPrIDRef="7"><hp:t>'+escXmlHwpx(titleText)+'</hp:t></hp:run></hp:p>';
 }
 export function wrapSection(body){
   return "<?xml version='1.0' encoding='utf-8'?>"+'<hs:sec xmlns:hp="http://www.hancom.co.kr/hwpml/2011/paragraph" xmlns:hs="http://www.hancom.co.kr/hwpml/2011/section">'+body+'</hs:sec>';

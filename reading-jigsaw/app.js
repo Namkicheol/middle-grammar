@@ -1202,7 +1202,28 @@ body{margin:0;background:var(--paper);font-family:'Noto Serif KR','Fraunces',ser
 .grammar-card .answer-line{display:block;margin-top:5px;border-bottom:1px solid var(--ink-mute);height:1.4em;}
 .grammar-hl{border-bottom:2px solid #a8431c;color:#a8431c;font-weight:700;background:rgba(168,67,28,.07);text-decoration:none;}
 .page-break{page-break-after:always;}
-@media print{ body{background:#fff;padding:0;} .paper{box-shadow:none;border:none;page-break-after:always;} }
+@page{ margin:12mm; }
+@media print{
+  body{background:#fff;padding:0;}
+  /* 조각 구분은 .page-break div(조각 사이에만 삽입)로만 처리 — .paper 자체 강제 나눔 제거(빈 페이지 원인) */
+  .paper{box-shadow:none;border:none;margin:0;max-width:100%;padding:3mm 3mm;}
+  .page-break{page-break-after:always;}
+  /* 카드·문장 줄이 페이지 경계에서 쪼개지지 않게 → 한 줄만 다음장 넘어가는 낭비 방지 */
+  .grammar-card,.q-card,.slow-row,.vocab-grid li{page-break-inside:avoid;}
+  .paper-step-label{page-break-after:avoid;}
+  /* 인쇄 컴팩션 — 경계 조각이 한 줄 넘쳐 다음장이 비는 낭비 제거 */
+  .paper-id-row{margin-bottom:7px;}
+  .paper-head{margin-bottom:11px;padding-bottom:9px;}
+  .paper-sidebar{margin-bottom:11px;padding:7px 11px;}
+  .paper-step{margin-bottom:12px;}
+  .paper-step-label{margin-bottom:7px;}
+  .grammar-card{padding:9px 12px;margin-bottom:6px;}
+  .grammar-card .sentence{margin:6px 0 7px;padding:7px 12px;}
+  .slow{padding-top:7px;}
+  .slow-row{padding:5px 0;}
+  .slow-en{line-height:1.55;}
+  .slow-ko{margin-top:3px;}
+}
 `;
 
 // ───── Persist ─────

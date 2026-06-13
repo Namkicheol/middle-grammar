@@ -250,12 +250,14 @@
   }
   window.egmDownloadDocx = downloadDocx;
 
-  /* ---------- HWPX 생성 (한글/한컴오피스, 베타) ---------- */
-  var HWPX_VER = '<?xml version="1.0" encoding="UTF-8" standalone="yes"?>\n<hv:HCFVersion xmlns:hv="http://www.hancom.co.kr/hwpml/2011/version" tagetApplication="WORDPROCESSOR" major="5" minor="0" micro="5" buildNumber="0" os="1" xmlVersion="1.4" application="Hancom Office Hangul" appVersion="9, 1, 1, 5656 WIN32LEWindows_Unknown_Version"/>';
-  var HWPX_CONTAINER = '<?xml version="1.0" encoding="UTF-8" standalone="yes"?>\n<ocf:container xmlns:ocf="urn:oasis:names:tc:opendocument:xmlns:container" xmlns:hpf="http://www.hancom.co.kr/schema/2011/hpf"><ocf:rootfiles><ocf:rootfile full-path="Contents/content.hpf" media-type="application/hwpml-package+xml"/></ocf:rootfiles></ocf:container>';
-  var HWPX_MANIFEST = '<?xml version="1.0" encoding="UTF-8" standalone="yes"?>\n<odf:manifest xmlns:odf="urn:oasis:names:tc:opendocument:xmlns:manifest:1.0" version="1.2"><odf:file-entry odf:full-path="/" odf:media-type="application/hwp+zip"/><odf:file-entry odf:full-path="Contents/header.xml" odf:media-type="application/xml"/><odf:file-entry odf:full-path="Contents/section0.xml" odf:media-type="application/xml"/></odf:manifest>';
-  var HWPX_HPF = '<?xml version="1.0" encoding="UTF-8" standalone="yes"?>\n<opf:package xmlns:opf="http://www.idpf.org/2007/opf/" xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:ha="http://www.hancom.co.kr/hwpml/2011/app" version="1.4" unique-identifier="" id=""><opf:metadata><opf:title>worksheet</opf:title><opf:language>ko</opf:language></opf:metadata><opf:manifest><opf:item id="header" href="Contents/header.xml" media-type="application/xml" isEmbeded="0"/><opf:item id="section0" href="Contents/section0.xml" media-type="application/xml" isEmbeded="0"/><opf:item id="settings" href="settings.xml" media-type="application/xml" isEmbeded="0"/></opf:manifest><opf:spine><opf:itemref idref="header" linear="yes"/><opf:itemref idref="section0" linear="yes"/></opf:spine></opf:package>';
-  var HWPX_SETTINGS = '<?xml version="1.0" encoding="UTF-8" standalone="yes"?>\n<ha:HWPApplicationSetting xmlns:ha="http://www.hancom.co.kr/hwpml/2011/app"><ha:CaretPosition listIDRef="0" paraIDRef="0" pos="0"/></ha:HWPApplicationSetting>';
+  /* ---------- HWPX 생성 (한글/한컴오피스, 베타) — 검증된 한컴 파일 구조 참조 ---------- */
+  var HWPX_NS = 'xmlns:ha="http://www.hancom.co.kr/hwpml/2011/app" xmlns:hp="http://www.hancom.co.kr/hwpml/2011/paragraph" xmlns:hp10="http://www.hancom.co.kr/hwpml/2016/paragraph" xmlns:hs="http://www.hancom.co.kr/hwpml/2011/section" xmlns:hc="http://www.hancom.co.kr/hwpml/2011/core" xmlns:hh="http://www.hancom.co.kr/hwpml/2011/head" xmlns:hhs="http://www.hancom.co.kr/hwpml/2011/history" xmlns:hm="http://www.hancom.co.kr/hwpml/2011/master-page" xmlns:hpf="http://www.hancom.co.kr/schema/2011/hpf" xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:opf="http://www.idpf.org/2007/opf/" xmlns:ooxmlchart="http://www.hancom.co.kr/hwpml/2016/ooxmlchart" xmlns:hwpunitchar="http://www.hancom.co.kr/hwpml/2016/HwpUnitChar" xmlns:epub="http://www.idpf.org/2007/ops" xmlns:config="urn:oasis:names:tc:opendocument:xmlns:config:1.0"';
+  var HWPX_VER = '<?xml version="1.0" encoding="UTF-8" standalone="yes" ?><hv:HCFVersion xmlns:hv="http://www.hancom.co.kr/hwpml/2011/version" tagetApplication="WORDPROCESSOR" major="5" minor="1" micro="1" buildNumber="0" os="1" xmlVersion="1.5" application="Hancom Office Hangul" appVersion="12, 0, 0, 0"/>';
+  var HWPX_CONTAINER = '<?xml version="1.0" encoding="UTF-8" standalone="yes" ?><ocf:container xmlns:ocf="urn:oasis:names:tc:opendocument:xmlns:container" xmlns:hpf="http://www.hancom.co.kr/schema/2011/hpf"><ocf:rootfiles><ocf:rootfile full-path="Contents/content.hpf" media-type="application/hwpml-package+xml"/><ocf:rootfile full-path="Preview/PrvText.txt" media-type="text/plain"/><ocf:rootfile full-path="META-INF/container.rdf" media-type="application/rdf+xml"/></ocf:rootfiles></ocf:container>';
+  var HWPX_RDF = '<?xml version="1.0" encoding="UTF-8" standalone="yes" ?><rdf:RDF xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"><rdf:Description rdf:about=""><ns0:hasPart xmlns:ns0="http://www.hancom.co.kr/hwpml/2016/meta/pkg#" rdf:resource="Contents/header.xml"/></rdf:Description><rdf:Description rdf:about="Contents/header.xml"><rdf:type rdf:resource="http://www.hancom.co.kr/hwpml/2016/meta/pkg#HeaderFile"/></rdf:Description><rdf:Description rdf:about=""><ns0:hasPart xmlns:ns0="http://www.hancom.co.kr/hwpml/2016/meta/pkg#" rdf:resource="Contents/section0.xml"/></rdf:Description><rdf:Description rdf:about="Contents/section0.xml"><rdf:type rdf:resource="http://www.hancom.co.kr/hwpml/2016/meta/pkg#SectionFile"/></rdf:Description><rdf:Description rdf:about=""><rdf:type rdf:resource="http://www.hancom.co.kr/hwpml/2016/meta/pkg#Document"/></rdf:Description></rdf:RDF>';
+  var HWPX_MANIFEST = '<?xml version="1.0" encoding="UTF-8" standalone="yes" ?><odf:manifest xmlns:odf="urn:oasis:names:tc:opendocument:xmlns:manifest:1.0"/>';
+  var HWPX_HPF = '<?xml version="1.0" encoding="UTF-8" standalone="yes" ?><opf:package ' + HWPX_NS + ' version="" unique-identifier="" id=""><opf:metadata><opf:title>worksheet</opf:title></opf:metadata><opf:manifest><opf:item id="header" href="Contents/header.xml" media-type="application/xml" isEmbeded="0"/><opf:item id="section0" href="Contents/section0.xml" media-type="application/xml" isEmbeded="0"/><opf:item id="settings" href="settings.xml" media-type="application/xml" isEmbeded="0"/></opf:manifest><opf:spine><opf:itemref idref="section0" linear="yes"/></opf:spine></opf:package>';
+  var HWPX_SETTINGS = '<?xml version="1.0" encoding="UTF-8" standalone="yes" ?><ha:HWPApplicationSetting xmlns:ha="http://www.hancom.co.kr/hwpml/2011/app"><ha:CaretPosition listIDRef="0" paraIDRef="0" pos="0"/></ha:HWPApplicationSetting>';
   function hwpxFontface(lang) { return '<hh:fontface lang="' + lang + '" fontCnt="1"><hh:font id="0" face="함초롬바탕" type="TTF" isEmbedded="0"><hh:typeInfo familyType="FCAT_GOTHIC" weight="6" proportion="4" contrast="0" strokeVariation="1" armStyle="1" letterform="1" midline="1" xHeight="1"/></hh:font></hh:fontface>'; }
   function hwpxCharPr(id, height, color, bold) {
     return '<hh:charPr id="' + id + '" height="' + height + '" textColor="' + color + '" shadeColor="none" useFontSpace="0" useKerning="0" symMark="NONE" borderFillIDRef="2">' +
@@ -264,8 +266,8 @@
       '<hh:offset hangul="0" latin="0" hanja="0" japanese="0" other="0" symbol="0" user="0"/>' + (bold ? '<hh:bold/>' : '') + '</hh:charPr>';
   }
   function hwpxBorderFill(id) { return '<hh:borderFill id="' + id + '" threeD="0" shadow="0" centerLine="NONE" breakCellSeparateLine="0"><hh:slash type="NONE" Crooked="0" isCounter="0"/><hh:backSlash type="NONE" Crooked="0" isCounter="0"/><hh:leftBorder type="NONE" width="0.1 mm" color="#000000"/><hh:rightBorder type="NONE" width="0.1 mm" color="#000000"/><hh:topBorder type="NONE" width="0.1 mm" color="#000000"/><hh:bottomBorder type="NONE" width="0.1 mm" color="#000000"/><hh:diagonal type="SOLID" width="0.1 mm" color="#000000"/></hh:borderFill>'; }
-  var HWPX_HEADER = '<?xml version="1.0" encoding="UTF-8" standalone="yes"?>\n' +
-    '<hh:head xmlns:hh="http://www.hancom.co.kr/hwpml/2011/head" xmlns:hp="http://www.hancom.co.kr/hwpml/2011/paragraph" xmlns:hc="http://www.hancom.co.kr/hwpml/2011/core" version="1.4" secCnt="1">' +
+  var HWPX_HEADER = '<?xml version="1.0" encoding="UTF-8" standalone="yes" ?>' +
+    '<hh:head ' + HWPX_NS + ' version="1.5" secCnt="1">' +
     '<hh:beginNum page="1" footnote="1" endnote="1" pic="1" tbl="1" equation="1"/><hh:refList>' +
     '<hh:fontfaces itemCnt="7">' + ['HANGUL', 'LATIN', 'HANJA', 'JAPANESE', 'OTHER', 'SYMBOL', 'USER'].map(hwpxFontface).join('') + '</hh:fontfaces>' +
     '<hh:borderFills itemCnt="2">' + hwpxBorderFill(1) + hwpxBorderFill(2) + '</hh:borderFills>' +
@@ -277,7 +279,7 @@
     '</hh:refList></hh:head>';
   function hwpxSecPr() {
     return '<hp:secPr id="" textDirection="HORIZONTAL" spaceColumns="1134" tabStop="8000" tabStopVal="4000" tabStopUnit="HWPUNIT" outlineShapeIDRef="1" memoShapeIDRef="0" textVerticalWidthHead="0" masterPageCnt="0">' +
-      '<hp:grid lineGrid="0" charGrid="0" wonggojiFormat="0" strtnum="0"/><hp:startNum pageStartsOn="BOTH" page="0" pic="0" tbl="0" equation="0"/>' +
+      '<hp:grid lineGrid="0" charGrid="0" wonggojiFormat="0"/><hp:startNum pageStartsOn="BOTH" page="0" pic="0" tbl="0" equation="0"/>' +
       '<hp:visibility hideFirstHeader="0" hideFirstFooter="0" hideFirstMasterPage="0" border="SHOW_ALL" fill="SHOW_ALL" hideFirstPageNum="0" hideFirstEmptyLine="0" showLineNumber="0"/>' +
       '<hp:lineNumberShape restartType="0" countBy="0" distance="0" startNumber="0"/>' +
       '<hp:pagePr landscape="WIDELY" width="59528" height="84188" gutterType="LEFT_ONLY"><hp:margin header="4252" footer="4252" gutter="0" left="5669" right="5669" top="5669" bottom="4252"/></hp:pagePr>' +
@@ -289,10 +291,11 @@
   }
   var _hpid = 0;
   function hwpxPara(text, charId, withSecPr) {
+    // hp:linesegarray를 넣지 않는다 — 한글이 열 때 줄 레이아웃을 재계산하게 둠.
+    // (가짜 lineseg 값이 있으면 한글이 '손상된 파일'로 거부·크래시함 — hancom-hwpx-skill 교훈)
     var runs = (withSecPr ? '<hp:run charPrIDRef="0">' + hwpxSecPr() + '<hp:ctrl/></hp:run>' : '') +
       '<hp:run charPrIDRef="' + (charId || 0) + '"><hp:t>' + escXml(text) + '</hp:t></hp:run>';
-    return '<hp:p id="' + (_hpid++) + '" paraPrIDRef="0" styleIDRef="0" pageBreak="0" columnBreak="0" merged="0">' + runs +
-      '<hp:linesegarray><hp:lineseg textpos="0" vertpos="0" vertsize="1000" textheight="1000" baseline="850" spacing="600" horzpos="0" horzsize="42520" flags="393216"/></hp:linesegarray></hp:p>';
+    return '<hp:p id="' + (_hpid++) + '" paraPrIDRef="0" styleIDRef="0" pageBreak="0" columnBreak="0" merged="0">' + runs + '</hp:p>';
   }
   function buildHwpxSection(d) {
     _hpid = 0;
@@ -310,19 +313,27 @@
         if (it.ans) body += hwpxPara(it.ans, 0);
       });
     });
-    return '<?xml version="1.0" encoding="UTF-8" standalone="yes"?>\n<hs:sec xmlns:hs="http://www.hancom.co.kr/hwpml/2011/section" xmlns:hp="http://www.hancom.co.kr/hwpml/2011/paragraph" xmlns:hc="http://www.hancom.co.kr/hwpml/2011/core" xmlns:hh="http://www.hancom.co.kr/hwpml/2011/head">' + body + '</hs:sec>';
+    return '<?xml version="1.0" encoding="UTF-8" standalone="yes" ?>' + '<hs:sec ' + HWPX_NS + '>' + body + '</hs:sec>';
+  }
+  function hwpxPrvText(d) {
+    var lines = [d.title]; if (d.sub) lines.push(d.sub);
+    d.sections.forEach(function (sec) { if (sec.header) lines.push(sec.header); sec.items.forEach(function (it) { if (it.t === 'q') lines.push(it.num + '. ' + it.stem); }); });
+    return lines.join('\n');
   }
   function downloadHwpx() {
     var d = extract(); if (!d.sections.length) return;
+    // ZIP 순서·구성을 검증된 한컴 파일과 동일하게 (mimetype 먼저, STORE)
     var zip = zipStore([
       { name: 'mimetype', data: u8('application/hwp+zip') },
-      { name: 'version.xml', data: u8(HWPX_VER) },
+      { name: 'Contents/content.hpf', data: u8(HWPX_HPF) },
       { name: 'Contents/header.xml', data: u8(HWPX_HEADER) },
       { name: 'Contents/section0.xml', data: u8(buildHwpxSection(d)) },
-      { name: 'Contents/content.hpf', data: u8(HWPX_HPF) },
-      { name: 'settings.xml', data: u8(HWPX_SETTINGS) },
+      { name: 'META-INF/container.rdf', data: u8(HWPX_RDF) },
       { name: 'META-INF/container.xml', data: u8(HWPX_CONTAINER) },
-      { name: 'META-INF/manifest.xml', data: u8(HWPX_MANIFEST) }
+      { name: 'META-INF/manifest.xml', data: u8(HWPX_MANIFEST) },
+      { name: 'Preview/PrvText.txt', data: u8(hwpxPrvText(d)) },
+      { name: 'settings.xml', data: u8(HWPX_SETTINGS) },
+      { name: 'version.xml', data: u8(HWPX_VER) }
     ]);
     var blob = new Blob([zip], { type: 'application/hwp+zip' });
     var url = URL.createObjectURL(blob), a = document.createElement('a');

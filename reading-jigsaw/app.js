@@ -7,7 +7,7 @@ import { extract, pickForPiece } from './engine/vocab.js?v=20260613a';
 import { detectAll } from './engine/grammar.js?v=20250526a';
 import { suggest as suggestBlanks } from './engine/blanks.js?v=20250526a';
 import { renderPaper } from './ui/preview.js?v=20260613c';
-import { resetHpid, hwpxPara, hwpxFirstPara, hwpxTable, hwpxBox, wrapSection, buildHwpxFile } from './engine/hwpx.js?v=20260613g';
+import { resetHpid, hwpxPara, hwpxFirstPara, hwpxTable, hwpxBox, wrapSection, buildHwpxFile } from './engine/hwpx.js?v=20260613h';
 
 const STORAGE_KEY = 'jigsaw-studio:v1';
 const SAMPLE_URL = 'assets/samples/donga-l4.txt';
@@ -1204,11 +1204,11 @@ function _docxEnRuns(text, blanks, isStudent) {
 }
 // 한글 어절 빈칸(ko-blank 모드 학생용) — blanked 인덱스는 밑줄빈칸으로
 function _docxKoRuns(ko, blanked) {
-  if (!blanked || !blanked.size) return _wRun(ko, { i: true, color: '5D544A', sz: 17 });
+  if (!blanked || !blanked.size) return _wRun(ko, { i: true, color: '5D544A', sz: 20 });
   return ko.split(' ').map((tok, i) => blanked.has(i)
     ? _wRun('______', { u: true })
-    : _wRun(tok, { i: true, color: '5D544A', sz: 17 })
-  ).join(_wRun(' ', { sz: 17 }));
+    : _wRun(tok, { i: true, color: '5D544A', sz: 20 })
+  ).join(_wRun(' ', { sz: 20 }));
 }
 function buildPieceDocx(idx, mode) {
   const p = state.pieces[idx]; if (!p) return '';
@@ -1247,15 +1247,15 @@ function buildPieceDocx(idx, mode) {
       const enBlank = (!isStudent || state.blankType === 'en');
       const enRuns = enBlank ? _docxEnRuns(s.en, blanks, isStudent) : _wRun(s.en);
       // 적당한 줄간격(끊어읽기 표시 공간) — 너무 비지도, 문법 여러 개 시 넘치지도 않게
-      inner += _wPara(enRuns, { after: s.ko ? 30 : 60, sz: 20, line: 300 });
+      inner += _wPara(enRuns, { after: s.ko ? 30 : 60, sz: 24, line: 320 });
       // 한글 줄: ko-빈칸 모드 학생 → 어절 빈칸 / 그 외 → 전체
       if (isStudent && state.blankType === 'ko') {
         if (s.ko) inner += _wPara(_docxKoRuns(s.ko, state.koBlanks?.get(s.id)), { after: 60, line: 276 });
       } else if (s.ko) {
-        inner += _wPara(_wRun(s.ko, { i: true, color: '5D544A', sz: 17 }), { after: 60, line: 276 });
+        inner += _wPara(_wRun(s.ko, { i: true, color: '5D544A', sz: 20 }), { after: 60, line: 300 });
       }
       const hits = state.grammarMap?.get(s.id);
-      if (!isStudent && hits && hits.length) inner += _wPara(_wRun('→ ' + (hits[0].explain || ''), { sz: 15, color: '0F1D6B' }), { after: 60 });
+      if (!isStudent && hits && hits.length) inner += _wPara(_wRun('→ ' + (hits[0].explain || ''), { sz: 18, color: '0F1D6B' }), { after: 60 });
     });
     body += _wBox(inner) + SPACER;
   }
@@ -1264,7 +1264,7 @@ function buildPieceDocx(idx, mode) {
     const question = p.aiQuestion || ('What is the main idea of this section?');
     body += stepLabel('③', 'Question');
     let inner = _wPara(_wRun('Q. ', { b: true }) + _wRun(question), { after: !isStudent && p.aiAnswer ? 60 : 120 });
-    if (!isStudent && p.aiAnswer) inner += _wPara(_wRun('A. ' + p.aiAnswer, { color: 'C0392B', sz: 17 }), { after: 0, line: 300 });
+    if (!isStudent && p.aiAnswer) inner += _wPara(_wRun('A. ' + p.aiAnswer, { color: 'C0392B', sz: 22 }), { after: 0, line: 320 });
     else { const line = _wPara(_wRun('__________________________________________________', { color: 'BBBBBB' }), { after: 160 }); inner += line + line + line; }
     body += _wBox(inner) + SPACER;
   }
@@ -1278,13 +1278,13 @@ function buildPieceDocx(idx, mode) {
   if (gPoints.length) {
     body += stepLabel('④', 'Grammar Point');
     for (const g of gPoints) {
-      let inner = _wPara(_wRun('Q. 아래 밑줄 친 표현은 어떻게 해석하나요? 어떤 문법적 특징이 있나요?', { sz: 16, color: '3D3830' }), { after: 40 });
+      let inner = _wPara(_wRun('Q. 아래 밑줄 친 표현은 어떻게 해석하나요? 어떤 문법적 특징이 있나요?', { sz: 18, color: '3D3830' }), { after: 40 });
       let sRuns;
       const m = g.match, t = g.sentence, mi = m ? t.indexOf(m) : -1;
       if (mi >= 0) sRuns = _wRun(t.slice(0, mi)) + _wRun(m, { u: true, b: true, color: 'A8431C' }) + _wRun(t.slice(mi + m.length));
       else sRuns = _wRun(t);
       inner += _wPara(sRuns, { after: !isStudent ? 40 : 0, shd: 'FFFFFF' });
-      if (!isStudent) inner += _wPara((g.ko ? _wRun('해석: ' + g.ko + '  ', { color: '3D3830', sz: 16 }) : '') + _wRun('A. ' + (g.explain || ''), { color: 'C0392B', sz: 16 }), { after: 0 });
+      if (!isStudent) inner += _wPara((g.ko ? _wRun('해석: ' + g.ko + '  ', { color: '3D3830', sz: 20 }) : '') + _wRun('A. ' + (g.explain || ''), { color: 'C0392B', sz: 20 }), { after: 0 });
       else { inner += _wPara(_wRun('__________________________________________________', { color: 'BBBBBB' }), { after: 0 }); }
       body += _wBox(inner) + SPACER;
     }
@@ -1327,7 +1327,7 @@ function exportDoc(mode) {
       '<w:styles xmlns:w="http://schemas.openxmlformats.org/wordprocessingml/2006/main">' +
       '<w:docDefaults><w:rPrDefault><w:rPr>' +
       '<w:rFonts w:ascii="Calibri" w:hAnsi="Calibri" w:eastAsia="맑은 고딕" w:cs="Calibri"/>' +
-      '<w:sz w:val="20"/><w:szCs w:val="20"/><w:lang w:val="en-US" w:eastAsia="ko-KR"/>' +
+      '<w:sz w:val="24"/><w:szCs w:val="24"/><w:lang w:val="en-US" w:eastAsia="ko-KR"/>' +
       '</w:rPr></w:rPrDefault></w:docDefaults></w:styles>';
     const zip = _zipStore([
       { name: '[Content_Types].xml', data: _u8(CT) },
@@ -1379,12 +1379,14 @@ function buildJigsawHwpxSection(idxs, mode) {
     if (vocab.length) {
       body += hwpxPara('① Vocabulary', 8);
       // 2단(단어|뜻|단어|뜻) 표 — 짧게. 너비합 42520 = 8000+13260+8000+13260.
-      const rows = [[{ t: '단어', charId: 8 }, { t: '뜻', charId: 8 }, { t: '단어', charId: 8 }, { t: '뜻', charId: 8 }]];
+      // 단어 셀은 paraId 41(가운데 정렬), 뜻 셀은 기본(왼쪽)
+      const W = t => ({ t, paraId: 41 });
+      const rows = [[{ t: '단어', charId: 8, paraId: 41 }, { t: '뜻', charId: 8, paraId: 41 }, { t: '단어', charId: 8, paraId: 41 }, { t: '뜻', charId: 8, paraId: 41 }]];
       for (let i = 0; i < vocab.length; i += 2) {
         const a = vocab[i], b = vocab[i + 1];
         rows.push([
-          a ? a.word : '', a ? (isStudent ? '' : (a.meaning || '')) : '',
-          b ? b.word : '', b ? (isStudent ? '' : (b.meaning || '')) : ''
+          a ? W(a.word) : '', a ? (isStudent ? '' : (a.meaning || '')) : '',
+          b ? W(b.word) : '', b ? (isStudent ? '' : (b.meaning || '')) : ''
         ]);
       }
       body += hwpxTable(rows, [8000, 13260, 8000, 13260], { rowH: 1800 });

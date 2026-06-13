@@ -1107,23 +1107,175 @@ const FIT_SCRIPT = `(async function(){
   window.focus(); window.print();
 })();`;
 
+/* ───── 진짜 .docx(OOXML) 생성 — Word-HTML(flex/grid 미지원) 대신 WordprocessingML.
+   표(w:tbl)·문단으로 조립해 Word에서 틀이 유지됨. zip/OOXML 헬퍼는 print-worksheet.js와 동일 기법. ───── */
+function escXml(t) { return String(t ?? '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;'); }
+function _crc32(buf) {
+  let t = _crc32.t; if (!t) { t = _crc32.t = []; for (let n = 0; n < 256; n++) { let c = n; for (let k = 0; k < 8; k++) c = c & 1 ? 0xEDB88320 ^ (c >>> 1) : c >>> 1; t[n] = c >>> 0; } }
+  let crc = 0xFFFFFFFF; for (let i = 0; i < buf.length; i++) crc = (crc >>> 8) ^ t[(crc ^ buf[i]) & 0xFF];
+  return (crc ^ 0xFFFFFFFF) >>> 0;
+}
+function _u8(s) { return new TextEncoder().encode(s); }
+function _zipStore(files) {
+  const parts = [], central = []; let offset = 0;
+  const u16 = n => [n & 255, (n >> 8) & 255];
+  const u32 = n => [n & 255, (n >> 8) & 255, (n >> 16) & 255, (n >>> 24) & 255];
+  files.forEach(f => {
+    const name = _u8(f.name), data = f.data, crc = _crc32(data);
+    const lh = [0x50, 0x4b, 0x03, 0x04].concat(u16(20), u16(0), u16(0), u16(0), u16(0), u32(crc), u32(data.length), u32(data.length), u16(name.length), u16(0));
+    parts.push(new Uint8Array(lh), name, data);
+    const ch = [0x50, 0x4b, 0x01, 0x02].concat(u16(20), u16(20), u16(0), u16(0), u16(0), u16(0), u32(crc), u32(data.length), u32(data.length), u16(name.length), u16(0), u16(0), u16(0), u16(0), u32(0), u32(offset));
+    central.push(new Uint8Array(ch), name);
+    offset += lh.length + name.length + data.length;
+  });
+  const cdSize = central.reduce((a, c) => a + c.length, 0);
+  central.forEach(c => parts.push(c));
+  parts.push(new Uint8Array([0x50, 0x4b, 0x05, 0x06].concat(u16(0), u16(0), u16(files.length), u16(files.length), u32(cdSize), u32(offset), u16(0))));
+  const total = parts.reduce((a, c) => a + c.length, 0), out = new Uint8Array(total); let p = 0;
+  parts.forEach(c => { out.set(c, p); p += c.length; });
+  return out;
+}
+function _wRun(text, o) {
+  o = o || {};
+  const rpr = '<w:rPr>' + (o.b ? '<w:b/>' : '') + (o.i ? '<w:i/>' : '') + (o.u ? '<w:u w:val="single"/>' : '') +
+    (o.color ? '<w:color w:val="' + o.color + '"/>' : '') +
+    (o.sz ? '<w:sz w:val="' + o.sz + '"/><w:szCs w:val="' + o.sz + '"/>' : '') + '</w:rPr>';
+  return '<w:r>' + rpr + '<w:t xml:space="preserve">' + escXml(text) + '</w:t></w:r>';
+}
+function _wPara(runs, o) {
+  o = o || {};
+  const ppr = '<w:pPr>' + (o.jc ? '<w:jc w:val="' + o.jc + '"/>' : '') +
+    (o.border ? '<w:pBdr><w:bottom w:val="single" w:sz="' + o.border + '" w:space="2" w:color="' + (o.bc || '999999') + '"/></w:pBdr>' : '') +
+    (o.shd ? '<w:shd w:val="clear" w:fill="' + o.shd + '"/>' : '') +
+    '<w:spacing w:after="' + (o.after != null ? o.after : 60) + '" w:line="240" w:lineRule="auto"/></w:pPr>';
+  return '<w:p>' + ppr + (runs || '') + '</w:p>';
+}
+function _wTc(content, wpct) { return '<w:tc><w:tcPr><w:tcW w:w="' + wpct + '" w:type="pct"/></w:tcPr>' + (content || '<w:p/>') + '</w:tc>'; }
+function _wTbl(rows) {
+  return '<w:tbl><w:tblPr><w:tblW w:w="5000" w:type="pct"/><w:tblLayout w:type="fixed"/></w:tblPr>' +
+    '<w:tblGrid><w:gridCol w:w="4675"/><w:gridCol w:w="4675"/></w:tblGrid>' + rows + '</w:tbl>';
+}
+// 한 문장 en을 빈칸 데이터로 분해 → runs (student: 밑줄빈칸 / teacher: 정답)
+function _docxEnRuns(text, blanks, isStudent) {
+  if (!blanks || !blanks.length) return _wRun(text);
+  const sorted = [...blanks].sort((a, b) => a.start - b.start);
+  let cursor = 0, out = '';
+  for (const b of sorted) {
+    if (b.start < cursor) continue;
+    out += _wRun(text.slice(cursor, b.start));
+    out += isStudent ? _wRun('______', { u: true }) : _wRun(b.text, { b: true, color: 'A8431C', u: true });
+    cursor = b.end;
+  }
+  out += _wRun(text.slice(cursor));
+  return out;
+}
+function buildPieceDocx(idx, mode) {
+  const p = state.pieces[idx]; if (!p) return '';
+  const isStudent = mode === 'student';
+  const rangeSentences = state.sentences.slice(p.range[0], p.range[1]);
+  const bodies = rangeSentences.filter(s => !s.isHeading && !s.koOnly && !s.deleted);
+  const vocab = state.vocabByPiece[idx] || [];
+  const lesson = (state.meta.lesson || '').trim();
+  const title = (state.meta.title || '').trim();
+  const stars = '★'.repeat(p.stars || 0) + '☆'.repeat(3 - (p.stars || 0));
+  let body = '';
+  // header
+  const headParts = [lesson, title].filter(Boolean).join(' · ');
+  body += _wPara(_wRun(p.label + '.  ', { b: true, sz: 36, color: 'A8431C' }) +
+    _wRun((p.heading || headParts || '') + '   ', { b: true, sz: 26 }) + _wRun(stars, { sz: 20, color: '999999' }),
+    { after: 40, border: 16, bc: '111111' });
+  body += _wPara(_wRun('학번: ______________      이름: ______________', { sz: 18, color: '555555' }), { after: 160 });
+  // vocabulary
+  if (vocab.length) {
+    body += _wPara(_wRun('① Vocabulary', { b: true, sz: 22, color: 'A8431C' }), { after: 60 });
+    let rows = '';
+    for (let i = 0; i < vocab.length; i += 2) {
+      const cell = v => v ? _wPara(_wRun(v.word + '   ', { b: true }) + _wRun(isStudent ? '____________' : (v.meaning || '____________'), { color: '555555' })) : '<w:p/>';
+      rows += '<w:tr>' + _wTc(cell(vocab[i]), 2500) + _wTc(cell(vocab[i + 1]), 2500) + '</w:tr>';
+    }
+    body += _wTbl(rows);
+    body += _wPara('', { after: 120 });
+  }
+  // slow reading
+  if (bodies.length) {
+    body += _wPara(_wRun('② Slow Reading', { b: true, sz: 22, color: 'A8431C' }), { after: 60 });
+    for (const s of bodies) {
+      const blanks = state.blanks?.get(s.id) || [];
+      const enRuns = (!isStudent || state.blankType === 'en') ? _docxEnRuns(s.en, blanks, isStudent) : _wRun(s.en);
+      body += _wPara(enRuns, { after: s.ko ? 0 : 40, sz: 20 });
+      if (s.ko) body += _wPara(_wRun(s.ko, { i: true, color: '5D544A', sz: 17 }), { after: 40 });
+      const hits = state.grammarMap?.get(s.id);
+      if (hits && hits.length) body += _wPara(_wRun('→ ' + (hits[0].explain || ''), { sz: 15, color: '0F1D6B' }), { after: 40 });
+    }
+    body += _wPara('', { after: 80 });
+  }
+  // question
+  if (bodies.length) {
+    const question = p.aiQuestion || ('What is the main idea of this section?');
+    body += _wPara(_wRun('③ Question', { b: true, sz: 22, color: 'A8431C' }), { after: 60 });
+    body += _wPara(_wRun('Q. ', { b: true }) + _wRun(question), { after: 0, border: 6, bc: 'CBC1AD' });
+    if (!isStudent && p.aiAnswer) body += _wPara(_wRun('A. ' + p.aiAnswer, { color: 'C0392B', sz: 17 }), { after: 60 });
+    else { body += _wPara('', { after: 0, border: 6, bc: 'CBC1AD' }); body += _wPara('', { after: 80, border: 6, bc: 'CBC1AD' }); }
+  }
+  // grammar
+  const gPoints = [];
+  for (const s of rangeSentences) {
+    if (s.isHeading) continue;
+    const hits = state.grammarMap?.get(s.id);
+    if (hits && hits.length) { gPoints.push({ sentence: s.en, match: hits[0].match, explain: hits[0].explain, ko: s.ko }); if (gPoints.length >= 3) break; }
+  }
+  if (gPoints.length) {
+    body += _wPara(_wRun('④ Grammar Point', { b: true, sz: 22, color: 'A8431C' }), { after: 60 });
+    for (const g of gPoints) {
+      body += _wPara(_wRun('Q. 아래 밑줄 친 표현은 어떻게 해석하나요? 어떤 문법적 특징이 있나요?', { sz: 16, color: '3D3830' }), { after: 0, shd: 'F4F6FF' });
+      // sentence with match underlined
+      let sRuns;
+      const m = g.match, t = g.sentence, mi = m ? t.indexOf(m) : -1;
+      if (mi >= 0) sRuns = _wRun(t.slice(0, mi)) + _wRun(m, { u: true, b: true, color: 'A8431C' }) + _wRun(t.slice(mi + m.length));
+      else sRuns = _wRun(t);
+      body += _wPara(sRuns, { after: 0, jc: 'center', shd: 'FFFFFF' });
+      if (!isStudent) body += _wPara((g.ko ? _wRun('해석: ' + g.ko + '  ', { color: '3D3830', sz: 16 }) : '') + _wRun('A. ' + (g.explain || ''), { color: 'C0392B', sz: 16 }), { after: 100 });
+      else { body += _wPara('', { after: 0 }); body += _wPara('', { after: 120 }); }
+    }
+  }
+  return body;
+}
+function buildJigsawDocxXml(idxs, mode) {
+  let body = '';
+  idxs.forEach((idx, i) => {
+    if (i > 0) body += '<w:p><w:r><w:br w:type="page"/></w:r></w:p>';
+    body += buildPieceDocx(idx, mode);
+  });
+  const sectPr = '<w:sectPr><w:pgSz w:w="11906" w:h="16838"/>' +
+    '<w:pgMar w:top="680" w:right="680" w:bottom="680" w:left="680" w:header="0" w:footer="0" w:gutter="0"/></w:sectPr>';
+  return '<?xml version="1.0" encoding="UTF-8" standalone="yes"?>' +
+    '<w:document xmlns:w="http://schemas.openxmlformats.org/wordprocessingml/2006/main">' +
+    '<w:body>' + body + sectPr + '</w:body></w:document>';
+}
 function exportDoc(mode) {
   try {
     const idxs = getSelectedPieceIdxs();
     if (!idxs.length) { alert('조각을 하나 이상 선택하세요.'); return; }
-    const pages = idxs.map(i => renderPaper(state, i, mode))
-      .join('<div style="page-break-after:always;"></div>');
-    const html = `<!DOCTYPE html>
-<html xmlns:o="urn:schemas-microsoft-com:office:office"
-      xmlns:w="urn:schemas-microsoft-com:office:word"
-      xmlns="http://www.w3.org/TR/REC-html40">
-<head><meta charset="utf-8"><style>${EXPORT_CSS}</style></head>
-<body>${pages}</body></html>`;
-    const blob = new Blob([html], { type: 'application/octet-stream' });
+    const CT = '<?xml version="1.0" encoding="UTF-8" standalone="yes"?>' +
+      '<Types xmlns="http://schemas.openxmlformats.org/package/2006/content-types">' +
+      '<Default Extension="rels" ContentType="application/vnd.openxmlformats-package.relationships+xml"/>' +
+      '<Default Extension="xml" ContentType="application/xml"/>' +
+      '<Override PartName="/word/document.xml" ContentType="application/vnd.openxmlformats-officedocument.wordprocessingml.document.main+xml"/>' +
+      '</Types>';
+    const RELS = '<?xml version="1.0" encoding="UTF-8" standalone="yes"?>' +
+      '<Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships">' +
+      '<Relationship Id="rId1" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/officeDocument" Target="word/document.xml"/>' +
+      '</Relationships>';
+    const zip = _zipStore([
+      { name: '[Content_Types].xml', data: _u8(CT) },
+      { name: '_rels/.rels', data: _u8(RELS) },
+      { name: 'word/document.xml', data: _u8(buildJigsawDocxXml(idxs, mode)) }
+    ]);
+    const blob = new Blob([zip], { type: 'application/vnd.openxmlformats-officedocument.wordprocessingml.document' });
     const url = URL.createObjectURL(blob);
     const a = document.createElement('a');
     a.href = url;
-    a.download = `${safeName()}-${mode === 'student' ? 'Ss' : 'T'}.doc`;
+    a.download = `${safeName()}-${mode === 'student' ? 'Ss' : 'T'}.docx`;
     document.body.appendChild(a); a.click();
     setTimeout(() => { a.remove(); URL.revokeObjectURL(url); }, 2000);
   } catch (e) {

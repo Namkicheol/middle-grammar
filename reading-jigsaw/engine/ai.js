@@ -74,6 +74,7 @@ export async function translateSentences(state) {
 
   const prompt = `아래 영어 문장들을 중학생 수준의 자연스러운 한국어로 번역하세요.
 JSON만 출력하세요 (키=인덱스, 값=한국어번역).
+중요: 사람 이름·고유명사는 한글로 음역하지 말고 영어 원문 그대로 두세요. (예: Emma → Emma, Junho → Junho)
 
 ${JSON.stringify(bodyMap)}
 
@@ -107,7 +108,7 @@ ${JSON.stringify(piecesPayload)}
 규칙:
 - match: 해당 조각 본문 문장에서 원문 그대로 복사한 어구 (수식어 포함 자연스러운 단위)
   예: "which influence your decisions", "Learning about them", "will have to buy them"
-- explain: 중학생 눈높이 한국어 문법 설명 (1~2문장)
+- explain: 중학생 눈높이 한국어 문법 설명 (1~2문장). 사람 이름·고유명사는 영어 원문 그대로(한글 음역 금지).
 - askTranslation: 해석이 까다롭거나 구조 이해에 번역이 중요한 경우 true, 단순 형태 문법은 false
   예: 관계절·부정사구·분사구·수동태·간접의문문 → true / 단순 조동사·비교급 → false
 

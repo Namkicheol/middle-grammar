@@ -1253,7 +1253,12 @@ body{
 .pm-head h3 { margin: 0 0 3px; font-size: 1.25rem; font-weight: 800; color: #0f172a; }
 .pm-head p { margin: 0; font-size: .82rem; color: #64748b; font-weight: 600; }
 .pm-close { position: absolute; top: 16px; right: 18px; background: none; border: none; font-size: 22px; cursor: pointer; color: #94a3b8; }
-.pm-search { margin: 14px 22px 0; position: relative; }
+.pm-opts { display: flex; gap: 10px; margin: 14px 22px 0; flex-wrap: wrap; }
+.pm-seg { display: inline-flex; background: #f1f5f9; border-radius: 11px; padding: 3px; }
+.pm-seg button { border: none; background: none; font-family: inherit; font-weight: 800; font-size: .8rem;
+  color: #64748b; padding: 7px 13px; border-radius: 8px; cursor: pointer; white-space: nowrap; }
+.pm-seg button.on { background: #fff; color: #0f172a; box-shadow: 0 1px 4px rgba(15,23,42,.14); }
+.pm-search { margin: 12px 22px 0; position: relative; }
 .pm-search input { width: 100%; padding: 12px 14px 12px 40px; border-radius: 12px; border: 2px solid #e2e8f0;
   font-size: .95rem; font-family: inherit; font-weight: 600; color: #0f172a; outline: none; }
 .pm-search input:focus { border-color: #6366f1; }
@@ -1283,15 +1288,25 @@ body{
   <div class="pm-card">
     <button class="pm-close" onclick="closePrintModal()" aria-label="닫기">×</button>
     <div class="pm-head">
-      <h3>🖨️ 문제 인쇄</h3>
-      <p>워크시트를 골라 <b>문제만</b> 또는 <b>해설 포함</b>으로 PDF 저장하세요.</p>
+      <h3>🖨️ 문제 내보내기</h3>
+      <p>형식·버전을 고르고 워크시트의 <b>받기</b>를 누르세요.</p>
+    </div>
+    <div class="pm-opts">
+      <div class="pm-seg" id="pm-fmt">
+        <button class="on" data-v="print">📄 PDF</button>
+        <button data-v="docx">📝 워드(DOCX)</button>
+      </div>
+      <div class="pm-seg" id="pm-ver">
+        <button class="on" data-v="q">문제만</button>
+        <button data-v="a">해설 포함</button>
+      </div>
     </div>
     <div class="pm-search">
       <span class="si">🔍</span>
       <input id="pm-q" type="text" placeholder="단원·워크시트 검색 (예: 동명사, be동사, 수동태)" autocomplete="off">
     </div>
     <div class="pm-list" id="pm-list"></div>
-    <div class="pm-foot">📄 문제 PDF · 📝 해설 PDF(정답·해석) · 📝 한글 = 워드/한글 편집용(.doc, hwpx로 저장 가능)</div>
+    <div class="pm-foot">📄 PDF는 바로 인쇄·저장 · 📝 워드(DOCX)는 워드·한글(한컴오피스)에서 열어 편집·hwpx 저장</div>
   </div>
 </div>
 
@@ -1312,8 +1327,11 @@ body{
     });
   });
 
-  function openUrl(url, ans, doc) {
-    var q = url + (url.indexOf('?') > -1 ? '&' : '?') + (doc ? 'doc=1' : 'print=1') + (ans ? '&ans=1' : '');
+  var state = { fmt: 'print', ver: 'q' };
+
+  function go(url) {
+    var ans = state.ver === 'a';
+    var q = url + (url.indexOf('?') > -1 ? '&' : '?') + (state.fmt === 'docx' ? 'docx=1' : 'print=1') + (ans ? '&ans=1' : '');
     window.open(q, '_blank');
   }
 
@@ -1324,6 +1342,7 @@ body{
       return !f || (it.title + ' ' + it.name + ' ' + it.grade).toLowerCase().indexOf(f) > -1;
     });
     if (!shown.length) { list.innerHTML = '<div class="pm-empty">검색 결과가 없어요</div>'; return; }
+    var label = (state.fmt === 'docx' ? '📝 워드' : '📄 PDF') + (state.ver === 'a' ? '·해설' : '');
     var html = '';
     ['중1', '중2'].forEach(function (g) {
       var grp = shown.filter(function (it) { return it.grade === g; });
@@ -1334,20 +1353,28 @@ body{
         var bd = it.level === 'hard' ? '<span class="pm-badge h">심화</span>' : '<span class="pm-badge b">기초</span>';
         html += '<div class="pm-item lv-' + it.level + '">' +
           '<div class="pm-name">' + bd + it.title + '<small>' + it.name + '</small></div>' +
-          '<button class="pm-btn q" data-i="' + idx + '" data-m="p0" title="문제만 PDF">📄 문제</button>' +
-          '<button class="pm-btn a" data-i="' + idx + '" data-m="p1" title="해설 포함 PDF">📝 해설</button>' +
-          '<button class="pm-btn d" data-i="' + idx + '" data-m="d0" title="한글/워드용 파일 (.doc)">📝 한글</button>' +
+          '<button class="pm-btn a" data-i="' + idx + '">⬇ ' + label + '</button>' +
           '</div>';
       });
     });
     list.innerHTML = html;
     list.querySelectorAll('.pm-btn').forEach(function (b) {
+      b.addEventListener('click', function () { go(items[+b.dataset.i].url); });
+    });
+  }
+
+  function bindSeg(id, key) {
+    document.getElementById(id).querySelectorAll('button').forEach(function (b) {
       b.addEventListener('click', function () {
-        var mode = b.dataset.m;
-        openUrl(items[+b.dataset.i].url, mode === 'p1', mode === 'd0');
+        this.parentNode.querySelectorAll('button').forEach(function (x) { x.classList.remove('on'); });
+        this.classList.add('on');
+        state[key] = this.dataset.v;
+        render(document.getElementById('pm-q').value);
       });
     });
   }
+  bindSeg('pm-fmt', 'fmt');
+  bindSeg('pm-ver', 'ver');
 
   window.openPrintModal = function () {
     document.getElementById('print-modal').classList.add('show');

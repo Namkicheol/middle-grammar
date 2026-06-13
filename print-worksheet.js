@@ -1,9 +1,9 @@
 /* =========================================================
-   print-worksheet.js — 워크시트 → 진짜 학습지(텍스트) 인쇄/PDF
-   - 화려한 카드를 그대로 인쇄하면 페이지 분할이 깨져 빈 페이지가 생김.
-   - 그래서 인쇄 시 문항 데이터를 추출해 plain 텍스트 학습지로 새로 조판한다.
-     (일반 블록 흐름 → 페이지가 깔끔히 넘어가고 빈 페이지가 없음)
-   - 교사 전용: 화면엔 버튼 없음. 허브에서 ?print=1(문제만) / ?print=1&ans=1(해설) 로 진입.
+   print-worksheet.js — 워크시트 → 진짜 학습지 (PDF / DOCX)
+   - 카드를 그대로 인쇄하면 페이지 분할이 깨져 빈 페이지가 생김.
+     → 문항 데이터를 추출(extract)해 plain 학습지로 새로 조판.
+   - PDF: 2단 텍스트 학습지 인쇄.  DOCX: 워드·한컴오피스(한글)에서 열리는 .docx 생성.
+   - 교사 전용: 허브에서 ?print=1 / ?docx=1 (+&ans=1 해설) 로 진입.
    ========================================================= */
 (function () {
   if (window.__egmPrintReady) return;
@@ -11,53 +11,12 @@
 
   var CIRC = '①②③④⑤⑥⑦⑧';
 
-  var css = '' +
-    '#egm-print-sheet { display: none; }' +
-    '@media print {' +
-    '  @page { margin: 12mm 11mm; }' +
-    '  html, body { background: #fff !important; }' +
-    '  body > *:not(#egm-print-sheet) { display: none !important; }' +
-    '  #egm-print-sheet { display: block !important; color: #111;' +
-    "    font-family: 'Pretendard','Noto Sans KR',-apple-system,sans-serif; }" +
-    '  #egm-print-sheet .ps-title { font-size: 1.3rem; font-weight: 800; text-align: center; margin: 0; }' +
-    '  #egm-print-sheet .ps-title .tag { font-size: .8rem; color: #047857; font-weight: 800; }' +
-    '  #egm-print-sheet .ps-sub { text-align: center; font-size: .82rem; color: #555;' +
-    '    margin: 2px 0 0; padding-bottom: 9px; border-bottom: 2px solid #111; }' +
-    '  #egm-print-sheet .ps-meta { display: flex; justify-content: space-between; font-size: .8rem;' +
-    '    color: #444; margin: 7px 0 10px; }' +
-    '  #egm-print-sheet .ps-body { columns: 2; column-gap: 16px; }' +
-    '  #egm-print-sheet .ps-h { -webkit-column-break-inside: avoid; break-inside: avoid; break-after: avoid;' +
-    '    font-weight: 800; font-size: .92rem; color: #1e3a8a; margin: 11px 0 6px; padding-bottom: 3px;' +
-    '    border-bottom: 1.5px solid #94a3b8; }' +
-    '  #egm-print-sheet .ps-passage { -webkit-column-break-inside: avoid; break-inside: avoid;' +
-    '    background: #f6f7f9; border: 1px solid #d8dee8; border-radius: 6px; padding: 8px 11px;' +
-    '    font-size: .82rem; line-height: 1.75; margin: 0 0 8px; color: #1f2937; }' +
-    '  #egm-print-sheet .ps-passage b { color: #b45309; }' +
-    '  #egm-print-sheet .ps-q { -webkit-column-break-inside: avoid; break-inside: avoid;' +
-    '    margin: 0 0 8px; font-size: .85rem; line-height: 1.5; }' +
-    '  #egm-print-sheet .ps-n { font-weight: 800; margin-right: 2px; }' +
-    '  #egm-print-sheet .ps-ex { color: #6b7280; font-size: .92em; }' +
-    '  #egm-print-sheet .ps-kor { display: block; color: #6b7280; font-size: .78rem; margin: 1px 0; }' +
-    '  #egm-print-sheet .ps-o { display: block; margin-top: 2px; }' +
-    '  #egm-print-sheet .ps-o .opt { margin-right: 12px; white-space: nowrap; display: inline-block; }' +
-    '  #egm-print-sheet .ps-bank { display: block; margin-top: 3px; color: #374151; font-size: .8rem;' +
-    '    background: #f3f4f6; border-radius: 5px; padding: 3px 7px; }' +
-    '  #egm-print-sheet .ps-a { display: inline-block; margin-top: 2px; color: #047857; font-weight: 800; font-size: .82rem; }' +
-    '}';
-
-  function injectStyle() {
-    var s = document.createElement('style');
-    s.id = 'egm-print-style';
-    s.textContent = css;
-    document.head.appendChild(s);
-  }
-
-  function esc(t) {
-    return String(t == null ? '' : t).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
-  }
+  /* ---------- 공통 유틸 ---------- */
   function clean(t) { return String(t || '').replace(/\s+/g, ' ').trim(); }
+  function escHtml(t) { return String(t == null ? '' : t).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;'); }
+  function escXml(t) { return escHtml(t).replace(/"/g, '&quot;'); }
 
-  // 섹션 내 패시지·문제 카드를 DOM 순서대로 수집 (중첩 래퍼 대응)
+  /* ---------- 문항 데이터 추출 (PDF·DOCX 공용) ---------- */
   function collectItems(sec) {
     var items = [];
     (function walk(el) {
@@ -70,89 +29,40 @@
     })(sec);
     return items;
   }
-
-  function getAnswer(card) {
+  function getAnswerText(card) {
+    var hintEl = card.querySelector('.answer-hint');
+    if (hintEl) { var t = clean(hintEl.textContent); if (t) return t; }
     var inp = card.querySelector('input.blank[data-ans], .q-input[data-ans], input[data-ans]');
-    if (inp) return inp.getAttribute('data-ans');
+    if (inp) return '정답: ' + inp.getAttribute('data-ans');
     var dz = card.querySelector('[data-ans]');
-    if (dz) return dz.getAttribute('data-ans');
+    if (dz) return '정답: ' + dz.getAttribute('data-ans');
     var btn = card.querySelector('.choice-btn[onclick], .check-btn[onclick]');
-    if (btn) {
-      var m = (btn.getAttribute('onclick') || '').match(/h(?:MCQ|Inp)\(this,\s*'([^']*)'/);
-      if (m) return m[1];
-    }
-    var st = card.querySelector('.answer-hint strong');
-    if (st) return clean(st.textContent);
+    if (btn) { var m = (btn.getAttribute('onclick') || '').match(/h(?:MCQ|Inp)\(this,\s*'([^']*)'/); if (m) return '정답: ' + m[1]; }
     return '';
   }
-
-  function stemHtml(card) {
+  function stemText(card) {
     var qt = card.querySelector('.q-text, .q-eng');
     if (!qt) return '';
     var clone = qt.cloneNode(true);
-    // 입력칸 → 밑줄, 보기/힌트 버튼·단어목록 제거
     [].forEach.call(clone.querySelectorAll('input'), function (i) { i.replaceWith(document.createTextNode(' ________ ')); });
-    [].forEach.call(clone.querySelectorAll('.vocab, .vocab-toggle, .hint-btn, .check-btn, button'), function (b) { b.remove(); });
-    // (be), (eat, 부정형) 같은 힌트는 살린다 (.ex)
-    return esc(clean(clone.textContent));
+    [].forEach.call(clone.querySelectorAll('.vocab, .vocab-toggle, .hint-btn, .check-btn, button, .q-kor'), function (b) { b.remove(); });
+    return clean(clone.textContent);
   }
-
-  function passageHtml(el) {
+  function passageText(el) {
     var clone = el.cloneNode(true);
-    [].forEach.call(clone.querySelectorAll('.num'), function (n) {
-      n.replaceWith(document.createTextNode(' (' + clean(n.textContent) + ') '));
-    });
-    var title = clone.querySelector('.ptitle');
-    var tHtml = title ? '<b>' + esc(clean(title.textContent)) + '</b><br>' : '';
-    if (title) title.remove();
-    return '<div class="ps-passage">' + tHtml + esc(clean(clone.textContent)) + '</div>';
+    [].forEach.call(clone.querySelectorAll('.num'), function (n) { n.replaceWith(document.createTextNode(' (' + clean(n.textContent) + ') ')); });
+    var title = clean((clone.querySelector('.ptitle') || {}).textContent);
+    var ptEl = clone.querySelector('.ptitle'); if (ptEl) ptEl.remove();
+    return { title: title, body: clean(clone.textContent) };
   }
-
-  function qHtml(card, num, ans) {
-    var stem = stemHtml(card);
-    var opts = [].map.call(card.querySelectorAll('.choice, .choice-btn'), function (b) { return clean(b.textContent); });
-    var pool = card.querySelector('.word-pool, .word-bank');
-    var bank = pool ? [].map.call(pool.querySelectorAll('.chip, .pool-chip, button'), function (b) { return clean(b.textContent); }) : null;
-    var korEl = card.querySelector('.q-kor');
-    var kor = korEl ? clean(korEl.textContent) : '';
-
-    var h = '<div class="ps-q"><span class="ps-n">' + num + '.</span> ' + stem;
-    if (kor && kor !== stem) h += '<span class="ps-kor">' + esc(kor) + '</span>';
-    if (opts.length) {
-      h += '<span class="ps-o">' + opts.map(function (o, i) {
-        return '<span class="opt">' + (CIRC[i] || (i + 1) + '.') + ' ' + esc(o) + '</span>';
-      }).join('') + '</span>';
-    }
-    if (bank && bank.length) h += '<span class="ps-bank">[보기] ' + bank.map(esc).join(' &nbsp;/&nbsp; ') + '</span>';
-    if (ans) {
-      var a = getAnswer(card);
-      if (a) h += '<span class="ps-a">✔ 정답: ' + esc(a) + '</span>';
-    }
-    h += '</div>';
-    return h;
-  }
-
-  // 문항 데이터를 추출해 텍스트 학습지(#egm-print-sheet)를 만든다
-  function buildSheet() {
-    var old = document.getElementById('egm-print-sheet');
-    if (old) old.remove();
+  function extract() {
     var ans = document.documentElement.classList.contains('egm-ans');
-
     var titleEl = document.querySelector('.header h1, #egm-app-root h1, h1, .sel-title');
-    var title = clean(titleEl ? titleEl.textContent : document.title);
     var subEl = document.querySelector('.header p, .sel-sub, #egm-app-root .header p');
-    var sub = clean(subEl ? subEl.textContent : '');
-
-    var html = '<div class="ps-title">' + esc(title) + (ans ? ' <span class="tag">[정답·해설]</span>' : '') + '</div>';
-    if (sub) html += '<div class="ps-sub">' + esc(sub) + '</div>';
-    html += '<div class="ps-meta"><span>이름: ______________</span><span>점수: ______ / ______</span></div>';
-    html += '<div class="ps-body">';
-
+    var data = { title: clean(titleEl ? titleEl.textContent : document.title), sub: clean(subEl ? subEl.textContent : ''), ans: ans, sections: [] };
     var tabs = document.querySelectorAll('.tabs .tab-btn, .tabs button');
     var secs = document.querySelectorAll('.sec');
-    var nrun = 0;
-    if (!secs.length) return false;
-
+    var n = 0;
     secs.forEach(function (sec, si) {
       var hd = '';
       var sh = sec.querySelector('.sec-hdr');
@@ -161,71 +71,192 @@
         var h2 = clean((sh.querySelector('h2') || {}).textContent);
         hd = (lbl ? lbl + ' · ' : '') + h2;
       } else if (tabs[si]) hd = clean(tabs[si].textContent);
-      if (hd) html += '<div class="ps-h">' + esc(hd) + '</div>';
-
+      var items = [];
       collectItems(sec).forEach(function (it) {
-        if (it.t === 'p') html += passageHtml(it.el);
-        else { nrun++; html += qHtml(it.el, nrun, ans); }
+        if (it.t === 'p') { items.push({ t: 'p', p: passageText(it.el) }); return; }
+        n++;
+        var card = it.el;
+        items.push({
+          t: 'q', num: n,
+          stem: stemText(card),
+          kor: clean((card.querySelector('.q-kor') || {}).textContent),
+          opts: [].map.call(card.querySelectorAll('.choice, .choice-btn'), function (b) { return clean(b.textContent); }),
+          bank: (function () { var p = card.querySelector('.word-pool, .word-bank'); return p ? [].map.call(p.querySelectorAll('.chip, .pool-chip, button'), function (b) { return clean(b.textContent); }) : null; })(),
+          ans: ans ? getAnswerText(card) : ''
+        });
+      });
+      data.sections.push({ header: hd, items: items });
+    });
+    return data;
+  }
+
+  /* ---------- PDF (화면 인쇄용 텍스트 학습지) ---------- */
+  var css = '' +
+    '#egm-print-sheet { display: none; }' +
+    '@media print {' +
+    '  @page { margin: 12mm 11mm; }' +
+    '  html, body { background: #fff !important; }' +
+    '  body > *:not(#egm-print-sheet) { display: none !important; }' +
+    '  #egm-print-sheet { display: block !important; color: #111;' +
+    "    font-family: 'Pretendard','Noto Sans KR',-apple-system,sans-serif; }" +
+    '  #egm-print-sheet .ps-title { font-size: 1.3rem; font-weight: 800; text-align: center; margin: 0; }' +
+    '  #egm-print-sheet .ps-title .tag { font-size: .8rem; color: #047857; font-weight: 800; }' +
+    '  #egm-print-sheet .ps-sub { text-align: center; font-size: .82rem; color: #555; margin: 2px 0 0;' +
+    '    padding-bottom: 9px; border-bottom: 2px solid #111; }' +
+    '  #egm-print-sheet .ps-meta { display: flex; justify-content: space-between; font-size: .8rem; color: #444; margin: 7px 0 10px; }' +
+    '  #egm-print-sheet .ps-body { columns: 2; column-gap: 18px; }' +
+    '  #egm-print-sheet .ps-h { break-inside: avoid; break-after: avoid; font-weight: 800; font-size: 1rem;' +
+    '    color: #1e3a8a; margin: 14px 0 9px; padding-bottom: 4px; border-bottom: 1.5px solid #94a3b8; }' +
+    '  #egm-print-sheet .ps-passage { break-inside: avoid; background: #f6f7f9; border: 1px solid #d8dee8;' +
+    '    border-radius: 6px; padding: 9px 12px; font-size: .9rem; line-height: 1.85; margin: 0 0 12px; color: #1f2937; }' +
+    '  #egm-print-sheet .ps-passage b { color: #b45309; }' +
+    '  #egm-print-sheet .ps-q { break-inside: avoid; margin: 0 0 14px; font-size: .95rem; line-height: 1.65; }' +
+    '  #egm-print-sheet .ps-n { font-weight: 800; margin-right: 2px; }' +
+    '  #egm-print-sheet .ps-kor { color: #6b7280; font-size: .84rem; margin: 2px 0; }' +
+    '  #egm-print-sheet .ps-o { margin-top: 4px; }' +
+    '  #egm-print-sheet .ps-o .opt { margin-right: 16px; white-space: nowrap; }' +
+    '  #egm-print-sheet .ps-bank { margin-top: 4px; color: #374151; font-size: .86rem; background: #f3f4f6; border-radius: 5px; padding: 4px 8px; }' +
+    '  #egm-print-sheet .ps-a { margin-top: 4px; color: #047857; font-weight: 700; font-size: .84rem;' +
+    '    background: #f0fdf4; border-left: 2px solid #22c55e; padding: 4px 8px; line-height: 1.5; }' +
+    '}';
+  function injectStyle() { var s = document.createElement('style'); s.id = 'egm-print-style'; s.textContent = css; document.head.appendChild(s); }
+
+  function buildSheet() {
+    var old = document.getElementById('egm-print-sheet'); if (old) old.remove();
+    var d = extract();
+    if (!d.sections.length) return false;
+    var h = '<div class="ps-title">' + escHtml(d.title) + (d.ans ? ' <span class="tag">[정답·해설]</span>' : '') + '</div>';
+    if (d.sub) h += '<div class="ps-sub">' + escHtml(d.sub) + '</div>';
+    h += '<div class="ps-meta"><span>이름: ______________</span><span>점수: ______ / ______</span></div><div class="ps-body">';
+    d.sections.forEach(function (sec) {
+      if (sec.header) h += '<div class="ps-h">' + escHtml(sec.header) + '</div>';
+      sec.items.forEach(function (it) {
+        if (it.t === 'p') { h += '<div class="ps-passage">' + (it.p.title ? '<b>' + escHtml(it.p.title) + '</b><br>' : '') + escHtml(it.p.body) + '</div>'; return; }
+        h += '<div class="ps-q"><span class="ps-n">' + it.num + '.</span> ' + escHtml(it.stem);
+        if (it.kor && it.kor !== it.stem) h += '<div class="ps-kor">' + escHtml(it.kor) + '</div>';
+        if (it.opts.length) h += '<div class="ps-o">' + it.opts.map(function (o, i) { return '<span class="opt">' + (CIRC[i] || (i + 1) + '.') + ' ' + escHtml(o) + '</span>'; }).join('&nbsp;&nbsp;&nbsp;') + '</div>';
+        if (it.bank && it.bank.length) h += '<div class="ps-bank">[보기] ' + it.bank.map(escHtml).join(' &nbsp;/&nbsp; ') + '</div>';
+        if (it.ans) h += '<div class="ps-a">' + escHtml(it.ans) + '</div>';
+        h += '</div>';
       });
     });
-    html += '</div>';
-
-    var sheet = document.createElement('div');
-    sheet.id = 'egm-print-sheet';
-    sheet.innerHTML = html;
+    h += '</div>';
+    var sheet = document.createElement('div'); sheet.id = 'egm-print-sheet'; sheet.innerHTML = h;
     document.body.appendChild(sheet);
     return true;
   }
-
   function egmPrint() { buildSheet(); window.print(); }
   window.egmPrint = egmPrint;
   window.addEventListener('beforeprint', buildSheet);
 
-  // 한글(HWPX)·워드용 .doc 다운로드 — 텍스트 학습지를 Word-openable HTML로 내보낸다.
-  // (한컴오피스·MS Word 둘 다 .doc HTML을 열며, 거기서 .hwpx로 저장 가능)
-  function downloadDoc() {
-    if (!buildSheet()) return;
-    var sheet = document.getElementById('egm-print-sheet');
-    var ans = document.documentElement.classList.contains('egm-ans');
-    var styles =
-      'body{font-family:"Malgun Gothic","Noto Sans KR",sans-serif;color:#111;font-size:11pt;line-height:1.5;}' +
-      '.ps-title{font-size:16pt;font-weight:bold;text-align:center;margin:0;}' +
-      '.ps-title .tag{font-size:11pt;color:#047857;}' +
-      '.ps-sub{text-align:center;font-size:10pt;color:#555;border-bottom:1.5pt solid #111;padding-bottom:6pt;margin-bottom:4pt;}' +
-      '.ps-meta{margin:6pt 0 10pt;}.ps-meta span{margin-right:30pt;}' +
-      '.ps-body{}' +
-      '.ps-h{font-weight:bold;color:#1e3a8a;border-bottom:1pt solid #999;margin:13pt 0 6pt;padding-bottom:2pt;}' +
-      '.ps-passage{background:#f5f6f8;border:1pt solid #ddd;padding:6pt 9pt;margin:0 0 7pt;font-size:10.5pt;}' +
-      '.ps-passage b{color:#b45309;}' +
-      '.ps-q{margin:0 0 8pt;}.ps-n{font-weight:bold;}' +
-      '.ps-kor{display:block;color:#666;font-size:9pt;}' +
-      '.ps-o{display:block;}.ps-o .opt{margin-right:16pt;}' +
-      '.ps-bank{display:block;background:#f3f4f6;padding:2pt 6pt;font-size:10pt;}' +
-      '.ps-a{display:inline-block;color:#047857;font-weight:bold;}';
-    var doc = '<html xmlns:o="urn:schemas-microsoft-com:office:office" xmlns:w="urn:schemas-microsoft-com:office:word">' +
-      '<head><meta charset="utf-8"><title>worksheet</title><style>' + styles + '</style></head>' +
-      '<body>' + sheet.innerHTML + '</body></html>';
-    var blob = new Blob(['﻿', doc], { type: 'application/msword' });
-    var url = URL.createObjectURL(blob);
-    var a = document.createElement('a');
-    var nm = clean((document.querySelector('.header h1, h1, .sel-title') || {}).textContent || document.title);
+  /* ---------- DOCX 생성 (라이브러리 없이 ZIP 직접 작성) ---------- */
+  function crc32(buf) {
+    var t = crc32.t; if (!t) { t = crc32.t = []; for (var n = 0; n < 256; n++) { var c = n; for (var k = 0; k < 8; k++) c = c & 1 ? 0xEDB88320 ^ (c >>> 1) : c >>> 1; t[n] = c >>> 0; } }
+    var crc = 0xFFFFFFFF; for (var i = 0; i < buf.length; i++) crc = (crc >>> 8) ^ t[(crc ^ buf[i]) & 0xFF];
+    return (crc ^ 0xFFFFFFFF) >>> 0;
+  }
+  function u8(s) { return new TextEncoder().encode(s); }
+  function zipStore(files) {
+    var parts = [], central = [], offset = 0;
+    var u16 = function (n) { return [n & 255, (n >> 8) & 255]; };
+    var u32 = function (n) { return [n & 255, (n >> 8) & 255, (n >> 16) & 255, (n >>> 24) & 255]; };
+    files.forEach(function (f) {
+      var name = u8(f.name), data = f.data, crc = crc32(data);
+      var lh = [0x50, 0x4b, 0x03, 0x04].concat(u16(20), u16(0), u16(0), u16(0), u16(0), u32(crc), u32(data.length), u32(data.length), u16(name.length), u16(0));
+      parts.push(new Uint8Array(lh), name, data);
+      var ch = [0x50, 0x4b, 0x01, 0x02].concat(u16(20), u16(20), u16(0), u16(0), u16(0), u16(0), u32(crc), u32(data.length), u32(data.length), u16(name.length), u16(0), u16(0), u16(0), u16(0), u32(0), u32(offset));
+      central.push(new Uint8Array(ch), name);
+      offset += lh.length + name.length + data.length;
+    });
+    var cdSize = central.reduce(function (a, c) { return a + c.length; }, 0);
+    central.forEach(function (c) { parts.push(c); });
+    parts.push(new Uint8Array([0x50, 0x4b, 0x05, 0x06].concat(u16(0), u16(0), u16(files.length), u16(files.length), u32(cdSize), u32(offset), u16(0))));
+    var total = parts.reduce(function (a, c) { return a + c.length; }, 0), out = new Uint8Array(total), p = 0;
+    parts.forEach(function (c) { out.set(c, p); p += c.length; });
+    return out;
+  }
+  function wRun(text, o) {
+    o = o || {};
+    var rpr = '<w:rPr>' + (o.b ? '<w:b/>' : '') + (o.color ? '<w:color w:val="' + o.color + '"/>' : '') +
+      (o.sz ? '<w:sz w:val="' + o.sz + '"/><w:szCs w:val="' + o.sz + '"/>' : '') + '</w:rPr>';
+    return '<w:r>' + rpr + '<w:t xml:space="preserve">' + escXml(text) + '</w:t></w:r>';
+  }
+  function wPara(runs, o) {
+    o = o || {};
+    var ppr = '<w:pPr>' + (o.jc ? '<w:jc w:val="' + o.jc + '"/>' : '') +
+      (o.border ? '<w:pBdr><w:bottom w:val="single" w:sz="' + (o.border) + '" w:space="2" w:color="' + (o.bc || '999999') + '"/></w:pBdr>' : '') +
+      (o.shd ? '<w:shd w:val="clear" w:fill="' + o.shd + '"/>' : '') +
+      '<w:spacing w:after="' + (o.after != null ? o.after : 60) + '" w:line="240" w:lineRule="auto"/></w:pPr>';
+    return '<w:p>' + ppr + (runs || '') + '</w:p>';
+  }
+  function buildDocxXml(d) {
+    var body = '';
+    body += wPara(wRun(d.title + (d.ans ? '  [정답·해설]' : ''), { b: true, sz: 32 }), { jc: 'center', after: 40 });
+    if (d.sub) body += wPara(wRun(d.sub, { sz: 18, color: '666666' }), { jc: 'center', after: 40, border: 12, bc: '111111' });
+    body += wPara(wRun('이름: ______________          점수: ______ / ______', { sz: 18, color: '444444' }), { after: 160 });
+    d.sections.forEach(function (sec) {
+      if (sec.header) body += wPara(wRun(sec.header, { b: true, sz: 22, color: '1E3A8A' }), { after: 80, border: 8, bc: '94A3B8' });
+      sec.items.forEach(function (it) {
+        if (it.t === 'p') {
+          if (it.p.title) body += wPara(wRun(it.p.title, { b: true, sz: 19, color: 'B45309' }), { after: 0, shd: 'F6F7F9' });
+          body += wPara(wRun(it.p.body, { sz: 19 }), { after: 100, shd: 'F6F7F9' });
+          return;
+        }
+        var runs = wRun(it.num + '. ', { b: true }) + wRun(it.stem, {});
+        body += wPara(runs, { after: it.kor || it.opts.length ? 0 : 100 });
+        if (it.kor && it.kor !== it.stem) body += wPara(wRun(it.kor, { sz: 16, color: '6B7280' }), { after: 0 });
+        if (it.opts.length) {
+          var ot = it.opts.map(function (o, i) { return (CIRC[i] || (i + 1) + '.') + ' ' + o; }).join('      ');
+          body += wPara(wRun(ot, {}), { after: 0 });
+        }
+        if (it.bank && it.bank.length) body += wPara(wRun('[보기] ' + it.bank.join('  /  '), { sz: 18, color: '374151' }), { after: 0, shd: 'F3F4F6' });
+        if (it.ans) body += wPara(wRun(it.ans, { sz: 17, color: '047857', b: true }), { after: 0, shd: 'F0FDF4' });
+        body += wPara('', { after: 100 });
+      });
+    });
+    var sectPr = '<w:sectPr><w:cols w:num="2" w:space="432"/><w:pgSz w:w="11906" w:h="16838"/>' +
+      '<w:pgMar w:top="680" w:right="620" w:bottom="680" w:left="620" w:header="0" w:footer="0" w:gutter="0"/></w:sectPr>';
+    return '<?xml version="1.0" encoding="UTF-8" standalone="yes"?>' +
+      '<w:document xmlns:w="http://schemas.openxmlformats.org/wordprocessingml/2006/main">' +
+      '<w:body>' + body + sectPr + '</w:body></w:document>';
+  }
+  function downloadDocx() {
+    var d = extract(); if (!d.sections.length) return;
+    var CT = '<?xml version="1.0" encoding="UTF-8" standalone="yes"?>' +
+      '<Types xmlns="http://schemas.openxmlformats.org/package/2006/content-types">' +
+      '<Default Extension="rels" ContentType="application/vnd.openxmlformats-package.relationships+xml"/>' +
+      '<Default Extension="xml" ContentType="application/xml"/>' +
+      '<Override PartName="/word/document.xml" ContentType="application/vnd.openxmlformats-officedocument.wordprocessingml.document.main+xml"/>' +
+      '</Types>';
+    var RELS = '<?xml version="1.0" encoding="UTF-8" standalone="yes"?>' +
+      '<Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships">' +
+      '<Relationship Id="rId1" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/officeDocument" Target="word/document.xml"/>' +
+      '</Relationships>';
+    var zip = zipStore([
+      { name: '[Content_Types].xml', data: u8(CT) },
+      { name: '_rels/.rels', data: u8(RELS) },
+      { name: 'word/document.xml', data: u8(buildDocxXml(d)) }
+    ]);
+    var blob = new Blob([zip], { type: 'application/vnd.openxmlformats-officedocument.wordprocessingml.document' });
+    var url = URL.createObjectURL(blob), a = document.createElement('a');
     a.href = url;
-    a.download = nm.replace(/[^\w가-힣]+/g, '_').replace(/^_+|_+$/g, '') + (ans ? '_해설' : '') + '.doc';
+    a.download = d.title.replace(/[^\w가-힣]+/g, '_').replace(/^_+|_+$/g, '') + (d.ans ? '_해설' : '_문제') + '.docx';
     document.body.appendChild(a); a.click(); a.remove();
     setTimeout(function () { URL.revokeObjectURL(url); }, 2000);
   }
-  window.egmDownloadDoc = downloadDoc;
+  window.egmDownloadDocx = downloadDocx;
 
-  function maybeAutoPrint() {
+  /* ---------- 진입 처리 ---------- */
+  function maybeAuto() {
     if (/[?&]ans=1\b/.test(location.search)) document.documentElement.classList.add('egm-ans');
-    var doc = /[?&]doc=1\b/.test(location.search);
-    if (!doc && !/[?&]print=1\b/.test(location.search)) return;
-    var fire = function () { setTimeout(doc ? downloadDoc : egmPrint, 450); };
+    var docx = /[?&]docx=1\b/.test(location.search);
+    var print = /[?&]print=1\b/.test(location.search);
+    if (!docx && !print) return;
+    var fire = function () { setTimeout(docx ? downloadDocx : egmPrint, 450); };
     if (document.readyState === 'complete') fire();
     else window.addEventListener('load', fire);
   }
-
-  function init() { injectStyle(); maybeAutoPrint(); }
+  function init() { injectStyle(); maybeAuto(); }
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', init);
   else init();
 })();

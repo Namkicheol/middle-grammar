@@ -274,9 +274,10 @@
     body += hwpxPara('이름 __________   점수 ______', 10);
     d.sections.forEach(function (sec) {
       if (sec.header) body += hwpxPara(sec.header, 8, 30);
-      sec.items.forEach(function (it) {
-        if (it.t === 'p') { if (it.p.title) body += hwpxPara(it.p.title, 8, 30); body += hwpxPara(it.p.body, 1); return; }
-        body += hwpxPara(it.num + '. ' + it.stem, 1, 30);
+      sec.items.forEach(function (it, ii) {
+        if (ii > 0) body += hwpxPara('', 1);
+        if (it.t === 'p') { if (it.p.title) body += hwpxPara(it.p.title, 8); body += hwpxPara(it.p.body, 1); return; }
+        body += hwpxPara(it.num + '. ' + it.stem, 1);
         if (it.kor && it.kor !== it.stem) body += hwpxPara(it.kor, 10);
         if (it.opts && it.opts.length) { var NB = String.fromCharCode(160); body += hwpxPara(it.opts.map(function (o, i) { return (CIRC[i] || (i + 1) + '.') + NB + String(o).replace(/ /g, NB); }).join('   '), 1); }
         if (it.bank && it.bank.length) body += hwpxPara('[보기] ' + it.bank.join('  /  '), 10);

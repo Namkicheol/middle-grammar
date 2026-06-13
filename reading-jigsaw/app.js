@@ -7,7 +7,7 @@ import { extract, pickForPiece } from './engine/vocab.js?v=20260613a';
 import { detectAll } from './engine/grammar.js?v=20250526a';
 import { suggest as suggestBlanks } from './engine/blanks.js?v=20250526a';
 import { renderPaper } from './ui/preview.js?v=20260613c';
-import { resetHpid, hwpxPara, hwpxFirstPara, wrapSection, buildHwpxFile } from './engine/hwpx.js?v=20260613c';
+import { resetHpid, hwpxPara, hwpxFirstPara, hwpxTable, wrapSection, buildHwpxFile } from './engine/hwpx.js?v=20260613d';
 
 const STORAGE_KEY = 'jigsaw-studio:v1';
 const SAMPLE_URL = 'assets/samples/donga-l4.txt';
@@ -1378,11 +1378,10 @@ function buildJigsawHwpxSection(idxs, mode) {
     body += hwpxPara('학번 __________    이름 __________', 10);
     if (vocab.length) {
       body += hwpxPara('① Vocabulary', 8);
-      for (let i = 0; i < vocab.length; i += 2) {
-        const fmt = v => v ? (v.word + ' : ' + (isStudent ? '__________' : (v.meaning || '__________'))) : '';
-        const line = [fmt(vocab[i]), fmt(vocab[i + 1])].filter(Boolean).join('        ');
-        body += hwpxPara(line, 0);
-      }
+      // 검증된 hp:tbl 표(단어 | 뜻). 페이지 내용폭 42520 = 16000 + 26520.
+      const rows = [[{ t: '단어', charId: 8 }, { t: '뜻', charId: 8 }]];
+      for (const v of vocab) rows.push([v.word, isStudent ? '' : (v.meaning || '')]);
+      body += hwpxTable(rows, [16000, 26520]);
     }
     if (bodies.length) {
       body += hwpxPara('② Slow Reading', 8);

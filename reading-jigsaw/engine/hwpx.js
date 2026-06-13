@@ -77,7 +77,7 @@ export function hwpxTable(rows, colWidths, opts){
         + '<hp:cellAddr colAddr="'+c+'" rowAddr="'+r+'"/>'
         + '<hp:cellSpan colSpan="1" rowSpan="1"/>'
         + '<hp:cellSz width="'+colWidths[c]+'" height="'+rowH+'"/>'
-        + '<hp:cellMargin left="283" right="283" top="141" bottom="141"/>'
+        + '<hp:cellMargin left="200" right="200" top="60" bottom="60"/>'
         + '</hp:tc>';
     }
     trs += '<hp:tr>'+tcs+'</hp:tr>';

@@ -7,7 +7,7 @@ import { extract, pickForPiece } from './engine/vocab.js?v=20260613a';
 import { detectAll } from './engine/grammar.js?v=20250526a';
 import { suggest as suggestBlanks } from './engine/blanks.js?v=20250526a';
 import { renderPaper } from './ui/preview.js?v=20260613c';
-import { resetHpid, hwpxPara, hwpxFirstPara, hwpxTable, hwpxBox, wrapSection, buildHwpxFile } from './engine/hwpx.js?v=20260613e';
+import { resetHpid, hwpxPara, hwpxFirstPara, hwpxTable, hwpxBox, wrapSection, buildHwpxFile } from './engine/hwpx.js?v=20260613f';
 
 const STORAGE_KEY = 'jigsaw-studio:v1';
 const SAMPLE_URL = 'assets/samples/donga-l4.txt';
@@ -1387,7 +1387,7 @@ function buildJigsawHwpxSection(idxs, mode) {
           b ? b.word : '', b ? (isStudent ? '' : (b.meaning || '')) : ''
         ]);
       }
-      body += hwpxTable(rows, [8000, 13260, 8000, 13260]);
+      body += hwpxTable(rows, [8000, 13260, 8000, 13260], { rowH: 1800 });
     }
     if (bodies.length) {
       body += hwpxPara('② Slow Reading', 8);

@@ -7,7 +7,7 @@ import { extract, pickForPiece } from './engine/vocab.js?v=20260613a';
 import { detectAll } from './engine/grammar.js?v=20250526a';
 import { suggest as suggestBlanks } from './engine/blanks.js?v=20250526a';
 import { renderPaper } from './ui/preview.js?v=20260613c';
-import { resetHpid, hwpxPara, hwpxFirstPara, hwpxTable, hwpxBox, wrapSection, buildHwpxFile } from './engine/hwpx.js?v=20260613f';
+import { resetHpid, hwpxPara, hwpxFirstPara, hwpxTable, hwpxBox, wrapSection, buildHwpxFile } from './engine/hwpx.js?v=20260613g';
 
 const STORAGE_KEY = 'jigsaw-studio:v1';
 const SAMPLE_URL = 'assets/samples/donga-l4.txt';
@@ -1408,7 +1408,7 @@ function buildJigsawHwpxSection(idxs, mode) {
       const question = p.aiQuestion || 'What is the main idea of this section?';
       body += hwpxPara('③ Question', 8);
       let qInner = hwpxPara('Q. ' + question, 0);
-      if (!isStudent && p.aiAnswer) qInner += hwpxPara('A. ' + p.aiAnswer, 9);
+      if (!isStudent && p.aiAnswer) qInner += hwpxPara('A. ' + p.aiAnswer, 11);
       else { qInner += hwpxPara(blankLine, 0); qInner += hwpxPara(blankLine, 0); }
       body += hwpxBox(qInner);
     }
@@ -1423,7 +1423,7 @@ function buildJigsawHwpxSection(idxs, mode) {
       for (const g of gp) {
         let gInner = hwpxPara('Q. 아래 밑줄 친 표현의 해석과 문법적 특징은?', 10);
         gInner += hwpxPara(g.sentence, 0);
-        if (!isStudent) { if (g.ko) gInner += hwpxPara('해석: ' + g.ko, 10); gInner += hwpxPara('A. ' + (g.explain || ''), 9); }
+        if (!isStudent) { if (g.ko) gInner += hwpxPara('해석: ' + g.ko, 10); gInner += hwpxPara('A. ' + (g.explain || ''), 11); }
         else { gInner += hwpxPara(blankLine, 0); }
         body += hwpxBox(gInner);
       }

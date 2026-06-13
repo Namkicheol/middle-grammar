@@ -1163,7 +1163,7 @@ function _wPara(runs, o) {
   const ppr = '<w:pPr>' + (o.jc ? '<w:jc w:val="' + o.jc + '"/>' : '') +
     (o.border ? '<w:pBdr><w:bottom w:val="single" w:sz="' + o.border + '" w:space="2" w:color="' + (o.bc || '999999') + '"/></w:pBdr>' : '') +
     (o.shd ? '<w:shd w:val="clear" w:fill="' + o.shd + '"/>' : '') +
-    '<w:spacing w:after="' + (o.after != null ? o.after : 60) + '" w:line="240" w:lineRule="auto"/></w:pPr>';
+    '<w:spacing w:after="' + (o.after != null ? o.after : 60) + '" w:line="' + (o.line || 240) + '" w:lineRule="auto"/></w:pPr>';
   return '<w:p>' + ppr + (runs || '') + '</w:p>';
 }
 function _wTc(content, wpct) { return '<w:tc><w:tcPr><w:tcW w:w="' + wpct + '" w:type="pct"/></w:tcPr>' + (content || '<w:p/>') + '</w:tc>'; }
@@ -1246,15 +1246,16 @@ function buildPieceDocx(idx, mode) {
       const blanks = state.blanks?.get(s.id) || [];
       const enBlank = (!isStudent || state.blankType === 'en');
       const enRuns = enBlank ? _docxEnRuns(s.en, blanks, isStudent) : _wRun(s.en);
-      inner += _wPara(enRuns, { after: s.ko ? 0 : 30, sz: 20 });
+      // 넉넉한 줄간격(끊어읽기 표시 공간) — 글 적어도 페이지가 널널하게 차게
+      inner += _wPara(enRuns, { after: s.ko ? 40 : 100, sz: 20, line: 360 });
       // 한글 줄: ko-빈칸 모드 학생 → 어절 빈칸 / 그 외 → 전체
       if (isStudent && state.blankType === 'ko') {
-        if (s.ko) inner += _wPara(_docxKoRuns(s.ko, state.koBlanks?.get(s.id)), { after: 30 });
+        if (s.ko) inner += _wPara(_docxKoRuns(s.ko, state.koBlanks?.get(s.id)), { after: 100, line: 300 });
       } else if (s.ko) {
-        inner += _wPara(_wRun(s.ko, { i: true, color: '5D544A', sz: 17 }), { after: 30 });
+        inner += _wPara(_wRun(s.ko, { i: true, color: '5D544A', sz: 17 }), { after: 100, line: 300 });
       }
       const hits = state.grammarMap?.get(s.id);
-      if (!isStudent && hits && hits.length) inner += _wPara(_wRun('→ ' + (hits[0].explain || ''), { sz: 15, color: '0F1D6B' }), { after: 30 });
+      if (!isStudent && hits && hits.length) inner += _wPara(_wRun('→ ' + (hits[0].explain || ''), { sz: 15, color: '0F1D6B' }), { after: 60 });
     });
     body += _wBox(inner) + SPACER;
   }
@@ -1262,9 +1263,9 @@ function buildPieceDocx(idx, mode) {
   if (bodies.length) {
     const question = p.aiQuestion || ('What is the main idea of this section?');
     body += stepLabel('③', 'Question');
-    let inner = _wPara(_wRun('Q. ', { b: true }) + _wRun(question), { after: !isStudent && p.aiAnswer ? 40 : 60 });
-    if (!isStudent && p.aiAnswer) inner += _wPara(_wRun('A. ' + p.aiAnswer, { color: 'C0392B', sz: 17 }), { after: 0 });
-    else { inner += _wPara(_wRun('__________________________________________________', { color: 'BBBBBB' }), { after: 30 }); inner += _wPara(_wRun('__________________________________________________', { color: 'BBBBBB' }), { after: 0 }); }
+    let inner = _wPara(_wRun('Q. ', { b: true }) + _wRun(question), { after: !isStudent && p.aiAnswer ? 60 : 120 });
+    if (!isStudent && p.aiAnswer) inner += _wPara(_wRun('A. ' + p.aiAnswer, { color: 'C0392B', sz: 17 }), { after: 0, line: 300 });
+    else { const line = _wPara(_wRun('__________________________________________________', { color: 'BBBBBB' }), { after: 160 }); inner += line + line + line; }
     body += _wBox(inner, { shd: 'FBF7EE' }) + SPACER;
   }
   // ④ Grammar Point — 카드마다 박스(옅은 파랑)

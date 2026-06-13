@@ -134,7 +134,7 @@
         if (it.t === 'p') { h += '<div class="ps-passage">' + (it.p.title ? '<b>' + escHtml(it.p.title) + '</b><br>' : '') + escHtml(it.p.body) + '</div>'; return; }
         h += '<div class="ps-q"><span class="ps-n">' + it.num + '.</span> ' + escHtml(it.stem);
         if (it.kor && it.kor !== it.stem) h += '<div class="ps-kor">' + escHtml(it.kor) + '</div>';
-        if (it.opts.length) h += '<div class="ps-o">' + it.opts.map(function (o, i) { return '<span class="opt">' + (CIRC[i] || (i + 1) + '.') + ' ' + escHtml(o) + '</span>'; }).join('&nbsp;&nbsp;&nbsp;') + '</div>';
+        if (it.opts.length) h += '<div class="ps-o">' + it.opts.map(function (o, i) { return '<span class="opt">' + (CIRC[i] || (i + 1) + '.') + '&nbsp;' + escHtml(o) + '</span>'; }).join(' ') + '</div>';
         if (it.bank && it.bank.length) h += '<div class="ps-bank">[보기] ' + it.bank.map(escHtml).join(' &nbsp;/&nbsp; ') + '</div>';
         if (it.ans) h += '<div class="ps-a">' + escHtml(it.ans) + '</div>';
         h += '</div>';

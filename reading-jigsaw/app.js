@@ -918,6 +918,7 @@ function applyAISplit(splitAt) {
     };
   });
   rebuildVocab();
+  trimAutoGrammar(); // AI 재분할 후 새 조각 기준으로 자동 문법 다시 1개로 제한
 }
 
 function applyAIResult(result, applySplit = false) {

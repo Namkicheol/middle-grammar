@@ -7,7 +7,7 @@ import { extract, pickForPiece } from './engine/vocab.js?v=20260613a';
 import { detectAll } from './engine/grammar.js?v=20250526a';
 import { suggest as suggestBlanks } from './engine/blanks.js?v=20250526a';
 import { renderPaper } from './ui/preview.js?v=20260613c';
-import { resetHpid, hwpxPara, hwpxFirstPara, hwpxTable, wrapSection, buildHwpxFile } from './engine/hwpx.js?v=20260613d';
+import { resetHpid, hwpxPara, hwpxFirstPara, hwpxTable, hwpxBox, wrapSection, buildHwpxFile } from './engine/hwpx.js?v=20260613e';
 
 const STORAGE_KEY = 'jigsaw-studio:v1';
 const SAMPLE_URL = 'assets/samples/donga-l4.txt';
@@ -1378,30 +1378,39 @@ function buildJigsawHwpxSection(idxs, mode) {
     body += hwpxPara('학번 __________    이름 __________', 10);
     if (vocab.length) {
       body += hwpxPara('① Vocabulary', 8);
-      // 검증된 hp:tbl 표(단어 | 뜻). 페이지 내용폭 42520 = 16000 + 26520.
-      const rows = [[{ t: '단어', charId: 8 }, { t: '뜻', charId: 8 }]];
-      for (const v of vocab) rows.push([v.word, isStudent ? '' : (v.meaning || '')]);
-      body += hwpxTable(rows, [16000, 26520]);
+      // 2단(단어|뜻|단어|뜻) 표 — 짧게. 너비합 42520 = 8000+13260+8000+13260.
+      const rows = [[{ t: '단어', charId: 8 }, { t: '뜻', charId: 8 }, { t: '단어', charId: 8 }, { t: '뜻', charId: 8 }]];
+      for (let i = 0; i < vocab.length; i += 2) {
+        const a = vocab[i], b = vocab[i + 1];
+        rows.push([
+          a ? a.word : '', a ? (isStudent ? '' : (a.meaning || '')) : '',
+          b ? b.word : '', b ? (isStudent ? '' : (b.meaning || '')) : ''
+        ]);
+      }
+      body += hwpxTable(rows, [8000, 13260, 8000, 13260]);
     }
     if (bodies.length) {
       body += hwpxPara('② Slow Reading', 8);
+      let inner = '';
       for (const s of bodies) {
         const enText = (isStudent && state.blankType === 'en') ? _plainEnBlank(s.en, state.blanks?.get(s.id)) : s.en;
-        body += hwpxPara(enText, 0);
+        inner += hwpxPara(enText, 0);
         if (s.ko) {
           const koText = (isStudent && state.blankType === 'ko') ? _plainKoBlank(s.ko, state.koBlanks?.get(s.id)) : s.ko;
-          body += hwpxPara(koText, 10);
+          inner += hwpxPara(koText, 10);
         } else if (isStudent && state.blankType === 'ko') {
-          body += hwpxPara(blankLine, 10);
+          inner += hwpxPara(blankLine, 10);
         }
         const hits = state.grammarMap?.get(s.id);
-        if (!isStudent && hits && hits.length) body += hwpxPara('→ ' + (hits[0].explain || ''), 10);
+        if (!isStudent && hits && hits.length) inner += hwpxPara('→ ' + (hits[0].explain || ''), 10);
       }
+      body += hwpxBox(inner);
       const question = p.aiQuestion || 'What is the main idea of this section?';
       body += hwpxPara('③ Question', 8);
-      body += hwpxPara('Q. ' + question, 0);
-      if (!isStudent && p.aiAnswer) body += hwpxPara('A. ' + p.aiAnswer, 9);
-      else { body += hwpxPara(blankLine, 0); body += hwpxPara(blankLine, 0); }
+      let qInner = hwpxPara('Q. ' + question, 0);
+      if (!isStudent && p.aiAnswer) qInner += hwpxPara('A. ' + p.aiAnswer, 9);
+      else { qInner += hwpxPara(blankLine, 0); qInner += hwpxPara(blankLine, 0); }
+      body += hwpxBox(qInner);
     }
     const gp = [];
     for (const s of rangeSentences) {
@@ -1412,10 +1421,11 @@ function buildJigsawHwpxSection(idxs, mode) {
     if (gp.length) {
       body += hwpxPara('④ Grammar Point', 8);
       for (const g of gp) {
-        body += hwpxPara('Q. 아래 밑줄 친 표현의 해석과 문법적 특징은?', 10);
-        body += hwpxPara(g.sentence, 0);
-        if (!isStudent) { if (g.ko) body += hwpxPara('해석: ' + g.ko, 10); body += hwpxPara('A. ' + (g.explain || ''), 9); }
-        else { body += hwpxPara(blankLine, 0); }
+        let gInner = hwpxPara('Q. 아래 밑줄 친 표현의 해석과 문법적 특징은?', 10);
+        gInner += hwpxPara(g.sentence, 0);
+        if (!isStudent) { if (g.ko) gInner += hwpxPara('해석: ' + g.ko, 10); gInner += hwpxPara('A. ' + (g.explain || ''), 9); }
+        else { gInner += hwpxPara(blankLine, 0); }
+        body += hwpxBox(gInner);
       }
     }
   });

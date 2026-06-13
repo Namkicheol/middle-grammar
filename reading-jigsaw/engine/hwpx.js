@@ -90,6 +90,26 @@ export function hwpxTable(rows, colWidths, opts){
     + trs + '</hp:tbl>';
   return '<hp:p id="'+(_hpid++)+'" paraPrIDRef="0" styleIDRef="0" pageBreak="0" columnBreak="0" merged="0"><hp:run charPrIDRef="0">'+tbl+'</hp:run></hp:p>';
 }
+// 단일 셀 박스(테두리 카드) — innerParas(hwpxPara들의 연결 문자열)를 셀 안에 담음.
+export function hwpxBox(innerParas, opts){
+  opts = opts || {};
+  const bf = opts.borderFill || 3;
+  const w = opts.width || 42520;
+  const h = opts.rowH || 3000;
+  const tc = '<hp:tc name="" header="0" hasMargin="0" protect="0" editable="0" dirty="0" borderFillIDRef="'+bf+'">'
+    + '<hp:subList id="" textDirection="HORIZONTAL" lineWrap="BREAK" vertAlign="TOP" linkListIDRef="0" linkListNextIDRef="0" textWidth="0" textHeight="0" hasTextRef="0" hasNumRef="0">'
+    + (innerParas || ('<hp:p id="'+(_hpid++)+'" paraPrIDRef="0" styleIDRef="0" pageBreak="0" columnBreak="0" merged="0"><hp:run charPrIDRef="0"><hp:t></hp:t></hp:run></hp:p>'))
+    + '</hp:subList>'
+    + '<hp:cellAddr colAddr="0" rowAddr="0"/><hp:cellSpan colSpan="1" rowSpan="1"/>'
+    + '<hp:cellSz width="'+w+'" height="'+h+'"/>'
+    + '<hp:cellMargin left="300" right="300" top="200" bottom="200"/></hp:tc>';
+  const tbl = '<hp:tbl id="'+(_hpid++)+'" zOrder="0" numberingType="TABLE" textWrap="TOP_AND_BOTTOM" textFlow="BOTH_SIDES" lock="0" dropcapstyle="None" pageBreak="CELL" repeatHeader="0" rowCnt="1" colCnt="1" cellSpacing="0" borderFillIDRef="'+bf+'" noAdjust="0">'
+    + '<hp:sz width="'+w+'" widthRelTo="ABSOLUTE" height="'+h+'" heightRelTo="ABSOLUTE" protect="0"/>'
+    + '<hp:pos treatAsChar="1" affectLSpacing="0" flowWithText="1" allowOverlap="0" holdAnchorAndSO="0" vertRelTo="PARA" horzRelTo="COLUMN" vertAlign="TOP" horzAlign="LEFT" vertOffset="0" horzOffset="0"/>'
+    + '<hp:outMargin left="0" right="0" top="0" bottom="0"/><hp:inMargin left="0" right="0" top="0" bottom="0"/>'
+    + '<hp:tr>'+tc+'</hp:tr></hp:tbl>';
+  return '<hp:p id="'+(_hpid++)+'" paraPrIDRef="0" styleIDRef="0" pageBreak="0" columnBreak="0" merged="0"><hp:run charPrIDRef="0">'+tbl+'</hp:run></hp:p>';
+}
 export function wrapSection(body){
   return "<?xml version='1.0' encoding='utf-8'?>"+'<hs:sec xmlns:hp="http://www.hancom.co.kr/hwpml/2011/paragraph" xmlns:hs="http://www.hancom.co.kr/hwpml/2011/section">'+body+'</hs:sec>';
 }

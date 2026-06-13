@@ -246,13 +246,98 @@
   }
   window.egmDownloadDocx = downloadDocx;
 
+  /* ---------- HWPX 생성 (한글/한컴오피스, 베타) ---------- */
+  var HWPX_VER = '<?xml version="1.0" encoding="UTF-8" standalone="yes"?>\n<hv:HCFVersion xmlns:hv="http://www.hancom.co.kr/hwpml/2011/version" tagetApplication="WORDPROCESSOR" major="5" minor="0" micro="5" buildNumber="0" os="1" xmlVersion="1.4" application="Hancom Office Hangul" appVersion="9, 1, 1, 5656 WIN32LEWindows_Unknown_Version"/>';
+  var HWPX_CONTAINER = '<?xml version="1.0" encoding="UTF-8" standalone="yes"?>\n<ocf:container xmlns:ocf="urn:oasis:names:tc:opendocument:xmlns:container" xmlns:hpf="http://www.hancom.co.kr/schema/2011/hpf"><ocf:rootfiles><ocf:rootfile full-path="Contents/content.hpf" media-type="application/hwpml-package+xml"/></ocf:rootfiles></ocf:container>';
+  var HWPX_MANIFEST = '<?xml version="1.0" encoding="UTF-8" standalone="yes"?>\n<odf:manifest xmlns:odf="urn:oasis:names:tc:opendocument:xmlns:manifest:1.0" version="1.2"><odf:file-entry odf:full-path="/" odf:media-type="application/hwp+zip"/><odf:file-entry odf:full-path="Contents/header.xml" odf:media-type="application/xml"/><odf:file-entry odf:full-path="Contents/section0.xml" odf:media-type="application/xml"/></odf:manifest>';
+  var HWPX_HPF = '<?xml version="1.0" encoding="UTF-8" standalone="yes"?>\n<opf:package xmlns:opf="http://www.idpf.org/2007/opf/" xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:ha="http://www.hancom.co.kr/hwpml/2011/app" version="1.4" unique-identifier="" id=""><opf:metadata><opf:title>worksheet</opf:title><opf:language>ko</opf:language></opf:metadata><opf:manifest><opf:item id="header" href="Contents/header.xml" media-type="application/xml" isEmbeded="0"/><opf:item id="section0" href="Contents/section0.xml" media-type="application/xml" isEmbeded="0"/><opf:item id="settings" href="settings.xml" media-type="application/xml" isEmbeded="0"/></opf:manifest><opf:spine><opf:itemref idref="header" linear="yes"/><opf:itemref idref="section0" linear="yes"/></opf:spine></opf:package>';
+  var HWPX_SETTINGS = '<?xml version="1.0" encoding="UTF-8" standalone="yes"?>\n<ha:HWPApplicationSetting xmlns:ha="http://www.hancom.co.kr/hwpml/2011/app"><ha:CaretPosition listIDRef="0" paraIDRef="0" pos="0"/></ha:HWPApplicationSetting>';
+  function hwpxFontface(lang) { return '<hh:fontface lang="' + lang + '" fontCnt="1"><hh:font id="0" face="함초롬바탕" type="TTF" isEmbedded="0"><hh:typeInfo familyType="FCAT_GOTHIC" weight="6" proportion="4" contrast="0" strokeVariation="1" armStyle="1" letterform="1" midline="1" xHeight="1"/></hh:font></hh:fontface>'; }
+  function hwpxCharPr(id, height, color, bold) {
+    return '<hh:charPr id="' + id + '" height="' + height + '" textColor="' + color + '" shadeColor="none" useFontSpace="0" useKerning="0" symMark="NONE" borderFillIDRef="2">' +
+      '<hh:fontRef hangul="0" latin="0" hanja="0" japanese="0" other="0" symbol="0" user="0"/><hh:ratio hangul="100" latin="100" hanja="100" japanese="100" other="100" symbol="100" user="100"/>' +
+      '<hh:spacing hangul="0" latin="0" hanja="0" japanese="0" other="0" symbol="0" user="0"/><hh:relSz hangul="100" latin="100" hanja="100" japanese="100" other="100" symbol="100" user="100"/>' +
+      '<hh:offset hangul="0" latin="0" hanja="0" japanese="0" other="0" symbol="0" user="0"/>' + (bold ? '<hh:bold/>' : '') + '</hh:charPr>';
+  }
+  function hwpxBorderFill(id) { return '<hh:borderFill id="' + id + '" threeD="0" shadow="0" centerLine="NONE" breakCellSeparateLine="0"><hh:slash type="NONE" Crooked="0" isCounter="0"/><hh:backSlash type="NONE" Crooked="0" isCounter="0"/><hh:leftBorder type="NONE" width="0.1 mm" color="#000000"/><hh:rightBorder type="NONE" width="0.1 mm" color="#000000"/><hh:topBorder type="NONE" width="0.1 mm" color="#000000"/><hh:bottomBorder type="NONE" width="0.1 mm" color="#000000"/><hh:diagonal type="SOLID" width="0.1 mm" color="#000000"/></hh:borderFill>'; }
+  var HWPX_HEADER = '<?xml version="1.0" encoding="UTF-8" standalone="yes"?>\n' +
+    '<hh:head xmlns:hh="http://www.hancom.co.kr/hwpml/2011/head" xmlns:hp="http://www.hancom.co.kr/hwpml/2011/paragraph" xmlns:hc="http://www.hancom.co.kr/hwpml/2011/core" version="1.4" secCnt="1">' +
+    '<hh:beginNum page="1" footnote="1" endnote="1" pic="1" tbl="1" equation="1"/><hh:refList>' +
+    '<hh:fontfaces itemCnt="7">' + ['HANGUL', 'LATIN', 'HANJA', 'JAPANESE', 'OTHER', 'SYMBOL', 'USER'].map(hwpxFontface).join('') + '</hh:fontfaces>' +
+    '<hh:borderFills itemCnt="2">' + hwpxBorderFill(1) + hwpxBorderFill(2) + '</hh:borderFills>' +
+    '<hh:charProperties itemCnt="3">' + hwpxCharPr(0, 1000, '#000000', false) + hwpxCharPr(1, 1600, '#000000', true) + hwpxCharPr(2, 1000, '#1E3A8A', true) + '</hh:charProperties>' +
+    '<hh:tabProperties itemCnt="1"><hh:tabPr id="0" autoTabLeft="0" autoTabRight="0"/></hh:tabProperties>' +
+    '<hh:numberings itemCnt="1"><hh:numbering id="1" start="0"><hh:paraHead start="1" level="1" align="LEFT" useInstWidth="1" autoIndent="1" widthAdjust="0" textOffsetType="PERCENT" textOffset="50" numFormat="DIGIT" charPrIDRef="0" checkable="0">^1.</hh:paraHead></hh:numbering></hh:numberings>' +
+    '<hh:paraProperties itemCnt="1"><hh:paraPr id="0" tabPrIDRef="0" condense="0" fontLineHeight="0" snapToGrid="1" suppressLineNumbers="0" checked="0"><hh:align horizontal="JUSTIFY" vertical="BASELINE"/><hh:heading type="NONE" idRef="0" level="0"/><hh:breakSetting breakLatinWord="KEEP_WORD" breakNonLatinWord="KEEP_WORD" widowOrphan="0" keepWithNext="0" keepLines="0" pageBreakBefore="0" lineWrap="BREAK"/><hh:margin><hc:intent value="0" unit="HWPUNIT"/><hc:left value="0" unit="HWPUNIT"/><hc:right value="0" unit="HWPUNIT"/><hc:prev value="0" unit="HWPUNIT"/><hc:next value="0" unit="HWPUNIT"/></hh:margin><hh:lineSpacing type="PERCENT" value="160" unit="HWPUNIT"/><hh:border borderFillIDRef="2" offsetLeft="0" offsetRight="0" offsetTop="0" offsetBottom="0" connect="0" ignoreMargin="0"/></hh:paraPr></hh:paraProperties>' +
+    '<hh:styles itemCnt="1"><hh:style id="0" type="PARA" name="바탕글" engName="Normal" paraPrIDRef="0" charPrIDRef="0" nextStyleIDRef="0" langID="1042" lockForm="0"/></hh:styles>' +
+    '</hh:refList></hh:head>';
+  function hwpxSecPr() {
+    return '<hp:secPr id="" textDirection="HORIZONTAL" spaceColumns="1134" tabStop="8000" tabStopVal="4000" tabStopUnit="HWPUNIT" outlineShapeIDRef="1" memoShapeIDRef="0" textVerticalWidthHead="0" masterPageCnt="0">' +
+      '<hp:grid lineGrid="0" charGrid="0" wonggojiFormat="0" strtnum="0"/><hp:startNum pageStartsOn="BOTH" page="0" pic="0" tbl="0" equation="0"/>' +
+      '<hp:visibility hideFirstHeader="0" hideFirstFooter="0" hideFirstMasterPage="0" border="SHOW_ALL" fill="SHOW_ALL" hideFirstPageNum="0" hideFirstEmptyLine="0" showLineNumber="0"/>' +
+      '<hp:lineNumberShape restartType="0" countBy="0" distance="0" startNumber="0"/>' +
+      '<hp:pagePr landscape="WIDELY" width="59528" height="84188" gutterType="LEFT_ONLY"><hp:margin header="4252" footer="4252" gutter="0" left="5669" right="5669" top="5669" bottom="4252"/></hp:pagePr>' +
+      '<hp:footNotePr><hp:autoNumFormat type="DIGIT" userChar="" prefixChar="" suffixChar=")" supscript="0"/><hp:noteLine length="-1" type="SOLID" width="0.12 mm" color="#000000"/><hp:noteSpacing betweenNotes="850" belowLine="567" aboveLine="567"/><hp:numbering type="CONTINUOUS" newNum="1"/><hp:placement place="EACH_COLUMN" beneathText="0"/></hp:footNotePr>' +
+      '<hp:endNotePr><hp:autoNumFormat type="DIGIT" userChar="" prefixChar="" suffixChar=")" supscript="0"/><hp:noteLine length="14692344" type="SOLID" width="0.12 mm" color="#000000"/><hp:noteSpacing betweenNotes="0" belowLine="567" aboveLine="850"/><hp:numbering type="CONTINUOUS" newNum="1"/><hp:placement place="END_OF_DOCUMENT" beneathText="0"/></hp:endNotePr>' +
+      '<hp:pageBorderFill type="BOTH" borderFillIDRef="1" textBorder="PAPER" headerInside="0" footerInside="0" fillArea="PAPER"><hp:offset left="1417" right="1417" top="1417" bottom="1417"/></hp:pageBorderFill>' +
+      '<hp:pageBorderFill type="EVEN" borderFillIDRef="1" textBorder="PAPER" headerInside="0" footerInside="0" fillArea="PAPER"><hp:offset left="1417" right="1417" top="1417" bottom="1417"/></hp:pageBorderFill>' +
+      '<hp:pageBorderFill type="ODD" borderFillIDRef="1" textBorder="PAPER" headerInside="0" footerInside="0" fillArea="PAPER"><hp:offset left="1417" right="1417" top="1417" bottom="1417"/></hp:pageBorderFill></hp:secPr>';
+  }
+  var _hpid = 0;
+  function hwpxPara(text, charId, withSecPr) {
+    var runs = (withSecPr ? '<hp:run charPrIDRef="0">' + hwpxSecPr() + '<hp:ctrl/></hp:run>' : '') +
+      '<hp:run charPrIDRef="' + (charId || 0) + '"><hp:t>' + escXml(text) + '</hp:t></hp:run>';
+    return '<hp:p id="' + (_hpid++) + '" paraPrIDRef="0" styleIDRef="0" pageBreak="0" columnBreak="0" merged="0">' + runs +
+      '<hp:linesegarray><hp:lineseg textpos="0" vertpos="0" vertsize="1000" textheight="1000" baseline="850" spacing="600" horzpos="0" horzsize="42520" flags="393216"/></hp:linesegarray></hp:p>';
+  }
+  function buildHwpxSection(d) {
+    _hpid = 0;
+    var body = hwpxPara(d.title + (d.ans ? '  [정답·해설]' : ''), 1, true);
+    if (d.sub) body += hwpxPara(d.sub, 0);
+    body += hwpxPara('이름: ______________     점수: ______ / ______', 0);
+    d.sections.forEach(function (sec) {
+      if (sec.header) body += hwpxPara(sec.header, 2);
+      sec.items.forEach(function (it) {
+        if (it.t === 'p') { if (it.p.title) body += hwpxPara(it.p.title, 2); body += hwpxPara(it.p.body, 0); return; }
+        body += hwpxPara(it.num + '. ' + it.stem, 0);
+        if (it.kor && it.kor !== it.stem) body += hwpxPara(it.kor, 0);
+        if (it.opts && it.opts.length) body += hwpxPara(it.opts.map(function (o, i) { return (CIRC[i] || (i + 1) + '.') + ' ' + o; }).join('   '), 0);
+        if (it.bank && it.bank.length) body += hwpxPara('[보기] ' + it.bank.join('  /  '), 0);
+        if (it.ans) body += hwpxPara(it.ans, 0);
+      });
+    });
+    return '<?xml version="1.0" encoding="UTF-8" standalone="yes"?>\n<hs:sec xmlns:hs="http://www.hancom.co.kr/hwpml/2011/section" xmlns:hp="http://www.hancom.co.kr/hwpml/2011/paragraph" xmlns:hc="http://www.hancom.co.kr/hwpml/2011/core" xmlns:hh="http://www.hancom.co.kr/hwpml/2011/head">' + body + '</hs:sec>';
+  }
+  function downloadHwpx() {
+    var d = extract(); if (!d.sections.length) return;
+    var zip = zipStore([
+      { name: 'mimetype', data: u8('application/hwp+zip') },
+      { name: 'version.xml', data: u8(HWPX_VER) },
+      { name: 'Contents/header.xml', data: u8(HWPX_HEADER) },
+      { name: 'Contents/section0.xml', data: u8(buildHwpxSection(d)) },
+      { name: 'Contents/content.hpf', data: u8(HWPX_HPF) },
+      { name: 'settings.xml', data: u8(HWPX_SETTINGS) },
+      { name: 'META-INF/container.xml', data: u8(HWPX_CONTAINER) },
+      { name: 'META-INF/manifest.xml', data: u8(HWPX_MANIFEST) }
+    ]);
+    var blob = new Blob([zip], { type: 'application/hwp+zip' });
+    var url = URL.createObjectURL(blob), a = document.createElement('a');
+    a.href = url;
+    a.download = d.title.replace(/[^\w가-힣]+/g, '_').replace(/^_+|_+$/g, '') + (d.ans ? '_해설' : '_문제') + '.hwpx';
+    document.body.appendChild(a); a.click(); a.remove();
+    setTimeout(function () { URL.revokeObjectURL(url); }, 2000);
+  }
+  window.egmDownloadHwpx = downloadHwpx;
+
   /* ---------- 진입 처리 ---------- */
   function maybeAuto() {
     if (/[?&]ans=1\b/.test(location.search)) document.documentElement.classList.add('egm-ans');
     var docx = /[?&]docx=1\b/.test(location.search);
+    var hwpx = /[?&]hwpx=1\b/.test(location.search);
     var print = /[?&]print=1\b/.test(location.search);
-    if (!docx && !print) return;
-    var fire = function () { setTimeout(docx ? downloadDocx : egmPrint, 450); };
+    if (!docx && !hwpx && !print) return;
+    var fn = hwpx ? downloadHwpx : (docx ? downloadDocx : egmPrint);
+    var fire = function () { setTimeout(fn, 450); };
     if (document.readyState === 'complete') fire();
     else window.addEventListener('load', fire);
   }

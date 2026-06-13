@@ -27,9 +27,19 @@ export async function enrichWithAI(state) {
     .filter(s => s.en);
 
   // 추출된 단어를 빈 값 템플릿으로 전달 → AI가 값을 채워 반환 (누락 방지)
-  const vocabTemplate = Object.fromEntries(
-    (state.vocab || []).slice(0, 40).map(v => [v.word, ''])
-  );
+  // 실제 학습지에 표시되는 단어(vocabByPiece) 기준 — 화면 단어 ≠ 질문 단어 불일치 방지
+  const displayedWords = [];
+  const seenWord = new Set();
+  for (const list of Object.values(state.vocabByPiece || {})) {
+    for (const v of list) {
+      const lc = (v.word || '').toLowerCase();
+      if (v.word && !seenWord.has(lc)) { seenWord.add(lc); displayedWords.push(v.word); }
+    }
+  }
+  const wordsForTemplate = displayedWords.length
+    ? displayedWords
+    : (state.vocab || []).slice(0, 40).map(v => v.word);
+  const vocabTemplate = Object.fromEntries(wordsForTemplate.map(w => [w, '']));
 
   const prompt = `중학교 영어 직소 학습지 보조입니다.
 아래 전체 본문을 보고 JSON만 출력하세요 (다른 텍스트 없이).

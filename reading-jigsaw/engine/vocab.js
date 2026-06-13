@@ -15,6 +15,8 @@ const STOPWORDS = new Set([
   'between','among','behind','before','after','during','since','until',
   'not','no','yes','very','too','also','just','only','still','already',
   'all','some','any','every','each','many','much','few','little','more','most',
+  'other','others','another','both','than','within','without','again','against',
+  'myself','yourself','himself','herself','itself','ourselves','yourselves','themselves',
   'one','two','three','four','five','six','seven','eight','nine','ten','first','second',
   'now','then','soon','today','tomorrow','yesterday',
   'say','said','says','tell','told','tells','ask','asked','asks',

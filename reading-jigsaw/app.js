@@ -1,9 +1,9 @@
 // app.js — Jigsaw Studio 메인 컨트롤러
 
 import { parse } from './engine/parser.js?v=20250526a';
-import { enrichWithAI, extractGrammarCandidates, translateSentences } from './engine/ai.js?v=20250526r';
+import { enrichWithAI, extractGrammarCandidates, translateSentences } from './engine/ai.js?v=20260613a';
 import { autoSplit, insertBoundary, removeBoundary } from './engine/split.js?v=20250526a';
-import { extract, pickForPiece } from './engine/vocab.js?v=20250526r';
+import { extract, pickForPiece } from './engine/vocab.js?v=20260613a';
 import { detectAll } from './engine/grammar.js?v=20250526a';
 import { suggest as suggestBlanks } from './engine/blanks.js?v=20250526a';
 import { renderPaper } from './ui/preview.js?v=20250526s';
@@ -888,13 +888,32 @@ function applyAIResult(result, applySplit = false) {
     applyAISplit(result.split_at);
   }
 
-  // 단어 뜻: 최상위 vocab_meanings (정확한 키 매칭)
-  const vocabMeanings = (result.vocab_meanings && typeof result.vocab_meanings === 'object')
-    ? result.vocab_meanings : {};
+  // 단어 뜻 lookup 구성: 최상위 vocab_meanings + piece별 vocab(수동 복붙 경로) 모두 수집
+  // 키 정규화(소문자·기호제거·단수형)로 DeepSeek가 키를 변형해도 매칭되게 함
+  const normKey = w => String(w ?? '').toLowerCase().replace(/[^a-z]/g, '');
+  const singular = n => n.length >= 4 ? n.replace(/ies$/, 'y').replace(/(es|s)$/, '') : n;
+  const meaningLookup = new Map();
+  const addMeaning = (k, val) => {
+    if (typeof val !== 'string' || !val.trim()) return;
+    const n = normKey(k);
+    if (!n) return;
+    if (!meaningLookup.has(n)) meaningLookup.set(n, val.trim());
+    const s = singular(n);
+    if (s && !meaningLookup.has(s)) meaningLookup.set(s, val.trim());
+  };
+  if (result.vocab_meanings && typeof result.vocab_meanings === 'object') {
+    for (const [k, val] of Object.entries(result.vocab_meanings)) addMeaning(k, val);
+  }
+  for (const pd of (result.pieces || [])) {
+    if (pd.vocab && typeof pd.vocab === 'object') {
+      for (const [k, val] of Object.entries(pd.vocab)) addMeaning(k, val);
+    }
+  }
   for (const vocabList of Object.values(state.vocabByPiece)) {
     for (const v of vocabList) {
-      const meaning = vocabMeanings[v.word] || vocabMeanings[v.word.toLowerCase()];
-      if (meaning && typeof meaning === 'string') v.meaning = meaning;
+      const n = normKey(v.word);
+      const meaning = meaningLookup.get(n) || meaningLookup.get(singular(n));
+      if (meaning) v.meaning = meaning;
     }
   }
 

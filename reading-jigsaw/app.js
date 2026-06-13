@@ -1376,35 +1376,33 @@ function buildJigsawHwpxSection(idxs, mode) {
     // 조각 시작 — 둘째 조각부터 페이지 나눔
     body += hwpxPara(head, 8, 30, pi > 0);
     body += hwpxPara('학번 __________    이름 __________', 10);
-    // paraId 40 = 테두리 박스 문단(연속 시 한 박스로 연결). 스텝 라벨(비-40)이 박스를 구분.
-    const BOX = 40;
     if (vocab.length) {
       body += hwpxPara('① Vocabulary', 8);
       for (let i = 0; i < vocab.length; i += 2) {
         const fmt = v => v ? (v.word + ' : ' + (isStudent ? '__________' : (v.meaning || '__________'))) : '';
         const line = [fmt(vocab[i]), fmt(vocab[i + 1])].filter(Boolean).join('        ');
-        body += hwpxPara(line, 0, BOX);
+        body += hwpxPara(line, 0);
       }
     }
     if (bodies.length) {
       body += hwpxPara('② Slow Reading', 8);
       for (const s of bodies) {
         const enText = (isStudent && state.blankType === 'en') ? _plainEnBlank(s.en, state.blanks?.get(s.id)) : s.en;
-        body += hwpxPara(enText, 0, BOX);
+        body += hwpxPara(enText, 0);
         if (s.ko) {
           const koText = (isStudent && state.blankType === 'ko') ? _plainKoBlank(s.ko, state.koBlanks?.get(s.id)) : s.ko;
-          body += hwpxPara(koText, 10, BOX);
+          body += hwpxPara(koText, 10);
         } else if (isStudent && state.blankType === 'ko') {
-          body += hwpxPara(blankLine, 10, BOX);
+          body += hwpxPara(blankLine, 10);
         }
         const hits = state.grammarMap?.get(s.id);
-        if (!isStudent && hits && hits.length) body += hwpxPara('→ ' + (hits[0].explain || ''), 10, BOX);
+        if (!isStudent && hits && hits.length) body += hwpxPara('→ ' + (hits[0].explain || ''), 10);
       }
       const question = p.aiQuestion || 'What is the main idea of this section?';
       body += hwpxPara('③ Question', 8);
-      body += hwpxPara('Q. ' + question, 0, BOX);
-      if (!isStudent && p.aiAnswer) body += hwpxPara('A. ' + p.aiAnswer, 9, BOX);
-      else { body += hwpxPara(blankLine, 0, BOX); body += hwpxPara(blankLine, 0, BOX); }
+      body += hwpxPara('Q. ' + question, 0);
+      if (!isStudent && p.aiAnswer) body += hwpxPara('A. ' + p.aiAnswer, 9);
+      else { body += hwpxPara(blankLine, 0); body += hwpxPara(blankLine, 0); }
     }
     const gp = [];
     for (const s of rangeSentences) {
@@ -1415,10 +1413,10 @@ function buildJigsawHwpxSection(idxs, mode) {
     if (gp.length) {
       body += hwpxPara('④ Grammar Point', 8);
       for (const g of gp) {
-        body += hwpxPara('Q. 아래 밑줄 친 표현의 해석과 문법적 특징은?', 10, BOX);
-        body += hwpxPara(g.sentence, 0, BOX);
-        if (!isStudent) { if (g.ko) body += hwpxPara('해석: ' + g.ko, 10, BOX); body += hwpxPara('A. ' + (g.explain || ''), 9, BOX); }
-        else { body += hwpxPara(blankLine, 0, BOX); }
+        body += hwpxPara('Q. 아래 밑줄 친 표현의 해석과 문법적 특징은?', 10);
+        body += hwpxPara(g.sentence, 0);
+        if (!isStudent) { if (g.ko) body += hwpxPara('해석: ' + g.ko, 10); body += hwpxPara('A. ' + (g.explain || ''), 9); }
+        else { body += hwpxPara(blankLine, 0); }
       }
     }
   });

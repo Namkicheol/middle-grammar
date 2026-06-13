@@ -36,17 +36,6 @@ export function renderPaper(state, pieceIdx, mode = 'student') {
     </div>
   </header>
 
-  <aside class="paper-sidebar">
-    <h4>우리가 할 일</h4>
-    <ul>
-      <li>단어 돌아가며 소리 내어 읽고 뜻 말하기</li>
-      <li>영어 문장 끊어 읽기 표시하기</li>
-      <li>돌아가며 해석 + 문법 포인트 정리</li>
-      <li>조원이 모르면 적극 도와주기</li>
-      <li>이해 안 된 부분 점검</li>
-    </ul>
-  </aside>
-
   ${renderVocab(vocabForPiece, isStudent, state.hangulHint)}
   ${renderSlow(bodies, state, isStudent)}
   ${renderQuestion(p, bodies, isStudent)}

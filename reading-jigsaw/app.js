@@ -6,7 +6,7 @@ import { autoSplit, insertBoundary, removeBoundary } from './engine/split.js?v=2
 import { extract, pickForPiece } from './engine/vocab.js?v=20260613a';
 import { detectAll } from './engine/grammar.js?v=20250526a';
 import { suggest as suggestBlanks } from './engine/blanks.js?v=20250526a';
-import { renderPaper } from './ui/preview.js?v=20250526s';
+import { renderPaper } from './ui/preview.js?v=20260613b';
 
 const STORAGE_KEY = 'jigsaw-studio:v1';
 const SAMPLE_URL = 'assets/samples/donga-l4.txt';
@@ -1062,7 +1062,9 @@ function printSelected(mode = 'student') {
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css">
 <style>${EXPORT_CSS}
 body{padding:16px;}@media print{body{padding:0;}}</style>
-</head><body>${pages}</body></html>`;
+</head><body>${pages}
+<script>${FIT_SCRIPT}<\/script>
+</body></html>`;
   const blob = new Blob([html], { type: 'text/html' });
   const url = URL.createObjectURL(blob);
   const win = window.open(url, '_blank');
@@ -1071,11 +1073,39 @@ body{padding:16px;}@media print{body{padding:0;}}</style>
     URL.revokeObjectURL(url);
     return;
   }
-  win.addEventListener('load', () => {
-    win.print();
-    setTimeout(() => URL.revokeObjectURL(url), 3000);
-  });
+  setTimeout(() => URL.revokeObjectURL(url), 8000);
 }
+
+// 인쇄 창에서 실행: 폰트 로드 후 각 조각이 한 페이지를 넘으면 그 조각만 zoom 축소 → 조각=1페이지 보장(빈 페이지/넘침 제거)
+const FIT_SCRIPT = `(async function(){
+  try{ if(document.fonts&&document.fonts.ready) await document.fonts.ready; }catch(e){}
+  await new Promise(function(r){ setTimeout(r,120); });
+  var PRINT_W=703, USABLE=1000; // A4(210x297) - 12mm여백, 96dpi 기준(약간 보수적)
+  // 정확한 측정을 위해 인쇄 폭으로 제한 + @media print 규칙을 화면에도 적용
+  document.body.style.margin='0';
+  document.body.style.width=PRINT_W+'px';
+  try{
+    for(var si=0; si<document.styleSheets.length; si++){
+      var rs; try{ rs=document.styleSheets[si].cssRules; }catch(e){ continue; }
+      for(var ri=0; ri<rs.length; ri++){ var r=rs[ri];
+        if(r.type===4 && /print/.test(r.conditionText||'')){
+          var t=''; for(var ci=0; ci<r.cssRules.length; ci++) t+=r.cssRules[ci].cssText+'\\n';
+          var st=document.createElement('style'); st.textContent=t; document.head.appendChild(st);
+        }
+      }
+    }
+  }catch(e){}
+  await new Promise(function(r){ setTimeout(r,60); });
+  var papers=document.querySelectorAll('.paper');
+  for(var i=0;i<papers.length;i++){
+    var p=papers[i]; p.style.zoom='1';
+    var h=p.getBoundingClientRect().height;
+    if(h>USABLE){ p.style.zoom=String(Math.max(0.62, USABLE/h)); }
+  }
+  document.body.style.width='';
+  await new Promise(function(r){ setTimeout(r,60); });
+  window.focus(); window.print();
+})();`;
 
 function exportDoc(mode) {
   try {

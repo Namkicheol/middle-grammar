@@ -1164,9 +1164,26 @@ function _wPara(runs, o) {
   return '<w:p>' + ppr + (runs || '') + '</w:p>';
 }
 function _wTc(content, wpct) { return '<w:tc><w:tcPr><w:tcW w:w="' + wpct + '" w:type="pct"/></w:tcPr>' + (content || '<w:p/>') + '</w:tc>'; }
-function _wTbl(rows) {
-  return '<w:tbl><w:tblPr><w:tblW w:w="5000" w:type="pct"/><w:tblLayout w:type="fixed"/></w:tblPr>' +
+function _wBorders(sz, color, sides) {
+  sides = sides || ['top', 'left', 'bottom', 'right', 'insideH', 'insideV'];
+  return '<w:tblBorders>' + sides.map(s => '<w:' + s + ' w:val="single" w:sz="' + sz + '" w:space="0" w:color="' + color + '"/>').join('') + '</w:tblBorders>';
+}
+const _CELLMAR = '<w:tblCellMar><w:top w:w="60" w:type="dxa"/><w:left w:w="120" w:type="dxa"/><w:bottom w:w="60" w:type="dxa"/><w:right w:w="120" w:type="dxa"/></w:tblCellMar>';
+// vocab 2열 표 — 외곽 박스 + 옅은 칸선
+function _wVocabTbl(rows) {
+  return '<w:tbl><w:tblPr><w:tblW w:w="5000" w:type="pct"/><w:tblLayout w:type="fixed"/>' +
+    _wBorders(4, 'CBC1AD') + _CELLMAR + '</w:tblPr>' +
     '<w:tblGrid><w:gridCol w:w="4675"/><w:gridCol w:w="4675"/></w:tblGrid>' + rows + '</w:tbl>';
+}
+// 단일 셀 박스(카드) — 테두리 + 옵션 음영. inner는 w:p들.
+function _wBox(inner, o) {
+  o = o || {};
+  const bc = o.bc || 'CBC1AD', sz = o.sz || 6;
+  const shd = o.shd ? '<w:shd w:val="clear" w:fill="' + o.shd + '"/>' : '';
+  return '<w:tbl><w:tblPr><w:tblW w:w="5000" w:type="pct"/><w:tblLayout w:type="fixed"/>' +
+    _wBorders(sz, bc, ['top', 'left', 'bottom', 'right']) + _CELLMAR + '</w:tblPr>' +
+    '<w:tblGrid><w:gridCol w:w="9400"/></w:tblGrid>' +
+    '<w:tr><w:tc><w:tcPr><w:tcW w:w="5000" w:type="pct"/>' + shd + '</w:tcPr>' + (inner || '<w:p/>') + '</w:tc></w:tr></w:tbl>';
 }
 // 한 문장 en을 빈칸 데이터로 분해 → runs (student: 밑줄빈칸 / teacher: 정답)
 function _docxEnRuns(text, blanks, isStudent) {
@@ -1191,46 +1208,49 @@ function buildPieceDocx(idx, mode) {
   const lesson = (state.meta.lesson || '').trim();
   const title = (state.meta.title || '').trim();
   const stars = '★'.repeat(p.stars || 0) + '☆'.repeat(3 - (p.stars || 0));
+  const SPACER = _wPara('', { after: 120 }); // 표(박스) 사이 구분 문단 — Word가 표를 합치지 않게
+  const stepLabel = (n, name) => _wPara(_wRun(n + '  ', { b: true, sz: 24, color: 'A8431C' }) + _wRun(name, { b: true, sz: 22 }), { after: 40 });
   let body = '';
-  // header
+  // header (제목 + 하단 굵은 선)
   const headParts = [lesson, title].filter(Boolean).join(' · ');
   body += _wPara(_wRun(p.label + '.  ', { b: true, sz: 36, color: 'A8431C' }) +
     _wRun((p.heading || headParts || '') + '   ', { b: true, sz: 26 }) + _wRun(stars, { sz: 20, color: '999999' }),
     { after: 40, border: 16, bc: '111111' });
-  body += _wPara(_wRun('학번: ______________      이름: ______________', { sz: 18, color: '555555' }), { after: 160 });
-  // vocabulary
+  body += _wPara(_wRun('학번: ______________      이름: ______________', { sz: 18, color: '555555' }), { after: 120 });
+  // ① Vocabulary — 외곽 박스 표
   if (vocab.length) {
-    body += _wPara(_wRun('① Vocabulary', { b: true, sz: 22, color: 'A8431C' }), { after: 60 });
+    body += stepLabel('①', 'Vocabulary');
     let rows = '';
     for (let i = 0; i < vocab.length; i += 2) {
       const cell = v => v ? _wPara(_wRun(v.word + '   ', { b: true }) + _wRun(isStudent ? '____________' : (v.meaning || '____________'), { color: '555555' })) : '<w:p/>';
       rows += '<w:tr>' + _wTc(cell(vocab[i]), 2500) + _wTc(cell(vocab[i + 1]), 2500) + '</w:tr>';
     }
-    body += _wTbl(rows);
-    body += _wPara('', { after: 120 });
+    body += _wVocabTbl(rows) + SPACER;
   }
-  // slow reading
+  // ② Slow Reading — 박스 카드
   if (bodies.length) {
-    body += _wPara(_wRun('② Slow Reading', { b: true, sz: 22, color: 'A8431C' }), { after: 60 });
-    for (const s of bodies) {
+    body += stepLabel('②', 'Slow Reading');
+    let inner = '';
+    bodies.forEach((s, i) => {
       const blanks = state.blanks?.get(s.id) || [];
       const enRuns = (!isStudent || state.blankType === 'en') ? _docxEnRuns(s.en, blanks, isStudent) : _wRun(s.en);
-      body += _wPara(enRuns, { after: s.ko ? 0 : 40, sz: 20 });
-      if (s.ko) body += _wPara(_wRun(s.ko, { i: true, color: '5D544A', sz: 17 }), { after: 40 });
+      inner += _wPara(enRuns, { after: s.ko ? 0 : 30, sz: 20 });
+      if (s.ko) inner += _wPara(_wRun(s.ko, { i: true, color: '5D544A', sz: 17 }), { after: 30 });
       const hits = state.grammarMap?.get(s.id);
-      if (hits && hits.length) body += _wPara(_wRun('→ ' + (hits[0].explain || ''), { sz: 15, color: '0F1D6B' }), { after: 40 });
-    }
-    body += _wPara('', { after: 80 });
+      if (!isStudent && hits && hits.length) inner += _wPara(_wRun('→ ' + (hits[0].explain || ''), { sz: 15, color: '0F1D6B' }), { after: 30 });
+    });
+    body += _wBox(inner) + SPACER;
   }
-  // question
+  // ③ Question — 박스 카드(옅은 음영)
   if (bodies.length) {
     const question = p.aiQuestion || ('What is the main idea of this section?');
-    body += _wPara(_wRun('③ Question', { b: true, sz: 22, color: 'A8431C' }), { after: 60 });
-    body += _wPara(_wRun('Q. ', { b: true }) + _wRun(question), { after: 0, border: 6, bc: 'CBC1AD' });
-    if (!isStudent && p.aiAnswer) body += _wPara(_wRun('A. ' + p.aiAnswer, { color: 'C0392B', sz: 17 }), { after: 60 });
-    else { body += _wPara('', { after: 0, border: 6, bc: 'CBC1AD' }); body += _wPara('', { after: 80, border: 6, bc: 'CBC1AD' }); }
+    body += stepLabel('③', 'Question');
+    let inner = _wPara(_wRun('Q. ', { b: true }) + _wRun(question), { after: !isStudent && p.aiAnswer ? 40 : 60 });
+    if (!isStudent && p.aiAnswer) inner += _wPara(_wRun('A. ' + p.aiAnswer, { color: 'C0392B', sz: 17 }), { after: 0 });
+    else { inner += _wPara(_wRun('__________________________________________________', { color: 'BBBBBB' }), { after: 30 }); inner += _wPara(_wRun('__________________________________________________', { color: 'BBBBBB' }), { after: 0 }); }
+    body += _wBox(inner, { shd: 'FBF7EE' }) + SPACER;
   }
-  // grammar
+  // ④ Grammar Point — 카드마다 박스(옅은 파랑)
   const gPoints = [];
   for (const s of rangeSentences) {
     if (s.isHeading) continue;
@@ -1238,17 +1258,17 @@ function buildPieceDocx(idx, mode) {
     if (hits && hits.length) { gPoints.push({ sentence: s.en, match: hits[0].match, explain: hits[0].explain, ko: s.ko }); if (gPoints.length >= 3) break; }
   }
   if (gPoints.length) {
-    body += _wPara(_wRun('④ Grammar Point', { b: true, sz: 22, color: 'A8431C' }), { after: 60 });
+    body += stepLabel('④', 'Grammar Point');
     for (const g of gPoints) {
-      body += _wPara(_wRun('Q. 아래 밑줄 친 표현은 어떻게 해석하나요? 어떤 문법적 특징이 있나요?', { sz: 16, color: '3D3830' }), { after: 0, shd: 'F4F6FF' });
-      // sentence with match underlined
+      let inner = _wPara(_wRun('Q. 아래 밑줄 친 표현은 어떻게 해석하나요? 어떤 문법적 특징이 있나요?', { sz: 16, color: '3D3830' }), { after: 40 });
       let sRuns;
       const m = g.match, t = g.sentence, mi = m ? t.indexOf(m) : -1;
       if (mi >= 0) sRuns = _wRun(t.slice(0, mi)) + _wRun(m, { u: true, b: true, color: 'A8431C' }) + _wRun(t.slice(mi + m.length));
       else sRuns = _wRun(t);
-      body += _wPara(sRuns, { after: 0, jc: 'center', shd: 'FFFFFF' });
-      if (!isStudent) body += _wPara((g.ko ? _wRun('해석: ' + g.ko + '  ', { color: '3D3830', sz: 16 }) : '') + _wRun('A. ' + (g.explain || ''), { color: 'C0392B', sz: 16 }), { after: 100 });
-      else { body += _wPara('', { after: 0 }); body += _wPara('', { after: 120 }); }
+      inner += _wPara(sRuns, { after: !isStudent ? 40 : 0, jc: 'center' });
+      if (!isStudent) inner += _wPara((g.ko ? _wRun('해석: ' + g.ko + '  ', { color: '3D3830', sz: 16 }) : '') + _wRun('A. ' + (g.explain || ''), { color: 'C0392B', sz: 16 }), { after: 0 });
+      else { inner += _wPara(_wRun('__________________________________________________', { color: 'BBBBBB' }), { after: 0 }); }
+      body += _wBox(inner, { bc: 'AEB7E0', shd: 'F4F6FF' }) + SPACER;
     }
   }
   return body;

@@ -1266,7 +1266,7 @@ function buildPieceDocx(idx, mode) {
     let inner = _wPara(_wRun('Q. ', { b: true }) + _wRun(question), { after: !isStudent && p.aiAnswer ? 60 : 120 });
     if (!isStudent && p.aiAnswer) inner += _wPara(_wRun('A. ' + p.aiAnswer, { color: 'C0392B', sz: 17 }), { after: 0, line: 300 });
     else { const line = _wPara(_wRun('__________________________________________________', { color: 'BBBBBB' }), { after: 160 }); inner += line + line + line; }
-    body += _wBox(inner, { shd: 'FBF7EE' }) + SPACER;
+    body += _wBox(inner) + SPACER;
   }
   // ④ Grammar Point — 카드마다 박스(옅은 파랑)
   const gPoints = [];
@@ -1286,7 +1286,7 @@ function buildPieceDocx(idx, mode) {
       inner += _wPara(sRuns, { after: !isStudent ? 40 : 0, shd: 'FFFFFF' });
       if (!isStudent) inner += _wPara((g.ko ? _wRun('해석: ' + g.ko + '  ', { color: '3D3830', sz: 16 }) : '') + _wRun('A. ' + (g.explain || ''), { color: 'C0392B', sz: 16 }), { after: 0 });
       else { inner += _wPara(_wRun('__________________________________________________', { color: 'BBBBBB' }), { after: 0 }); }
-      body += _wBox(inner, { bc: 'AEB7E0', shd: 'F4F6FF' }) + SPACER;
+      body += _wBox(inner) + SPACER;
     }
   }
   return body;

@@ -7,6 +7,7 @@ import { extract, pickForPiece } from './engine/vocab.js?v=20260613a';
 import { detectAll } from './engine/grammar.js?v=20250526a';
 import { suggest as suggestBlanks } from './engine/blanks.js?v=20250526a';
 import { renderPaper } from './ui/preview.js?v=20260613b';
+import { resetHpid, hwpxPara, hwpxFirstPara, wrapSection, buildHwpxFile } from './engine/hwpx.js?v=20260613a';
 
 const STORAGE_KEY = 'jigsaw-studio:v1';
 const SAMPLE_URL = 'assets/samples/donga-l4.txt';
@@ -457,6 +458,16 @@ function viewExport() {
         <h3>교사용 DOCX</h3>
         <p>정답 포함 · Word 편집용</p>
       </button>
+      <button class="export-card" id="x-hwpx-student">
+        <div class="x-emoji">🇰🇷</div>
+        <h3>학생용 HWPX</h3>
+        <p>한글(한컴오피스)</p>
+      </button>
+      <button class="export-card" id="x-hwpx-teacher">
+        <div class="x-emoji">📗</div>
+        <h3>교사용 HWPX</h3>
+        <p>정답 포함 · 한글 편집용</p>
+      </button>
     </div>
 
     <div class="step-actions">
@@ -531,6 +542,8 @@ document.addEventListener('click', e => {
   if (t.id === 'x-print-teacher') return printSelected('teacher');
   if (t.id === 'x-doc-student') return exportDoc('student');
   if (t.id === 'x-doc-teacher') return exportDoc('teacher');
+  if (t.id === 'x-hwpx-student') return exportHwpx('student');
+  if (t.id === 'x-hwpx-teacher') return exportHwpx('teacher');
 
   // 출제 유형 선택 (Step 3)
   const btypeBtn = t.closest('[data-btype]');
@@ -1280,6 +1293,90 @@ function exportDoc(mode) {
     setTimeout(() => { a.remove(); URL.revokeObjectURL(url); }, 2000);
   } catch (e) {
     alert('DOCX 생성 오류: ' + e.message);
+  }
+}
+
+/* ───── HWPX(한글) 생성 — 검증된 한컴 정적 부품(engine/hwpx.js) + 조각 콘텐츠 section0.xml ───── */
+function buildJigsawHwpxSection(idxs, mode) {
+  resetHpid();
+  const isStudent = mode === 'student';
+  const blankLine = '________________________________________';
+  const docTitle = ([state.meta.lesson, state.meta.title].filter(s => s && s.trim()).join(' · ')) || '리딩 직소 학습지';
+  let body = hwpxFirstPara(docTitle + (isStudent ? '' : '  [정답·해설]'));
+  idxs.forEach((idx, pi) => {
+    const p = state.pieces[idx]; if (!p) return;
+    const rangeSentences = state.sentences.slice(p.range[0], p.range[1]);
+    const bodies = rangeSentences.filter(s => !s.isHeading && !s.koOnly && !s.deleted);
+    const vocab = state.vocabByPiece[idx] || [];
+    const stars = '★'.repeat(p.stars || 0) + '☆'.repeat(3 - (p.stars || 0));
+    const head = (p.label + '.  ' + (p.heading || '') + '   ' + stars).trim();
+    // 조각 시작 — 둘째 조각부터 페이지 나눔
+    body += hwpxPara(head, 8, 30, pi > 0);
+    body += hwpxPara('학번 __________    이름 __________', 10);
+    if (vocab.length) {
+      body += hwpxPara('① Vocabulary', 8);
+      for (let i = 0; i < vocab.length; i += 2) {
+        const fmt = v => v ? (v.word + ' : ' + (isStudent ? '__________' : (v.meaning || '__________'))) : '';
+        const line = [fmt(vocab[i]), fmt(vocab[i + 1])].filter(Boolean).join('        ');
+        body += hwpxPara(line, 0);
+      }
+    }
+    if (bodies.length) {
+      body += hwpxPara('② Slow Reading', 8);
+      for (const s of bodies) {
+        body += hwpxPara(s.en, 0);
+        if (s.ko) body += hwpxPara(s.ko, 10);
+        const hits = state.grammarMap?.get(s.id);
+        if (!isStudent && hits && hits.length) body += hwpxPara('→ ' + (hits[0].explain || ''), 10);
+      }
+      const question = p.aiQuestion || 'What is the main idea of this section?';
+      body += hwpxPara('③ Question', 8);
+      body += hwpxPara('Q. ' + question, 0);
+      if (!isStudent && p.aiAnswer) body += hwpxPara('A. ' + p.aiAnswer, 9);
+      else { body += hwpxPara(blankLine, 0); body += hwpxPara(blankLine, 0); }
+    }
+    const gp = [];
+    for (const s of rangeSentences) {
+      if (s.isHeading) continue;
+      const h = state.grammarMap?.get(s.id);
+      if (h && h.length) { gp.push({ sentence: s.en, explain: h[0].explain, ko: s.ko }); if (gp.length >= 3) break; }
+    }
+    if (gp.length) {
+      body += hwpxPara('④ Grammar Point', 8);
+      for (const g of gp) {
+        body += hwpxPara('Q. 아래 밑줄 친 표현의 해석과 문법적 특징은?', 10);
+        body += hwpxPara(g.sentence, 0);
+        if (!isStudent) { if (g.ko) body += hwpxPara('해석: ' + g.ko, 10); body += hwpxPara('A. ' + (g.explain || ''), 9); }
+        else { body += hwpxPara(blankLine, 0); }
+      }
+    }
+  });
+  return wrapSection(body);
+}
+function buildJigsawHwpxPrv(idxs) {
+  const lines = [([state.meta.lesson, state.meta.title].filter(s => s && s.trim()).join(' · ')) || '리딩 직소 학습지'];
+  idxs.forEach(idx => {
+    const p = state.pieces[idx]; if (!p) return;
+    lines.push(p.label + '. ' + (p.heading || ''));
+  });
+  return lines.join('\n');
+}
+function exportHwpx(mode) {
+  try {
+    const idxs = getSelectedPieceIdxs();
+    if (!idxs.length) { alert('조각을 하나 이상 선택하세요.'); return; }
+    const section = buildJigsawHwpxSection(idxs, mode);
+    const prv = buildJigsawHwpxPrv(idxs);
+    const bytes = buildHwpxFile(section, prv);
+    const blob = new Blob([bytes], { type: 'application/hwp+zip' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `${safeName()}-${mode === 'student' ? 'Ss' : 'T'}.hwpx`;
+    document.body.appendChild(a); a.click();
+    setTimeout(() => { a.remove(); URL.revokeObjectURL(url); }, 2000);
+  } catch (e) {
+    alert('HWPX 생성 오류: ' + e.message);
   }
 }
 

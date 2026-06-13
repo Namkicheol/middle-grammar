@@ -270,9 +270,14 @@ function viewBlanks() {
       </div>
     </div>
 
-    <p style="font-family:var(--font-display);font-style:italic;color:var(--ink-3);font-size:.94rem;margin-bottom:18px;">
-      영어빈칸: 더블클릭으로 단어 선택 · 한글빈칸: 한국어 어절 더블클릭
-    </p>
+    <div style="display:flex;align-items:center;gap:12px;background:rgba(168,67,28,.08);border:2px solid var(--terracotta,#a8431c);border-radius:10px;padding:14px 18px;margin-bottom:18px;">
+      <span style="font-size:1.6rem;line-height:1;">👆</span>
+      <p style="margin:0;font-size:1.18rem;font-weight:700;color:var(--ink,#181613);line-height:1.5;">
+        <span style="color:var(--terracotta,#a8431c);">영어 빈칸</span> = 영어 단어 <u>더블클릭</u>
+        <span style="opacity:.5;margin:0 6px;">/</span>
+        <span style="color:var(--terracotta,#a8431c);">한글 빈칸</span> = 한국어 어절 <u>더블클릭</u>
+      </p>
+    </div>
 
     ${state.pieces.map((p, idx) => renderBlanksPiece(p, idx)).join('')}
 

@@ -180,7 +180,7 @@ function renderGrammar(points, isStudent) {
         : 'Q. 아래 밑줄 친 표현의 문법적 특징은 무엇인가요?'}</div>
       <div class="sentence">${highlightMatch(p.sentence, p.match)}</div>
       ${isStudent
-        ? '<span class="answer-line"></span><span class="answer-line"></span><span class="answer-line"></span>'
+        ? '<span class="answer-line"></span>'
         : `<div class="ask answer">${p.askTranslation && p.ko ? `<div class="answer-ko">해석: ${escapeHtml(p.ko)}</div>` : ''}A. ${escapeHtml(p.explain)}</div>`}
     </div>
   `).join('')}

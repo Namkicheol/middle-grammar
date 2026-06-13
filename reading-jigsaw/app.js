@@ -6,7 +6,7 @@ import { autoSplit, insertBoundary, removeBoundary } from './engine/split.js?v=2
 import { extract, pickForPiece } from './engine/vocab.js?v=20260613a';
 import { detectAll } from './engine/grammar.js?v=20250526a';
 import { suggest as suggestBlanks } from './engine/blanks.js?v=20250526a';
-import { renderPaper } from './ui/preview.js?v=20260613b';
+import { renderPaper } from './ui/preview.js?v=20260613c';
 import { resetHpid, hwpxPara, hwpxFirstPara, wrapSection, buildHwpxFile } from './engine/hwpx.js?v=20260613b';
 
 const STORAGE_KEY = 'jigsaw-studio:v1';
@@ -291,11 +291,14 @@ function viewBlanks() {
         <input id="grammar-target" class="vocab-edit-meaning" style="flex:1;min-width:160px;max-width:280px;"
                placeholder="예: 관계대명사, 수동태, to부정사 …" value="${escapeAttr(state.grammarTarget || '')}">
       </div>
-      ${state.grammarLoading
-        ? `<div class="claude-panel-row"><span style="font-family:var(--font-mono);font-size:.8rem;color:var(--moss);">AI가 문법 포인트를 분석 중...</span></div>`
+      ${(state.grammarLoading || state.aiLoading)
+        ? `<div class="claude-panel-row"><span style="font-family:var(--font-mono);font-size:.8rem;color:var(--moss);">AI 실행 중...</span></div>`
         : state.grammarCandidates
           ? renderGrammarCandidates()
-          : `<div class="claude-panel-row"><button class="btn btn-primary" id="run-ai">✨ 문법 포인트 추출</button></div>`}
+          : `<div class="claude-panel-row" style="flex-direction:column;align-items:flex-start;gap:6px;">
+               <button class="btn btn-primary" id="run-ai-full">🤖 AI로 채우기 — 단어 뜻·번역·문법</button>
+               <span style="font-family:var(--font-mono);font-size:.72rem;color:var(--ink-3);">버튼을 눌러야 AI가 실행됩니다 (자동 실행 안 함 · API 절약)</span>
+             </div>`}
     </div>
 
     <div class="step-actions">
@@ -539,6 +542,7 @@ document.addEventListener('click', e => {
   // Step 3 — Claude panel
   if (t.id === 'copy-claude-prompt') return copyClaudePrompt();
   if (t.id === 'apply-ai-json') return applyAIJson();
+  if (t.id === 'run-ai-full') return runAIEnrich(true);
   if (t.id === 'run-ai') return runGrammarExtract();
   if (t.id === 'apply-grammar-btn') return applyGrammarSelections();
   // Step 5
@@ -671,7 +675,10 @@ document.addEventListener('change', e => {
     }
     return;
   }
-  if (e.target.classList.contains('gc-check')) applyGrammarSelections();
+  if (e.target.classList.contains('gc-check')) {
+    state.grammarSelected[`${e.target.dataset.label}-${e.target.dataset.ci}`] = e.target.checked;
+    applyGrammarSelections();
+  }
 });
 
 // 입력 처리
@@ -747,7 +754,7 @@ function renderGrammarCandidates() {
           <div class="gc-piece-label">조각 ${pc.label}</div>
           ${(pc.candidates || []).map((c, ci) => {
             const key = `${pc.label}-${ci}`;
-            const isChecked = state.grammarSelected[key] !== false;
+            const isChecked = state.grammarSelected[key] === true;
             return `
             <label class="gc-item">
               <input type="checkbox" class="gc-check" data-label="${pc.label}" data-ci="${ci}" ${isChecked ? 'checked' : ''}>
@@ -759,7 +766,7 @@ function renderGrammarCandidates() {
       `).join('')}
     </div>
     <div class="claude-panel-row" style="margin-top:10px;gap:8px;">
-      <button class="btn" id="run-ai">↺ 다시 추출</button>
+      <button class="btn" id="run-ai">↺ 문법 후보 다시 추출</button>
     </div>`;
 }
 
@@ -823,11 +830,11 @@ async function runGrammarExtract() {
   try {
     const result = await extractGrammarCandidates(state);
     state.grammarCandidates = result;
-    // 초기에 모두 선택 상태로 초기화
+    // 기본값: 조각당 첫 후보 1개만 선택, 나머지는 비움(사용자가 원하는 것만 체크)
     state.grammarSelected = {};
     (result.pieces || []).forEach(pc =>
       (pc.candidates || []).forEach((_, ci) => {
-        state.grammarSelected[`${pc.label}-${ci}`] = true;
+        state.grammarSelected[`${pc.label}-${ci}`] = (ci === 0);
       })
     );
     renderEdit();
@@ -844,11 +851,6 @@ async function runGrammarExtract() {
 function applyGrammarSelections() {
   if (!state.grammarCandidates) return;
 
-  // DOM에서 체크 상태 먼저 저장 (renderEdit 이전에 캡처)
-  document.querySelectorAll('.gc-check').forEach(cb => {
-    state.grammarSelected[`${cb.dataset.label}-${cb.dataset.ci}`] = cb.checked;
-  });
-
   // 기존 AI 문법 히트 초기화
   for (const [sid, hits] of state.grammarMap) {
     const filtered = hits.filter(h => h.label !== 'AI');
@@ -856,27 +858,24 @@ function applyGrammarSelections() {
     else state.grammarMap.delete(sid);
   }
 
-  const checks = [...document.querySelectorAll('.gc-check:checked')];
-  for (const cb of checks) {
-    const pcLabel = cb.dataset.label;
-    const ci = +cb.dataset.ci;
-    const pc = state.grammarCandidates.pieces?.find(p => p.label === pcLabel);
-    if (!pc) continue;
-    const cand = pc.candidates?.[ci];
-    if (!cand?.match) continue;
-
-    const pieceIdx = state.pieces.findIndex(p => p.label === pcLabel);
-    if (pieceIdx < 0) continue;
-    const piece = state.pieces[pieceIdx];
-    for (const s of state.sentences.slice(piece.range[0], piece.range[1])) {
-      if (s.isHeading || !s.en.includes(cand.match)) continue;
-      const existing = state.grammarMap.get(s.id) || [];
-      state.grammarMap.set(s.id, [
-        { match: cand.match, label: 'AI', explain: cand.explain },
-        ...existing.filter(h => h.match !== cand.match)
-      ]);
-      break;
-    }
+  // state.grammarSelected 기준으로 적용 (DOM 비의존 — 다른 단계에서도 즉시 반영)
+  for (const pc of (state.grammarCandidates.pieces || [])) {
+    (pc.candidates || []).forEach((cand, ci) => {
+      if (state.grammarSelected[`${pc.label}-${ci}`] !== true) return;
+      if (!cand?.match) return;
+      const pieceIdx = state.pieces.findIndex(p => p.label === pc.label);
+      if (pieceIdx < 0) return;
+      const piece = state.pieces[pieceIdx];
+      for (const s of state.sentences.slice(piece.range[0], piece.range[1])) {
+        if (s.isHeading || !s.en.includes(cand.match)) continue;
+        const existing = state.grammarMap.get(s.id) || [];
+        state.grammarMap.set(s.id, [
+          { match: cand.match, label: 'AI', explain: cand.explain },
+          ...existing.filter(h => h.match !== cand.match)
+        ]);
+        break;
+      }
+    });
   }
 
   renderEdit(); renderPrev(); persist();
@@ -995,8 +994,7 @@ async function submitSource() {
   }
   pipeline();
   go(2);
-
-  runAIEnrich(true); // AI가 split_at도 함께 결정
+  // AI 자동 실행 안 함 — 사용자가 '빈칸·문법' 단계에서 [AI로 채우기] 버튼을 눌러야 실행(API 절약)
 }
 
 async function loadSample() {
@@ -1204,6 +1202,14 @@ function _docxEnRuns(text, blanks, isStudent) {
   out += _wRun(text.slice(cursor));
   return out;
 }
+// 한글 어절 빈칸(ko-blank 모드 학생용) — blanked 인덱스는 밑줄빈칸으로
+function _docxKoRuns(ko, blanked) {
+  if (!blanked || !blanked.size) return _wRun(ko, { i: true, color: '5D544A', sz: 17 });
+  return ko.split(' ').map((tok, i) => blanked.has(i)
+    ? _wRun('______', { u: true })
+    : _wRun(tok, { i: true, color: '5D544A', sz: 17 })
+  ).join(_wRun(' ', { sz: 17 }));
+}
 function buildPieceDocx(idx, mode) {
   const p = state.pieces[idx]; if (!p) return '';
   const isStudent = mode === 'student';
@@ -1238,9 +1244,15 @@ function buildPieceDocx(idx, mode) {
     let inner = '';
     bodies.forEach((s, i) => {
       const blanks = state.blanks?.get(s.id) || [];
-      const enRuns = (!isStudent || state.blankType === 'en') ? _docxEnRuns(s.en, blanks, isStudent) : _wRun(s.en);
+      const enBlank = (!isStudent || state.blankType === 'en');
+      const enRuns = enBlank ? _docxEnRuns(s.en, blanks, isStudent) : _wRun(s.en);
       inner += _wPara(enRuns, { after: s.ko ? 0 : 30, sz: 20 });
-      if (s.ko) inner += _wPara(_wRun(s.ko, { i: true, color: '5D544A', sz: 17 }), { after: 30 });
+      // 한글 줄: ko-빈칸 모드 학생 → 어절 빈칸 / 그 외 → 전체
+      if (isStudent && state.blankType === 'ko') {
+        if (s.ko) inner += _wPara(_docxKoRuns(s.ko, state.koBlanks?.get(s.id)), { after: 30 });
+      } else if (s.ko) {
+        inner += _wPara(_wRun(s.ko, { i: true, color: '5D544A', sz: 17 }), { after: 30 });
+      }
       const hits = state.grammarMap?.get(s.id);
       if (!isStudent && hits && hits.length) inner += _wPara(_wRun('→ ' + (hits[0].explain || ''), { sz: 15, color: '0F1D6B' }), { after: 30 });
     });
@@ -1336,6 +1348,17 @@ function exportDoc(mode) {
 }
 
 /* ───── HWPX(한글) 생성 — 검증된 한컴 정적 부품(engine/hwpx.js) + 조각 콘텐츠 section0.xml ───── */
+function _plainEnBlank(text, blanks) {
+  if (!blanks || !blanks.length) return text;
+  const sorted = [...blanks].sort((a, b) => a.start - b.start);
+  let cur = 0, out = '';
+  for (const b of sorted) { if (b.start < cur) continue; out += text.slice(cur, b.start) + '______'; cur = b.end; }
+  return out + text.slice(cur);
+}
+function _plainKoBlank(ko, blanked) {
+  if (!blanked || !blanked.size) return ko;
+  return ko.split(' ').map((t, i) => blanked.has(i) ? '______' : t).join(' ');
+}
 function buildJigsawHwpxSection(idxs, mode) {
   resetHpid();
   const isStudent = mode === 'student';
@@ -1363,8 +1386,14 @@ function buildJigsawHwpxSection(idxs, mode) {
     if (bodies.length) {
       body += hwpxPara('② Slow Reading', 8);
       for (const s of bodies) {
-        body += hwpxPara(s.en, 0);
-        if (s.ko) body += hwpxPara(s.ko, 10);
+        const enText = (isStudent && state.blankType === 'en') ? _plainEnBlank(s.en, state.blanks?.get(s.id)) : s.en;
+        body += hwpxPara(enText, 0);
+        if (s.ko) {
+          const koText = (isStudent && state.blankType === 'ko') ? _plainKoBlank(s.ko, state.koBlanks?.get(s.id)) : s.ko;
+          body += hwpxPara(koText, 10);
+        } else if (isStudent && state.blankType === 'ko') {
+          body += hwpxPara(blankLine, 10);
+        }
         const hits = state.grammarMap?.get(s.id);
         if (!isStudent && hits && hits.length) body += hwpxPara('→ ' + (hits[0].explain || ''), 10);
       }

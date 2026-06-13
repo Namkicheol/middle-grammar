@@ -1171,7 +1171,7 @@ function _wBorders(sz, color, sides) {
   sides = sides || ['top', 'left', 'bottom', 'right', 'insideH', 'insideV'];
   return '<w:tblBorders>' + sides.map(s => '<w:' + s + ' w:val="single" w:sz="' + sz + '" w:space="0" w:color="' + color + '"/>').join('') + '</w:tblBorders>';
 }
-const _CELLMAR = '<w:tblCellMar><w:top w:w="60" w:type="dxa"/><w:left w:w="120" w:type="dxa"/><w:bottom w:w="60" w:type="dxa"/><w:right w:w="120" w:type="dxa"/></w:tblCellMar>';
+const _CELLMAR = '<w:tblCellMar><w:top w:w="36" w:type="dxa"/><w:left w:w="120" w:type="dxa"/><w:bottom w:w="36" w:type="dxa"/><w:right w:w="120" w:type="dxa"/></w:tblCellMar>';
 // vocab 2열 표 — 외곽 박스 + 옅은 칸선
 function _wVocabTbl(rows) {
   return '<w:tbl><w:tblPr><w:tblW w:w="5000" w:type="pct"/><w:tblLayout w:type="fixed"/>' +
@@ -1233,7 +1233,7 @@ function buildPieceDocx(idx, mode) {
     body += stepLabel('①', 'Vocabulary');
     let rows = '';
     for (let i = 0; i < vocab.length; i += 2) {
-      const cell = v => v ? _wPara(_wRun(v.word + '   ', { b: true }) + _wRun(isStudent ? '____________' : (v.meaning || '____________'), { color: '555555' })) : '<w:p/>';
+      const cell = v => v ? _wPara(_wRun(v.word + '  ', { b: true }) + _wRun(': ', { color: '999999' }) + _wRun(isStudent ? '___________' : (v.meaning || '___________'), { color: '555555' }), { after: 0 }) : '<w:p/>';
       rows += '<w:tr>' + _wTc(cell(vocab[i]), 2500) + _wTc(cell(vocab[i + 1]), 2500) + '</w:tr>';
     }
     body += _wVocabTbl(rows) + SPACER;
@@ -1282,7 +1282,7 @@ function buildPieceDocx(idx, mode) {
       const m = g.match, t = g.sentence, mi = m ? t.indexOf(m) : -1;
       if (mi >= 0) sRuns = _wRun(t.slice(0, mi)) + _wRun(m, { u: true, b: true, color: 'A8431C' }) + _wRun(t.slice(mi + m.length));
       else sRuns = _wRun(t);
-      inner += _wPara(sRuns, { after: !isStudent ? 40 : 0, jc: 'center' });
+      inner += _wPara(sRuns, { after: !isStudent ? 40 : 0, shd: 'FFFFFF' });
       if (!isStudent) inner += _wPara((g.ko ? _wRun('해석: ' + g.ko + '  ', { color: '3D3830', sz: 16 }) : '') + _wRun('A. ' + (g.explain || ''), { color: 'C0392B', sz: 16 }), { after: 0 });
       else { inner += _wPara(_wRun('__________________________________________________', { color: 'BBBBBB' }), { after: 0 }); }
       body += _wBox(inner, { bc: 'AEB7E0', shd: 'F4F6FF' }) + SPACER;

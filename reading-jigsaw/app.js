@@ -7,7 +7,7 @@ import { extract, pickForPiece } from './engine/vocab.js?v=20260613a';
 import { detectAll } from './engine/grammar.js?v=20250526a';
 import { suggest as suggestBlanks } from './engine/blanks.js?v=20250526a';
 import { renderPaper } from './ui/preview.js?v=20260614d';
-import { resetHpid, hwpxPara, hwpxFirstPara, hwpxTable, hwpxTableSpan, hwpxBox, wrapSection, buildHwpxFile } from './engine/hwpx.js?v=20260614b';
+import { resetHpid, hwpxPara, hwpxFirstPara, hwpxTable, hwpxTableSpan, hwpxBox, wrapSection, buildHwpxFile } from './engine/hwpx.js?v=20260614c';
 
 const STORAGE_KEY = 'jigsaw-studio:v1';
 const SAMPLE_URL = 'assets/samples/donga-l4.txt';

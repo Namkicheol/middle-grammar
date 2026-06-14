@@ -124,7 +124,7 @@ export function hwpxTableSpan(rows, colWidths, opts){
         + '<hp:cellAddr colAddr="'+c+'" rowAddr="'+r+'"/>'
         + '<hp:cellSpan colSpan="'+cs+'" rowSpan="'+rs+'"/>'
         + '<hp:cellSz width="'+width+'" height="'+(rowH*rs)+'"/>'
-        + '<hp:cellMargin left="510" right="300" top="120" bottom="120"/>'
+        + '<hp:cellMargin left="510" right="300" top="180" bottom="360"/>'
         + '</hp:tc>';
       c += cs;
     }

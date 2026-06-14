@@ -1320,6 +1320,52 @@ function _wBox(inner, o) {
     '<w:tblGrid><w:gridCol w:w="9400"/></w:tblGrid>' +
     '<w:tr><w:tc><w:tcPr><w:tcW w:w="5000" w:type="pct"/>' + shd + '</w:tcPr>' + (inner || '<w:p/>') + '</w:tc></w:tr></w:tbl>';
 }
+// 병합(colSpan=gridSpan / rowSpan=vMerge) 지원 표 — 레퍼런스 좌측 라벨열 구조용.
+// rows: [[{runs?,inner?,t?,colSpan?,rowSpan?,jc?,shd?,after?,line?,vAlign?}|string,...],...]
+// Word는 병합으로 덮인 칸도 vMerge 연속셀로 매 행에 명시해야 함 → 점유 그리드로 자동 채움.
+function _wSpanTbl(colDxa, rows, opts) {
+  opts = opts || {};
+  const bc = opts.bc || '888888', sz = opts.sz || 4;
+  const colCnt = colDxa.length, total = colDxa.reduce((a, b) => a + b, 0);
+  const pct = w => Math.round(w / total * 5000);
+  const occ = {}, grid = [];
+  for (let r = 0; r < rows.length; r++) {
+    let c = 0;
+    for (const raw of (rows[r] || [])) {
+      const cell = (typeof raw === 'string') ? { t: raw } : raw;
+      while (occ[r + ',' + c]) c++;
+      const cs = cell.colSpan || 1, rs = cell.rowSpan || 1;
+      (grid[r] = grid[r] || [])[c] = { kind: 'start', cell, cs, rs };
+      for (let dr = 0; dr < rs; dr++) for (let dc = 0; dc < cs; dc++) occ[(r + dr) + ',' + (c + dc)] = true;
+      for (let dr = 1; dr < rs; dr++) (grid[r + dr] = grid[r + dr] || [])[c] = { kind: 'vcont', cs };
+      c += cs;
+    }
+  }
+  let trs = '';
+  for (let r = 0; r < rows.length; r++) {
+    let tcs = '', c = 0;
+    while (c < colCnt) {
+      const g = (grid[r] || [])[c];
+      if (!g) { c++; continue; }
+      const cs = g.cs, w = colDxa.slice(c, c + cs).reduce((a, b) => a + b, 0);
+      const gs = cs > 1 ? '<w:gridSpan w:val="' + cs + '"/>' : '';
+      if (g.kind === 'vcont') {
+        tcs += '<w:tc><w:tcPr><w:tcW w:w="' + pct(w) + '" w:type="pct"/>' + gs + '<w:vMerge/></w:tcPr><w:p/></w:tc>';
+      } else {
+        const cell = g.cell;
+        const vm = g.rs > 1 ? '<w:vMerge w:val="restart"/>' : '';
+        const shd = cell.shd ? '<w:shd w:val="clear" w:fill="' + cell.shd + '"/>' : '';
+        const va = '<w:vAlign w:val="' + (cell.vAlign || 'center') + '"/>';
+        const content = cell.inner || _wPara(cell.runs || _wRun(cell.t || ''), { jc: cell.jc, after: cell.after != null ? cell.after : 0, line: cell.line || 264 });
+        tcs += '<w:tc><w:tcPr><w:tcW w:w="' + pct(w) + '" w:type="pct"/>' + gs + vm + shd + va + '</w:tcPr>' + content + '</w:tc>';
+      }
+      c += cs;
+    }
+    trs += '<w:tr>' + tcs + '</w:tr>';
+  }
+  const gridXml = '<w:tblGrid>' + colDxa.map(w => '<w:gridCol w:w="' + w + '"/>').join('') + '</w:tblGrid>';
+  return '<w:tbl><w:tblPr><w:tblW w:w="5000" w:type="pct"/><w:tblLayout w:type="fixed"/>' + _wBorders(sz, bc) + _CELLMAR + '</w:tblPr>' + gridXml + trs + '</w:tbl>';
+}
 // 한 문장 en을 빈칸 데이터로 분해 → runs (student: 밑줄빈칸 / teacher: 정답)
 function _docxEnRuns(text, blanks, isStudent) {
   if (!blanks || !blanks.length) return _wRun(text);
@@ -1351,62 +1397,74 @@ function buildPieceDocx(idx, mode) {
   const lesson = (state.meta.lesson || '').trim();
   const title = (state.meta.title || '').trim();
   const stars = '★'.repeat(p.stars || 0) + '☆'.repeat(3 - (p.stars || 0));
-  const SPACER = _wPara('', { after: 120 }); // 표(박스) 사이 구분 문단 — Word가 표를 합치지 않게
-  const stepLabel = (n, name) => _wPara(_wRun(n + '  ', { b: true, sz: 24, color: 'A8431C' }) + _wRun(name, { b: true, sz: 22 }), { after: 40 });
+  const SPACER = _wPara('', { after: 80 });
+  const LBL = 'F0ECE0'; // 좌측 라벨 셀 음영
+  const lblCell = (text, rowSpan) => ({ runs: text.split('\n').map(t => _wRun(t, { b: true, sz: 20 })).join('<w:r><w:br/></w:r>'), rowSpan, jc: 'center', shd: LBL });
   let body = '';
-  // header (제목 + 하단 굵은 선)
-  const headParts = [lesson, title].filter(Boolean).join(' · ');
-  body += _wPara(_wRun(p.label + '.  ', { b: true, sz: 36, color: 'A8431C' }) +
-    _wRun((p.heading || headParts || '') + '   ', { b: true, sz: 26 }) + _wRun(stars, { sz: 20, color: '999999' }),
-    { after: 40, border: 16, bc: '111111' });
+  // ① 제목 strip(단원 | 제목 | Jigsaw Reading | 조각) — 레퍼런스 상단 띠 표
+  body += _wSpanTbl([1769, 3653, 2211, 1769], [[
+    { runs: _wRun(lesson || 'Reading', { b: true, sz: 20 }), jc: 'center', shd: LBL },
+    { runs: _wRun(title, { b: true, sz: 22 }), jc: 'center' },
+    { runs: _wRun('Jigsaw Reading', { sz: 18, color: '5D544A' }), jc: 'center' },
+    { runs: _wRun(p.label + (p.heading ? '. ' + p.heading : ''), { sz: 18 }), jc: 'center' }
+  ]], { sz: 6, bc: '555555' });
   body += _wPara(_wRun('학번: ______________      이름: ______________', { sz: 18, color: '555555' }), { after: 60 });
-  body += _wPara(_wRun('[Jigsaw Reading] 전문가 집단으로 이동하여 ' + p.label + '를 자세히 함께 공부한 후, 원래 모둠으로 돌아와 선생님이 되어 친구들에게 읽고 설명해 줍니다.', { sz: 16, color: '5D544A' }), { after: 120 });
-  // ① Vocabulary — 외곽 박스 표
+  // ② 좌측 라벨열 단일 표 (7열: 라벨 + 단어3쌍 / 본문 span6)
+  const COL = [1442, 1769, 884, 1769, 884, 1769, 884]; // 라벨 + (단어 넓게|뜻) ×3, 합 9401
+  const rows = [];
+  // 헤더행: [A★★★ | jigsaw 안내(span6)]
+  rows.push([
+    { runs: _wRun(p.label + '  ', { b: true, sz: 26, color: 'A8431C' }) + _wRun(stars, { sz: 16, color: '999999' }), jc: 'center', shd: LBL },
+    { runs: _wRun('[Jigsaw Reading] 전문가 집단으로 이동하여 ' + p.label + '를 자세히 함께 공부한 후, 원래 모둠으로 돌아와 선생님이 되어 친구들에게 읽고 설명해 줍니다.', { sz: 16, color: '5D544A' }), colSpan: 6, jc: 'left' }
+  ]);
+  // Step 1 Words — 라벨 rowSpan + 단어3쌍 그리드
   if (vocab.length) {
-    body += stepLabel('Step 1', 'Words');
-    let rows = '';
-    for (let i = 0; i < vocab.length; i += 2) {
-      const cell = v => v ? _wPara(_wRun(v.word + '  ', { b: true }) + _wRun(': ', { color: '999999' }) + _wRun(isStudent ? '___________' : (v.meaning || '___________'), { color: '555555' }), { after: 0 }) : '<w:p/>';
-      rows += '<w:tr>' + _wTc(cell(vocab[i]), 2500) + _wTc(cell(vocab[i + 1]), 2500) + '</w:tr>';
+    const wr = [];
+    for (let i = 0; i < vocab.length; i += 3) {
+      const cells = [];
+      for (let j = 0; j < 3; j++) {
+        const v = vocab[i + j];
+        cells.push(v ? { runs: _wRun(v.word, { b: true }), jc: 'center' } : { t: '' });
+        cells.push(v ? { runs: _wRun(isStudent ? '' : (v.meaning || ''), { color: '555555', sz: 18 }) } : { t: '' });
+      }
+      wr.push(cells);
     }
-    body += _wVocabTbl(rows) + SPACER;
+    rows.push([lblCell('Step 1\nWords', wr.length), ...wr[0]]);
+    for (let k = 1; k < wr.length; k++) rows.push(wr[k]);
   }
-  // ② Slow Reading — 박스 카드
+  // Step 2 Slow Reading — 라벨 rowSpan + 문장행(각 줄 span6)
   if (bodies.length) {
-    body += stepLabel('Step 2', 'Slow Reading');
-    let inner = '';
-    bodies.forEach((s, i) => {
+    const lines = [];
+    bodies.forEach(s => {
       const blanks = state.blanks?.get(s.id) || [];
       const enBlank = (!isStudent || state.blankType === 'en');
       const enRuns = enBlank ? _docxEnRuns(s.en, blanks, isStudent) : _wRun(s.en);
-      // 적당한 줄간격(끊어읽기 표시 공간) — 너무 비지도, 문법 여러 개 시 넘치지도 않게
-      inner += _wPara(enRuns, { after: s.ko ? 30 : 60, sz: 24, line: 320 });
-      // 한글 줄: ko-빈칸 모드 학생 → 어절 빈칸 / 그 외 → 전체
+      lines.push({ runs: enRuns, sz: 24, line: 300, after: s.ko ? 20 : 40 });
       if (isStudent && state.blankType === 'ko') {
-        if (s.ko) inner += _wPara(_docxKoRuns(s.ko, state.koBlanks?.get(s.id)), { after: 60, line: 276 });
+        if (s.ko) lines.push({ runs: _docxKoRuns(s.ko, state.koBlanks?.get(s.id)), line: 264, after: 40 });
       } else if (s.ko) {
-        inner += _wPara(_wRun(s.ko, { i: true, color: '5D544A', sz: 20 }), { after: 60, line: 300 });
+        lines.push({ runs: _wRun(s.ko, { i: true, color: '5D544A', sz: 20 }), line: 276, after: 40 });
       }
       const hits = state.grammarMap?.get(s.id);
-      if (!isStudent && hits && hits.length) inner += _wPara(_wRun('→ ' + (hits[0].explain || ''), { sz: 18, color: '0F1D6B' }), { after: 60 });
+      if (!isStudent && hits && hits.length) lines.push({ runs: _wRun('→ ' + (hits[0].explain || ''), { sz: 18, color: '0F1D6B' }), after: 40 });
     });
-    body += _wBox(inner) + SPACER;
+    const toCell = (l, extra) => ({ runs: l.runs, inner: _wPara(l.runs, { after: l.after != null ? l.after : 0, line: l.line || 264 }), jc: 'left', vAlign: 'center', ...extra });
+    rows.push([lblCell('Step 2\nSlow Reading', lines.length), toCell(lines[0], { colSpan: 6 })]);
+    for (let k = 1; k < lines.length; k++) rows.push([toCell(lines[k], { colSpan: 6 })]);
   }
-  // ③ Question — 박스 카드 (자동 1개 + 추가 질문들)
-  if (bodies.length) {
-    const qs = (p.displayQ !== undefined) ? p.displayQ : [{ q: p.aiQuestion || 'What is the main idea of this section?', a: p.aiAnswer }];
-    if (qs.length) {
-    body += stepLabel('Step 3', 'Question');
-    let inner = '';
-    qs.forEach((it, qi) => {
-      inner += _wPara(_wRun('Q. ', { b: true }) + _wRun(it.q), { after: !isStudent && it.a ? 60 : 120 });
-      if (!isStudent && it.a) inner += _wPara(_wRun('A. ' + it.a, { color: 'C0392B', sz: 22 }), { after: qi < qs.length - 1 ? 120 : 0, line: 320 });
-      else { const line = _wPara(_wRun('__________________________________________________', { color: 'BBBBBB' }), { after: 160 }); inner += line + line + (qi < qs.length - 1 ? '' : line); }
+  // Step 3 Question — 라벨 rowSpan + 질문/답행
+  const qs = (p.displayQ !== undefined) ? p.displayQ : [{ q: p.aiQuestion || 'What is the main idea of this section?', a: p.aiAnswer }];
+  if (bodies.length && qs.length) {
+    const qLines = [];
+    qs.forEach(it => {
+      qLines.push({ inner: _wPara(_wRun('Q. ', { b: true }) + _wRun(it.q), { after: 40 }) });
+      if (!isStudent && it.a) qLines.push({ inner: _wPara(_wRun('A. ' + it.a, { color: 'C0392B', sz: 22 }), { after: 0, line: 300 }) });
+      else qLines.push({ inner: _wPara(_wRun('__________________________________________________', { color: 'BBBBBB' }), { after: 100 }) });
     });
-    body += _wBox(inner) + SPACER;
-    }
+    rows.push([lblCell('Step 3\nQuestion', qLines.length), { inner: qLines[0].inner, colSpan: 6, jc: 'left', vAlign: 'center' }]);
+    for (let k = 1; k < qLines.length; k++) rows.push([{ inner: qLines[k].inner, colSpan: 6, jc: 'left', vAlign: 'center' }]);
   }
-  // ④ Grammar Point — 카드마다 박스(옅은 파랑)
+  // Step 4 Grammar Point — 라벨 rowSpan + 카드행
   const gPoints = [];
   for (const s of rangeSentences) {
     if (s.isHeading) continue;
@@ -1414,19 +1472,19 @@ function buildPieceDocx(idx, mode) {
     if (hits && hits.length) for (const h of hits) gPoints.push({ sentence: s.en, match: h.match, explain: h.explain, ko: s.ko });
   }
   if (gPoints.length) {
-    body += stepLabel('Step 4', 'Grammar Point');
+    const gLines = [];
     for (const g of gPoints) {
-      let inner = _wPara(_wRun('Q. 아래 밑줄 친 표현은 어떻게 해석하나요? 어떤 문법적 특징이 있나요?', { sz: 18, color: '3D3830' }), { after: 40 });
-      let sRuns;
+      gLines.push({ inner: _wPara(_wRun('Q. 아래 밑줄 친 표현은 어떻게 해석하나요? 어떤 문법적 특징이 있나요?', { sz: 18, color: '3D3830' }), { after: 30 }) });
       const m = g.match, t = g.sentence, mi = m ? t.indexOf(m) : -1;
-      if (mi >= 0) sRuns = _wRun(t.slice(0, mi)) + _wRun(m, { u: true, b: true, color: 'C0392B' }) + _wRun(t.slice(mi + m.length));
-      else sRuns = _wRun(t);
-      inner += _wPara(sRuns, { after: !isStudent ? 40 : 0, shd: 'FFFFFF' });
-      if (!isStudent) inner += _wPara((g.ko ? _wRun('해석: ' + g.ko + '  ', { color: '3D3830', sz: 20 }) : '') + _wRun('A. ' + (g.explain || ''), { color: 'C0392B', sz: 20 }), { after: 0 });
-      else { inner += _wPara(_wRun('__________________________________________________', { color: 'BBBBBB' }), { after: 0 }); }
-      body += _wBox(inner) + SPACER;
+      const sRuns = (mi >= 0) ? _wRun(t.slice(0, mi)) + _wRun(m, { u: true, b: true, color: 'C0392B' }) + _wRun(t.slice(mi + m.length)) : _wRun(t);
+      gLines.push({ inner: _wPara(sRuns, { after: !isStudent ? 30 : 0 }) });
+      if (!isStudent) gLines.push({ inner: _wPara((g.ko ? _wRun('해석: ' + g.ko + '  ', { color: '3D3830', sz: 20 }) : '') + _wRun('A. ' + (g.explain || ''), { color: 'C0392B', sz: 20 }), { after: 60 }) });
+      else gLines.push({ inner: _wPara(_wRun('__________________________________________________', { color: 'BBBBBB' }), { after: 60 }) });
     }
+    rows.push([lblCell('Step 4\nGrammar Point', gLines.length), { inner: gLines[0].inner, colSpan: 6, jc: 'left', vAlign: 'center' }]);
+    for (let k = 1; k < gLines.length; k++) rows.push([{ inner: gLines[k].inner, colSpan: 6, jc: 'left', vAlign: 'center' }]);
   }
+  body += _wSpanTbl(COL, rows, { sz: 4, bc: '888888' }) + SPACER;
   return body;
 }
 function buildJigsawDocxXml(idxs, mode) {
@@ -1516,19 +1574,19 @@ function buildJigsawHwpxSection(idxs, mode) {
     const lesson = (state.meta.lesson || '').trim();
     const title = (state.meta.title || '').trim();
     body += hwpxTable([[
-      { t: lesson || 'Reading', charId: 8, paraId: 41 },
-      { t: title, charId: 8, paraId: 41 },
-      { t: 'Jigsaw Reading', charId: 0, paraId: 41 },
-      { t: p.label + (p.heading ? '. ' + p.heading : ''), charId: 0, paraId: 41 }
+      { t: lesson || 'Reading', charId: 8, paraId: 0 },
+      { t: title, charId: 8, paraId: 0 },
+      { t: 'Jigsaw Reading', charId: 0, paraId: 0 },
+      { t: p.label + (p.heading ? '. ' + p.heading : ''), charId: 0, paraId: 0 }
     ]], [8000, 16520, 10000, 8000], { rowH: 1500 });
     body += hwpxPara('학번 __________    이름 __________', 10);
 
     // ② 좌측 라벨열을 가진 단일 표 — 레퍼런스 본문 표(7열: 라벨 + 단어3쌍 / 본문 span6)
-    const COLW = [7000, 4200, 7640, 4200, 7640, 4200, 7640]; // 합 42520
+    const COLW = [6520, 8000, 4000, 8000, 4000, 8000, 4000]; // 합 42520 // 합 42520
     const rows = [];
     // 헤더행: [라벨 A★★★ | jigsaw 안내(span6)]
     rows.push([
-      { t: p.label + '  ' + stars, charId: 8, paraId: 41 },
+      { t: p.label + '  ' + stars, charId: 8, paraId: 0 },
       { t: '[Jigsaw Reading] 전문가 집단으로 이동하여 ' + p.label + '를 자세히 함께 공부한 후, 원래 모둠으로 돌아와 선생님이 되어 친구들에게 읽고 설명해 줍니다.', charId: 10, colSpan: 6 }
     ]);
     // Step 1 Words — 좌측 라벨 rowSpan + 단어3쌍 그리드
@@ -1538,12 +1596,12 @@ function buildJigsawHwpxSection(idxs, mode) {
         const cells = [];
         for (let j = 0; j < 3; j++) {
           const v = vocab[i + j];
-          cells.push(v ? { t: v.word, charId: 8, paraId: 41 } : { t: '' });
+          cells.push(v ? { t: v.word, charId: 8, paraId: 0 } : { t: '' });
           cells.push(v ? { t: isStudent ? '' : (v.meaning || ''), charId: 0 } : { t: '' });
         }
         wordRows.push(cells);
       }
-      rows.push([{ t: 'Step 1 Words', charId: 8, paraId: 41, rowSpan: wordRows.length }, ...wordRows[0]]);
+      rows.push([{ t: 'Step 1 Words', charId: 8, paraId: 0, rowSpan: wordRows.length }, ...wordRows[0]]);
       for (let k = 1; k < wordRows.length; k++) rows.push(wordRows[k]);
     }
     // Step 2 Slow Reading — 좌측 라벨 rowSpan + 문장행(각 줄 span6)
@@ -1561,7 +1619,7 @@ function buildJigsawHwpxSection(idxs, mode) {
         const hits = state.grammarMap?.get(s.id);
         if (!isStudent && hits && hits.length) lines.push({ t: '→ ' + (hits[0].explain || ''), charId: 11 });
       }
-      rows.push([{ t: 'Step 2 Slow Reading', charId: 8, paraId: 41, rowSpan: lines.length }, { t: lines[0].t, charId: lines[0].charId, colSpan: 6 }]);
+      rows.push([{ t: 'Step 2 Slow Reading', charId: 8, paraId: 0, rowSpan: lines.length }, { t: lines[0].t, charId: lines[0].charId, colSpan: 6 }]);
       for (let k = 1; k < lines.length; k++) rows.push([{ t: lines[k].t, charId: lines[k].charId, colSpan: 6 }]);
     }
     // Step 3 Question
@@ -1573,7 +1631,7 @@ function buildJigsawHwpxSection(idxs, mode) {
         if (!isStudent && it.a) qLines.push({ t: 'A. ' + it.a, charId: 11 });
         else qLines.push({ t: blankLine, charId: 0 });
       }
-      rows.push([{ t: 'Step 3 Question', charId: 8, paraId: 41, rowSpan: qLines.length }, { t: qLines[0].t, charId: qLines[0].charId, colSpan: 6 }]);
+      rows.push([{ t: 'Step 3 Question', charId: 8, paraId: 0, rowSpan: qLines.length }, { t: qLines[0].t, charId: qLines[0].charId, colSpan: 6 }]);
       for (let k = 1; k < qLines.length; k++) rows.push([{ t: qLines[k].t, charId: qLines[k].charId, colSpan: 6 }]);
     }
     // Step 4 Grammar Point
@@ -1591,7 +1649,7 @@ function buildJigsawHwpxSection(idxs, mode) {
         if (!isStudent) { if (g.ko) gLines.push({ t: '해석: ' + g.ko, charId: 10 }); gLines.push({ t: 'A. ' + (g.explain || ''), charId: 11 }); }
         else gLines.push({ t: blankLine, charId: 0 });
       }
-      rows.push([{ t: 'Step 4 Grammar Point', charId: 8, paraId: 41, rowSpan: gLines.length }, { t: gLines[0].t, charId: gLines[0].charId, colSpan: 6 }]);
+      rows.push([{ t: 'Step 4 Grammar Point', charId: 8, paraId: 0, rowSpan: gLines.length }, { t: gLines[0].t, charId: gLines[0].charId, colSpan: 6 }]);
       for (let k = 1; k < gLines.length; k++) rows.push([{ t: gLines[k].t, charId: gLines[k].charId, colSpan: 6 }]);
     }
     body += hwpxTableSpan(rows, COLW, { rowH: 1100 });

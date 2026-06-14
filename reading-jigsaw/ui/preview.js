@@ -134,9 +134,12 @@ function pickNote(state, sentence) {
 
 function renderQuestion(piece, bodies, isStudent) {
   if (!bodies.length) return '';
+  // displayQ(체크된 질문들)가 있으면 그걸 사용 — 모두 해제 시 질문 섹션 없음. 없으면(enrich 전) 자동 질문.
   const target = bodies.slice().sort((a, b) => b.en.length - a.en.length)[0];
-  const q0 = piece.aiQuestion || makeQuestion(target.en, piece.heading);
-  const qs = [{ q: q0, a: piece.aiAnswer }, ...((piece.extraQ || []))];
+  const qs = (piece.displayQ !== undefined)
+    ? piece.displayQ
+    : [{ q: piece.aiQuestion || makeQuestion(target.en, piece.heading), a: piece.aiAnswer }];
+  if (!qs.length) return '';
   const cards = qs.map(({ q, a }) => {
     const answerHtml = isStudent
       ? '<span class="answer-line"></span><span class="answer-line"></span>'

@@ -6,7 +6,7 @@ import { autoSplit, insertBoundary, removeBoundary } from './engine/split.js?v=2
 import { extract, pickForPiece } from './engine/vocab.js?v=20260613a';
 import { detectAll } from './engine/grammar.js?v=20250526a';
 import { suggest as suggestBlanks } from './engine/blanks.js?v=20250526a';
-import { renderPaper } from './ui/preview.js?v=20260614b';
+import { renderPaper } from './ui/preview.js?v=20260614c';
 import { resetHpid, hwpxPara, hwpxFirstPara, hwpxTable, hwpxBox, wrapSection, buildHwpxFile } from './engine/hwpx.js?v=20260613h';
 
 const STORAGE_KEY = 'jigsaw-studio:v1';
@@ -782,10 +782,10 @@ function applyAIJson() {
 
 function renderGrammarCandidates() {
   const cands = state.grammarCandidates;
-  if (!cands?.pieces?.length) return '<div class="claude-panel-row" style="color:var(--ink-3);font-size:.82rem;">추출된 문법 포인트가 없습니다.</div>';
-  return `
+  const hasCands = cands?.pieces?.some(pc => pc.candidates.length);
+  const list = hasCands ? `
     <div class="gc-list">
-      ${cands.pieces.map(pc => `
+      ${cands.pieces.filter(pc => pc.candidates.length).map(pc => `
         <div class="gc-piece">
           <div class="gc-piece-label">조각 ${pc.label}</div>
           ${(pc.candidates || []).map((c, ci) => {
@@ -800,9 +800,10 @@ function renderGrammarCandidates() {
           }).join('')}
         </div>
       `).join('')}
-    </div>
+    </div>` : `<div class="claude-panel-row" style="color:var(--ink-3);font-size:.78rem;">자동 문법 1개 외에 더 필요하면 추가하세요.</div>`;
+  return `${list}
     <div class="claude-panel-row" style="margin-top:10px;gap:8px;">
-      <button class="btn" id="run-ai">↺ 문법 후보 다시 추출</button>
+      <button class="btn" id="run-ai">✨ AI 문법 추가</button>
     </div>`;
 }
 
@@ -841,8 +842,14 @@ async function runAIEnrich(applySplit = false) {
   try {
     const result = await enrichWithAI(state);
     applyAIResult(result, applySplit);
+    // 자동 문법(detectAll 1)·자동 질문(aiQuestion 1)을 '체크된 후보'로 확정 — 패널·워크시트 일관, 삭제 가능
+    if (!state._detectMap) state._detectMap = detectAll(state.sentences);
+    buildGrammarFromDetect(state._detectMap);
+    buildQuestionFromAuto();
+    rebuildGrammarMap();
+    applyQuestionSelections();
     renderEdit(); renderPrev(); persist();
-    // 번역만 자동. 문법 추가(runGrammarExtract)는 버튼으로만.
+    // 번역만 자동. 문법·질문 추가는 버튼으로만.
     runTranslate();
   } catch (e) {
     showAIError(e.message);
@@ -935,12 +942,24 @@ async function runAddQuestions() {
   } catch (e) { showAIError(e.message); }
   finally { state.aiLoading = false; renderEdit(); }
 }
+// 자동 질문(aiQuestion 1개)을 체크된 후보로 구성. AI 추가 질문은 뒤에 append.
+function buildQuestionFromAuto() {
+  state.questionCandidates = {
+    pieces: state.pieces.map(p => ({
+      label: p.label,
+      candidates: p.aiQuestion ? [{ q: p.aiQuestion, a: p.aiAnswer || '' }] : []
+    }))
+  };
+  state.questionSelected = {};
+  state.questionCandidates.pieces.forEach(pc => pc.candidates.forEach((_, ci) => { state.questionSelected[`${pc.label}-${ci}`] = true; }));
+}
+// 체크된 질문 후보 → piece.displayQ (워크시트에 출제될 질문들)
 function applyQuestionSelections() {
   if (!state.questionCandidates) return;
   for (const pc of state.questionCandidates.pieces) {
     const idx = state.pieces.findIndex(p => p.label === pc.label);
     if (idx < 0) continue;
-    state.pieces[idx].extraQ = pc.candidates.filter((_, ci) => state.questionSelected[`${pc.label}-${ci}`] === true);
+    state.pieces[idx].displayQ = pc.candidates.filter((_, ci) => state.questionSelected[`${pc.label}-${ci}`] === true);
   }
 }
 
@@ -1369,7 +1388,8 @@ function buildPieceDocx(idx, mode) {
   }
   // ③ Question — 박스 카드 (자동 1개 + 추가 질문들)
   if (bodies.length) {
-    const qs = [{ q: p.aiQuestion || 'What is the main idea of this section?', a: p.aiAnswer }, ...((p.extraQ || []))];
+    const qs = (p.displayQ !== undefined) ? p.displayQ : [{ q: p.aiQuestion || 'What is the main idea of this section?', a: p.aiAnswer }];
+    if (qs.length) {
     body += stepLabel('③', 'Question');
     let inner = '';
     qs.forEach((it, qi) => {
@@ -1378,6 +1398,7 @@ function buildPieceDocx(idx, mode) {
       else { const line = _wPara(_wRun('__________________________________________________', { color: 'BBBBBB' }), { after: 160 }); inner += line + line + (qi < qs.length - 1 ? '' : line); }
     });
     body += _wBox(inner) + SPACER;
+    }
   }
   // ④ Grammar Point — 카드마다 박스(옅은 파랑)
   const gPoints = [];
@@ -1518,15 +1539,17 @@ function buildJigsawHwpxSection(idxs, mode) {
         if (!isStudent && hits && hits.length) inner += hwpxPara('→ ' + (hits[0].explain || ''), 10);
       }
       body += hwpxBox(inner);
-      const qs = [{ q: p.aiQuestion || 'What is the main idea of this section?', a: p.aiAnswer }, ...((p.extraQ || []))];
-      body += hwpxPara('③ Question', 8);
-      let qInner = '';
-      for (const it of qs) {
-        qInner += hwpxPara('Q. ' + it.q, 0);
-        if (!isStudent && it.a) qInner += hwpxPara('A. ' + it.a, 11);
-        else { qInner += hwpxPara(blankLine, 0); }
+      const qs = (p.displayQ !== undefined) ? p.displayQ : [{ q: p.aiQuestion || 'What is the main idea of this section?', a: p.aiAnswer }];
+      if (qs.length) {
+        body += hwpxPara('③ Question', 8);
+        let qInner = '';
+        for (const it of qs) {
+          qInner += hwpxPara('Q. ' + it.q, 0);
+          if (!isStudent && it.a) qInner += hwpxPara('A. ' + it.a, 11);
+          else { qInner += hwpxPara(blankLine, 0); }
+        }
+        body += hwpxBox(qInner);
       }
-      body += hwpxBox(qInner);
     }
     const gp = [];
     for (const s of rangeSentences) {
@@ -1717,7 +1740,11 @@ function persist() {
       selectedPiece: state.selectedPiece,
       grammarTarget: state.grammarTarget,
       blankType: state.blankType,
-      showKo: state.showKo
+      showKo: state.showKo,
+      grammarCandidates: state.grammarCandidates,
+      grammarSelected: state.grammarSelected,
+      questionCandidates: state.questionCandidates,
+      questionSelected: state.questionSelected
     };
     localStorage.setItem(STORAGE_KEY, JSON.stringify(snap));
   } catch (e) { /* quota / private mode → skip */ }

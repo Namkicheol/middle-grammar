@@ -6,7 +6,7 @@ import { autoSplit, insertBoundary, removeBoundary } from './engine/split.js?v=2
 import { extract, pickForPiece } from './engine/vocab.js?v=20260613a';
 import { detectAll } from './engine/grammar.js?v=20250526a';
 import { suggest as suggestBlanks } from './engine/blanks.js?v=20250526a';
-import { renderPaper } from './ui/preview.js?v=20260613d';
+import { renderPaper } from './ui/preview.js?v=20260613e';
 import { resetHpid, hwpxPara, hwpxFirstPara, hwpxTable, hwpxBox, wrapSection, buildHwpxFile } from './engine/hwpx.js?v=20260613h';
 
 const STORAGE_KEY = 'jigsaw-studio:v1';
@@ -22,6 +22,8 @@ const state = {
   styleBase: 'english2',
   meta: { title: '', lesson: '' },
   grammarSelected: {},    // "label-ci" → true/false
+  questionCandidates: null,
+  questionSelected: {},   // 질문 후보 "label-ci" → true/false
   source: '',
   sentences: [],
   pieces: [],
@@ -291,17 +293,10 @@ function viewBlanks() {
         <input id="grammar-target" class="vocab-edit-meaning" style="flex:1;min-width:160px;max-width:280px;"
                placeholder="예: 관계대명사, 수동태, to부정사 …" value="${escapeAttr(state.grammarTarget || '')}">
       </div>
+      <span style="font-family:var(--font-mono);font-size:.72rem;color:var(--ink-3);display:block;margin:2px 0 8px;">단어 뜻·해석·질문 1개·문법 1개는 <b>자동</b>입니다. 자동 문법도 <b>체크 해제하면 빠집니다.</b> 버튼으로 더 추가하세요.</span>
       ${(state.grammarLoading || state.aiLoading)
         ? `<div class="claude-panel-row"><span style="font-family:var(--font-mono);font-size:.8rem;color:var(--moss);">AI 실행 중...</span></div>`
-        : state.grammarCandidates
-          ? renderGrammarCandidates()
-          : `<div class="claude-panel-row" style="flex-direction:column;align-items:flex-start;gap:6px;">
-               <div style="display:flex;gap:8px;flex-wrap:wrap;">
-                 <button class="btn btn-primary" id="run-ai">✨ AI 문법 추가</button>
-                 <button class="btn btn-primary" id="run-q">❓ AI 질문 추가</button>
-               </div>
-               <span style="font-family:var(--font-mono);font-size:.72rem;color:var(--ink-3);">단어 뜻·해석·질문 1개·문법 1개는 <b>자동 생성</b>됩니다. 위 버튼으로 AI 문법 포인트(선택지)와 질문을 <b>더 추가</b>할 수 있어요.</span>
-             </div>`}
+        : renderGrammarCandidates()}
     </div>
 
     <div class="step-actions">
@@ -502,8 +497,9 @@ function pipeline() {
     deduped.forEach(c => usedVocab.add(c.lc));
     state.vocabByPiece[i] = deduped;
   }
-  state.grammarMap = detectAll(state.sentences);
-  trimAutoGrammar(); // 자동 문법은 조각당 1개만 (나머지는 AI 버튼으로 추가)
+  state._detectMap = detectAll(state.sentences);
+  buildGrammarFromDetect(state._detectMap); // 자동 문법 조각당 1개를 체크된 후보로
+  rebuildGrammarMap();
   state.blanks = new Map();
   for (const s of state.sentences) {
     if (s.isHeading || !s.en) continue;
@@ -704,6 +700,10 @@ document.addEventListener('change', e => {
     state.grammarSelected[`${e.target.dataset.label}-${e.target.dataset.ci}`] = e.target.checked;
     applyGrammarSelections();
   }
+  if (e.target.classList.contains('qc-check')) {
+    state.questionSelected[`${e.target.dataset.label}-${e.target.dataset.ci}`] = e.target.checked;
+    applyQuestionSelections(); renderEdit(); renderPrev(); persist();
+  }
 });
 
 // 입력 처리
@@ -790,9 +790,28 @@ function renderGrammarCandidates() {
         </div>
       `).join('')}
     </div>
+    ${renderQuestionCandidates()}
     <div class="claude-panel-row" style="margin-top:10px;gap:8px;">
       <button class="btn" id="run-ai">↺ 문법 후보 다시 추출</button>
       <button class="btn" id="run-q">❓ AI 질문 추가</button>
+    </div>`;
+}
+
+function renderQuestionCandidates() {
+  const qc = state.questionCandidates;
+  if (!qc || !qc.pieces.some(pc => pc.candidates.length)) return '';
+  return `
+    <div class="gc-list" style="margin-top:10px;border-top:1px dashed var(--ink-mute);padding-top:8px;">
+      <div class="gc-piece-label" style="margin-bottom:6px;">추가 질문 — 체크한 것만 출제됩니다</div>
+      ${qc.pieces.filter(pc => pc.candidates.length).map(pc => `
+        <div class="gc-piece">
+          <div class="gc-piece-label">조각 ${pc.label}</div>
+          ${pc.candidates.map((c, ci) => {
+            const key = `${pc.label}-${ci}`;
+            const ch = state.questionSelected[key] === true;
+            return `<label class="gc-item"><input type="checkbox" class="qc-check" data-label="${pc.label}" data-ci="${ci}" ${ch ? 'checked' : ''}><span class="gc-match">${escapeHtml(c.q)}</span></label>`;
+          }).join('')}
+        </div>`).join('')}
     </div>`;
 }
 
@@ -850,18 +869,22 @@ async function runTranslate() {
 
 async function runGrammarExtract() {
   state.grammarLoading = true;
-  state.grammarCandidates = null;
   renderEdit();
   try {
     const result = await extractGrammarCandidates(state);
-    state.grammarCandidates = result;
-    // AI 문법은 '추가' 후보 — 기본 모두 해제. 자동 문법 1개는 detectAll이 이미 제공.
-    state.grammarSelected = {};
-    (result.pieces || []).forEach(pc =>
-      (pc.candidates || []).forEach((_, ci) => {
-        state.grammarSelected[`${pc.label}-${ci}`] = false;
-      })
-    );
+    // 기존 후보(자동 1개 등)에 AI 후보를 추가(append). 기본 해제(사용자가 골라서 추가).
+    if (!state.grammarCandidates) state.grammarCandidates = { pieces: state.pieces.map(p => ({ label: p.label, candidates: [] })) };
+    for (const pd of (result.pieces || [])) {
+      let pc = state.grammarCandidates.pieces.find(x => x.label === pd.label);
+      if (!pc) { pc = { label: pd.label, candidates: [] }; state.grammarCandidates.pieces.push(pc); }
+      for (const c of (pd.candidates || [])) {
+        if (!c.match) continue;
+        if (pc.candidates.some(x => x.match === c.match)) continue; // 중복 제거
+        const ci = pc.candidates.length;
+        pc.candidates.push({ match: c.match, explain: c.explain, askTranslation: c.askTranslation });
+        state.grammarSelected[`${pd.label}-${ci}`] = false;
+      }
+    }
     renderEdit();
     applyGrammarSelections();
     renderPrev(); persist();
@@ -873,53 +896,72 @@ async function runGrammarExtract() {
   }
 }
 
-// AI 질문 추가 — 각 조각에 질문 1개씩 더 붙임
+// AI 질문 추가 — 후보로 누적, 체크박스로 선택(문법과 동일). 새로 추가된 건 기본 선택.
 async function runAddQuestions() {
   state.aiLoading = true; renderEdit();
   try {
     const result = await addQuestions(state);
+    if (!state.questionCandidates) state.questionCandidates = { pieces: state.pieces.map(p => ({ label: p.label, candidates: [] })) };
     for (const pd of (result.pieces || [])) {
-      const idx = state.pieces.findIndex(p => p.label === pd.label);
-      if (idx < 0 || !pd.question) continue;
-      const p = state.pieces[idx];
-      if (!p.extraQ) p.extraQ = [];
-      p.extraQ.push({ q: pd.question, a: pd.answer || '' });
+      if (!pd.question) continue;
+      let pc = state.questionCandidates.pieces.find(x => x.label === pd.label);
+      if (!pc) { pc = { label: pd.label, candidates: [] }; state.questionCandidates.pieces.push(pc); }
+      const ci = pc.candidates.length;
+      pc.candidates.push({ q: pd.question, a: pd.answer || '' });
+      state.questionSelected[`${pd.label}-${ci}`] = true;
     }
+    applyQuestionSelections();
     renderEdit(); renderPrev(); persist();
   } catch (e) { showAIError(e.message); }
   finally { state.aiLoading = false; renderEdit(); }
 }
-
-function applyGrammarSelections() {
-  if (!state.grammarCandidates) return;
-
-  // 기존 AI 문법 히트 초기화
-  for (const [sid, hits] of state.grammarMap) {
-    const filtered = hits.filter(h => h.label !== 'AI');
-    if (filtered.length) state.grammarMap.set(sid, filtered);
-    else state.grammarMap.delete(sid);
+function applyQuestionSelections() {
+  if (!state.questionCandidates) return;
+  for (const pc of state.questionCandidates.pieces) {
+    const idx = state.pieces.findIndex(p => p.label === pc.label);
+    if (idx < 0) continue;
+    state.pieces[idx].extraQ = pc.candidates.filter((_, ci) => state.questionSelected[`${pc.label}-${ci}`] === true);
   }
+}
 
-  // state.grammarSelected 기준으로 적용 (DOM 비의존 — 다른 단계에서도 즉시 반영)
+// detectAll 결과(Map)에서 조각당 1개씩 자동 문법 후보 구성(기본 체크). AI 후보는 별도 추가.
+function buildGrammarFromDetect(detectMap) {
+  state.grammarCandidates = {
+    pieces: state.pieces.map(p => {
+      let one = null;
+      for (let i = p.range[0]; i < p.range[1] && !one; i++) {
+        const s = state.sentences[i]; if (!s || s.isHeading) continue;
+        const hits = detectMap && detectMap.get(s.id);
+        if (hits && hits.length) one = { match: hits[0].match, explain: hits[0].explain, askTranslation: hits[0].askTranslation };
+      }
+      return { label: p.label, candidates: one ? [one] : [] };
+    })
+  };
+  state.grammarSelected = {};
+  state.grammarCandidates.pieces.forEach(pc => pc.candidates.forEach((_, ci) => { state.grammarSelected[`${pc.label}-${ci}`] = true; }));
+}
+// 체크된 후보에서 grammarMap 완전 재구성 (렌더 없음)
+function rebuildGrammarMap() {
+  state.grammarMap = new Map();
+  if (!state.grammarCandidates) return;
   for (const pc of (state.grammarCandidates.pieces || [])) {
+    const pieceIdx = state.pieces.findIndex(p => p.label === pc.label);
+    if (pieceIdx < 0) continue;
+    const piece = state.pieces[pieceIdx];
     (pc.candidates || []).forEach((cand, ci) => {
-      if (state.grammarSelected[`${pc.label}-${ci}`] !== true) return;
-      if (!cand?.match) return;
-      const pieceIdx = state.pieces.findIndex(p => p.label === pc.label);
-      if (pieceIdx < 0) return;
-      const piece = state.pieces[pieceIdx];
+      if (state.grammarSelected[`${pc.label}-${ci}`] !== true || !cand?.match) return;
       for (const s of state.sentences.slice(piece.range[0], piece.range[1])) {
         if (s.isHeading || !s.en.includes(cand.match)) continue;
         const existing = state.grammarMap.get(s.id) || [];
-        state.grammarMap.set(s.id, [
-          { match: cand.match, label: 'AI', explain: cand.explain },
-          ...existing.filter(h => h.match !== cand.match)
-        ]);
+        if (existing.some(h => h.match === cand.match)) break;
+        state.grammarMap.set(s.id, [...existing, { match: cand.match, label: 'AI', explain: cand.explain, askTranslation: cand.askTranslation }]);
         break;
       }
     });
   }
-
+}
+function applyGrammarSelections() {
+  rebuildGrammarMap();
   renderEdit(); renderPrev(); persist();
 }
 
@@ -940,7 +982,8 @@ function applyAISplit(splitAt) {
     };
   });
   rebuildVocab();
-  trimAutoGrammar(); // AI 재분할 후 새 조각 기준으로 자동 문법 다시 1개로 제한
+  buildGrammarFromDetect(state._detectMap); // 새 조각 기준 자동 문법 후보 재구성
+  rebuildGrammarMap();
 }
 
 function applyAIResult(result, applySplit = false) {

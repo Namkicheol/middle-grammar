@@ -201,17 +201,13 @@ function collectGrammar(state, piece) {
     const s = state.sentences[i];
     if (!s || s.isHeading) continue;
     const hits = state.grammarMap?.get(s.id);
-    if (hits && hits.length) {
+    if (!hits || !hits.length) continue;
+    for (const h of hits) { // 체크된 모든 문법을 각각 카드로 (cap 없음)
       result.push({
-        sid: s.id,
-        sentence: s.en,
-        ko: s.ko || '',
-        match: hits[0].match,
-        label: hits[0].label,
-        explain: hits[0].explain,
-        askTranslation: hits[0].askTranslation !== false
+        sid: s.id, sentence: s.en, ko: s.ko || '',
+        match: h.match, label: h.label, explain: h.explain,
+        askTranslation: h.askTranslation !== false
       });
-      if (result.length >= 3) break;
     }
   }
   return result;

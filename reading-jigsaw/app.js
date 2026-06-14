@@ -6,7 +6,7 @@ import { autoSplit, insertBoundary, removeBoundary } from './engine/split.js?v=2
 import { extract, pickForPiece } from './engine/vocab.js?v=20260613a';
 import { detectAll } from './engine/grammar.js?v=20250526a';
 import { suggest as suggestBlanks } from './engine/blanks.js?v=20250526a';
-import { renderPaper } from './ui/preview.js?v=20260613e';
+import { renderPaper } from './ui/preview.js?v=20260614b';
 import { resetHpid, hwpxPara, hwpxFirstPara, hwpxTable, hwpxBox, wrapSection, buildHwpxFile } from './engine/hwpx.js?v=20260613h';
 
 const STORAGE_KEY = 'jigsaw-studio:v1';
@@ -308,6 +308,7 @@ function viewBlanks() {
         ? `<div class="claude-panel-row"><span style="font-family:var(--font-mono);font-size:.8rem;color:var(--moss);">AI 실행 중...</span></div>`
         : renderGrammarCandidates()}
     </div>
+    ${renderQuestionPanel()}
 
     <div class="step-actions">
       <button class="btn" id="back-split">← 분할</button>
@@ -800,19 +801,17 @@ function renderGrammarCandidates() {
         </div>
       `).join('')}
     </div>
-    ${renderQuestionCandidates()}
     <div class="claude-panel-row" style="margin-top:10px;gap:8px;">
       <button class="btn" id="run-ai">↺ 문법 후보 다시 추출</button>
-      <button class="btn" id="run-q">❓ AI 질문 추가</button>
     </div>`;
 }
 
-function renderQuestionCandidates() {
+// 질문 전용 패널(문법과 별도 칸) — 후보 체크리스트 + [질문 추가] 버튼
+function renderQuestionPanel() {
   const qc = state.questionCandidates;
-  if (!qc || !qc.pieces.some(pc => pc.candidates.length)) return '';
-  return `
-    <div class="gc-list" style="margin-top:10px;border-top:1px dashed var(--ink-mute);padding-top:8px;">
-      <div class="gc-piece-label" style="margin-bottom:6px;">추가 질문 — 체크한 것만 출제됩니다</div>
+  const hasCands = qc && qc.pieces.some(pc => pc.candidates.length);
+  const list = hasCands ? `
+    <div class="gc-list">
       ${qc.pieces.filter(pc => pc.candidates.length).map(pc => `
         <div class="gc-piece">
           <div class="gc-piece-label">조각 ${pc.label}</div>
@@ -822,6 +821,17 @@ function renderQuestionCandidates() {
             return `<label class="gc-item"><input type="checkbox" class="qc-check" data-label="${pc.label}" data-ci="${ci}" ${ch ? 'checked' : ''}><span class="gc-match">${escapeHtml(c.q)}</span></label>`;
           }).join('')}
         </div>`).join('')}
+    </div>` : `<div class="claude-panel-row" style="color:var(--ink-3);font-size:.78rem;">자동 질문 1개 외에 더 필요하면 추가하세요.</div>`;
+  return `
+    <div class="claude-panel" style="margin-top:14px;">
+      <div class="claude-panel-head">
+        <span class="claude-panel-title">질문 선택</span>
+        <span class="claude-panel-desc">체크한 질문만 출제됩니다 (자동 1개 + 추가)</span>
+      </div>
+      ${list}
+      <div class="claude-panel-row" style="margin-top:10px;">
+        <button class="btn" id="run-q">❓ AI 질문 추가</button>
+      </div>
     </div>`;
 }
 
@@ -1374,7 +1384,7 @@ function buildPieceDocx(idx, mode) {
   for (const s of rangeSentences) {
     if (s.isHeading) continue;
     const hits = state.grammarMap?.get(s.id);
-    if (hits && hits.length) { gPoints.push({ sentence: s.en, match: hits[0].match, explain: hits[0].explain, ko: s.ko }); if (gPoints.length >= 3) break; }
+    if (hits && hits.length) for (const h of hits) gPoints.push({ sentence: s.en, match: h.match, explain: h.explain, ko: s.ko });
   }
   if (gPoints.length) {
     body += stepLabel('④', 'Grammar Point');
@@ -1522,7 +1532,7 @@ function buildJigsawHwpxSection(idxs, mode) {
     for (const s of rangeSentences) {
       if (s.isHeading) continue;
       const h = state.grammarMap?.get(s.id);
-      if (h && h.length) { gp.push({ sentence: s.en, explain: h[0].explain, ko: s.ko }); if (gp.length >= 3) break; }
+      if (h && h.length) for (const hit of h) gp.push({ sentence: s.en, explain: hit.explain, ko: s.ko });
     }
     if (gp.length) {
       body += hwpxPara('④ Grammar Point', 8);

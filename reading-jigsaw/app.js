@@ -1775,6 +1775,18 @@ function restore() {
       state.vocab = extract(state.sentences);
       rebuildVocab();
     }
+    // 구버전 호환: 문법/질문 후보가 없으면 재구성 (워크시트만 있고 패널 비던 문제 방지)
+    if (state.sentences?.length && state.pieces?.length) {
+      if (!state.grammarCandidates) {
+        state._detectMap = detectAll(state.sentences);
+        buildGrammarFromDetect(state._detectMap);
+        rebuildGrammarMap();
+      }
+      if (!state.questionCandidates) {
+        buildQuestionFromAuto();
+        applyQuestionSelections();
+      }
+    }
     return true;
   } catch (e) {
     return false;

@@ -36,6 +36,8 @@ export function renderPaper(state, pieceIdx, mode = 'student') {
     </div>
   </header>
 
+  <div class="jigsaw-guide">[Jigsaw Reading] 전문가 집단으로 이동하여 ${escapeHtml(p.label)}를 자세히 함께 공부한 후, 원래 모둠으로 돌아와 선생님이 되어 친구들에게 읽고 설명해 줍니다.</div>
+
   ${renderVocab(vocabForPiece, isStudent, state.hangulHint)}
   ${renderSlow(bodies, state, isStudent)}
   ${renderQuestion(p, bodies, isStudent)}
@@ -49,7 +51,7 @@ function renderVocab(vocab, isStudent, hangulHint) {
 <section class="paper-step">
   <div class="paper-step-label">
     <span class="paper-step-num">01</span>
-    <span class="paper-step-name">Vocabulary</span>
+    <span class="paper-step-name">Words</span>
     <span class="paper-step-aside">words ・ ${vocab.length}</span>
   </div>
   <ul class="vocab-grid">

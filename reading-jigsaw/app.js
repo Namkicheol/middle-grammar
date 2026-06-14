@@ -6,7 +6,7 @@ import { autoSplit, insertBoundary, removeBoundary } from './engine/split.js?v=2
 import { extract, pickForPiece } from './engine/vocab.js?v=20260613a';
 import { detectAll } from './engine/grammar.js?v=20250526a';
 import { suggest as suggestBlanks } from './engine/blanks.js?v=20250526a';
-import { renderPaper } from './ui/preview.js?v=20260614c';
+import { renderPaper } from './ui/preview.js?v=20260614d';
 import { resetHpid, hwpxPara, hwpxFirstPara, hwpxTable, hwpxBox, wrapSection, buildHwpxFile } from './engine/hwpx.js?v=20260613h';
 
 const STORAGE_KEY = 'jigsaw-studio:v1';
@@ -1354,10 +1354,11 @@ function buildPieceDocx(idx, mode) {
   body += _wPara(_wRun(p.label + '.  ', { b: true, sz: 36, color: 'A8431C' }) +
     _wRun((p.heading || headParts || '') + '   ', { b: true, sz: 26 }) + _wRun(stars, { sz: 20, color: '999999' }),
     { after: 40, border: 16, bc: '111111' });
-  body += _wPara(_wRun('학번: ______________      이름: ______________', { sz: 18, color: '555555' }), { after: 120 });
+  body += _wPara(_wRun('학번: ______________      이름: ______________', { sz: 18, color: '555555' }), { after: 60 });
+  body += _wPara(_wRun('[Jigsaw Reading] 전문가 집단으로 이동하여 ' + p.label + '를 자세히 함께 공부한 후, 원래 모둠으로 돌아와 선생님이 되어 친구들에게 읽고 설명해 줍니다.', { sz: 16, color: '5D544A' }), { after: 120 });
   // ① Vocabulary — 외곽 박스 표
   if (vocab.length) {
-    body += stepLabel('①', 'Vocabulary');
+    body += stepLabel('Step 1', 'Words');
     let rows = '';
     for (let i = 0; i < vocab.length; i += 2) {
       const cell = v => v ? _wPara(_wRun(v.word + '  ', { b: true }) + _wRun(': ', { color: '999999' }) + _wRun(isStudent ? '___________' : (v.meaning || '___________'), { color: '555555' }), { after: 0 }) : '<w:p/>';
@@ -1367,7 +1368,7 @@ function buildPieceDocx(idx, mode) {
   }
   // ② Slow Reading — 박스 카드
   if (bodies.length) {
-    body += stepLabel('②', 'Slow Reading');
+    body += stepLabel('Step 2', 'Slow Reading');
     let inner = '';
     bodies.forEach((s, i) => {
       const blanks = state.blanks?.get(s.id) || [];
@@ -1390,7 +1391,7 @@ function buildPieceDocx(idx, mode) {
   if (bodies.length) {
     const qs = (p.displayQ !== undefined) ? p.displayQ : [{ q: p.aiQuestion || 'What is the main idea of this section?', a: p.aiAnswer }];
     if (qs.length) {
-    body += stepLabel('③', 'Question');
+    body += stepLabel('Step 3', 'Question');
     let inner = '';
     qs.forEach((it, qi) => {
       inner += _wPara(_wRun('Q. ', { b: true }) + _wRun(it.q), { after: !isStudent && it.a ? 60 : 120 });
@@ -1408,7 +1409,7 @@ function buildPieceDocx(idx, mode) {
     if (hits && hits.length) for (const h of hits) gPoints.push({ sentence: s.en, match: h.match, explain: h.explain, ko: s.ko });
   }
   if (gPoints.length) {
-    body += stepLabel('④', 'Grammar Point');
+    body += stepLabel('Step 4', 'Grammar Point');
     for (const g of gPoints) {
       let inner = _wPara(_wRun('Q. 아래 밑줄 친 표현은 어떻게 해석하나요? 어떤 문법적 특징이 있나요?', { sz: 18, color: '3D3830' }), { after: 40 });
       let sRuns;
@@ -1508,8 +1509,9 @@ function buildJigsawHwpxSection(idxs, mode) {
     // 조각 시작 — 둘째 조각부터 페이지 나눔
     body += hwpxPara(head, 8, 30, pi > 0);
     body += hwpxPara('학번 __________    이름 __________', 10);
+    body += hwpxPara('[Jigsaw Reading] 전문가 집단으로 이동하여 ' + p.label + '를 자세히 함께 공부한 후, 원래 모둠으로 돌아와 선생님이 되어 친구들에게 읽고 설명해 줍니다.', 10);
     if (vocab.length) {
-      body += hwpxPara('① Vocabulary', 8);
+      body += hwpxPara('Step 1  Words', 8);
       // 2단(단어|뜻|단어|뜻) 표 — 짧게. 너비합 42520 = 8000+13260+8000+13260.
       // 단어 셀은 paraId 41(가운데 정렬), 뜻 셀은 기본(왼쪽)
       const W = t => ({ t, paraId: 41 });
@@ -1524,7 +1526,7 @@ function buildJigsawHwpxSection(idxs, mode) {
       body += hwpxTable(rows, [8000, 13260, 8000, 13260], { rowH: 1800 });
     }
     if (bodies.length) {
-      body += hwpxPara('② Slow Reading', 8);
+      body += hwpxPara('Step 2  Slow Reading', 8);
       let inner = '';
       for (const s of bodies) {
         const enText = (isStudent && state.blankType === 'en') ? _plainEnBlank(s.en, state.blanks?.get(s.id)) : s.en;
@@ -1541,7 +1543,7 @@ function buildJigsawHwpxSection(idxs, mode) {
       body += hwpxBox(inner);
       const qs = (p.displayQ !== undefined) ? p.displayQ : [{ q: p.aiQuestion || 'What is the main idea of this section?', a: p.aiAnswer }];
       if (qs.length) {
-        body += hwpxPara('③ Question', 8);
+        body += hwpxPara('Step 3  Question', 8);
         let qInner = '';
         for (const it of qs) {
           qInner += hwpxPara('Q. ' + it.q, 0);
@@ -1558,7 +1560,7 @@ function buildJigsawHwpxSection(idxs, mode) {
       if (h && h.length) for (const hit of h) gp.push({ sentence: s.en, explain: hit.explain, ko: s.ko });
     }
     if (gp.length) {
-      body += hwpxPara('④ Grammar Point', 8);
+      body += hwpxPara('Step 4  Grammar Point', 8);
       for (const g of gp) {
         let gInner = hwpxPara('Q. 아래 밑줄 친 표현의 해석과 문법적 특징은?', 10);
         gInner += hwpxPara(g.sentence, 0);
@@ -1659,6 +1661,7 @@ body{margin:0;background:var(--paper);font-family:'Noto Serif KR','Fraunces',ser
 .paper-id-row{display:flex;gap:28px;justify-content:flex-end;font-family:'JetBrains Mono',monospace;font-size:.7rem;color:#5d544a;margin-bottom:12px;letter-spacing:.03em;}
 .paper-id-row .id-line{display:inline-block;width:96px;border-bottom:1px solid #5d544a;vertical-align:bottom;margin-left:5px;}
 .paper-head{display:flex;align-items:flex-start;justify-content:space-between;padding-bottom:14px;margin-bottom:18px;border-bottom:2px solid var(--ink);}
+.jigsaw-guide{font-size:.82rem;color:#5d544a;margin:0 0 12px;padding:7px 11px;background:rgba(168,67,28,.05);border-left:3px solid #a8431c;line-height:1.5;}
 .paper-letter{font-family:'Fraunces';font-style:italic;font-weight:900;font-size:3.2rem;line-height:.85;letter-spacing:-.05em;}
 .paper-title{text-align:right;font-family:'Fraunces';font-style:italic;font-weight:600;font-size:1rem;color:var(--ink-3);}
 .paper-title b{display:block;font-family:'Fraunces';font-weight:800;font-style:normal;font-size:1.16rem;color:var(--ink);}

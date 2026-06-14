@@ -82,7 +82,8 @@ function renderPrev() {
       </div>`;
     return;
   }
-  const modeToggleHtml = `
+  // 표시 옵션 토글은 3단계(빈칸·문법)부터 노출 — 1·2단계에선 선택 단계가 아니라 혼동되므로 숨김
+  const modeToggleHtml = (state.step <= 2) ? '' : `
     <div style="display:flex;gap:6px;align-items:center;flex-wrap:wrap;">
       <div class="prev-toggle">
         <button class="${state.mode === 'student' ? 'on' : ''}" data-mode="student">학생</button>
@@ -188,6 +189,15 @@ function viewSplit() {
         <div class="edit-meta-item"><span>pieces</span><b>${state.pieces.length}</b></div>
         <div class="edit-meta-item"><span>avg ★</span><b>${(state.pieces.reduce((a,p)=>a+p.stars,0)/state.pieces.length).toFixed(1)}</b></div>
       </div>
+    </div>
+
+    <div style="display:flex;align-items:center;gap:12px;background:rgba(168,67,28,.08);border:2px solid var(--terracotta,#a8431c);border-radius:10px;padding:14px 18px;margin-bottom:18px;">
+      <span style="font-size:1.6rem;line-height:1;">✂️</span>
+      <p style="margin:0;font-size:1.06rem;font-weight:700;color:var(--ink,#181613);line-height:1.55;">
+        본문을 <span style="color:var(--terracotta,#a8431c);">조각(그룹별 분량)</span>으로 나누는 단계예요.
+        <span style="opacity:.5;margin:0 4px;">/</span>
+        <u>✂ 여기서 나누기</u> · <u>⤚ 앞 조각과 합치기</u> · <u>★ 난이도</u> · <u>✕ 문장 삭제</u>
+      </p>
     </div>
 
     ${state.pieces.map((p, idx) => {

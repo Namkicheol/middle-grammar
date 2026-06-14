@@ -7,7 +7,7 @@ import { extract, pickForPiece } from './engine/vocab.js?v=20260613a';
 import { detectAll } from './engine/grammar.js?v=20250526a';
 import { suggest as suggestBlanks } from './engine/blanks.js?v=20250526a';
 import { renderPaper } from './ui/preview.js?v=20260614d';
-import { resetHpid, hwpxPara, hwpxFirstPara, hwpxTable, hwpxBox, wrapSection, buildHwpxFile } from './engine/hwpx.js?v=20260613h';
+import { resetHpid, hwpxPara, hwpxFirstPara, hwpxTable, hwpxTableSpan, hwpxBox, wrapSection, buildHwpxFile } from './engine/hwpx.js?v=20260614b';
 
 const STORAGE_KEY = 'jigsaw-studio:v1';
 const SAMPLE_URL = 'assets/samples/donga-l4.txt';
@@ -1510,54 +1510,73 @@ function buildJigsawHwpxSection(idxs, mode) {
     const bodies = rangeSentences.filter(s => !s.isHeading && !s.koOnly && !s.deleted);
     const vocab = state.vocabByPiece[idx] || [];
     const stars = '★'.repeat(p.stars || 0) + '☆'.repeat(3 - (p.stars || 0));
-    const head = (p.label + '.  ' + (p.heading || '') + '   ' + stars).trim();
-    // 조각 시작 — 둘째 조각부터 페이지 나눔
-    body += hwpxPara(head, 8, 30, pi > 0);
+    // 둘째 조각부터 페이지 나눔
+    if (pi > 0) body += hwpxPara(' ', 0, 0, true);
+    // ① 제목 strip(교재·단원·Reading제목·페이지) — 레퍼런스 상단 표
+    const lesson = (state.meta.lesson || '').trim();
+    const title = (state.meta.title || '').trim();
+    body += hwpxTable([[
+      { t: lesson || 'Reading', charId: 8, paraId: 41 },
+      { t: title, charId: 8, paraId: 41 },
+      { t: 'Jigsaw Reading', charId: 0, paraId: 41 },
+      { t: p.label + (p.heading ? '. ' + p.heading : ''), charId: 0, paraId: 41 }
+    ]], [8000, 16520, 10000, 8000], { rowH: 1500 });
     body += hwpxPara('학번 __________    이름 __________', 10);
-    body += hwpxPara('[Jigsaw Reading] 전문가 집단으로 이동하여 ' + p.label + '를 자세히 함께 공부한 후, 원래 모둠으로 돌아와 선생님이 되어 친구들에게 읽고 설명해 줍니다.', 10);
+
+    // ② 좌측 라벨열을 가진 단일 표 — 레퍼런스 본문 표(7열: 라벨 + 단어3쌍 / 본문 span6)
+    const COLW = [7000, 4200, 7640, 4200, 7640, 4200, 7640]; // 합 42520
+    const rows = [];
+    // 헤더행: [라벨 A★★★ | jigsaw 안내(span6)]
+    rows.push([
+      { t: p.label + '  ' + stars, charId: 8, paraId: 41 },
+      { t: '[Jigsaw Reading] 전문가 집단으로 이동하여 ' + p.label + '를 자세히 함께 공부한 후, 원래 모둠으로 돌아와 선생님이 되어 친구들에게 읽고 설명해 줍니다.', charId: 10, colSpan: 6 }
+    ]);
+    // Step 1 Words — 좌측 라벨 rowSpan + 단어3쌍 그리드
     if (vocab.length) {
-      body += hwpxPara('Step 1  Words', 8);
-      // 2단(단어|뜻|단어|뜻) 표 — 짧게. 너비합 42520 = 8000+13260+8000+13260.
-      // 단어 셀은 paraId 41(가운데 정렬), 뜻 셀은 기본(왼쪽)
-      const W = t => ({ t, paraId: 41 });
-      const rows = [[{ t: '단어', charId: 8, paraId: 41 }, { t: '뜻', charId: 8, paraId: 41 }, { t: '단어', charId: 8, paraId: 41 }, { t: '뜻', charId: 8, paraId: 41 }]];
-      for (let i = 0; i < vocab.length; i += 2) {
-        const a = vocab[i], b = vocab[i + 1];
-        rows.push([
-          a ? W(a.word) : '', a ? (isStudent ? '' : (a.meaning || '')) : '',
-          b ? W(b.word) : '', b ? (isStudent ? '' : (b.meaning || '')) : ''
-        ]);
+      const wordRows = [];
+      for (let i = 0; i < vocab.length; i += 3) {
+        const cells = [];
+        for (let j = 0; j < 3; j++) {
+          const v = vocab[i + j];
+          cells.push(v ? { t: v.word, charId: 8, paraId: 41 } : { t: '' });
+          cells.push(v ? { t: isStudent ? '' : (v.meaning || ''), charId: 0 } : { t: '' });
+        }
+        wordRows.push(cells);
       }
-      body += hwpxTable(rows, [8000, 13260, 8000, 13260], { rowH: 1800 });
+      rows.push([{ t: 'Step 1 Words', charId: 8, paraId: 41, rowSpan: wordRows.length }, ...wordRows[0]]);
+      for (let k = 1; k < wordRows.length; k++) rows.push(wordRows[k]);
     }
+    // Step 2 Slow Reading — 좌측 라벨 rowSpan + 문장행(각 줄 span6)
     if (bodies.length) {
-      body += hwpxPara('Step 2  Slow Reading', 8);
-      let inner = '';
+      const lines = [];
       for (const s of bodies) {
         const enText = (isStudent && state.blankType === 'en') ? _plainEnBlank(s.en, state.blanks?.get(s.id)) : s.en;
-        inner += hwpxPara(enText, 0);
+        lines.push({ t: enText, charId: 0 });
         if (s.ko) {
           const koText = (isStudent && state.blankType === 'ko') ? _plainKoBlank(s.ko, state.koBlanks?.get(s.id)) : s.ko;
-          inner += hwpxPara(koText, 10);
+          lines.push({ t: koText, charId: 10 });
         } else if (isStudent && state.blankType === 'ko') {
-          inner += hwpxPara(blankLine, 10);
+          lines.push({ t: blankLine, charId: 10 });
         }
         const hits = state.grammarMap?.get(s.id);
-        if (!isStudent && hits && hits.length) inner += hwpxPara('→ ' + (hits[0].explain || ''), 10);
+        if (!isStudent && hits && hits.length) lines.push({ t: '→ ' + (hits[0].explain || ''), charId: 11 });
       }
-      body += hwpxBox(inner);
-      const qs = (p.displayQ !== undefined) ? p.displayQ : [{ q: p.aiQuestion || 'What is the main idea of this section?', a: p.aiAnswer }];
-      if (qs.length) {
-        body += hwpxPara('Step 3  Question', 8);
-        let qInner = '';
-        for (const it of qs) {
-          qInner += hwpxPara('Q. ' + it.q, 0);
-          if (!isStudent && it.a) qInner += hwpxPara('A. ' + it.a, 11);
-          else { qInner += hwpxPara(blankLine, 0); }
-        }
-        body += hwpxBox(qInner);
-      }
+      rows.push([{ t: 'Step 2 Slow Reading', charId: 8, paraId: 41, rowSpan: lines.length }, { t: lines[0].t, charId: lines[0].charId, colSpan: 6 }]);
+      for (let k = 1; k < lines.length; k++) rows.push([{ t: lines[k].t, charId: lines[k].charId, colSpan: 6 }]);
     }
+    // Step 3 Question
+    const qs = (p.displayQ !== undefined) ? p.displayQ : [{ q: p.aiQuestion || 'What is the main idea of this section?', a: p.aiAnswer }];
+    if (bodies.length && qs.length) {
+      const qLines = [];
+      for (const it of qs) {
+        qLines.push({ t: 'Q. ' + it.q, charId: 0 });
+        if (!isStudent && it.a) qLines.push({ t: 'A. ' + it.a, charId: 11 });
+        else qLines.push({ t: blankLine, charId: 0 });
+      }
+      rows.push([{ t: 'Step 3 Question', charId: 8, paraId: 41, rowSpan: qLines.length }, { t: qLines[0].t, charId: qLines[0].charId, colSpan: 6 }]);
+      for (let k = 1; k < qLines.length; k++) rows.push([{ t: qLines[k].t, charId: qLines[k].charId, colSpan: 6 }]);
+    }
+    // Step 4 Grammar Point
     const gp = [];
     for (const s of rangeSentences) {
       if (s.isHeading) continue;
@@ -1565,15 +1584,17 @@ function buildJigsawHwpxSection(idxs, mode) {
       if (h && h.length) for (const hit of h) gp.push({ sentence: s.en, explain: hit.explain, ko: s.ko });
     }
     if (gp.length) {
-      body += hwpxPara('Step 4  Grammar Point', 8);
+      const gLines = [];
       for (const g of gp) {
-        let gInner = hwpxPara('Q. 아래 밑줄 친 표현의 해석과 문법적 특징은?', 10);
-        gInner += hwpxPara(g.sentence, 0);
-        if (!isStudent) { if (g.ko) gInner += hwpxPara('해석: ' + g.ko, 10); gInner += hwpxPara('A. ' + (g.explain || ''), 11); }
-        else { gInner += hwpxPara(blankLine, 0); }
-        body += hwpxBox(gInner);
+        gLines.push({ t: 'Q. 아래 밑줄 친 표현의 해석과 문법적 특징은?', charId: 10 });
+        gLines.push({ t: g.sentence, charId: 0 });
+        if (!isStudent) { if (g.ko) gLines.push({ t: '해석: ' + g.ko, charId: 10 }); gLines.push({ t: 'A. ' + (g.explain || ''), charId: 11 }); }
+        else gLines.push({ t: blankLine, charId: 0 });
       }
+      rows.push([{ t: 'Step 4 Grammar Point', charId: 8, paraId: 41, rowSpan: gLines.length }, { t: gLines[0].t, charId: gLines[0].charId, colSpan: 6 }]);
+      for (let k = 1; k < gLines.length; k++) rows.push([{ t: gLines[k].t, charId: gLines[k].charId, colSpan: 6 }]);
     }
+    body += hwpxTableSpan(rows, COLW, { rowH: 1100 });
   });
   return wrapSection(body);
 }

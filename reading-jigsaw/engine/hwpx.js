@@ -91,6 +91,53 @@ export function hwpxTable(rows, colWidths, opts){
     + trs + '</hp:tbl>';
   return '<hp:p id="'+(_hpid++)+'" paraPrIDRef="0" styleIDRef="0" pageBreak="0" columnBreak="0" merged="0"><hp:run charPrIDRef="0">'+tbl+'</hp:run></hp:p>';
 }
+// 병합(colSpan/rowSpan) 지원 표 — 레퍼런스 직소 활동지 구조(좌측 라벨열 병합)용.
+// rows: [[{t,charId?,paraId?,colSpan?,rowSpan?,vAlign?}|string, ...], ...]
+//   rowSpan으로 위에서 덮인 칸은 자동 점유 처리되어 그 행에서 생략됨(레퍼런스와 동일).
+// colWidths: 전체 열 폭(합=42520). opts.rowH=기본 행높이.
+export function hwpxTableSpan(rows, colWidths, opts){
+  opts = opts || {};
+  const bf = opts.borderFill || 3;
+  const rowH = opts.rowH || 1100;
+  const totalW = colWidths.reduce((a,b)=>a+b,0);
+  const colCnt = colWidths.length, rowCnt = rows.length;
+  const occ = {}; // "r,c" -> true (rowSpan으로 덮인 칸)
+  let trs = '';
+  for(let r=0; r<rowCnt; r++){
+    let tcs = '';
+    let c = 0;
+    for(const raw of (rows[r] || [])){
+      const cell = (typeof raw === 'string') ? { t: raw } : raw;
+      while(occ[r+','+c]) c++;            // 점유된 칸 건너뛰기
+      const cs = cell.colSpan || 1, rs = cell.rowSpan || 1;
+      for(let dr=0; dr<rs; dr++) for(let dc=0; dc<cs; dc++) occ[(r+dr)+','+(c+dc)] = true;
+      const width = colWidths.slice(c, c+cs).reduce((a,b)=>a+b,0);
+      const text = cell.t || '';
+      const charId = cell.charId != null ? cell.charId : 0;
+      const paraId = cell.paraId != null ? cell.paraId : 0;
+      const vAlign = cell.vAlign || 'CENTER';
+      tcs += '<hp:tc name="" header="0" hasMargin="1" protect="0" editable="0" dirty="0" borderFillIDRef="'+bf+'">'
+        + '<hp:subList id="" textDirection="HORIZONTAL" lineWrap="BREAK" vertAlign="'+vAlign+'" linkListIDRef="0" linkListNextIDRef="0" textWidth="0" textHeight="0" hasTextRef="0" hasNumRef="0">'
+        + (cell.inner != null ? cell.inner
+            : '<hp:p id="'+(_hpid++)+'" paraPrIDRef="'+paraId+'" styleIDRef="0" pageBreak="0" columnBreak="0" merged="0"><hp:run charPrIDRef="'+charId+'"><hp:t>'+escXmlHwpx(text)+'</hp:t></hp:run></hp:p>')
+        + '</hp:subList>'
+        + '<hp:cellAddr colAddr="'+c+'" rowAddr="'+r+'"/>'
+        + '<hp:cellSpan colSpan="'+cs+'" rowSpan="'+rs+'"/>'
+        + '<hp:cellSz width="'+width+'" height="'+(rowH*rs)+'"/>'
+        + '<hp:cellMargin left="510" right="300" top="120" bottom="120"/>'
+        + '</hp:tc>';
+      c += cs;
+    }
+    trs += '<hp:tr>'+tcs+'</hp:tr>';
+  }
+  const tbl = '<hp:tbl id="'+(_hpid++)+'" zOrder="0" numberingType="TABLE" textWrap="TOP_AND_BOTTOM" textFlow="BOTH_SIDES" lock="0" dropcapstyle="None" pageBreak="CELL" repeatHeader="0" rowCnt="'+rowCnt+'" colCnt="'+colCnt+'" cellSpacing="0" borderFillIDRef="'+bf+'" noAdjust="0">'
+    + '<hp:sz width="'+totalW+'" widthRelTo="ABSOLUTE" height="'+(rowH*rowCnt)+'" heightRelTo="ABSOLUTE" protect="0"/>'
+    + '<hp:pos treatAsChar="1" affectLSpacing="0" flowWithText="1" allowOverlap="0" holdAnchorAndSO="0" vertRelTo="PARA" horzRelTo="COLUMN" vertAlign="TOP" horzAlign="LEFT" vertOffset="0" horzOffset="0"/>'
+    + '<hp:outMargin left="0" right="0" top="0" bottom="0"/>'
+    + '<hp:inMargin left="0" right="0" top="0" bottom="0"/>'
+    + trs + '</hp:tbl>';
+  return '<hp:p id="'+(_hpid++)+'" paraPrIDRef="0" styleIDRef="0" pageBreak="0" columnBreak="0" merged="0"><hp:run charPrIDRef="0">'+tbl+'</hp:run></hp:p>';
+}
 // 단일 셀 박스(테두리 카드) — innerParas(hwpxPara들의 연결 문자열)를 셀 안에 담음.
 export function hwpxBox(innerParas, opts){
   opts = opts || {};

@@ -1,7 +1,7 @@
 // app.js — Jigsaw Studio 메인 컨트롤러
 
 import { parse } from './engine/parser.js?v=20250526a';
-import { enrichWithAI, extractGrammarCandidates, translateSentences, addQuestions } from './engine/ai.js?v=20260613c';
+import { enrichWithAI, extractGrammarCandidates, translateSentences, addQuestions } from './engine/ai.js?v=20260614a';
 import { autoSplit, insertBoundary, removeBoundary } from './engine/split.js?v=20250526a';
 import { extract, pickForPiece } from './engine/vocab.js?v=20260613a';
 import { detectAll } from './engine/grammar.js?v=20250526a';
@@ -929,14 +929,19 @@ async function runAddQuestions() {
   try {
     const result = await addQuestions(state);
     if (!state.questionCandidates) state.questionCandidates = { pieces: state.pieces.map(p => ({ label: p.label, candidates: [] })) };
+    let added = 0;
     for (const pd of (result.pieces || [])) {
       if (!pd.question) continue;
       let pc = state.questionCandidates.pieces.find(x => x.label === pd.label);
       if (!pc) { pc = { label: pd.label, candidates: [] }; state.questionCandidates.pieces.push(pc); }
+      const norm = s => s.trim().toLowerCase().replace(/[^a-z0-9가-힣]/g, '');
+      if (pc.candidates.some(c => norm(c.q) === norm(pd.question))) continue; // 중복 질문 제외
       const ci = pc.candidates.length;
       pc.candidates.push({ q: pd.question, a: pd.answer || '' });
       state.questionSelected[`${pd.label}-${ci}`] = true;
+      added++;
     }
+    if (!added) showAIError('새로운 질문이 더 나오지 않았어요. (본문이 짧으면 추가 질문이 제한적입니다)');
     applyQuestionSelections();
     renderEdit(); renderPrev(); persist();
   } catch (e) { showAIError(e.message); }

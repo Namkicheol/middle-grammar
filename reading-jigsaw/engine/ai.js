@@ -120,18 +120,24 @@ ${JSON.stringify(piecesPayload)}
 
 // 질문 추가 — 각 조각에 기존 질문과 겹치지 않는 새 영어 질문 1개 + 짧은 답
 export async function addQuestions(state) {
-  const piecesPayload = state.pieces.map(p => ({
-    label: p.label,
-    sentences: state.sentences.slice(p.range[0], p.range[1]).filter(s => !s.isHeading && s.en).map(s => s.en),
-    existing: [p.aiQuestion, ...((p.extraQ || []).map(x => x.q))].filter(Boolean)
-  }));
-  const prompt = `중학교 영어 직소 학습지입니다. 각 조각 본문을 보고 기존 질문과 겹치지 않는 새 영어 comprehension question 1개와 10단어 이내 짧은 답을 만드세요.
-사람 이름·고유명사는 영어 원문 그대로.
+  const qc = state.questionCandidates;
+  const piecesPayload = state.pieces.map(p => {
+    const cand = qc && qc.pieces.find(x => x.label === p.label);
+    const existing = cand ? cand.candidates.map(c => c.q) : [p.aiQuestion].filter(Boolean);
+    return {
+      label: p.label,
+      sentences: state.sentences.slice(p.range[0], p.range[1]).filter(s => !s.isHeading && s.en).map(s => s.en),
+      existing
+    };
+  });
+  const prompt = `중학교 영어 직소 학습지입니다. 각 조각 본문을 보고 새 영어 comprehension question 1개와 10단어 이내 짧은 답을 만드세요.
+필수: 아래 "existing" 목록의 질문들과 **내용·초점이 분명히 다른** 질문을 만드세요. 같은 사실을 묻는 질문 금지.
+다양한 의문사(What/Why/How/Where/Who)와 본문의 다른 부분을 활용하세요. 사람 이름·고유명사는 영어 원문 그대로.
 
 조각 데이터:
 ${JSON.stringify(piecesPayload)}
 
 출력 형식 (JSON만):
-{"pieces":[{"label":"A","question":"What do trees share underground?","answer":"They share information."}]}`;
+{"pieces":[{"label":"A","question":"How does the explosion affect crops?","answer":"It made crops fail worldwide."}]}`;
   return callAPI(prompt);
 }

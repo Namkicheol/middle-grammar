@@ -1,12 +1,12 @@
 // app.js — Jigsaw Studio 메인 컨트롤러
 
 import { parse } from './engine/parser.js?v=20250526a';
-import { enrichWithAI, extractGrammarCandidates, translateSentences } from './engine/ai.js?v=20260613b';
+import { enrichWithAI, extractGrammarCandidates, translateSentences, addQuestions } from './engine/ai.js?v=20260613c';
 import { autoSplit, insertBoundary, removeBoundary } from './engine/split.js?v=20250526a';
 import { extract, pickForPiece } from './engine/vocab.js?v=20260613a';
 import { detectAll } from './engine/grammar.js?v=20250526a';
 import { suggest as suggestBlanks } from './engine/blanks.js?v=20250526a';
-import { renderPaper } from './ui/preview.js?v=20260613c';
+import { renderPaper } from './ui/preview.js?v=20260613d';
 import { resetHpid, hwpxPara, hwpxFirstPara, hwpxTable, hwpxBox, wrapSection, buildHwpxFile } from './engine/hwpx.js?v=20260613h';
 
 const STORAGE_KEY = 'jigsaw-studio:v1';
@@ -296,8 +296,11 @@ function viewBlanks() {
         : state.grammarCandidates
           ? renderGrammarCandidates()
           : `<div class="claude-panel-row" style="flex-direction:column;align-items:flex-start;gap:6px;">
-               <button class="btn btn-primary" id="run-ai">✨ AI로 문법·질문 더 추가</button>
-               <span style="font-family:var(--font-mono);font-size:.72rem;color:var(--ink-3);">단어 뜻·해석·질문 1개·문법 1개는 <b>자동 생성</b>됩니다. 이 버튼은 AI가 <b>문법 포인트를 더 뽑아</b> 선택지로 추가합니다.</span>
+               <div style="display:flex;gap:8px;flex-wrap:wrap;">
+                 <button class="btn btn-primary" id="run-ai">✨ AI 문법 추가</button>
+                 <button class="btn btn-primary" id="run-q">❓ AI 질문 추가</button>
+               </div>
+               <span style="font-family:var(--font-mono);font-size:.72rem;color:var(--ink-3);">단어 뜻·해석·질문 1개·문법 1개는 <b>자동 생성</b>됩니다. 위 버튼으로 AI 문법 포인트(선택지)와 질문을 <b>더 추가</b>할 수 있어요.</span>
              </div>`}
     </div>
 
@@ -565,6 +568,7 @@ document.addEventListener('click', e => {
   if (t.id === 'apply-ai-json') return applyAIJson();
   if (t.id === 'run-ai-full') return runAIEnrich(true);
   if (t.id === 'run-ai') return runGrammarExtract();
+  if (t.id === 'run-q') return runAddQuestions();
   if (t.id === 'apply-grammar-btn') return applyGrammarSelections();
   // Step 5
   if (t.id === 'back-preview') { state.selectedPiece = -1; return go(4); }
@@ -788,6 +792,7 @@ function renderGrammarCandidates() {
     </div>
     <div class="claude-panel-row" style="margin-top:10px;gap:8px;">
       <button class="btn" id="run-ai">↺ 문법 후보 다시 추출</button>
+      <button class="btn" id="run-q">❓ AI 질문 추가</button>
     </div>`;
 }
 
@@ -866,6 +871,23 @@ async function runGrammarExtract() {
     state.grammarLoading = false;
     renderEdit();
   }
+}
+
+// AI 질문 추가 — 각 조각에 질문 1개씩 더 붙임
+async function runAddQuestions() {
+  state.aiLoading = true; renderEdit();
+  try {
+    const result = await addQuestions(state);
+    for (const pd of (result.pieces || [])) {
+      const idx = state.pieces.findIndex(p => p.label === pd.label);
+      if (idx < 0 || !pd.question) continue;
+      const p = state.pieces[idx];
+      if (!p.extraQ) p.extraQ = [];
+      p.extraQ.push({ q: pd.question, a: pd.answer || '' });
+    }
+    renderEdit(); renderPrev(); persist();
+  } catch (e) { showAIError(e.message); }
+  finally { state.aiLoading = false; renderEdit(); }
 }
 
 function applyGrammarSelections() {
@@ -1282,13 +1304,16 @@ function buildPieceDocx(idx, mode) {
     });
     body += _wBox(inner) + SPACER;
   }
-  // ③ Question — 박스 카드(옅은 음영)
+  // ③ Question — 박스 카드 (자동 1개 + 추가 질문들)
   if (bodies.length) {
-    const question = p.aiQuestion || ('What is the main idea of this section?');
+    const qs = [{ q: p.aiQuestion || 'What is the main idea of this section?', a: p.aiAnswer }, ...((p.extraQ || []))];
     body += stepLabel('③', 'Question');
-    let inner = _wPara(_wRun('Q. ', { b: true }) + _wRun(question), { after: !isStudent && p.aiAnswer ? 60 : 120 });
-    if (!isStudent && p.aiAnswer) inner += _wPara(_wRun('A. ' + p.aiAnswer, { color: 'C0392B', sz: 22 }), { after: 0, line: 320 });
-    else { const line = _wPara(_wRun('__________________________________________________', { color: 'BBBBBB' }), { after: 160 }); inner += line + line + line; }
+    let inner = '';
+    qs.forEach((it, qi) => {
+      inner += _wPara(_wRun('Q. ', { b: true }) + _wRun(it.q), { after: !isStudent && it.a ? 60 : 120 });
+      if (!isStudent && it.a) inner += _wPara(_wRun('A. ' + it.a, { color: 'C0392B', sz: 22 }), { after: qi < qs.length - 1 ? 120 : 0, line: 320 });
+      else { const line = _wPara(_wRun('__________________________________________________', { color: 'BBBBBB' }), { after: 160 }); inner += line + line + (qi < qs.length - 1 ? '' : line); }
+    });
     body += _wBox(inner) + SPACER;
   }
   // ④ Grammar Point — 카드마다 박스(옅은 파랑)
@@ -1304,7 +1329,7 @@ function buildPieceDocx(idx, mode) {
       let inner = _wPara(_wRun('Q. 아래 밑줄 친 표현은 어떻게 해석하나요? 어떤 문법적 특징이 있나요?', { sz: 18, color: '3D3830' }), { after: 40 });
       let sRuns;
       const m = g.match, t = g.sentence, mi = m ? t.indexOf(m) : -1;
-      if (mi >= 0) sRuns = _wRun(t.slice(0, mi)) + _wRun(m, { u: true, b: true, color: 'A8431C' }) + _wRun(t.slice(mi + m.length));
+      if (mi >= 0) sRuns = _wRun(t.slice(0, mi)) + _wRun(m, { u: true, b: true, color: 'C0392B' }) + _wRun(t.slice(mi + m.length));
       else sRuns = _wRun(t);
       inner += _wPara(sRuns, { after: !isStudent ? 40 : 0, shd: 'FFFFFF' });
       if (!isStudent) inner += _wPara((g.ko ? _wRun('해석: ' + g.ko + '  ', { color: '3D3830', sz: 20 }) : '') + _wRun('A. ' + (g.explain || ''), { color: 'C0392B', sz: 20 }), { after: 0 });
@@ -1430,11 +1455,14 @@ function buildJigsawHwpxSection(idxs, mode) {
         if (!isStudent && hits && hits.length) inner += hwpxPara('→ ' + (hits[0].explain || ''), 10);
       }
       body += hwpxBox(inner);
-      const question = p.aiQuestion || 'What is the main idea of this section?';
+      const qs = [{ q: p.aiQuestion || 'What is the main idea of this section?', a: p.aiAnswer }, ...((p.extraQ || []))];
       body += hwpxPara('③ Question', 8);
-      let qInner = hwpxPara('Q. ' + question, 0);
-      if (!isStudent && p.aiAnswer) qInner += hwpxPara('A. ' + p.aiAnswer, 11);
-      else { qInner += hwpxPara(blankLine, 0); qInner += hwpxPara(blankLine, 0); }
+      let qInner = '';
+      for (const it of qs) {
+        qInner += hwpxPara('Q. ' + it.q, 0);
+        if (!isStudent && it.a) qInner += hwpxPara('A. ' + it.a, 11);
+        else { qInner += hwpxPara(blankLine, 0); }
+      }
       body += hwpxBox(qInner);
     }
     const gp = [];
@@ -1582,7 +1610,7 @@ body{margin:0;background:var(--paper);font-family:'Noto Serif KR','Fraunces',ser
 .grammar-card .ask{font-size:.8rem;color:#3d3830;font-style:normal;font-weight:500;}.grammar-card .ask.answer{color:#c0392b;font-weight:600;}
 .grammar-card .answer-ko{font-size:.8rem;color:#3d3830;font-weight:500;margin-bottom:4px;padding-bottom:4px;border-bottom:1px dotted #cbc1ad;}
 .grammar-card .answer-line{display:block;margin-top:5px;border-bottom:1px solid var(--ink-mute);height:1.4em;}
-.grammar-hl{border-bottom:2px solid #a8431c;color:#a8431c;font-weight:700;background:rgba(168,67,28,.07);text-decoration:none;}
+.grammar-hl{border-bottom:2px solid #c0392b;color:#c0392b;font-weight:700;background:rgba(192,57,43,.07);text-decoration:none;}
 .page-break{page-break-after:always;}
 @page{ margin:12mm; }
 @media print{

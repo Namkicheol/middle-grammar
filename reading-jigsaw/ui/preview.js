@@ -135,22 +135,22 @@ function pickNote(state, sentence) {
 function renderQuestion(piece, bodies, isStudent) {
   if (!bodies.length) return '';
   const target = bodies.slice().sort((a, b) => b.en.length - a.en.length)[0];
-  const question = piece.aiQuestion || makeQuestion(target.en, piece.heading);
-  const answerHtml = isStudent
-    ? '<span class="answer-line"></span><span class="answer-line"></span>'
-    : (piece.aiAnswer
-        ? `<div class="ask answer">A. ${escapeHtml(piece.aiAnswer)}</div>`
-        : '<span class="answer-line"></span><span class="answer-line"></span>');
+  const q0 = piece.aiQuestion || makeQuestion(target.en, piece.heading);
+  const qs = [{ q: q0, a: piece.aiAnswer }, ...((piece.extraQ || []))];
+  const cards = qs.map(({ q, a }) => {
+    const answerHtml = isStudent
+      ? '<span class="answer-line"></span><span class="answer-line"></span>'
+      : (a ? `<div class="ask answer">A. ${escapeHtml(a)}</div>`
+           : '<span class="answer-line"></span><span class="answer-line"></span>');
+    return `<div class="q-card"><span class="qm">Q.</span>${escapeHtml(q)}${answerHtml}</div>`;
+  }).join('');
   return `
 <section class="paper-step">
   <div class="paper-step-label">
     <span class="paper-step-num">03</span>
     <span class="paper-step-name">Question</span>
   </div>
-  <div class="q-card">
-    <span class="qm">Q.</span>${escapeHtml(question)}
-    ${answerHtml}
-  </div>
+  ${cards}
 </section>`;
 }
 

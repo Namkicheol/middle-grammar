@@ -1,0 +1,21 @@
+문법 레인저스 에셋 출처 (전부 CC0 / public domain — 재배포 허용)
+
+미술: "16x16 Puny Characters" + "PunyMonsters" by Shade (merchant-shade)
+- https://merchant-shade.itch.io/16x16-puny-characters
+- License: Creative Commons Zero (CC0) v1.0 Universal
+  원문: "You are allowed to create Variations/DLCs of this asset pack and even
+  sell it as your own." → 상업/비상업/재배포 모두 허용. public repo 문제 없음.
+- 입수: 2026-06-15
+
+구성:
+- characters/  영웅·병사 스프라이트 (32×32 캔버스, 시트 768×256 = 24열×8행)
+    8행 = 8애니: Idle / Walk / Sword / Bow / Stave / Throw / Hurt / Death
+    색상 팀(Blue·Cyan vs Red 등)으로 아군/적군 구분 가능
+    Soldier·Warrior·Archer·Mage·Orc(Grunt/Peon/Soldier)·Human·Slime
+- monsters/   적 동물 9종 (32×32): 흑표범·개·멧돼지×2·거미×2·늑대·쥐·고양이
+- env/        배경 타일 (Grass1/2, Dirt, Tree)
+
+비고:
+- 라인레인저스st 측면 레인 배틀용. game2/tower의 LuizMelo 파이터와 다른 새 에셋
+  (사용자 요청: "이미 써서 좀 그래 / 다른 에셋").
+- 16×16 도트 톤 = 작고 귀여운 라인레인저스 분위기.

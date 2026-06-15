@@ -42,6 +42,7 @@ button{font-family:inherit;}
 #wave-chip{color:#7dd3fc;border-color:rgba(56,189,248,.45);}
 #best-chip2{color:#ddd6fe;font-size:.74rem;}
 #bgm-btn{font-size:1rem;background:rgba(255,255,255,.08);border:1.5px solid rgba(255,255,255,.2);border-radius:10px;padding:6px 9px;cursor:pointer;}
+#speed-btn{font-size:.82rem;font-weight:900;color:#fde68a;background:rgba(251,191,36,.14);border:1.5px solid rgba(251,191,36,.45);border-radius:10px;padding:6px 9px;cursor:pointer;white-space:nowrap;}
 
 #stage-wrap{position:relative;width:100%;max-width:760px;}
 #stage{display:block;width:100%;height:auto;image-rendering:pixelated;border-radius:14px;border:2px solid rgba(56,189,248,.25);background:#1a2f1c;touch-action:manipulation;}
@@ -51,6 +52,7 @@ button{font-family:inherit;}
 /* 타워 빌드 메뉴 */
 #build-menu{position:absolute;display:none;z-index:8;background:rgba(12,19,34,.97);border:2px solid rgba(56,189,248,.5);border-radius:14px;padding:10px;box-shadow:0 8px 26px rgba(0,0,0,.7);width:188px;}
 #build-menu.show{display:block;}
+#build-menu{max-height:60vh;overflow-y:auto;}
 #build-menu .bm-title{font-size:.74rem;color:#7dd3fc;font-weight:800;margin-bottom:7px;text-align:center;}
 .bm-btn{width:100%;display:flex;align-items:center;gap:8px;background:rgba(255,255,255,.06);border:1.5px solid rgba(251,191,36,.4);border-radius:10px;padding:8px 10px;margin-bottom:6px;cursor:pointer;color:#fff;font-weight:800;font-size:.84rem;text-align:left;}
 .bm-btn:disabled{opacity:.4;cursor:default;}
@@ -121,6 +123,10 @@ button{font-family:inherit;}
     <div class="up-row"><span class="up-label">중1</span><div class="up-grid" id="up-grid-g1"></div></div>
     <div class="up-row"><span class="up-label">중2</span><div class="up-grid" id="up-grid-g2"></div></div>
   </div>
+  <div id="map-pick" style="max-width:520px;width:100%;margin-top:14px;">
+    <div style="font-size:.78rem;color:#7dd3fc;font-weight:800;margin-bottom:8px;text-align:center;">🗺️ 전장 선택</div>
+    <div class="up-grid" id="map-grid" style="justify-content:center;"></div>
+  </div>
   <button id="gate-go">🛡️ 방어 시작!</button>
   <a class="gate-back" href="../game/index.html">← 목록</a>
 </div>
@@ -132,6 +138,7 @@ button{font-family:inherit;}
     <div class="hud-chip" id="gold-chip">💰 0</div>
     <div class="hud-chip" id="wave-chip">🌊 1</div>
     <div class="hud-chip" id="best-chip2">최고 -</div>
+    <button id="speed-btn" title="게임 속도">▶ 1x</button>
     <button id="bgm-btn" title="배경음악">🔊</button>
   </div>
   <div id="stage-wrap">
@@ -211,35 +218,73 @@ const ENEMY_TYPES={
   magma:    {img:'enemies/ground/magma-crab.png',cw:64, ch:64, row:2, frames:8, hp:1.9, spd:0.78,bounty:5},
   firebug:  {img:'enemies/ground/firebug.png',   cw:128,ch:64, row:2, frames:6, hp:1.3, spd:1.0, bounty:4},
 };
-const TOWER={
-  cw:96, ch:96, frames:6,
-  lv:[ // 레벨별 능력치 + 스프라이트
-    {weapon:'towers/tower-01/level-01-weapon.png', range:118, dmg:9,  fire:0.95, cost:55},
-    {weapon:'towers/tower-01/level-02-weapon.png', range:132, dmg:16, fire:0.80, cost:65},
-    {weapon:'towers/tower-01/level-03-weapon.png', range:150, dmg:28, fire:0.62, cost:95},
-  ],
-  projectile:'towers/tower-01/level-01-projectile.png',
-  impact:'towers/tower-01/weapon-impact.png',  // 384×64 = 6프레임
-};
+// 타워 6종 — 무기 스프라이트·발사체·스탯·특수효과가 모두 다르다 (프레임은 정사각, fh=프레임 한 변)
+//  proj 'sprite' = 스프라이트 발사체 / 'dot' = 색 원 발사체. 특수: splash 광역 / slow 둔화 / poison 중독(DoT)
+const TOWER_TYPES=[
+  {key:'arrow', name:'화살탑', emoji:'🏹', desc:'균형형 · 무난한 사거리와 연사', wp:'tower-01', fh:96,
+   proj:'sprite', projFile:'towers/tower-01/level-01-projectile.png', pfw:24,pfh:40, pw:10,ph:17, rot:true,
+   lv:[{range:122,dmg:9, fire:0.82,cost:55},{range:138,dmg:17,fire:0.68,cost:60},{range:158,dmg:30,fire:0.56,cost:85}]},
+  {key:'magic', name:'마법탑', emoji:'🔮', desc:'범위 피해 · 주변 적까지 한 방', wp:'tower-02', fh:96, splash:40,
+   proj:'sprite', projFile:'towers/tower-02/level-01-projectile.png', pfw:32,pfh:32, pw:20,ph:20,
+   lv:[{range:110,dmg:16,fire:1.25,cost:80},{range:122,dmg:28,fire:1.08,cost:85},{range:138,dmg:46,fire:0.92,cost:120}]},
+  {key:'rapid', name:'속사탑', emoji:'⚡', desc:'초고속 연사 · 떼거리에 강함', wp:'tower-03', fh:96,
+   proj:'dot', dot:'#fde68a', pr:3,
+   lv:[{range:104,dmg:5, fire:0.38,cost:65},{range:114,dmg:9, fire:0.31,cost:70},{range:126,dmg:15,fire:0.25,cost:95}]},
+  {key:'cannon', name:'대포탑', emoji:'💣', desc:'강력·광역 · 아주 느림', wp:'tower-04', fh:128, splash:56,
+   proj:'dot', dot:'#1f2937', pr:6,
+   lv:[{range:150,dmg:34,fire:1.7,cost:100},{range:165,dmg:58,fire:1.5,cost:110},{range:185,dmg:92,fire:1.3,cost:150}]},
+  {key:'frost', name:'서리탑', emoji:'❄️', desc:'적을 둔화 · 길목 묶어두기', wp:'tower-06', fh:64, slow:0.5, slowT:1.4,
+   proj:'dot', dot:'#7dd3fc', pr:4,
+   lv:[{range:108,dmg:4, fire:0.9, cost:60},{range:120,dmg:8, fire:0.8, cost:65},{range:134,dmg:13,fire:0.7, cost:90}]},
+  {key:'poison', name:'독탑', emoji:'☠️', desc:'지속 피해(중독) · 단단한 적에 강함', wp:'tower-08', fh:48, poison:true,
+   proj:'dot', dot:'#a3e635', pr:4,
+   lv:[{range:112,dmg:3, fire:1.0, cost:70, dps:7, dur:3},{range:124,dmg:5, fire:0.9, cost:75, dps:13,dur:3},{range:138,dmg:8, fire:0.8, cost:105,dps:22,dur:3.2}]},
+];
+const IMPACT='towers/tower-01/weapon-impact.png'; // 384×64 = 6프레임 64
 async function loadAssets(){
+  if(IMG._done)return;
   const jobs=[];
   for(const k in ENEMY_TYPES) jobs.push(loadImg(AP+ENEMY_TYPES[k].img).then(i=>IMG['e_'+k]=i));
-  TOWER.lv.forEach((l,i)=>jobs.push(loadImg(AP+l.weapon).then(im=>IMG['w'+i]=im)));
-  jobs.push(loadImg(AP+TOWER.projectile).then(i=>IMG.proj=i));
-  jobs.push(loadImg(AP+TOWER.impact).then(i=>IMG.impact=i));
+  TOWER_TYPES.forEach((T,ti)=>{
+    [1,2,3].forEach((n,li)=>jobs.push(loadImg(AP+'towers/'+T.wp+'/level-0'+n+'-weapon.png').then(im=>{IMG['tw'+ti+'_'+li]=im;T.lv[li].frames=im?Math.max(1,Math.round(im.naturalWidth/T.fh)):1;})));
+    if(T.proj==='sprite')jobs.push(loadImg(AP+T.projFile).then(im=>IMG['proj'+ti]=im));
+  });
+  jobs.push(loadImg(AP+IMPACT).then(i=>IMG.impact=i));
   await Promise.all(jobs);
+  IMG._done=true;
 }
 
 // ── 스테이지 좌표 (논리 760×460) ──
-const SW=760,SH=460;
-// 적은 오른쪽에서 들어와 굽이굽이 왼쪽 성으로
-const PATH=[{x:800,y:110},{x:560,y:110},{x:560,y:250},{x:300,y:250},{x:300,y:110},{x:120,y:110},{x:120,y:360},{x:64,y:360}];
-const BASE={x:60,y:360};
-// 타워 슬롯 (경로 옆 — 사거리 닿게 배치)
-const SLOTS=[
-  {x:660,y:200},{x:460,y:175},{x:460,y:325},{x:200,y:185},{x:200,y:325},{x:380,y:360},{x:660,y:60},{x:120,y:235},
+const SW=760,SH=460,TILE=40;
+const GCOLS=Math.floor(SW/TILE), GROWS=Math.floor(SH/TILE);
+// 맵: 경로 모양이 다른 여러 스테이지 (적은 오른쪽 밖에서 들어와 왼쪽 성으로)
+const MAPS=[
+  {name:'굽이 평원', emoji:'🌾', g1:'#1f3a22', g2:'#23421f',
+   path:[{x:800,y:110},{x:560,y:110},{x:560,y:250},{x:300,y:250},{x:300,y:110},{x:120,y:110},{x:120,y:360},{x:60,y:360}]},
+  {name:'지그재그 숲', emoji:'🌲', g1:'#1c3328', g2:'#203b2c',
+   path:[{x:800,y:80},{x:650,y:80},{x:650,y:300},{x:500,y:300},{x:500,y:90},{x:350,y:90},{x:350,y:300},{x:200,y:300},{x:200,y:120},{x:60,y:120}]},
+  {name:'바위 협곡', emoji:'⛰️', g1:'#33302a', g2:'#3a352c',
+   path:[{x:800,y:390},{x:700,y:390},{x:700,y:90},{x:420,y:90},{x:420,y:380},{x:160,y:380},{x:160,y:150},{x:60,y:150}]},
 ];
-const TILE=40; // 시각 기준
+let MAP=null, PATH=null, BASE=null, SEG=[], PATHLEN=0, BUILDABLE=null;
+function distSeg(px,py,a,b){const dx=b.x-a.x,dy=b.y-a.y,l2=dx*dx+dy*dy;let t=l2?((px-a.x)*dx+(py-a.y)*dy)/l2:0;t=Math.max(0,Math.min(1,t));return Math.hypot(px-(a.x+t*dx),py-(a.y+t*dy));}
+function distToPath(px,py){let m=1e9;for(let i=0;i<PATH.length-1;i++)m=Math.min(m,distSeg(px,py,PATH[i],PATH[i+1]));return m;}
+function cellKey(cx,cy){return cx+','+cy;}
+function computeBuildable(){
+  const s=new Set();
+  for(let cy=0;cy<GROWS;cy++)for(let cx=0;cx<GCOLS;cx++){
+    const x=cx*TILE+TILE/2,y=cy*TILE+TILE/2;
+    if(distToPath(x,y)>30 && Math.hypot(x-BASE.x,y-BASE.y)>40) s.add(cellKey(cx,cy));
+  }
+  return s;
+}
+function setMap(i){
+  MAP=MAPS[i];PATH=MAP.path;BASE=PATH[PATH.length-1];
+  SEG=[];PATHLEN=0;
+  for(let k=0;k<PATH.length-1;k++){const a=PATH[k],b=PATH[k+1];const d=Math.hypot(b.x-a.x,b.y-a.y);SEG.push({a,b,d,acc:PATHLEN});PATHLEN+=d;}
+  BUILDABLE=computeBuildable();
+  renderBackground();
+}
 
 // ── 게임 상태 ──
 let GS=null, bgCanvas=null, raf=0, lastT=0;
@@ -260,37 +305,28 @@ function buildPool(scope){
 }
 function shuffled(a){a=a.slice();for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];}return a;}
 
-// ── 배경 (정적 — 한 번만 그려 캐시) ──
+// ── 배경 (정적 — 맵 바뀔 때만 그려 캐시) ──
 function renderBackground(){
   bgCanvas=document.createElement('canvas');bgCanvas.width=SW;bgCanvas.height=SH;
   const g=bgCanvas.getContext('2d');
-  // 잔디 체크무늬
   for(let y=0;y<SH;y+=TILE)for(let x=0;x<SW;x+=TILE){
-    g.fillStyle=((x/TILE+y/TILE)%2===0)?'#1f3a22':'#23421f';
+    g.fillStyle=((x/TILE+y/TILE)%2===0)?MAP.g1:MAP.g2;
     g.fillRect(x,y,TILE,TILE);
   }
-  // 길 (두꺼운 폴리라인)
   g.lineJoin='round';g.lineCap='round';
   g.strokeStyle='#3a2c1c';g.lineWidth=46;strokePath(g);
   g.strokeStyle='#5a4126';g.lineWidth=38;strokePath(g);
   g.strokeStyle='#6b4e2e';g.lineWidth=30;strokePath(g);
-  // 길 테두리 점선
   g.setLineDash([6,10]);g.strokeStyle='rgba(0,0,0,.18)';g.lineWidth=2;strokePath(g);g.setLineDash([]);
-  // 타워 슬롯 패드
-  SLOTS.forEach(s=>{
-    g.beginPath();g.arc(s.x,s.y,18,0,Math.PI*2);
-    g.fillStyle='rgba(56,189,248,.13)';g.fill();
-    g.strokeStyle='rgba(125,211,252,.5)';g.lineWidth=2;g.setLineDash([4,4]);g.stroke();g.setLineDash([]);
-  });
+  // 건설 가능 타일 — 옅은 점으로 표시
+  BUILDABLE.forEach(k=>{const[cx,cy]=k.split(',').map(Number);const x=cx*TILE+TILE/2,y=cy*TILE+TILE/2;
+    g.beginPath();g.arc(x,y,3,0,Math.PI*2);g.fillStyle='rgba(125,211,252,.22)';g.fill();});
 }
 function strokePath(g){
   g.beginPath();g.moveTo(PATH[0].x,PATH[0].y);
   for(let i=1;i<PATH.length;i++)g.lineTo(PATH[i].x,PATH[i].y);
   g.stroke();
 }
-// 경로 누적 길이
-const SEG=[]; let PATHLEN=0;
-for(let i=0;i<PATH.length-1;i++){const a=PATH[i],b=PATH[i+1];const d=Math.hypot(b.x-a.x,b.y-a.y);SEG.push({a,b,d,acc:PATHLEN});PATHLEN+=d;}
 function posAt(dist){ // 경로 시작(오른쪽)에서 dist px 진행한 좌표 + 진행방향
   if(dist<=0)return {x:PATH[0].x,y:PATH[0].y,dx:-1,dy:0};
   for(const s of SEG){
@@ -305,25 +341,27 @@ function saveRec(k,v){try{localStorage.setItem(k,JSON.stringify(v));}catch(e){}}
 function bestKey(scope){return 'egmTD.best.'+(scope||'all');}
 
 // ── 게임 시작 ──
-async function startRun(scope){
+async function startRun(scope, mapIdx){
   await loadAssets();
-  if(!bgCanvas)renderBackground();
+  setMap(mapIdx==null?(GS?GS.mapIdx:gateMap):mapIdx);
   const pool=buildPool(scope);
   GS={
-    scope, pool, qseq:shuffled(pool), qi:0,
-    gold:90, baseHP:12, wave:0, combo:0,
+    scope, mapIdx:MAPS.indexOf(MAP), pool, qseq:shuffled(pool), qi:0,
+    gold:90, baseHP:12, wave:0, combo:0, speed:1, correct:0, total:0, maxCombo:0,
     enemies:[], towers:[], shots:[], fx:[], floats:[],
     spawnQueue:[], spawnTimer:0, betweenWave:0, waveActive:false,
     over:false, win:false, time:0,
   };
   $('gate').style.display='none';$('result').style.display='none';$('game').style.display='flex';
   $('build-menu').classList.remove('show');
+  $('speed-btn').textContent='▶ 1x';
   const best=loadRec(bestKey(scope));
   $('best-chip2').textContent='최고 '+(best?best.wave+'웨이브':'-');
   bgmPlay();
   updateHud();
   nextQuestion();
-  startWave(1);
+  banner('🏗️ 파란 점 땅을 탭해 타워를 지어!');
+  setTimeout(()=>{if(GS&&!GS.over)startWave(1);},1700);
   lastT=performance.now();
   cancelAnimationFrame(raf);
   raf=requestAnimationFrame(loop);
@@ -359,7 +397,7 @@ function enemyStats(type,w){
 }
 function spawnEnemy(type){
   const g=GS;const st=enemyStats(type,g.wave);
-  g.enemies.push({type,dist:0,hp:st.hp,maxHp:st.hp,spd:st.spd,bounty:st.bounty,frame:0,ft:0,face:-1,x:PATH[0].x,y:PATH[0].y});
+  g.enemies.push({type,dist:0,hp:st.hp,maxHp:st.hp,spd:st.spd,bounty:st.bounty,frame:0,ft:0,face:-1,x:PATH[0].x,y:PATH[0].y,slowT:0,slowMul:1,poison:null});
 }
 
 // ── 메인 루프 ──
@@ -372,23 +410,26 @@ function loop(now){
   raf=requestAnimationFrame(loop);
 }
 
-function update(dt){
-  const g=GS;g.time+=dt;
+function update(dtRaw){
+  const g=GS;const dt=dtRaw*g.speed;g.time+=dt;
   // 스폰
   if(g.waveActive&&g.spawnQueue.length){
     g.spawnTimer-=dt;
     if(g.spawnTimer<=0){spawnEnemy(g.spawnQueue.shift());g.spawnTimer=Math.max(0.45,1.1-g.wave*0.03);}
   }
-  // 적 이동
+  // 적 이동 + 상태효과(중독·둔화)
   for(const e of g.enemies){
     if(e.dead)continue;
-    e.dist+=e.spd*dt;
+    if(e.poison&&e.poison.t>0){e.poison.t-=dt;e.hp-=e.poison.dps*dt;if(e.hp<=0){killEnemy(e);continue;}}
+    let sp=e.spd;
+    if(e.slowT>0){e.slowT-=dt;sp*=e.slowMul;}
+    e.dist+=sp*dt;
     const p=posAt(e.dist);
     e.x=p.x;e.y=p.y;
-    if(p.dx!==0)e.face=p.dx; // 진행방향에 따라 좌우
+    if(p.dx!==0)e.face=p.dx;
     e.ft+=dt;const fps=8;
     if(e.ft>=1/fps){e.ft=0;e.frame=(e.frame+1)%ENEMY_TYPES[e.type].frames;}
-    if(p.end){ // 성 도달
+    if(p.end){
       e.dead=true;e.leaked=true;
       g.baseHP--;g.combo=0;sfx.leak();shakeBase();
       addFloat(BASE.x+20,BASE.y-30,'-1 ❤️','#fca5a5');
@@ -398,17 +439,15 @@ function update(dt){
   }
   // 타워 사격
   for(const tw of g.towers){
-    const L=TOWER.lv[tw.level];
+    const T=TOWER_TYPES[tw.type], L=T.lv[tw.level];
     tw.cool-=dt;
-    if(tw.firing){tw.ft+=dt;if(tw.ft>=1/14){tw.ft=0;tw.fframe++;if(tw.fframe>=TOWER.frames){tw.firing=false;tw.fframe=0;}}}
+    if(tw.firing){tw.ft+=dt;if(tw.ft>=1/16){tw.ft=0;tw.fframe++;if(tw.fframe>=(L.frames||6)){tw.firing=false;tw.fframe=0;}}}
     if(tw.cool<=0){
-      // 사거리 내 가장 진행한 적 타겟
       let best=null,bestDist=-1;
       for(const e of g.enemies){if(e.dead)continue;const d=Math.hypot(e.x-tw.x,e.y-tw.y);if(d<=L.range&&e.dist>bestDist){best=e;bestDist=e.dist;}}
       if(best){
         tw.cool=L.fire;tw.firing=true;tw.fframe=0;tw.ft=0;
-        const ang=Math.atan2(best.y-tw.y,best.x-tw.x);
-        g.shots.push({x:tw.x,y:tw.y-14,tx:best.x,ty:best.y,target:best,ang,spd:360,dmg:L.dmg});
+        g.shots.push({x:tw.x,y:tw.y-14,target:best,tx:best.x,ty:best.y,ang:0,spd:380,dmg:L.dmg,type:tw.type,lvl:tw.level});
         sfx.shoot();
       }
     }
@@ -420,14 +459,7 @@ function update(dt){
     const aimX=(tgt&&!tgt.dead)?tgt.x:s.tx, aimY=(tgt&&!tgt.dead)?tgt.y:s.ty;
     const ang=Math.atan2(aimY-s.y,aimX-s.x);s.ang=ang;
     s.x+=Math.cos(ang)*s.spd*dt;s.y+=Math.sin(ang)*s.spd*dt;
-    if(Math.hypot(aimX-s.x,aimY-s.y)<14){
-      s.done=true;
-      addImpact(s.x,s.y);
-      if(tgt&&!tgt.dead){
-        tgt.hp-=s.dmg;sfx.hit();
-        if(tgt.hp<=0){killEnemy(tgt);}
-      }
-    }
+    if(Math.hypot(aimX-s.x,aimY-s.y)<15){s.done=true;addImpact(s.x,s.y);applyHit(s);}
   }
   // 임팩트 FX
   for(const f of g.fx){f.ft+=dt;if(f.ft>=1/22){f.ft=0;f.frame++;if(f.frame>=6)f.done=true;}}
@@ -455,9 +487,21 @@ function update(dt){
 }
 
 function killEnemy(e){
-  const g=GS;e.dead=true;e.fade=0.35;
+  const g=GS;if(e.dead)return;e.dead=true;e.fade=0.35;
   g.gold+=e.bounty;addFloat(e.x,e.y-26,'+'+e.bounty,'#86efac');
   sfx.coin();updateHud();
+}
+function hurtEnemy(e,dmg){if(e.dead)return;e.hp-=dmg;if(e.hp<=0)killEnemy(e);}
+function applyHit(s){
+  const g=GS,T=TOWER_TYPES[s.type],L=T.lv[s.lvl],tgt=s.target;
+  if(T.splash){
+    for(const e of g.enemies){if(e.dead)continue;const d=Math.hypot(e.x-s.x,e.y-s.y);if(d<=T.splash)hurtEnemy(e,e===tgt?s.dmg:Math.round(s.dmg*0.6));}
+  }else if(tgt&&!tgt.dead){hurtEnemy(tgt,s.dmg);}
+  if(tgt&&!tgt.dead){
+    if(T.slow){tgt.slowT=T.slowT;tgt.slowMul=T.slow;}
+    if(T.poison){tgt.poison={dps:L.dps,t:L.dur};}
+  }
+  sfx.hit();
 }
 function addImpact(x,y){GS.fx.push({x,y,frame:0,ft:0});}
 function addFloat(x,y,txt,color){GS.floats.push({x,y,txt,color,life:0.9});}
@@ -477,24 +521,30 @@ function render(){
   cx.font='13px serif';
   cx.fillText('❤️'.repeat(Math.max(0,g.baseHP)),bx+8,BASE.y+22);
 
-  // 타워 사거리(선택 슬롯)
-  if(g.selSlot!=null){const s=SLOTS[g.selSlot];const tw=towerAt(g.selSlot);
-    const range=tw?TOWER.lv[tw.level].range:TOWER.lv[0].range;
-    cx.beginPath();cx.arc(s.x,s.y,range,0,Math.PI*2);
+  // 타워 사거리(선택 셀)
+  if(g.selCell){const ccx=g.selCell.cx*TILE+TILE/2, ccy=g.selCell.cy*TILE+TILE/2;
+    const tw=towerAt(g.selCell.cx,g.selCell.cy);
+    const range=tw?TOWER_TYPES[tw.type].lv[tw.level].range:TOWER_TYPES[g.previewType||0].lv[0].range;
+    cx.beginPath();cx.arc(ccx,ccy,range,0,Math.PI*2);
     cx.fillStyle='rgba(125,211,252,.10)';cx.fill();
-    cx.strokeStyle='rgba(125,211,252,.5)';cx.lineWidth=2;cx.stroke();
+    cx.strokeStyle='rgba(125,211,252,.55)';cx.lineWidth=2;cx.stroke();
+    cx.strokeStyle='rgba(253,230,138,.8)';cx.lineWidth=2;cx.strokeRect(ccx-TILE/2,ccy-TILE/2,TILE,TILE);
   }
 
   // 적
   for(const e of g.enemies){
     const t=ENEMY_TYPES[e.type];const img=IMG['e_'+e.type];if(!img)continue;
     const scale=46/t.ch, dw=t.cw*scale, dh=t.ch*scale;
+    // 상태효과 표시 (둔화=청록 / 중독=연두 발밑 링)
+    if(!e.dead&&(e.slowT>0||(e.poison&&e.poison.t>0))){
+      cx.fillStyle=e.slowT>0?'rgba(125,211,252,.5)':'rgba(163,230,53,.5)';
+      cx.beginPath();cx.ellipse(e.x,e.y+2,dw*0.4,5,0,0,Math.PI*2);cx.fill();
+    }
     cx.save();cx.globalAlpha=e.dead?Math.max(0,e.fade/0.35):1;
     cx.translate(e.x,e.y);
     if(e.face>0)cx.scale(-1,1); // 시트는 왼쪽 향함 — 오른쪽 이동 시 뒤집기
     cx.drawImage(img, e.frame*t.cw, t.row*t.ch, t.cw, t.ch, -dw/2, -dh+6, dw, dh);
     cx.restore();
-    // HP 바
     if(!e.dead&&e.hp<e.maxHp){
       const bw=dw*0.9;
       cx.fillStyle='rgba(0,0,0,.55)';cx.fillRect(e.x-bw/2,e.y-dh+0,bw,4);
@@ -503,20 +553,25 @@ function render(){
   }
   // 타워
   for(const tw of g.towers){
-    const img=IMG['w'+tw.level];if(!img)continue;
-    const frame=tw.firing?tw.fframe:0;
-    const scale=0.62, dw=TOWER.cw*scale, dh=TOWER.ch*scale;
-    // 받침
-    cx.fillStyle='rgba(30,41,59,.85)';cx.beginPath();cx.ellipse(tw.x,tw.y+6,17,8,0,0,Math.PI*2);cx.fill();
-    cx.drawImage(img, frame*TOWER.cw,0,TOWER.cw,TOWER.ch, tw.x-dw/2, tw.y-dh+10, dw, dh);
-    // 레벨 점
-    for(let i=0;i<=tw.level;i++){cx.fillStyle='#fde68a';cx.beginPath();cx.arc(tw.x-8+i*8,tw.y+14,2.4,0,Math.PI*2);cx.fill();}
+    const T=TOWER_TYPES[tw.type], L=T.lv[tw.level], img=IMG['tw'+tw.type+'_'+tw.level];
+    cx.fillStyle='rgba(30,41,59,.85)';cx.beginPath();cx.ellipse(tw.x,tw.y+8,16,7,0,0,Math.PI*2);cx.fill();
+    if(img){
+      const frames=L.frames||6, frame=tw.firing?Math.min(tw.fframe,frames-1):0;
+      const scale=60/T.fh, dw=T.fh*scale, dh=T.fh*scale;
+      cx.drawImage(img, frame*T.fh,0,T.fh,T.fh, tw.x-dw/2, tw.y-dh+14, dw, dh);
+    }
+    for(let i=0;i<=tw.level;i++){cx.fillStyle='#fde68a';cx.beginPath();cx.arc(tw.x-8+i*8,tw.y+16,2.4,0,Math.PI*2);cx.fill();}
   }
   // 발사체
   for(const s of g.shots){
-    if(!IMG.proj)continue;
-    cx.save();cx.translate(s.x,s.y);cx.rotate(s.ang+Math.PI/2);
-    const pw=12,ph=20;cx.drawImage(IMG.proj,-pw/2,-ph/2,pw,ph);cx.restore();
+    const T=TOWER_TYPES[s.type];
+    if(T.proj==='sprite'&&IMG['proj'+s.type]){
+      cx.save();cx.translate(s.x,s.y);cx.rotate(s.ang+Math.PI/2);
+      cx.drawImage(IMG['proj'+s.type],0,0,T.pfw,T.pfh,-T.pw/2,-T.ph/2,T.pw,T.ph);cx.restore();
+    }else{
+      cx.beginPath();cx.arc(s.x,s.y,T.pr,0,Math.PI*2);cx.fillStyle=T.dot;cx.fill();
+      cx.strokeStyle='rgba(255,255,255,.5)';cx.lineWidth=1;cx.stroke();
+    }
   }
   // 임팩트
   for(const f of g.fx){if(!IMG.impact)continue;const fw=64;cx.drawImage(IMG.impact,f.frame*fw,0,fw,64,f.x-24,f.y-24,48,48);}
@@ -525,54 +580,59 @@ function render(){
   for(const t of g.floats){cx.globalAlpha=Math.min(1,t.life/0.5);cx.fillStyle=t.color;cx.fillText(t.txt,t.x,t.y);}
   cx.globalAlpha=1;
 }
-function towerAt(slotIdx){return GS.towers.find(t=>t.slot===slotIdx)||null;}
+function towerAt(cxi,cyi){return GS.towers.find(t=>t.cx===cxi&&t.cy===cyi)||null;}
 
-// ── 입력: 슬롯 탭 ──
+// ── 입력: 땅 탭(자유 배치 — 셀에 스냅) ──
 cv.addEventListener('click',e=>{
   const g=GS;if(!g||g.over)return;
   const r=cv.getBoundingClientRect();
   const x=(e.clientX-r.left)*(SW/r.width), y=(e.clientY-r.top)*(SH/r.height);
-  let hit=-1,hd=28;
-  SLOTS.forEach((s,i)=>{const d=Math.hypot(s.x-x,s.y-y);if(d<hd){hd=d;hit=i;}});
-  if(hit>=0){openBuildMenu(hit);}else{closeBuildMenu();}
+  const cxi=Math.floor(x/TILE), cyi=Math.floor(y/TILE);
+  if(towerAt(cxi,cyi)||BUILDABLE.has(cellKey(cxi,cyi)))openBuildMenu(cxi,cyi);
+  else closeBuildMenu();
 });
-function openBuildMenu(slotIdx){
-  const g=GS;g.selSlot=slotIdx;
-  const s=SLOTS[slotIdx], tw=towerAt(slotIdx), m=$('build-menu');
+function openBuildMenu(cxi,cyi){
+  const g=GS;g.selCell={cx:cxi,cy:cyi};g.previewType=0;
+  const tw=towerAt(cxi,cyi), m=$('build-menu');
   let html='';
   if(!tw){
-    const c=TOWER.lv[0].cost;
-    html='<div class="bm-title">🏹 타워 건설</div>'+
-      `<button class="bm-btn" ${g.gold<c?'disabled':''} data-act="build"><span>🏹 화살탑 Lv.1</span><span class="bm-cost">${c}💰</span></button>`;
-  }else if(tw.level<2){
-    const c=TOWER.lv[tw.level+1].cost;
-    html=`<div class="bm-title">🏹 화살탑 Lv.${tw.level+1}</div>`+
-      `<button class="bm-btn" ${g.gold<c?'disabled':''} data-act="up"><span>⬆️ Lv.${tw.level+2}로 강화</span><span class="bm-cost">${c}💰</span></button>`+
-      `<button class="bm-btn sell" data-act="sell"><span>💸 철거</span><span class="bm-cost">+${sellValue(tw)}💰</span></button>`;
+    html='<div class="bm-title">🏗️ 타워 건설</div>';
+    TOWER_TYPES.forEach((T,ti)=>{const c=T.lv[0].cost;
+      html+=`<button class="bm-btn" ${g.gold<c?'disabled':''} data-act="build" data-t="${ti}"><span>${T.emoji} ${T.name}</span><span class="bm-cost">${c}💰</span></button>`;});
   }else{
-    html=`<div class="bm-title">🏹 화살탑 Lv.3 (최대)</div>`+
-      `<button class="bm-btn sell" data-act="sell"><span>💸 철거</span><span class="bm-cost">+${sellValue(tw)}💰</span></button>`;
+    const T=TOWER_TYPES[tw.type];
+    if(tw.level<2){const c=T.lv[tw.level+1].cost;
+      html=`<div class="bm-title">${T.emoji} ${T.name} Lv.${tw.level+1}</div>`+
+        `<button class="bm-btn" ${g.gold<c?'disabled':''} data-act="up"><span>⬆️ Lv.${tw.level+2} 강화</span><span class="bm-cost">${c}💰</span></button>`+
+        `<button class="bm-btn sell" data-act="sell"><span>💸 철거</span><span class="bm-cost">+${sellValue(tw)}💰</span></button>`;
+    }else{
+      html=`<div class="bm-title">${T.emoji} ${T.name} Lv.3 (최대)</div>`+
+        `<button class="bm-btn sell" data-act="sell"><span>💸 철거</span><span class="bm-cost">+${sellValue(tw)}💰</span></button>`;
+    }
   }
   html+='<button class="bm-close" data-act="close">닫기</button>';
   m.innerHTML=html;
-  // 위치
   const wrapW=$('stage-wrap').clientWidth, sc=wrapW/SW;
-  let px=s.x*sc-94, py=s.y*sc+24;
-  px=Math.max(6,Math.min(wrapW-194,px));
+  let px=(cxi*TILE+TILE/2)*sc-94, py=(cyi*TILE+TILE/2)*sc+20;
+  px=Math.max(6,Math.min(wrapW-194,px));py=Math.max(6,py);
   m.style.left=px+'px';m.style.top=py+'px';
   m.classList.add('show');
-  m.querySelectorAll('[data-act]').forEach(b=>b.onclick=()=>doBuildAct(b.dataset.act,slotIdx));
+  m.querySelectorAll('[data-act]').forEach(b=>{
+    b.onclick=()=>doBuildAct(b.dataset.act,cxi,cyi,b.dataset.t!=null?+b.dataset.t:null);
+    if(b.dataset.t!=null)b.addEventListener('pointerenter',()=>{g.previewType=+b.dataset.t;});
+  });
 }
-function closeBuildMenu(){GS.selSlot=null;$('build-menu').classList.remove('show');}
-function sellValue(tw){let paid=0;for(let i=0;i<=tw.level;i++)paid+=TOWER.lv[i].cost;return Math.floor(paid*0.5);}
-function doBuildAct(act,slotIdx){
-  const g=GS;const tw=towerAt(slotIdx);
-  if(act==='build'){
-    const c=TOWER.lv[0].cost;if(g.gold<c)return;
-    g.gold-=c;g.towers.push({slot:slotIdx,x:SLOTS[slotIdx].x,y:SLOTS[slotIdx].y,level:0,cool:0,firing:false,fframe:0,ft:0});
+function closeBuildMenu(){if(GS)GS.selCell=null;$('build-menu').classList.remove('show');}
+function sellValue(tw){const lv=TOWER_TYPES[tw.type].lv;let paid=0;for(let i=0;i<=tw.level;i++)paid+=lv[i].cost;return Math.floor(paid*0.5);}
+function doBuildAct(act,cxi,cyi,typeIdx){
+  const g=GS;const tw=towerAt(cxi,cyi);
+  if(act==='close'){closeBuildMenu();return;}
+  if(act==='build'&&!tw&&typeIdx!=null){
+    const c=TOWER_TYPES[typeIdx].lv[0].cost;if(g.gold<c)return;
+    g.gold-=c;g.towers.push({cx:cxi,cy:cyi,x:cxi*TILE+TILE/2,y:cyi*TILE+TILE/2,type:typeIdx,level:0,cool:0,firing:false,fframe:0,ft:0});
     sfx.build();
   }else if(act==='up'&&tw&&tw.level<2){
-    const c=TOWER.lv[tw.level+1].cost;if(g.gold<c)return;
+    const c=TOWER_TYPES[tw.type].lv[tw.level+1].cost;if(g.gold<c)return;
     g.gold-=c;tw.level++;sfx.build();
   }else if(act==='sell'&&tw){
     g.gold+=sellValue(tw);g.towers=g.towers.filter(t=>t!==tw);sfx.coin();
@@ -597,9 +657,10 @@ function answer(btn,val){
   const g=GS;if(!g||g.over||g.locked)return;
   g.locked=true;
   const correct=val===g.cur.ans;
+  g.total++;
   [...document.querySelectorAll('.opt')].forEach(b=>{b.disabled=true;if(b.textContent===g.cur.ans)b.classList.add('ok');else if(b===btn)b.classList.add('ng');});
   if(correct){
-    g.combo++;
+    g.combo++;g.correct++;g.maxCombo=Math.max(g.maxCombo,g.combo);
     const base=14, bonus=Math.min(10,Math.floor(g.combo/3)*2);
     const gain=base+bonus;
     g.gold+=gain;sfx.ok();
@@ -640,17 +701,28 @@ function gameOver(win){
   $('res-sub').textContent='적에게 성을 빼앗겼다… 다시 도전!';
   $('res-new-wrap').innerHTML=isNew?'<div class="res-new">🎉 최고 기록!</div>':'';
   const best=loadRec(bKey);
-  $('res-best').textContent='내 최고: '+(best?best.wave+' 웨이브':'-');
+  const acc=g.total?Math.round(g.correct/g.total*100):0;
+  $('res-best').innerHTML='📊 정답률 '+acc+'% ('+g.correct+'/'+g.total+') · 🔥최다 '+g.maxCombo+'콤보<br>🏆 내 최고: '+(best?best.wave+' 웨이브':'-');
   sfx.over();bgmStop();
   setTimeout(()=>$('result').style.display='flex',500);
 }
-$('btn-retry').onclick=()=>startRun(GS.scope);
+$('btn-retry').onclick=()=>startRun(GS.scope,GS.mapIdx);
 $('bgm-btn').onclick=()=>{bgmOn=!bgmOn;localStorage.setItem('egmTD.bgm',bgmOn?'on':'off');syncBgmBtn();if(bgmOn&&GS&&!GS.over)bgmPlay();else bgm.pause();};
+$('speed-btn').onclick=()=>{if(!GS||GS.over)return;GS.speed=GS.speed===1?2:1;$('speed-btn').textContent=GS.speed===2?'▶▶ 2x':'▶ 1x';};
 syncBgmBtn();
 
 // ── 게이트 ──
-let gateScope='all';
+let gateScope='all', gateMap=0;
 {const _u=new URLSearchParams(location.search).get('unit');if(_u&&_u!=='all'&&GAME_QUESTIONS[_u])gateScope=_u;}
+function buildMapChips(){
+  const grid=$('map-grid');grid.innerHTML='';
+  MAPS.forEach((m,i)=>{
+    const b=document.createElement('button');b.className='uchip'+(i===gateMap?' on':'');b.dataset.map=i;
+    b.textContent=m.emoji+' '+m.name;
+    b.onclick=()=>{gateMap=i;[...grid.children].forEach(c=>c.classList.toggle('on',+c.dataset.map===i));};
+    grid.appendChild(b);
+  });
+}
 function buildUnitChips(){
   UNIT_KEYS.forEach(k=>{
     const grid=k.startsWith('g1')?$('up-grid-g1'):$('up-grid-g2');
@@ -674,8 +746,8 @@ function refreshGate(){
 }
 $('card-all').onclick=()=>{gateScope='all';refreshGate();};
 $('card-unit').onclick=()=>{if(gateScope==='all')gateScope=UNIT_KEYS[0];refreshGate();};
-$('gate-go').onclick=()=>startRun(gateScope);
-buildUnitChips();refreshGate();
+$('gate-go').onclick=()=>startRun(gateScope,gateMap);
+buildUnitChips();buildMapChips();refreshGate();
 </script>
 </body>
 </html>

@@ -166,6 +166,11 @@ button{font-family:inherit;}
 .opt.ok{background:rgba(34,197,94,.3);border-color:#22c55e;}
 .opt.ng{background:rgba(239,68,68,.3);border-color:#ef4444;animation:shake .35s;}
 .opt:disabled{cursor:default;opacity:.92;}
+/* 🪙 베팅 선택 버튼 */
+.opt.stake{font-size:.98rem;}
+.opt.stake small{display:block;font-size:.7rem;font-weight:700;margin-top:3px;color:#c4b5fd;}
+.opt.st-bet{border-color:#fbbf24;background:rgba(251,191,36,.15);}
+.opt.st-safe{border-color:#34d399;background:rgba(52,211,153,.13);}
 @keyframes shake{0%,100%{transform:translateX(0)}25%{transform:translateX(-6px)}75%{transform:translateX(6px)}}
 
 /* 오답 확인 스트립 */
@@ -214,7 +219,7 @@ button{font-family:inherit;}
 <div id="gate">
   <img class="gate-hero" src="assets/huntress/portrait.png" alt="huntress">
   <div class="gate-title">🗼 문법 무한의 탑</div>
-  <div class="gate-sub">한 문제 = 한 층. 목숨 3개로 어디까지 올라갈까?<br>10층마다 보스 관문 · 몬스터·보물·유령·새·돌풍·안개 변수층 + 아이템!</div>
+  <div class="gate-sub">한 문제 = 한 층. 목숨 3개로 어디까지 올라갈까?<br>10층마다 보스 관문 · 몬스터·보물·🪙베팅·유령·새·돌풍·안개 변수층 + 아이템!<br>올라갈수록 ⚙️가속! 시간이 점점 짧아진다.</div>
   <div class="mode-cards">
     <button class="mode-card on" id="card-daily">
       <div class="mc-icon">🗓️</div>
@@ -244,7 +249,7 @@ button{font-family:inherit;}
   <canvas id="bg"></canvas>
   <div id="wall"></div>
   <div id="hud">
-    <div id="floor-chip"><small>FLOOR</small><span id="floor-num">0</span>층</div>
+    <div id="floor-chip"><small id="floor-tag">FLOOR</small><span id="floor-num">0</span>층</div>
     <div id="streak-chip">🔥 <span id="streak-num">0</span> 연속</div>
     <div id="hearts">❤️❤️❤️</div>
     <button id="bgm-btn" title="배경음악">🔊</button>
@@ -381,8 +386,9 @@ function buildPool(scope){ // null/'all'=전 단원, 'g1'/'g2'=학년 전체, �
 function shuffled(arr,rng){const a=arr.slice();for(let i=a.length-1;i>0;i--){const j=Math.floor(rng()*(i+1));[a[i],a[j]]=[a[j],a[i]];}return a;}
 
 // ── 난이도 곡선 ──
-function timeFor(floor){return Math.max(8,20-floor*0.3);}            // 초: 20 → 8
+function timeFor(floor){return Math.max(5,19-floor*0.32);}          // 초: 19 → 5 (44층 부근까지 계속 단축, plateau 제거)
 function pLevel2(floor){return Math.min(.85,.15+floor*.025);}        // level2 비중: 15% → 85%
+function speedGear(floor){return Math.min(6,1+Math.floor(floor/8));}// ⚙️ 가속 기어: 8층마다 1단, 최대 6단
 
 // ── 기록 (localStorage) ──
 function loadRec(key){try{return JSON.parse(localStorage.getItem(key))||null;}catch(e){return null;}}
@@ -415,18 +421,20 @@ const ITEM_DEFS={
 };
 // 방해/패널티 층 — 등불·일반층 판정에 사용
 const DISTURB=['wind','fog','ghost','bird','rush'];
+// 변수층 가중 테이블 (보스는 10층마다 별도)
+const EVENTS=[
+  {k:'monster',w:10},{k:'treasure',w:9},{k:'bet',w:8},
+  {k:'wind',w:8},{k:'fog',w:7},{k:'ghost',w:7},{k:'bird',w:7},{k:'rush',w:7},
+];
 function eventFor(f,rng){ // 보스(10층마다) > 4층 이전 없음 > 가중 추첨
   if(f<4)return null;
   if(f%10===0)return 'boss';
-  const r=rng();
-  // 누적 확률 — 약 55% 일반, 45% 이벤트
-  if(r<.10)return 'monster';
-  if(r<.19)return 'treasure';
-  if(r<.27)return 'wind';
-  if(r<.34)return 'fog';
-  if(r<.41)return 'ghost';
-  if(r<.48)return 'bird';
-  if(r<.55)return 'rush';
+  // 올라갈수록 변수 빈도 증가: 45% → 최대 72%
+  const eventChance=Math.min(.72,.45+(f-4)*0.006);
+  if(rng()>=eventChance)return null;
+  const tot=EVENTS.reduce((s,e)=>s+e.w,0);
+  let r=rng()*tot;
+  for(const e of EVENTS){r-=e.w;if(r<0)return e.k;}
   return null;
 }
 function addItem(kind){
@@ -501,6 +509,7 @@ function startRun(mode){
     poolL1:pool.l1,poolL2:pool.l2,
     floor:0,hearts:3,streak:0,maxStreak:0,wrongs:[],
     items:[],event:null,eventFloor:-1,monster:null,fever:0,windIv:null,activeDisturb:null,
+    betStake:null,
     over:false,locked:false,timerT:null,
   };
   renderItems();
@@ -561,6 +570,7 @@ function syncEvent(){
   else if(g.event==='ghost')chip.textContent='👻 유령층! 유령이 선택지를 가리며 지나간다!';
   else if(g.event==='bird')chip.textContent='🐦 새떼층! 새가 문제를 가리며 날아간다!';
   else if(g.event==='rush')chip.textContent='⚡ 가속층! 시간이 평소보다 빠르게 흐른다!';
+  else if(g.event==='bet')chip.textContent='🪙 베팅층! 안전(+1층) 또는 베팅(+2층/❤️-2)을 골라라!';
 }
 function skipClimb(){ // 🪽 날개: 문제를 건너뛰고 한 층 등반 (연속 기록은 유지만)
   const g=GS;if(!g||g.over||g.locked)return;
@@ -577,7 +587,7 @@ function skipClimb(){ // 🪽 날개: 문제를 건너뛰고 한 층 등반 (연
 }
 function nextQuestion(){
   const g=GS;if(!g||g.over)return;
-  g.locked=false;
+  g.locked=false;g.betStake=null;
   $('fb').classList.remove('show');
   syncEvent();
   const q=pickQuestion();
@@ -593,6 +603,27 @@ function nextQuestion(){
   g.activeDisturb=DISTURB.includes(g.event)?g.event:null;
   // 🌫️ 안개층: 해석 가림
   if(g.event==='fog')$('q-kor').classList.add('fogged');
+  // 👻 유령 / 🐦 새: 슬라이드 애니메이션이 텍스트 위를 반복해 지나가며 가림
+  if(g.event==='ghost')$('disturb').className='ghost';
+  else if(g.event==='bird')$('disturb').className='bird';
+  // 🪙 베팅층: 문제 풀기 전에 안전/베팅 먼저 선택 (타이머는 선택 후 시작)
+  if(g.event==='bet'){showStake();return;}
+  presentOptions();
+}
+function showStake(){
+  const box=$('opts');box.innerHTML='';
+  const fill=$('timer-fill');fill.style.transition='none';fill.style.width='100%';fill.classList.remove('crit');
+  const mk=(html,stake,cls)=>{
+    const b=document.createElement('button');
+    b.className='opt stake '+cls;b.innerHTML=html;
+    b.onclick=()=>{GS.betStake=stake;presentOptions();};
+    box.appendChild(b);
+  };
+  mk('🛡️ 안전<small>+1층</small>','safe','st-safe');
+  mk('🪙 베팅<small>+2층 / ❤️ -2</small>','bet','st-bet');
+}
+function presentOptions(){
+  const g=GS,q=g.cur;
   const opts=shuffled(q.opts,g.rng);
   const box=$('opts');box.innerHTML='';
   opts.forEach(o=>{
@@ -608,10 +639,7 @@ function nextQuestion(){
       [...box.children].sort(()=>Math.random()-.5).forEach(b=>box.appendChild(b));
     },2800);
   }
-  // 👻 유령 / 🐦 새: 슬라이드 애니메이션이 텍스트 위를 반복해 지나가며 가림
-  if(g.event==='ghost')$('disturb').className='ghost';
-  else if(g.event==='bird')$('disturb').className='bird';
-  // 시간 단축: 몬스터 60% / 보스 70% / ⚡가속 55%
+  // 시간 단축: 몬스터 60% / 보스 70% / ⚡가속 55% (베팅은 보통 시간)
   const tScale=g.event==='monster'?0.6:g.event==='boss'?0.7:g.event==='rush'?0.55:1;
   startTimer(timeFor(g.floor)*tScale);
 }
@@ -674,7 +702,9 @@ function randItem(){ // 가중치 기반 — 반반 편중 해소
 function onCorrect(){
   const g=GS;
   const ev=g.event;
+  const oldGear=speedGear(g.floor);
   let climbN=ev==='monster'?2:ev==='boss'?3:1;   // 몬스터 +2 / 보스 +3
+  if(ev==='bet'&&g.betStake==='bet')climbN=2;    // 🪙 베팅 성공: +2층
   if(g.fever>0){climbN+=1;g.fever--;}            // 🔥 피버: 정답마다 +1층
   // 점프(몬스터·피버)가 다음 보스층(10의 배수)을 건너뛰지 않도록 보스 직전에서 멈춤
   if(ev!=='boss'){
@@ -709,6 +739,10 @@ function onCorrect(){
     banner(addItem(got)?'💰 '+ITEM_DEFS[got].emoji+' '+ITEM_DEFS[got].label+' 획득!':'💰 가방이 가득! (최대 3개)');
     delay=1150;
   }
+  if(ev==='bet'){
+    banner(g.betStake==='bet'?('🪙 베팅 성공! +'+climbN+'층!'):('🛡️ 안전하게 +'+climbN+'층'));
+    delay=Math.max(delay,1050);
+  }
   // 콤보 보상: 5연속마다 아이템, 7연속 도달 시 피버(5문제 동안 +1층)
   if(ev!=='boss'&&g.streak%5===0){
     const got=randItem();
@@ -717,6 +751,11 @@ function onCorrect(){
   if(g.streak>0&&g.streak%7===0){
     g.fever=5;
     banner('🔥🔥 피버 타임! 5문제 동안 정답마다 +1층!');delay=Math.max(delay,1200);
+  }
+  // ⚙️ 가속 기어 상승 — 제한시간이 더 짧아진다
+  const newGear=speedGear(g.floor);
+  if(newGear>oldGear){
+    banner('⏩ '+newGear+'단 가속! 제한시간이 더 짧아진다');delay=Math.max(delay,1100);
   }
   wallY+=160*climbN;wall.style.backgroundPositionY=wallY+'px';
   const tier=Math.floor(g.floor/10);
@@ -742,7 +781,9 @@ function onWrong(picked){
     setTimeout(nextQuestion,2400);
     return;
   }
-  g.hearts--;g.streak=0;g.fever=0;   // 피버는 오답으로 종료
+  g.hearts-=(g.event==='bet'&&g.betStake==='bet')?2:1; // 🪙 베팅 실패: 하트 -2
+  if(g.hearts<0)g.hearts=0;
+  g.streak=0;g.fever=0;   // 피버는 오답으로 종료
   sfx.ng();
   setHero('hurt',420);
   updateHud();
@@ -761,6 +802,8 @@ function onWrong(picked){
 function updateHud(){
   const g=GS;
   $('floor-num').textContent=g.floor;
+  const gear=speedGear(g.floor);
+  $('floor-tag').textContent=gear>1?'⚙️ '+gear+'단':'FLOOR';
   $('hearts').textContent='❤️'.repeat(g.hearts)+'🖤'.repeat(3-g.hearts);
   const sc=$('streak-chip');
   if(g.fever>0){

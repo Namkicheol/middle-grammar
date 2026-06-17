@@ -1,0 +1,7 @@
+[mcp_servers.kordoc]
+command = "npx"
+args = [
+    "-y",
+    "kordoc",
+    "mcp",
+]

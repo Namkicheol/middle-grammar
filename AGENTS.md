@@ -34,7 +34,7 @@
 
 ## 스킬·에이전트 자료 취급
 
-`.claude/skills/*/SKILL.md`와 `.claude/agents/*.md`는 Claude Code의 skill/agent 정의다. Claude Code 세션에서는 자동 로드되며, Codex에서는 자동 로드되지 않으므로 로컬 참고 문서로 읽어 절차·체크리스트를 그대로 따른다.
+`.claude/skills/*/SKILL.md`와 `.claude/agents/*.md`는 Claude Code의 skill/agent 정의다. Codex에서는 `.agents/skills`(현재 `.claude/skills`로 연결)와 `.codex/agents/*.toml`을 사용한다. 한쪽만 고치지 말고 공통 지침은 중립 표현으로 유지한다.
 
 전역 지침은 `~/.claude/CLAUDE.md`(Claude Code) / `~/.codex/AGENTS.md`(Codex)에 있다.
 

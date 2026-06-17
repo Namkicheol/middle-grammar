@@ -684,10 +684,6 @@ body{
           <strong>무한의 탑</strong>
           <span>목숨 3개 등반 · 오늘의 탑 층수 경쟁</span>
         </button>
-        <button class="mode-btn" data-mode="rangers">
-          <strong>문법 레인저스</strong>
-          <span>문제 맞혀 유닛 소환 · 레인 배틀 진격전</span>
-        </button>
       </div>
     </div>
   </div>
@@ -1175,7 +1171,6 @@ function startSelectedGame(unitKey) {
   } else if (selectedMode === 'speed') startSpeedQuiz(unitKey);
   else if (selectedMode === 'whack') location.href = '../whack-grammar/?unit=' + encodeURIComponent(unitKey);
   else if (selectedMode === 'tower') location.href = '../tower/?unit=' + encodeURIComponent(unitKey);
-  else if (selectedMode === 'rangers') location.href = '../grammar-rangers/?unit=' + encodeURIComponent(unitKey);
   else startGame(unitKey);
 }
 

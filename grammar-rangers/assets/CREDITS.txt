@@ -1,21 +1,30 @@
-문법 레인저스 에셋 출처 (전부 CC0 / public domain — 재배포 허용)
+문법 레인저스 에셋 출처
 
-미술: "16x16 Puny Characters" + "PunyMonsters" by Shade (merchant-shade)
-- https://merchant-shade.itch.io/16x16-puny-characters
+1) v2 레인저 캐릭터 — CC0 / public domain
+- 원본: "80x64 Male and Female Sprites Character Template" by mixxit
+- URL: https://opengameart.org/content/80x64-male-and-female-sprites-character-template
+- License: CC0 1.0 Universal
+- 원문 요지: 80x64 sprite size, walk/shoot/idle 포함, no attribution required / copyright free.
+- 적용: assets/v2/rangers/*.png
+  - 원본 Male/Female 부품 PNG를 색상별로 합성해 루키·블레이드·스나이퍼·가드·플레어·메이지 시트 생성.
+  - 공용 프레임: walk 8프레임, attack 4프레임, 64×80 셀.
+
+2) v2 몬스터·배경 — CC0 / public domain
+- 원본: "Sideview Fantasy Patreon Collection" by ansimuz
+- URL: https://opengameart.org/content/sideview-fantasy-patreon-collection
+- License: CC0 1.0 Universal
+- 원문 요지: various Fantasy environments and sprites, PNG ready-to-use, free to use, credit not required but appreciated.
+- 적용: assets/v2/foes/*.png, assets/v2/env/*.png
+  - snake, mushroom, lizard, froggy, bunny, wyvern, dragon 프레임을 게임용 고정 셀 시트로 정규화.
+  - mist forest / forest road 배경 일부를 전투 배경으로 사용.
+
+3) 기존 Puny 에셋 — CC0 / public domain, 레거시 보존
+- 원본: "16x16 Puny Characters" + "PunyMonsters" by Shade (merchant-shade)
+- URL: https://merchant-shade.itch.io/16x16-puny-characters
 - License: Creative Commons Zero (CC0) v1.0 Universal
-  원문: "You are allowed to create Variations/DLCs of this asset pack and even
-  sell it as your own." → 상업/비상업/재배포 모두 허용. public repo 문제 없음.
-- 입수: 2026-06-15
-
-구성:
-- characters/  영웅·병사 스프라이트 (32×32 캔버스, 시트 768×256 = 24열×8행)
-    8행 = 8애니: Idle / Walk / Sword / Bow / Stave / Throw / Hurt / Death
-    색상 팀(Blue·Cyan vs Red 등)으로 아군/적군 구분 가능
-    Soldier·Warrior·Archer·Mage·Orc(Grunt/Peon/Soldier)·Human·Slime
-- monsters/   적 동물 9종 (32×32): 흑표범·개·멧돼지×2·거미×2·늑대·쥐·고양이
-- env/        배경 타일 (Grass1/2, Dirt, Tree)
+- 위치: assets/characters/, assets/monsters/, assets/env/
+- 현재 v2 그래픽 전환 후 직접 렌더링에는 사용하지 않지만, 이전 버전/예비 리소스로 보존.
 
 비고:
-- 라인레인저스st 측면 레인 배틀용. game2/tower의 LuizMelo 파이터와 다른 새 에셋
-  (사용자 요청: "이미 써서 좀 그래 / 다른 에셋").
-- 16×16 도트 톤 = 작고 귀여운 라인레인저스 분위기.
+- v2 전환일: 2026-06-17
+- 목표: game2/tower의 기존 LuizMelo 계열 전투 스프라이트 재사용을 줄이고, 문법 레인저스만의 별도 캐릭터·몬스터 톤으로 분리.

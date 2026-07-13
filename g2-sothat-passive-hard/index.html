@@ -180,8 +180,8 @@ body{font-family:'Baloo 2','Noto Sans KR',sans-serif;background:var(--bg);paddin
     <div class="q-text">Jake's room was <em>___</em> messy that his mom refused to enter.</div>
     <div class="vocab"><span class="vw">messy 지저분한</span><span class="vw">refuse 거부하다</span></div>
     <div class="choices" data-qid="a1" data-ans="so">
-      <button class="choice" onclick="pickChoice(this)">so</button>
       <button class="choice" onclick="pickChoice(this)">very</button>
+      <button class="choice" onclick="pickChoice(this)">so</button>
       <button class="choice" onclick="pickChoice(this)">too</button>
       <button class="choice" onclick="pickChoice(this)">quite</button>
     </div>
@@ -193,10 +193,10 @@ body{font-family:'Baloo 2','Noto Sans KR',sans-serif;background:var(--bg);paddin
     <div class="q-text">The windows <em>___</em> cleaned by the maintenance team last Saturday.</div>
     <div class="vocab"><span class="vw">maintenance team 관리팀</span></div>
     <div class="choices" data-qid="a2" data-ans="were">
+      <button class="choice" onclick="pickChoice(this)">were</button>
       <button class="choice" onclick="pickChoice(this)">is</button>
       <button class="choice" onclick="pickChoice(this)">was</button>
       <button class="choice" onclick="pickChoice(this)">are</button>
-      <button class="choice" onclick="pickChoice(this)">were</button>
     </div>
     <div class="answer-hint" id="ah-a2">💡 정답: <strong>were</strong> — 주어(The windows)가 복수이고 과거(last Saturday) → were + p.p.(cleaned).<br>📝 해석: 창문들이 지난 토요일 관리팀에 의해 청소되었다.</div>
     <button class="hint-btn" onclick="showHint('a2')">💡 힌트 보기</button>
@@ -206,10 +206,10 @@ body{font-family:'Baloo 2','Noto Sans KR',sans-serif;background:var(--bg);paddin
     <div class="q-text">Yuna's speech was so well-prepared <em>___</em> her teacher gave her extra credit.</div>
     <div class="vocab"><span class="vw">well-prepared 잘 준비된</span><span class="vw">extra credit 추가 점수</span></div>
     <div class="choices" data-qid="a3" data-ans="that">
+      <button class="choice" onclick="pickChoice(this)">that</button>
       <button class="choice" onclick="pickChoice(this)">when</button>
       <button class="choice" onclick="pickChoice(this)">because</button>
       <button class="choice" onclick="pickChoice(this)">which</button>
-      <button class="choice" onclick="pickChoice(this)">that</button>
     </div>
     <div class="answer-hint" id="ah-a3">💡 정답: <strong>that</strong> — so well-prepared + that + 결과절. "너무 잘 준비되어서 ~". that이 결과절을 이끕니다.<br>📝 해석: Yuna의 발표는 너무 잘 준비되어서 선생님이 그녀에게 추가 점수를 주었다.</div>
     <button class="hint-btn" onclick="showHint('a3')">💡 힌트 보기</button>
@@ -219,10 +219,10 @@ body{font-family:'Baloo 2','Noto Sans KR',sans-serif;background:var(--bg);paddin
     <div class="q-text">This special award <em>___</em> given to only one student each year.</div>
     <div class="vocab"><span class="vw">award 상</span><span class="vw">each year 매년</span></div>
     <div class="choices" data-qid="a4" data-ans="is given">
+      <button class="choice" onclick="pickChoice(this)">is given</button>
       <button class="choice" onclick="pickChoice(this)">gave</button>
       <button class="choice" onclick="pickChoice(this)">are given</button>
       <button class="choice" onclick="pickChoice(this)">were given</button>
-      <button class="choice" onclick="pickChoice(this)">is given</button>
     </div>
     <div class="answer-hint" id="ah-a4">💡 정답: <strong>is given</strong> — 주어(This special award)가 단수이고 현재 습관(each year) → is + p.p.(given).<br>📝 해석: 이 특별상은 매년 한 명의 학생에게만 주어진다.</div>
     <button class="hint-btn" onclick="showHint('a4')">💡 힌트 보기</button>
@@ -231,7 +231,7 @@ body{font-family:'Baloo 2','Noto Sans KR',sans-serif;background:var(--bg);paddin
   <!-- 오류 수정 (a5-a8) -->
   <div class="question-card" id="qc-a5"><span class="q-num">5</span><span class="q-type fix">오류 수정</span>
     <div class="q-sub">밑줄 친 부분을 바르게 고쳐 빈칸에 쓰세요.</div>
-    <div class="q-text">The parcel <span class="wrong">send</span> by the post office yesterday.<br>→ <input class="blank" id="bi-a5" placeholder="___" data-ans="was sent" autocomplete="off" style="min-width:110px"></div>
+    <div class="q-text">The parcel <span class="wrong">was send</span> by the post office yesterday.<br>→ <input class="blank" id="bi-a5" placeholder="___" data-ans="was sent" autocomplete="off" style="min-width:110px"></div>
     <button class="check-btn" onclick="checkBlank('a5')">✔ 확인</button>
     <div class="answer-hint" id="ah-a5">💡 정답: <strong>was sent</strong> — 주어(The parcel)가 발송된 것이므로 수동태. 과거 → was + p.p.(sent). send의 과거분사는 sent.<br>📝 해석: 소포가 어제 우체국에 의해 발송되었다.</div>
     <button class="hint-btn" onclick="showHint('a5')">💡 힌트 보기</button>
@@ -255,9 +255,9 @@ body{font-family:'Baloo 2','Noto Sans KR',sans-serif;background:var(--bg);paddin
 
   <div class="question-card" id="qc-a8"><span class="q-num">8</span><span class="q-type fix">오류 수정</span>
     <div class="q-sub">밑줄 친 부분을 바르게 고쳐 빈칸에 쓰세요.</div>
-    <div class="q-text">The cakes <span class="wrong">was baked</span> by Mia and her sister last Sunday.<br>→ <input class="blank" id="bi-a8" placeholder="___" data-ans="were baked" autocomplete="off" style="min-width:120px"></div>
+    <div class="q-text">The movie was <span class="wrong">too boring that</span> we left early.<br>→ <input class="blank" id="bi-a8" placeholder="___" data-ans="so boring that" autocomplete="off" style="min-width:130px"></div>
     <button class="check-btn" onclick="checkBlank('a8')">✔ 확인</button>
-    <div class="answer-hint" id="ah-a8">💡 정답: <strong>were baked</strong> — 주어(The cakes)가 복수이므로 was → were. 과거 수동태: were + p.p.(baked).<br>📝 해석: 케이크들은 지난 일요일 Mia와 그녀의 언니에 의해 구워졌다.</div>
+    <div class="answer-hint" id="ah-a8">💡 정답: <strong>so boring that</strong> — so + 형용사 + that + 결과절: too boring that ✗<br>📝 해석: 그 영화는 너무 지루해서 우리는 일찍 나왔다.</div>
     <button class="hint-btn" onclick="showHint('a8')">💡 힌트 보기</button>
   </div>
 

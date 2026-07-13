@@ -178,9 +178,9 @@ body{font-family:'Baloo 2','Noto Sans KR',sans-serif;background:var(--bg);paddin
     <div class="q-text">She <em>___</em> lived in Seoul for ten years.</div>
     <div class="vocab"><span class="vw">live 살다</span></div>
     <div class="choices" data-qid="a1" data-ans="has">
-      <button class="choice" onclick="pickChoice(this)">has</button>
       <button class="choice" onclick="pickChoice(this)">have</button>
       <button class="choice" onclick="pickChoice(this)">had</button>
+      <button class="choice" onclick="pickChoice(this)">has</button>
       <button class="choice" onclick="pickChoice(this)">is</button>
     </div>
     <div class="answer-hint" id="ah-a1">💡 정답: <strong>has</strong> — She(3인칭 단수) + 현재완료 → has + p.p. (have → has)<br>📝 해석: 그녀는 10년 동안 서울에 살고 있다.</div>
@@ -204,10 +204,10 @@ body{font-family:'Baloo 2','Noto Sans KR',sans-serif;background:var(--bg);paddin
     <div class="q-text">This book is <em>___</em> than the one I read last week.</div>
     <div class="vocab"><span class="vw">interesting 흥미로운</span></div>
     <div class="choices" data-qid="a3" data-ans="more interesting">
-      <button class="choice" onclick="pickChoice(this)">more interesting</button>
       <button class="choice" onclick="pickChoice(this)">most interesting</button>
       <button class="choice" onclick="pickChoice(this)">more interestingly</button>
       <button class="choice" onclick="pickChoice(this)">the most interesting</button>
+      <button class="choice" onclick="pickChoice(this)">more interesting</button>
     </div>
     <div class="answer-hint" id="ah-a3">💡 정답: <strong>more interesting</strong> — 3음절 이상 형용사 비교급 = more + 원급 (more interestingly ✗: interestingly는 부사형, 형용사 자리에 쓸 수 없음)<br>📝 해석: 이 책은 내가 지난주에 읽은 것보다 더 흥미롭다.</div>
     <button class="hint-btn" onclick="showHint('a3')">💡 힌트 보기</button>
@@ -217,8 +217,8 @@ body{font-family:'Baloo 2','Noto Sans KR',sans-serif;background:var(--bg);paddin
     <div class="q-text">Jake is <em>___</em> student in the whole school.</div>
     <div class="vocab"><span class="vw">whole 전체의</span><span class="vw">tall 키가 큰</span></div>
     <div class="choices" data-qid="a4" data-ans="the tallest">
-      <button class="choice" onclick="pickChoice(this)">the tallest</button>
       <button class="choice" onclick="pickChoice(this)">tallest</button>
+      <button class="choice" onclick="pickChoice(this)">the tallest</button>
       <button class="choice" onclick="pickChoice(this)">the taller</button>
       <button class="choice" onclick="pickChoice(this)">most tall</button>
     </div>
@@ -242,12 +242,12 @@ body{font-family:'Baloo 2','Noto Sans KR',sans-serif;background:var(--bg);paddin
   <div class="question-card" id="qc-a6"><span class="q-num">6</span><span class="q-type fix">오류 수정</span>
     <div class="q-text">
       <span class="orig">❌ He has studied English <span class="wrong">since</span> three years.</span><br>
-      → 밑줄 친 부분을 바르게 고치세요:
-      <input class="blank" id="bi-a6" placeholder="___" data-ans="for three years" autocomplete="off" style="min-width:140px">
+      → 밑줄 친 전치사만 고치세요:<br>
+      He has studied English <input class="blank" id="bi-a6" placeholder="___" data-ans="for" autocomplete="off" style="min-width:70px"> three years.
     </div>
     <div class="vocab"><span class="vw">study 공부하다</span></div>
     <button class="check-btn" onclick="checkBlank('a6')">✔ 확인</button>
-    <div class="answer-hint" id="ah-a6">💡 정답: <strong>for three years</strong> — 기간(three years) 앞에는 since → for (since는 과거 시점 앞에 사용)<br>📝 해석: 그는 3년 동안 영어를 공부해 왔다.</div>
+    <div class="answer-hint" id="ah-a6">💡 정답: <strong>for</strong> — 기간(three years) 앞에는 since → for (since는 과거 시점 앞에 사용)<br>📝 해석: 그는 3년 동안 영어를 공부해 왔다.</div>
     <button class="hint-btn" onclick="showHint('a6')">💡 힌트 보기</button>
   </div>
 

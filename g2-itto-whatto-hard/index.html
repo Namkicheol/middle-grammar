@@ -180,8 +180,8 @@ body{font-family:'Baloo 2','Noto Sans KR',sans-serif;background:var(--bg);paddin
     <div class="q-text">It is interesting <em>___</em> Japanese pop songs.</div>
     <div class="vocab"><span class="vw">interesting 흥미로운</span></div>
     <div class="choices" data-qid="a1" data-ans="to learn">
-      <button class="choice" onclick="pickChoice(this)">learn</button>
       <button class="choice" onclick="pickChoice(this)">to learn</button>
+      <button class="choice" onclick="pickChoice(this)">learn</button>
       <button class="choice" onclick="pickChoice(this)">learns</button>
       <button class="choice" onclick="pickChoice(this)">learning to</button>
     </div>
@@ -194,10 +194,10 @@ body{font-family:'Baloo 2','Noto Sans KR',sans-serif;background:var(--bg);paddin
     <div class="q-kor">그 보고서를 하루 만에 끝내는 것은 <u>나에게</u> 힘들다.</div>
     <div class="vocab"><span class="vw">report 보고서</span></div>
     <div class="choices" data-qid="a2" data-ans="for">
-      <button class="choice" onclick="pickChoice(this)">to</button>
-      <button class="choice" onclick="pickChoice(this)">for</button>
       <button class="choice" onclick="pickChoice(this)">of</button>
       <button class="choice" onclick="pickChoice(this)">with</button>
+      <button class="choice" onclick="pickChoice(this)">to</button>
+      <button class="choice" onclick="pickChoice(this)">for</button>
     </div>
     <div class="answer-hint" id="ah-a2">💡 정답: <strong>for</strong> — to부정사의 의미상 주어는 「for + 목적격」: for me<br>📝 해석: 그 보고서를 하루 만에 끝내는 것은 나에게 힘들다.</div>
     <button class="hint-btn" onclick="showHint('a2')">💡 힌트 보기</button>
@@ -205,12 +205,11 @@ body{font-family:'Baloo 2','Noto Sans KR',sans-serif;background:var(--bg);paddin
 
   <div class="question-card" id="qc-a3"><span class="q-num">3</span><span class="q-type ctx">문맥 파악</span>
     <div class="q-text">She is learning <em>___</em> to make Italian pasta from a video.</div>
-    <div class="q-kor">그녀는 영상으로 이탈리아 파스타를 <u>어떻게</u> 만드는지 배우는 중이다.</div>
     <div class="vocab"><span class="vw">Italian 이탈리아의</span></div>
     <div class="choices" data-qid="a3" data-ans="how">
-      <button class="choice" onclick="pickChoice(this)">what</button>
-      <button class="choice" onclick="pickChoice(this)">how</button>
       <button class="choice" onclick="pickChoice(this)">why</button>
+      <button class="choice" onclick="pickChoice(this)">how</button>
+      <button class="choice" onclick="pickChoice(this)">what</button>
       <button class="choice" onclick="pickChoice(this)">where</button>
     </div>
     <div class="answer-hint" id="ah-a3">💡 정답: <strong>how</strong> — 「~하는 방법」은 how to부정사. (why는 「의문사+to부정사」로 쓰지 않음)<br>📝 해석: 그녀는 영상으로 이탈리아 파스타를 만드는 방법을 배우는 중이다.</div>
@@ -219,12 +218,11 @@ body{font-family:'Baloo 2','Noto Sans KR',sans-serif;background:var(--bg);paddin
 
   <div class="question-card" id="qc-a4"><span class="q-num">4</span><span class="q-type ctx">문맥 파악</span>
     <div class="q-text">He couldn't decide <em>___</em> to put the heavy bookshelf.</div>
-    <div class="q-kor">그는 그 무거운 책장을 <u>어디에</u> 둘지 결정하지 못했다.</div>
     <div class="vocab"><span class="vw">bookshelf 책장</span></div>
     <div class="choices" data-qid="a4" data-ans="where">
+      <button class="choice" onclick="pickChoice(this)">where</button>
       <button class="choice" onclick="pickChoice(this)">what</button>
       <button class="choice" onclick="pickChoice(this)">when</button>
-      <button class="choice" onclick="pickChoice(this)">where</button>
       <button class="choice" onclick="pickChoice(this)">why</button>
     </div>
     <div class="answer-hint" id="ah-a4">💡 정답: <strong>where</strong> — 「어디에 ~할지」는 where to부정사<br>📝 해석: 그는 그 무거운 책장을 어디에 둘지 결정하지 못했다.</div>
@@ -235,7 +233,7 @@ body{font-family:'Baloo 2','Noto Sans KR',sans-serif;background:var(--bg);paddin
   <div class="question-card" id="qc-a5"><span class="q-num">5</span><span class="q-type fix">오류 수정</span>
     <div class="q-text">
       <span class="orig">❌ It is a good habit <span class="wrong">read</span> books every night.</span><br>
-      → 밑줄 친 부분을 바르게 고치세요:
+      → 밑줄 친 부분을 포함해 바르게 고치세요. 필요한 말은 함께 쓰세요:
       <input class="blank" id="bi-a5" placeholder="___" data-ans="to read" autocomplete="off" style="min-width:90px">
     </div>
     <div class="vocab"><span class="vw">habit 습관</span></div>
@@ -247,7 +245,7 @@ body{font-family:'Baloo 2','Noto Sans KR',sans-serif;background:var(--bg);paddin
   <div class="question-card" id="qc-a6"><span class="q-num">6</span><span class="q-type fix">오류 수정</span>
     <div class="q-text">
       <span class="orig">❌ Many people don't know how <span class="wrong">finding</span> interesting books.</span><br>
-      → 밑줄 친 부분을 바르게 고치세요:
+      → 밑줄 친 부분을 포함해 바르게 고치세요. 필요한 말은 함께 쓰세요:
       <input class="blank" id="bi-a6" placeholder="___" data-ans="to find" autocomplete="off" style="min-width:90px">
     </div>
     <div class="vocab"><span class="vw">interesting 흥미로운</span></div>
@@ -270,14 +268,13 @@ body{font-family:'Baloo 2','Noto Sans KR',sans-serif;background:var(--bg);paddin
 
   <div class="question-card" id="qc-a8"><span class="q-num">8</span><span class="q-type fix">오류 수정</span>
     <div class="q-text">
-      <span class="orig">❌ She told us <span class="wrong">why</span> to use the new printer.</span><br>
-      → 밑줄 친 의문사를 바르게 고치세요:
-      <input class="blank" id="bi-a8" placeholder="___" data-ans="how" autocomplete="off" style="min-width:70px">
+      <span class="orig">❌ She told us <span class="wrong">how use</span> the new printer.</span><br>
+      → 밑줄 친 부분을 포함해 바르게 고치세요. 필요한 말은 함께 쓰세요:
+      <input class="blank" id="bi-a8" placeholder="___" data-ans="how to use" autocomplete="off" style="min-width:100px">
     </div>
-    <div class="q-kor">그녀는 우리에게 새 프린터를 <u>어떻게</u> 사용하는지 알려 주었다.</div>
     <div class="vocab"><span class="vw">printer 프린터</span></div>
     <button class="check-btn" onclick="checkBlank('a8')">✔ 확인</button>
-    <div class="answer-hint" id="ah-a8">💡 정답: <strong>how</strong> — why는 「의문사+to부정사」 형태로 쓰지 않는다. 문맥상 '사용 방법'이므로 how to use<br>📝 해석: 그녀는 우리에게 새 프린터를 어떻게 사용하는지 알려 주었다.</div>
+    <div class="answer-hint" id="ah-a8">💡 정답: <strong>how to use</strong> — 「의문사 + to + 동사원형」: how to use<br>📝 해석: 그녀는 우리에게 새 프린터를 어떻게 사용하는지 알려 주었다.</div>
     <button class="hint-btn" onclick="showHint('a8')">💡 힌트 보기</button>
   </div>
 

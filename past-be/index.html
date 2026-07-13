@@ -643,6 +643,14 @@ var vocabData={
   'c10':[{w:'child',k:'어린아이'},{w:'afraid of',k:'~을 무서워하는'}]
 };
 document.addEventListener('DOMContentLoaded',function(){
+  document.querySelectorAll('.choices:not(.ox)').forEach(function(box){
+    var buttons=Array.prototype.slice.call(box.children);
+    for(var i=buttons.length-1;i>0;i--){
+      var j=Math.floor(Math.random()*(i+1));
+      var tmp=buttons[i];buttons[i]=buttons[j];buttons[j]=tmp;
+    }
+    buttons.forEach(function(button){box.appendChild(button);});
+  });
   var st=document.createElement('style');
   st.textContent='.vi-vw{font-size:.72rem;background:#fef3c7;color:#92400e;border-radius:6px;padding:2px 8px;font-weight:600;margin:1px 2px;}';
   document.head.appendChild(st);

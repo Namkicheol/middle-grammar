@@ -842,6 +842,15 @@ const GAME_QUESTIONS = {
     "color": "#6366f1",
     "questions": [
       {
+        "id": "g1_l2_fix_enjoy_reading",
+        "kor": "오류 수정: enjoy 뒤에는 어떤 형태를 써야 할까?",
+        "eng": "I enjoy ___ comics after dinner.",
+        "ans": "reading",
+        "opts": ["to read", "reading", "read", "reads"],
+        "level": 2,
+        "type": "fix"
+      },
+      {
         "id": "g1_l2_gerund_basic_s0q1",
         "kor": "나는 지금 책을 읽고 있는 중이다.",
         "eng": "I ___ a book right now.",
@@ -1598,6 +1607,15 @@ const GAME_QUESTIONS = {
     "label": "중1 L3 · be·일반동사 과거형 & when",
     "color": "#22c55e",
     "questions": [
+      {
+        "id": "g1_l3_fix_when_arrived",
+        "kor": "오류 수정: when 뒤 문장을 바르게 고르세요.",
+        "eng": "When Mina ___ at school, the first class started.",
+        "ans": "arrived",
+        "opts": ["did arrive", "arrived", "arrives", "was arrive"],
+        "level": 2,
+        "type": "fix"
+      },
       {
         "id": "g1_l3_be_1",
         "kor": "나는 작년에 열 살이었다.",
@@ -3082,6 +3100,15 @@ const GAME_QUESTIONS = {
     "color": "#8b5cf6",
     "questions": [
       {
+        "id": "g1_l5_fix_to_watch",
+        "kor": "오류 수정: 목적을 나타내는 말을 고르세요.",
+        "eng": "The cat climbed onto the windowsill ___ the birds.",
+        "ans": "to watch",
+        "opts": ["watching", "to watch", "watch", "to watching"],
+        "level": 2,
+        "type": "fix"
+      },
+      {
         "id": "g1_l5_reflexive_to_basic_a1",
         "kor": "Sarah는 자기 자신을 위해 새 가방을 샀다.",
         "eng": "Sarah bought a new bag for ___.",
@@ -3865,6 +3892,15 @@ const GAME_QUESTIONS = {
     "label": "중1 L6 · 감각동사 & because",
     "color": "#ef4444",
     "questions": [
+      {
+        "id": "g1_l6_fix_because",
+        "kor": "오류 수정: 원인을 나타내는 접속사를 고르세요.",
+        "eng": "We canceled the picnic ___ it rained.",
+        "ans": "because",
+        "opts": ["so", "because", "when", "that"],
+        "level": 2,
+        "type": "fix"
+      },
       {
         "id": "g1_l6_look_because_basic_a1",
         "kor": "새 놀이터는 매우 안전해 보인다.",
@@ -5819,6 +5855,15 @@ const GAME_QUESTIONS = {
     "color": "#0d9488",
     "questions": [
       {
+        "id": "g2_l1_fix_send_to",
+        "kor": "오류 수정: send 뒤 받는 사람 앞에 알맞은 전치사를 고르세요.",
+        "eng": "She sent a postcard ___ her best friend.",
+        "ans": "to",
+        "opts": ["for", "to", "with", "of"],
+        "level": 2,
+        "type": "fix"
+      },
+      {
         "id": "g2_l1_g2_give_relclause_basic_a1",
         "kor": "그녀는 경기 후 나에게 따뜻한 포옹을 해 주었다.",
         "eng": "She gave ___ a warm hug after the game.",
@@ -6407,6 +6452,15 @@ const GAME_QUESTIONS = {
     "label": "중2 L2 · 현재완료 & 비교급",
     "color": "#f97316",
     "questions": [
+      {
+        "id": "g2_l2_fix_for_duration",
+        "kor": "오류 수정: 기간 앞에 알맞은 말을 고르세요.",
+        "eng": "He has studied English ___ three years.",
+        "ans": "for",
+        "opts": ["since", "for", "at", "from"],
+        "level": 2,
+        "type": "fix"
+      },
       {
         "id": "g2_l2_g2_perfect_compare_basic_a1",
         "kor": "나는 이 영화를 전에 본 적이 있다.",
@@ -7022,6 +7076,15 @@ const GAME_QUESTIONS = {
     "label": "중2 L3 · 형용사 to부정사 & if",
     "color": "#ec4899",
     "questions": [
+      {
+        "id": "g2_l3_fix_if_takes",
+        "kor": "오류 수정: if절에 알맞은 동사 형태를 고르세요.",
+        "eng": "If Mina ___ an umbrella, she will stay dry.",
+        "ans": "takes",
+        "opts": ["will take", "takes", "took", "taking"],
+        "level": 2,
+        "type": "fix"
+      },
       {
         "id": "g2_l3_g2_to_if_basic_a1",
         "kor": "소풍에 먹을 것이 필요하다.",
@@ -7675,6 +7738,15 @@ const GAME_QUESTIONS = {
     "label": "중2 L4 · so~that & 수동태",
     "color": "#84cc16",
     "questions": [
+      {
+        "id": "g2_l4_fix_so_boring_that",
+        "kor": "오류 수정: 결과를 나타내는 표현을 고르세요.",
+        "eng": "The movie was ___ we left early.",
+        "ans": "so boring that",
+        "opts": ["too boring that", "so boring that", "very boring because", "so bored that"],
+        "level": 2,
+        "type": "fix"
+      },
       {
         "id": "g2_l4_g2_sothat_passive_basic_a1",
         "kor": "그는 너무 피곤해서 움직일 수 없었다.",
@@ -10519,6 +10591,15 @@ const GAME_QUESTIONS = {
     "label": "중2 L8 · 가주어 it & 의문사+to부정사",
     "color": "#eab308",
     "questions": [
+      {
+        "id": "g2_l8_fix_how_to_use",
+        "kor": "오류 수정: 의문사와 to부정사 형태를 고르세요.",
+        "eng": "She told us ___ the new printer.",
+        "ans": "how to use",
+        "opts": ["how use", "how to use", "why to use", "how using"],
+        "level": 2,
+        "type": "fix"
+      },
       {
         "id": "g2_l8_g2_itto_whatto_basic_index_a1",
         "kor": "약속을 지키는 것은 중요하다.",

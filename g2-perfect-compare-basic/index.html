@@ -693,6 +693,18 @@ function toast(msg,type){
   clearTimeout(t._t);t._t=setTimeout(function(){t.classList.remove('show');},1800);
 }
 </script>
+<script>
+document.addEventListener('DOMContentLoaded',function(){
+  document.querySelectorAll('.choices:not(.ox)').forEach(function(box){
+    var buttons=Array.prototype.slice.call(box.children);
+    for(var i=buttons.length-1;i>0;i--){
+      var j=Math.floor(Math.random()*(i+1));
+      var tmp=buttons[i];buttons[i]=buttons[j];buttons[j]=tmp;
+    }
+    buttons.forEach(function(button){box.appendChild(button);});
+  });
+});
+</script>
 <script src="../score-popup.js"></script>
 <script src="../sounds.js"></script>
 <script src="../print-worksheet.js?v=11"></script>

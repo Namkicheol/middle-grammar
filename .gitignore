@@ -30,3 +30,7 @@ code-review-graph/
 /*.jpg
 /*.jpeg
 .remember/
+
+# AI 게임 에셋 중간 원본 (런타임 투명 PNG만 커밋)
+game2/assets/hd-v1/source/
+grammar-rangers/assets/hd-v1/source/

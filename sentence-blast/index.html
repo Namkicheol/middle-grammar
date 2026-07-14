@@ -1,0 +1,254 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
+<title>Sentence Blast · 문법 아케이드</title>
+<link rel="icon" href="data:,">
+<style>
+:root{--ink:#061127;--panel:#0b1d3d;--line:rgba(148,163,184,.18);--cyan:#22d3ee;--mint:#34d399;--gold:#facc15;--pink:#fb7185;--purple:#a78bfa;}
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+body{min-height:100vh;background:radial-gradient(circle at 50% -10%,#164e63 0,#0b1c3c 34%,#030817 76%);color:#fff;font-family:'Nunito','Noto Sans KR',sans-serif;overflow-x:hidden}
+button{font-family:inherit}
+button:focus-visible{outline:3px solid var(--gold);outline-offset:3px}
+.app{width:min(100%,520px);min-height:100vh;margin:auto;background:linear-gradient(180deg,rgba(4,15,38,.58),rgba(2,8,23,.92));box-shadow:0 0 70px rgba(0,0,0,.4);position:relative;overflow:hidden}
+.top{padding:12px 14px 10px;background:rgba(5,17,42,.88);border-bottom:1px solid rgba(103,232,249,.2);backdrop-filter:blur(10px);position:relative;z-index:3}
+.top-row{display:grid;grid-template-columns:auto 1fr auto;gap:10px;align-items:center}
+.back{border:1px solid rgba(255,255,255,.13);background:rgba(255,255,255,.08);color:#fff;border-radius:999px;padding:7px 11px;font-size:.72rem;font-weight:900;cursor:pointer}
+.brand{text-align:center}.brand small{display:block;color:#67e8f9;font-size:.55rem;letter-spacing:1.8px;font-weight:900}.brand h1{font-family:'Jua','Noto Sans KR',sans-serif;font-size:1.42rem;font-weight:400;line-height:1.05}.brand h1 span{color:#6ee7b7}
+.time{font-size:1.1rem;font-weight:900;color:#fde68a;font-variant-numeric:tabular-nums;min-width:42px;text-align:right}.time.crit{color:#fda4af;animation:pulse .7s infinite}
+@keyframes pulse{50%{opacity:.48}}
+.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;margin-top:10px}
+.stat{background:rgba(255,255,255,.055);border:1px solid rgba(255,255,255,.07);border-radius:10px;padding:5px 4px;text-align:center}.stat b{display:block;color:#f8fafc;font-size:.82rem;font-weight:900}.stat span{display:block;color:#94a3b8;font-size:.53rem;font-weight:900;letter-spacing:.4px;margin-top:1px}
+.phase{height:24px;position:relative;background:#07142d;border-bottom:1px solid rgba(255,255,255,.08);overflow:hidden;text-align:center;font-size:.64rem;font-weight:900;line-height:24px;color:#dbeafe}
+.phase-fill{position:absolute;inset:0 auto 0 0;width:100%;background:linear-gradient(90deg,rgba(34,211,238,.45),rgba(52,211,153,.45));transition:width .4s linear}.phase-label{position:relative;text-shadow:0 1px 3px #020617}
+.mission{margin:12px 14px 9px;padding:10px 12px;border:1px solid rgba(52,211,153,.2);border-radius:14px;background:linear-gradient(120deg,rgba(16,185,129,.11),rgba(34,211,238,.07));display:flex;align-items:center;justify-content:space-between;gap:10px}.mission strong{font-family:'Jua','Noto Sans KR',sans-serif;font-weight:400;color:#a7f3d0;font-size:.92rem}.mission span{color:#94a3b8;font-size:.62rem;font-weight:800;text-align:right}
+.board-wrap{padding:0 14px;position:relative}.board{display:grid;grid-template-columns:repeat(8,1fr);gap:4px;width:100%;aspect-ratio:1;padding:7px;border-radius:19px;background:rgba(2,8,23,.78);border:1px solid rgba(103,232,249,.2);box-shadow:inset 0 0 24px rgba(0,0,0,.42),0 18px 36px rgba(0,0,0,.25)}
+.cell{border:0;border-radius:6px;background:linear-gradient(145deg,#13284c,#0b1b38);box-shadow:inset 0 1px 0 rgba(255,255,255,.04);cursor:pointer;min-width:0;transition:transform .08s,filter .12s}.cell:hover{filter:brightness(1.2)}.cell.filled{background:linear-gradient(145deg,var(--block-hi),var(--block));box-shadow:inset 0 3px 4px rgba(255,255,255,.3),0 0 10px color-mix(in srgb,var(--block) 35%,transparent)}.cell.preview{background:color-mix(in srgb,var(--preview) 60%,#fff);transform:scale(.9)}.cell.bad{animation:bad .22s 2}@keyframes bad{50%{transform:translateX(3px);background:#7f1d1d}}
+.blast-flash{position:absolute;inset:0 14px;border-radius:19px;pointer-events:none;opacity:0;background:radial-gradient(circle,#fef08a 0,rgba(34,211,238,.65) 24%,transparent 67%)}.blast-flash.on{animation:blast .72s ease-out}@keyframes blast{0%{opacity:0;transform:scale(.7)}35%{opacity:1}100%{opacity:0;transform:scale(1.13)}}
+.tray-title{display:flex;align-items:center;justify-content:space-between;padding:11px 17px 7px}.tray-title strong{font-family:'Jua','Noto Sans KR',sans-serif;font-size:.92rem;font-weight:400}.tray-title span{font-size:.58rem;color:#94a3b8;font-weight:900}.tray{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;padding:0 14px 14px}.piece{min-height:86px;border-radius:16px;border:1px solid rgba(148,163,184,.17);background:linear-gradient(150deg,#0e2347,#08162f);cursor:pointer;display:grid;place-items:center;position:relative;transition:transform .15s,border-color .15s,opacity .15s}.piece.on{transform:translateY(-4px);border-color:var(--piece);box-shadow:0 9px 20px color-mix(in srgb,var(--piece) 24%,transparent)}.piece.used{opacity:.18;pointer-events:none}.piece small{position:absolute;right:8px;bottom:6px;font-size:.5rem;color:#94a3b8}.mini{display:grid;gap:3px}.mini i{display:block;width:14px;height:14px;border-radius:4px;background:linear-gradient(145deg,var(--piece-hi),var(--piece));box-shadow:inset 0 2px 3px rgba(255,255,255,.3)}
+.tip{text-align:center;color:#64748b;font-size:.62rem;font-weight:800;padding:0 14px 20px}
+.toast{position:fixed;left:50%;bottom:20px;transform:translate(-50%,25px);z-index:30;padding:10px 16px;border-radius:999px;background:#fff;color:#0f172a;font-size:.76rem;font-weight:900;box-shadow:0 12px 30px rgba(0,0,0,.35);opacity:0;pointer-events:none;transition:.2s;white-space:nowrap}.toast.show{opacity:1;transform:translate(-50%,0)}.toast.ok{background:#d1fae5;color:#065f46}.toast.ng{background:#ffe4e6;color:#9f1239}
+.overlay{display:none;position:fixed;inset:0;z-index:50;background:rgba(2,6,23,.78);backdrop-filter:blur(8px);align-items:center;justify-content:center;padding:16px}.overlay.show{display:flex}.card{width:min(100%,430px);border-radius:27px;background:linear-gradient(150deg,#eff6ff,#fff 46%,#ecfdf5);color:#0f172a;padding:22px 18px;box-shadow:0 28px 70px rgba(0,0,0,.52),0 0 34px rgba(52,211,153,.2);border:2px solid rgba(110,231,183,.75);animation:pop .22s cubic-bezier(.2,1.5,.5,1)}@keyframes pop{from{opacity:0;transform:scale(.82)}to{opacity:1;transform:scale(1)}}
+.challenge-head{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-bottom:10px}.challenge-head h2{font-family:'Jua','Noto Sans KR',sans-serif;font-weight:400;font-size:1.28rem;color:#064e3b}.challenge-time{display:grid;place-items:center;width:44px;height:44px;border-radius:50%;background:#07142d;color:#fde68a;font-weight:900;font-size:1.05rem}
+.kor{background:#cffafe;color:#155e75;border-radius:12px;padding:8px 10px;font-size:.78rem;font-weight:800;line-height:1.45;margin-bottom:12px}.guide{font-size:.68rem;color:#64748b;font-weight:900;margin-bottom:7px}.answer-zone,.chips{display:flex;flex-wrap:wrap;gap:7px;min-height:49px;padding:8px;border-radius:13px}.answer-zone{background:#e2e8f0;border:2px dashed #94a3b8;margin-bottom:9px}.chips{background:rgba(255,255,255,.7);border:1px solid #dbeafe}.word{border:1px solid #bfdbfe;background:#fff;color:#1e3a8a;border-radius:10px;padding:8px 10px;font-weight:900;font-size:.84rem;cursor:pointer;box-shadow:0 3px 7px rgba(30,64,175,.08)}.word:disabled{opacity:.18;cursor:default}.answer-zone .word{background:#0f766e;color:#fff;border-color:#0f766e}.challenge-actions{display:grid;grid-template-columns:1fr auto;gap:8px;margin-top:12px}.check{border:0;border-radius:14px;background:linear-gradient(120deg,#10b981,#06b6d4);color:#fff;font-size:.92rem;font-weight:900;padding:12px;cursor:pointer;box-shadow:0 9px 20px rgba(16,185,129,.25)}.reset{border:1px solid #cbd5e1;background:#fff;color:#475569;border-radius:14px;padding:0 14px;font-weight:900;cursor:pointer}.feedback{min-height:42px;margin-top:10px;font-size:.76rem;font-weight:900;line-height:1.45;text-align:center}.feedback.ok{color:#047857}.feedback.ng{color:#be123c}
+.end-card{text-align:center}.end-emoji{font-size:3.2rem}.end-card h2{font-family:'Jua','Noto Sans KR',sans-serif;font-size:1.6rem;font-weight:400;color:#0f3b5e}.final-score{font-size:2.2rem;color:#7c3aed;font-weight:900;margin:9px}.end-sub{font-size:.8rem;color:#64748b;font-weight:800;line-height:1.6}.end-actions{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:16px}.end-actions button{border:0;border-radius:14px;padding:12px;font-weight:900;cursor:pointer}.again{background:#10b981;color:#fff}.home{background:#e2e8f0;color:#334155}
+@media(max-width:360px){.stats{gap:3px}.stat b{font-size:.72rem}.board{gap:3px}.piece{min-height:78px}.mission span{display:none}}
+@media(prefers-reduced-motion:reduce){*,*::before,*::after{animation-duration:.01ms!important;transition-duration:.01ms!important}}
+
+/* Block-puzzle visual direction: simple score, big board, floating pieces. */
+:root{--game-blue:#174f91;--game-blue-deep:#123c72;--game-grid:#0f3567;--game-slot:#245a96}
+body{background:#0c2f5c;color:#fff;font-family:ui-rounded,'SF Pro Rounded','Arial Rounded MT Bold','Noto Sans KR',system-ui,sans-serif}
+.app{width:min(100%,500px);background:linear-gradient(180deg,#1d5ba1 0,#174f91 46%,#123f78 100%);box-shadow:none;overflow:hidden}
+.top{padding:10px 18px 6px;background:transparent;border:0;backdrop-filter:none}
+.top-row{grid-template-columns:54px 1fr 54px;min-height:66px}
+.back{width:42px;height:42px;padding:0;border:0;background:rgba(7,35,74,.34);font-size:0}.back::before{content:'‹';font-size:2rem;font-family:system-ui;font-weight:500;line-height:1}
+.score-head{text-align:center}.score-head small{display:block;font-size:.55rem;letter-spacing:2px;color:#b9dcff;font-weight:900}.score-head b{display:block;font-size:2.35rem;line-height:1;color:#fff;font-weight:900;letter-spacing:-1px;text-shadow:0 3px 0 rgba(5,28,61,.25)}
+.time{font-size:.95rem;color:#fff;background:rgba(7,35,74,.34);border-radius:999px;padding:7px 6px;text-align:center;min-width:52px}
+.brand{margin-top:-2px}.brand small{font-size:.62rem;color:#d7ebff;letter-spacing:2.4px}.brand h1{display:none}
+.stats{display:flex;justify-content:center;gap:22px;margin-top:5px}.stat{background:transparent;border:0;border-radius:0;padding:0}.stat b{display:inline;color:#fff;font-size:.76rem}.stat span{display:inline;color:#b9dcff;font-size:.52rem;margin-left:4px}
+.phase{height:22px;margin:4px 18px 0;border-radius:999px;background:rgba(8,40,81,.36);border:0;line-height:22px;color:#eaf5ff}.phase-fill{background:rgba(112,211,255,.42)}.phase-label{text-shadow:none;font-size:.6rem}
+.mission{margin:11px 18px 8px;padding:0;border:0;background:transparent;border-radius:0}.mission strong{font-family:inherit;font-size:.72rem;font-weight:900;color:#eaf5ff;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.mission span{font-size:.56rem;color:#b9dcff}
+.board-wrap{padding:0 18px}.board{gap:4px;padding:7px;border-radius:12px;background:#0d376d;border:0;box-shadow:inset 0 2px 10px rgba(3,23,53,.46),0 5px 0 rgba(7,35,74,.28)}
+.cell{border-radius:5px;background:#245c99;box-shadow:inset 0 2px 2px rgba(255,255,255,.07)}.cell.filled{border-radius:5px;box-shadow:inset 0 4px 4px rgba(255,255,255,.34),inset 0 -3px 3px rgba(3,23,53,.14),0 2px 2px rgba(5,30,66,.24)}.cell.preview{transform:none;filter:brightness(1.28)}
+.blast-flash{inset:0 18px;border-radius:12px}
+.tray-title{padding:16px 21px 4px}.tray-title strong{font-family:inherit;font-size:.68rem;font-weight:900;color:#d7ebff;letter-spacing:.4px}.tray-title span{font-size:.56rem;color:#b9dcff}
+.tray{gap:6px;padding:0 18px 12px;min-height:105px}.piece{min-height:96px;border:0;border-radius:0;background:transparent;box-shadow:none;touch-action:none}.piece.on{transform:none;border:0;box-shadow:none}.piece.used{opacity:.1}.piece small{display:none}.mini{gap:4px}.mini i{width:20px;height:20px;border-radius:5px;box-shadow:inset 0 4px 4px rgba(255,255,255,.34),inset 0 -3px 3px rgba(4,29,65,.15),0 3px 2px rgba(5,32,70,.28)}
+.tip{color:#b9dcff;font-size:.56rem;padding-bottom:16px}
+.drag-ghost{position:fixed;z-index:80;pointer-events:none;display:grid;gap:4px;filter:drop-shadow(0 9px 8px rgba(4,23,51,.3));transform:scale(1.08)}.drag-ghost i{display:block;width:34px;height:34px;border-radius:6px;background:linear-gradient(145deg,var(--piece-hi),var(--piece));box-shadow:inset 0 5px 5px rgba(255,255,255,.34),0 3px 2px rgba(5,32,70,.28)}
+.drag-ghost span{width:34px;height:34px}
+.overlay{background:rgba(6,28,61,.76);backdrop-filter:blur(5px)}.card{border-radius:20px;background:#f8fbff;border:0;box-shadow:0 24px 58px rgba(4,24,52,.42);animation:pop .18s ease-out}.challenge-head h2,.end-card h2{font-family:inherit;font-weight:900;color:#123f78}.challenge-time{background:#174f91;color:#fff}.kor{background:#e5f1ff;color:#1c4b7d}.answer-zone{background:#e8edf4;border:2px dashed #94a3b8}.answer-zone .word{background:#1f6fb2;border-color:#1f6fb2}.check{background:#ff9f1c;box-shadow:0 5px 0 #d77700}.again{background:#1f6fb2}.final-score{color:#174f91}
+@media(max-width:360px){.top{padding-left:12px;padding-right:12px}.board-wrap{padding:0 12px}.board{gap:3px}.mission{margin-left:13px;margin-right:13px}.tray{padding-left:8px;padding-right:8px}.mini i{width:17px;height:17px}}
+@media(max-height:650px){.top{padding-top:5px}.top-row{min-height:56px}.score-head b{font-size:2rem}.stats{margin-top:2px}.mission{margin-top:7px;margin-bottom:6px}.mission span{display:none}.board-wrap{width:min(calc(100% - 24px),calc(100vh - 310px));min-width:238px;margin:auto;padding:0}.blast-flash{inset:0}.tray-title{padding-top:10px}.tray{min-height:78px}.piece{min-height:72px}.tip{padding-bottom:6px}}
+</style>
+</head>
+<body>
+<main class="app">
+  <header class="top">
+    <div class="top-row">
+      <button class="back" onclick="location.href='../game/'">← 메뉴</button>
+      <div class="score-head"><small>SCORE</small><b id="score">0</b></div>
+      <div class="time" id="time">5:00</div>
+    </div>
+    <div class="brand"><small>SENTENCE BLAST</small></div>
+    <div class="stats">
+      <div class="stat"><b id="lines">0</b><span>LINES</span></div>
+      <div class="stat"><b id="combo">0</b><span>COMBO</span></div>
+      <div class="stat"><b id="grammar">0/0</b><span>GRAMMAR</span></div>
+    </div>
+  </header>
+  <div class="phase"><div class="phase-fill" id="phase-fill"></div><span class="phase-label" id="phase-label">문장 챌린지까지 45초</span></div>
+  <section class="mission"><strong id="unit-label">블록을 채워 줄을 지워요</strong><span>45초 집중 플레이<br>문제 시간은 차감되지 않아요</span></section>
+  <section class="board-wrap"><div class="board" id="board" aria-label="8×8 블록 보드"></div><div class="blast-flash" id="blast-flash"></div></section>
+  <div class="tray-title"><strong>BLOCKS</strong><span>블록을 끌어 보드에 놓으세요</span></div>
+  <section class="tray" id="tray"></section>
+  <p class="tip">놓을 곳이 없어도 보드 구조대가 자동으로 도와줘요.</p>
+</main>
+
+<div class="toast" id="toast"></div>
+
+<div class="overlay" id="challenge">
+  <section class="card">
+    <div class="challenge-head"><h2>Sentence Challenge</h2><div class="challenge-time" id="challenge-time">10</div></div>
+    <div class="kor" id="challenge-kor"></div>
+    <div class="guide">단어를 차례로 눌러 문장을 완성하세요.</div>
+    <div class="answer-zone" id="answer-zone"></div>
+    <div class="chips" id="chips"></div>
+    <div class="challenge-actions"><button class="check" id="check-btn">BLAST</button><button class="reset" id="reset-btn">다시</button></div>
+    <div class="feedback" id="feedback"></div>
+  </section>
+</div>
+
+<div class="overlay" id="gameover">
+  <section class="card end-card">
+    <div class="end-emoji">🏆</div><h2>Sentence Blast 완료!</h2>
+    <div class="final-score" id="final-score">0점</div>
+    <div class="end-sub" id="end-sub"></div>
+    <div class="end-actions"><button class="again" onclick="location.reload()">한 판 더</button><button class="home" onclick="location.href='../game/'">메뉴</button></div>
+  </section>
+</div>
+
+<script src="../game/questions.js"></script>
+<script src="../sounds.js"></script>
+<script>
+'use strict';
+const SIZE=8, PLAY_PHASE_SECONDS=45, CHALLENGE_SECONDS=10;
+const COLORS=[['#0891b2','#67e8f9'],['#2563eb','#93c5fd'],['#7c3aed','#c4b5fd'],['#db2777','#f9a8d4'],['#ea580c','#fdba74'],['#059669','#6ee7b7'],['#ca8a04','#fde047']];
+const SHAPES=[
+  {n:'1',c:[[0,0]]},{n:'2',c:[[0,0],[0,1]]},{n:'3',c:[[0,0],[0,1],[0,2]]},{n:'4',c:[[0,0],[0,1],[0,2],[0,3]]},
+  {n:'세로2',c:[[0,0],[1,0]]},{n:'세로3',c:[[0,0],[1,0],[2,0]]},{n:'네모',c:[[0,0],[0,1],[1,0],[1,1]]},
+  {n:'L',c:[[0,0],[1,0],[1,1]]},{n:'큰L',c:[[0,0],[1,0],[2,0],[2,1]]},{n:'T',c:[[0,0],[0,1],[0,2],[1,1]]},
+  {n:'지그재그',c:[[0,1],[0,2],[1,0],[1,1]]}
+];
+const params=new URLSearchParams(location.search);
+const requestedUnitKey=params.get('unit')||'all';
+const unitKey=GAME_QUESTIONS[requestedUnitKey]?requestedUnitKey:'all';
+const duration=Math.max(60,Math.min(600,Number(params.get('seconds'))||300));
+let remaining=duration, phaseRemaining=PLAY_PHASE_SECONDS, phase='play';
+let board=Array(SIZE*SIZE).fill(null), tray=[], selected=-1;
+let score=0, lines=0, combo=0, bestCombo=0, grammarCorrect=0, grammarTotal=0;
+let challengeLeft=CHALLENGE_SECONDS, currentQuestion=null, currentSentence='', chosen=[], locked=false, timerId=null, dragState=null;
+const usedSentenceIds=new Set();
+
+const $=id=>document.getElementById(id);
+const units=Object.entries(GAME_QUESTIONS).filter(([k])=>k!=='all');
+const unit=GAME_QUESTIONS[unitKey]||GAME_QUESTIONS.all;
+const rawQuestions=unitKey==='all'?units.flatMap(([,u])=>u.questions):unit.questions;
+
+function shuffle(a){for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]]}return a}
+function formatTime(s){return Math.floor(s/60)+':'+String(s%60).padStart(2,'0')}
+function esc(s){return String(s).replace(/[&<>'"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;',"'":'&#39;','"':'&quot;'}[c]))}
+function toast(msg,type=''){const t=$('toast');t.textContent=msg;t.className='toast show '+type;clearTimeout(t._id);t._id=setTimeout(()=>t.className='toast',1500)}
+
+function sentenceFor(q){
+  if(!q||q.ans==='O'||q.ans==='X')return '';
+  const eng=String(q.eng||'').trim();
+  const ans=String(q.ans||'').trim();
+  if(/_{2,}/.test(eng))return eng.replace(/_{2,}/,ans);
+  if(/^[A-Za-z]/.test(ans)&&ans.split(/\s+/).length>=3)return ans;
+  if(/^[A-Za-z]/.test(eng)&&eng.split(/\s+/).length>=3)return eng;
+  return '';
+}
+const sentenceQuestions=rawQuestions.filter(q=>{
+  const s=sentenceFor(q),n=s.split(/\s+/).length,kor=String(q.kor||'');
+  const cleanSentence=n>=3&&n<=13&&!/[가-힣]|→|[()]|_{2,}/.test(s);
+  const cleanGuide=!/^오류\s*수정/.test(kor)&&!kor.includes('👉');
+  return cleanSentence&&cleanGuide;
+});
+
+function renderBoard(){
+  const el=$('board');el.innerHTML='';
+  board.forEach((v,i)=>{const b=document.createElement('button');b.className='cell'+(v!==null?' filled':'');b.dataset.i=i;b.setAttribute('aria-label',(Math.floor(i/SIZE)+1)+'행 '+(i%SIZE+1)+'열');if(v!==null){b.style.setProperty('--block',COLORS[v][0]);b.style.setProperty('--block-hi',COLORS[v][1])}b.onclick=()=>placeAt(i);b.onmouseenter=()=>previewAt(i);b.onmouseleave=clearPreview;el.appendChild(b)});
+}
+function shapeBox(shape){const rows=Math.max(...shape.c.map(x=>x[0]))+1,cols=Math.max(...shape.c.map(x=>x[1]))+1;return{rows,cols}}
+function renderTray(){
+  const el=$('tray');el.innerHTML='';
+  tray.forEach((item,i)=>{const box=shapeBox(item.shape),b=document.createElement('button');b.className='piece'+(selected===i?' on':'')+(item.used?' used':'');b.style.setProperty('--piece',COLORS[item.color][0]);b.style.setProperty('--piece-hi',COLORS[item.color][1]);const cells=new Set(item.shape.c.map(x=>x.join(',')));let mini='';for(let r=0;r<box.rows;r++)for(let c=0;c<box.cols;c++)mini+=cells.has(r+','+c)?'<i></i>':'<span></span>';b.innerHTML=`<div class="mini" style="grid-template-columns:repeat(${box.cols},20px)">${mini}</div><small>${esc(item.shape.n)}</small>`;b.onclick=()=>{selected=item.used?-1:i;renderTray()};b.onpointerdown=e=>startDrag(e,i);el.appendChild(b)});
+}
+function newTray(){tray=Array.from({length:3},()=>({shape:SHAPES[Math.floor(Math.random()*SHAPES.length)],color:Math.floor(Math.random()*COLORS.length),used:false}));selected=tray.findIndex(x=>!x.used);renderTray();setTimeout(checkMoves,0)}
+function cellsFor(index,shape){const row=Math.floor(index/SIZE),col=index%SIZE;return shape.c.map(([dr,dc])=>[row+dr,col+dc]).filter(([r,c])=>r>=0&&r<SIZE&&c>=0&&c<SIZE).map(([r,c])=>r*SIZE+c)}
+function canPlace(index,shape){const targets=cellsFor(index,shape);return targets.length===shape.c.length&&targets.every(i=>board[i]===null)}
+function previewAt(index){clearPreview();if(phase!=='play'||selected<0||!tray[selected]||tray[selected].used)return;const item=tray[selected],targets=cellsFor(index,item.shape);targets.forEach(i=>{const c=$('board').children[i];if(c){c.classList.add(canPlace(index,item.shape)?'preview':'bad');c.style.setProperty('--preview',COLORS[item.color][0])}})}
+function clearPreview(){document.querySelectorAll('.cell.preview,.cell.bad').forEach(c=>c.classList.remove('preview','bad'))}
+function startDrag(e,index){
+  if(phase!=='play'||!tray[index]||tray[index].used)return;
+  e.preventDefault();selected=index;
+  const item=tray[index],box=shapeBox(item.shape),filled=new Set(item.shape.c.map(x=>x.join(','))),ghost=document.createElement('div');
+  ghost.className='drag-ghost';ghost.style.gridTemplateColumns=`repeat(${box.cols},34px)`;ghost.style.setProperty('--piece',COLORS[item.color][0]);ghost.style.setProperty('--piece-hi',COLORS[item.color][1]);
+  for(let r=0;r<box.rows;r++)for(let c=0;c<box.cols;c++)ghost.innerHTML+=filled.has(r+','+c)?'<i></i>':'<span></span>';
+  document.body.appendChild(ghost);dragState={index,item,box,ghost,target:-1};moveDrag(e);
+  document.addEventListener('pointermove',moveDrag,{passive:false});document.addEventListener('pointerup',endDrag,{once:true});document.addEventListener('pointercancel',endDrag,{once:true});
+}
+function moveDrag(e){
+  if(!dragState)return;e.preventDefault();const d=dragState,lift=74;d.ghost.style.left=(e.clientX-d.box.cols*17)+'px';d.ghost.style.top=(e.clientY-lift-d.box.rows*17)+'px';
+  const rect=$('board').getBoundingClientRect(),cell=rect.width/SIZE,originX=e.clientX-d.box.cols*cell/2,originY=e.clientY-lift-d.box.rows*cell/2,col=Math.round((originX-rect.left)/cell),row=Math.round((originY-rect.top)/cell),index=row*SIZE+col;
+  clearPreview();d.target=row>=0&&col>=0&&row<SIZE&&col<SIZE&&canPlace(index,d.item.shape)?index:-1;if(d.target>=0)previewAt(d.target);
+}
+function endDrag(e){
+  if(!dragState)return;document.removeEventListener('pointermove',moveDrag);document.removeEventListener('pointercancel',endDrag);const d=dragState;dragState=null;d.ghost.remove();clearPreview();if(d.target>=0)placeAt(d.target);else{selected=d.index;renderTray()}
+}
+function placeAt(index){
+  if(phase!=='play'||selected<0||!tray[selected]||tray[selected].used)return;
+  const item=tray[selected];if(!canPlace(index,item.shape)){toast('여기에는 놓을 수 없어요','ng');return}
+  const targets=cellsFor(index,item.shape);targets.forEach(i=>board[i]=item.color);score+=targets.length*10;item.used=true;
+  const cleared=clearLines();if(cleared){combo++;bestCombo=Math.max(bestCombo,combo);score+=cleared*100*combo;toast(combo>1?`🔥 ${combo}콤보! ${cleared}줄 폭발`:`💥 ${cleared}줄 완성!`,'ok')}else combo=0;
+  selected=tray.findIndex(x=>!x.used);if(tray.every(x=>x.used))newTray();else{renderTray();checkMoves()}renderBoard();updateHUD();
+}
+function clearLines(){
+  const fullRows=[],fullCols=[];for(let r=0;r<SIZE;r++)if(Array.from({length:SIZE},(_,c)=>board[r*SIZE+c]).every(v=>v!==null))fullRows.push(r);for(let c=0;c<SIZE;c++)if(Array.from({length:SIZE},(_,r)=>board[r*SIZE+c]).every(v=>v!==null))fullCols.push(c);
+  const gone=new Set();fullRows.forEach(r=>{for(let c=0;c<SIZE;c++)gone.add(r*SIZE+c)});fullCols.forEach(c=>{for(let r=0;r<SIZE;r++)gone.add(r*SIZE+c)});gone.forEach(i=>board[i]=null);lines+=fullRows.length+fullCols.length;return fullRows.length+fullCols.length;
+}
+function hasAnyMove(){return tray.some(item=>!item.used&&board.some((_,i)=>canPlace(i,item.shape)))}
+function checkMoves(){if(phase!=='play'||hasAnyMove())return;const filled=board.map((v,i)=>v!==null?i:null).filter(i=>i!==null);shuffle(filled).slice(0,Math.max(8,Math.ceil(filled.length*.35))).forEach(i=>board[i]=null);combo=0;newTray();renderBoard();updateHUD();toast('🛟 보드 구조대! 막힌 칸을 정리했어요','ok')}
+
+function updateHUD(){
+  $('score').textContent=score.toLocaleString();$('lines').textContent=lines;$('combo').textContent=combo;$('grammar').textContent=grammarCorrect+'/'+grammarTotal;$('time').textContent=formatTime(remaining);$('time').classList.toggle('crit',remaining<=20);
+  const pct=Math.max(0,phaseRemaining/PLAY_PHASE_SECONDS*100);$('phase-fill').style.width=pct+'%';$('phase-label').textContent=`문장 챌린지까지 ${phaseRemaining}초`;
+}
+function tick(){
+  if(phase==='play'){
+    remaining--;phaseRemaining--;updateHUD();
+    if(remaining<=0){finish();return}
+    if(phaseRemaining<=0)openChallenge();
+  }else if(phase==='challenge'&&!locked){challengeLeft--;$('challenge-time').textContent=challengeLeft;if(challengeLeft<=0)resolveChallenge(false,true)}
+}
+function openChallenge(){
+  if(!sentenceQuestions.length){phaseRemaining=PLAY_PHASE_SECONDS;return}
+  phase='challenge';locked=false;chosen=[];
+  let pool=sentenceQuestions.filter(q=>!usedSentenceIds.has(q.id));if(!pool.length){usedSentenceIds.clear();pool=sentenceQuestions.slice()}
+  if(grammarTotal<2){const intro=pool.filter(q=>Number(q.level||1)===1);if(intro.length)pool=intro}
+  currentQuestion=pool[Math.floor(Math.random()*pool.length)];usedSentenceIds.add(currentQuestion.id);currentSentence=sentenceFor(currentQuestion).replace(/\s+/g,' ').trim();grammarTotal++;
+  const wordCount=currentSentence.split(' ').length;challengeLeft=(wordCount<=7?12:wordCount<=10?18:24)+(Number(currentQuestion.level||1)>=2?2:0);
+  $('challenge-time').textContent=challengeLeft;$('challenge-kor').textContent=currentQuestion.kor||'올바른 영어 문장을 만드세요.';$('feedback').textContent='';$('feedback').className='feedback';$('check-btn').disabled=false;$('check-btn').textContent='BLAST';$('check-btn').onclick=checkSentence;$('reset-btn').disabled=false;
+  const words=currentSentence.split(' ');let shuffled=shuffle(words.map((w,i)=>({w,i})));if(shuffled.map(x=>x.w).join(' ')===currentSentence)shuffled.reverse();
+  const chips=$('chips');chips.innerHTML='';shuffled.forEach(item=>{const b=document.createElement('button');b.className='word';b.textContent=item.w;b.dataset.token=item.i;b.onclick=()=>chooseWord(b,item);chips.appendChild(b)});renderChosen();$('challenge').classList.add('show');updateHUD();
+}
+function chooseWord(btn,item){if(locked||btn.disabled)return;chosen.push({btn,item});btn.disabled=true;renderChosen()}
+function renderChosen(){const z=$('answer-zone');z.innerHTML='';chosen.forEach((entry,i)=>{const b=document.createElement('button');b.className='word';b.textContent=entry.item.w;b.onclick=()=>{if(locked)return;entry.btn.disabled=false;chosen.splice(i,1);renderChosen()};z.appendChild(b)})}
+function resetWords(){if(locked)return;chosen.forEach(x=>x.btn.disabled=false);chosen=[];renderChosen()}
+function normalize(s){return s.trim().toLowerCase().replace(/\s+([,.!?])/g,'$1').replace(/\s+/g,' ')}
+function checkSentence(){if(locked)return;const total=currentSentence.split(' ').length;if(chosen.length!==total){toast(`단어를 모두 사용하세요 (${chosen.length}/${total})`,'ng');return}resolveChallenge(normalize(chosen.map(x=>x.item.w).join(' '))===normalize(currentSentence),false)}
+function resolveChallenge(correct,timedOut){
+  if(locked)return;locked=true;$('check-btn').disabled=true;$('reset-btn').disabled=true;const f=$('feedback');
+  if(correct){grammarCorrect++;score+=500;f.textContent='정답! 가장 막힌 가로·세로줄을 폭파합니다. +500';f.className='feedback ok';setTimeout(()=>{applyGrammarBlast();closeChallenge()},900)}
+  else{
+    const mine=chosen.length?chosen.map(x=>x.item.w).join(' '):'(완성하지 못함)';
+    f.innerHTML=`${timedOut?'시간 종료':'다시 확인해요'}<br>내 문장: ${esc(mine)}<br>정답 문장: ${esc(currentSentence)}`;f.className='feedback ng';
+    $('check-btn').disabled=false;$('check-btn').textContent='계속';$('check-btn').onclick=closeChallenge;
+  }
+  updateHUD();
+}
+function applyGrammarBlast(){
+  const rowCounts=Array.from({length:SIZE},(_,r)=>Array.from({length:SIZE},(_,c)=>board[r*SIZE+c]).filter(v=>v!==null).length),colCounts=Array.from({length:SIZE},(_,c)=>Array.from({length:SIZE},(_,r)=>board[r*SIZE+c]).filter(v=>v!==null).length);
+  const r=rowCounts.indexOf(Math.max(...rowCounts)),c=colCounts.indexOf(Math.max(...colCounts));let removed=0;for(let x=0;x<SIZE;x++){const ri=r*SIZE+x,ci=x*SIZE+c;if(board[ri]!==null){board[ri]=null;removed++}if(board[ci]!==null){board[ci]=null;removed++}}
+  $('blast-flash').classList.remove('on');void $('blast-flash').offsetWidth;$('blast-flash').classList.add('on');renderBoard();toast(removed?`💥 문법 폭발! ${removed}칸 제거`:'💥 완벽한 보드! 보너스 +500','ok');
+}
+function closeChallenge(){$('challenge').classList.remove('show');phase='play';phaseRemaining=PLAY_PHASE_SECONDS;locked=false;renderTray();checkMoves();updateHUD()}
+function finish(){phase='over';clearInterval(timerId);const key=`mg_sentence_blast_best_v1_${unitKey}_${duration}`;let best=0;try{const old=JSON.parse(localStorage.getItem(key)||'null');best=old&&old.score||0;if(score>best)localStorage.setItem(key,JSON.stringify({score,lines,correct:grammarCorrect,total:grammarTotal,combo:bestCombo,date:new Date().toLocaleDateString('ko-KR')}))}catch(e){}$('final-score').textContent=score.toLocaleString()+'점';$('end-sub').innerHTML=`완성한 줄 ${lines}개 · 문법 ${grammarCorrect}/${grammarTotal}<br>최고 콤보 ${bestCombo}`+(score>best?' · <strong>신기록!</strong>':'');$('gameover').classList.add('show')}
+
+$('check-btn').onclick=checkSentence;$('reset-btn').onclick=resetWords;
+$('unit-label').textContent=(unit&&unit.label?unit.label:'전체 랜덤')+' · 줄을 완성해요';
+renderBoard();newTray();updateHUD();timerId=setInterval(tick,1000);
+</script>
+</body>
+</html>

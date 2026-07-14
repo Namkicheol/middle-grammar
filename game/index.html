@@ -5,72 +5,81 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
 <title>중학 문법 게임</title>
 <link rel="icon" href="data:,">
-<link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@400;600;700;800&family=Noto+Sans+KR:wght@400;500;700&display=swap" rel="stylesheet">
 <style>
-:root{--blue:#0ea5e9;--dark:#0c4a6e;--green:#22c55e;--red:#ef4444;--purple:#8b5cf6;--pink:#ec4899;--ink:#0f172a;--bg:#f0f9ff;--white:#fff;--gray:#94a3b8;}
+:root{--blue:#22d3ee;--dark:#08152f;--green:#22c55e;--red:#fb7185;--purple:#8b5cf6;--pink:#ec4899;--gold:#facc15;--ink:#0f172a;--bg:#07142d;--white:#fff;--gray:#94a3b8;}
 *{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
 body{
-  font-family:'Baloo 2','Noto Sans KR',sans-serif;
+  font-family:ui-rounded,'SF Pro Rounded','Arial Rounded MT Bold','Noto Sans KR',system-ui,sans-serif;
   background:
-    linear-gradient(135deg,rgba(14,165,233,.14) 0,rgba(14,165,233,0) 26%),
-    linear-gradient(225deg,rgba(236,72,153,.12) 0,rgba(236,72,153,0) 24%),
-    #eaf6ff;
+    radial-gradient(circle at 14% 12%,rgba(34,211,238,.2),transparent 27%),
+    radial-gradient(circle at 86% 18%,rgba(236,72,153,.17),transparent 25%),
+    linear-gradient(180deg,#07142d,#050b1c 72%);
   min-height:100vh;overflow-x:hidden;
 }
+button{font-family:inherit;}
+button:focus-visible,.unit-card:focus-visible,.all-btn:focus-visible{outline:3px solid #facc15;outline-offset:3px;}
 
 /* ── START SCREEN ── */
-#start-screen{display:block;width:100%;max-width:520px;margin:0 auto;min-height:100vh;background:rgba(255,255,255,.62);box-shadow:0 0 0 1px rgba(255,255,255,.7),0 24px 70px rgba(15,23,42,.12);}
-.start-header{background:linear-gradient(145deg,#0f172a 0%,#155e75 45%,#7c3aed 100%);padding:26px 20px 28px;text-align:center;position:relative;overflow:hidden;}
-.start-header::before{content:'';position:absolute;inset:0;background-image:linear-gradient(rgba(255,255,255,.08) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,.08) 1px,transparent 1px);background-size:28px 28px;mask-image:linear-gradient(to bottom,#000,transparent 86%);}
+#start-screen{display:block;width:100%;max-width:720px;margin:0 auto;min-height:100vh;background:linear-gradient(180deg,rgba(8,21,47,.76),rgba(5,11,28,.94));border-left:1px solid rgba(255,255,255,.06);border-right:1px solid rgba(255,255,255,.06);box-shadow:0 32px 90px rgba(0,0,0,.38);}
+.start-header{background:linear-gradient(145deg,#0b1f46 0%,#123b5d 48%,#5b21b6 100%);padding:30px 22px 48px;text-align:center;position:relative;overflow:hidden;}
+.start-header::before{content:'';position:absolute;inset:0;background-image:linear-gradient(rgba(255,255,255,.07) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,.07) 1px,transparent 1px);background-size:26px 26px;mask-image:linear-gradient(to bottom,#000,transparent 90%);}
+.start-header::after{content:'';position:absolute;width:260px;height:260px;border-radius:50%;right:-110px;top:-130px;background:radial-gradient(circle,rgba(34,211,238,.48),rgba(34,211,238,0) 68%);}
 .start-header>*{position:relative;z-index:1;}
-.start-header .badge{display:inline-flex;align-items:center;gap:6px;background:rgba(255,255,255,.14);color:#fff;font-size:11px;font-weight:800;letter-spacing:1.8px;padding:6px 14px;border:1px solid rgba(255,255,255,.22);border-radius:20px;margin-bottom:11px;box-shadow:inset 0 1px 0 rgba(255,255,255,.18);}
-.start-header h1{color:#fff;font-size:2.2rem;font-weight:800;margin-bottom:8px;text-shadow:0 5px 24px rgba(0,0,0,.28);}
-.start-header p{color:rgba(255,255,255,.82);font-size:.9rem;line-height:1.5;max-width:320px;margin:0 auto;}
-.mode-hero{margin:18px auto 0;max-width:390px;border-radius:20px;overflow:hidden;border:1px solid rgba(255,255,255,.18);box-shadow:0 18px 38px rgba(0,0,0,.22);position:relative;}
-.mode-hero img{display:block;width:100%;height:142px;object-fit:cover;}
-.mode-hero::after{content:'';position:absolute;inset:0;background:linear-gradient(180deg,rgba(15,23,42,0) 35%,rgba(15,23,42,.62));pointer-events:none;}
-.mode-hero span{position:absolute;z-index:1;left:14px;bottom:12px;color:#fff;font-size:.78rem;font-weight:900;text-shadow:0 2px 8px rgba(0,0,0,.55);}
-.bubble-deco{display:flex;justify-content:center;gap:7px;margin-top:18px;}
-.bubble-deco span{display:inline-block;width:23px;height:23px;border-radius:50%;opacity:.95;animation:bob var(--d,1.2s) ease-in-out infinite alternate;box-shadow:inset 0 5px 8px rgba(255,255,255,.34),0 8px 18px rgba(0,0,0,.18);}
+.start-header .badge{display:inline-flex;align-items:center;gap:6px;background:#06132d;color:#67e8f9;font-size:10px;font-weight:900;letter-spacing:2.2px;padding:7px 15px;border:1px solid rgba(103,232,249,.34);border-radius:999px;margin-bottom:12px;box-shadow:0 0 22px rgba(34,211,238,.18);}
+.start-header h1{font-family:inherit;color:#fff;font-size:clamp(2.15rem,8vw,3.25rem);font-weight:900;letter-spacing:-2px;margin-bottom:7px;text-shadow:0 5px 24px rgba(0,0,0,.32);}
+.start-header h1 span{color:#67e8f9;}
+.start-header p{color:#dbeafe;font-size:.9rem;font-weight:700;line-height:1.55;max-width:390px;margin:0 auto;}
+.bubble-deco{display:flex;justify-content:center;gap:8px;margin-top:19px;}
+.bubble-deco span{display:inline-block;width:21px;height:21px;border-radius:50%;opacity:.98;animation:bob var(--d,1.2s) ease-in-out infinite alternate;box-shadow:inset 0 5px 8px rgba(255,255,255,.5),0 7px 17px rgba(0,0,0,.25),0 0 12px currentColor;}
 @keyframes bob{0%{transform:translateY(0)}100%{transform:translateY(-8px)}}
 
-.settings-box{margin:-8px 18px 0;padding:14px 14px 16px;background:rgba(255,255,255,.94);border:1px solid rgba(226,232,240,.9);border-radius:20px;box-shadow:0 14px 32px rgba(15,23,42,.12);position:relative;z-index:2;}
+.settings-box{margin:-25px 18px 0;padding:18px;background:rgba(7,20,45,.96);border:1px solid rgba(103,232,249,.17);border-radius:24px;box-shadow:0 22px 42px rgba(0,0,0,.38),inset 0 1px 0 rgba(255,255,255,.05);position:relative;z-index:2;}
+.panel-title,.unit-head{display:flex;align-items:center;gap:11px;}
+.panel-title>span,.unit-head>span{display:grid;place-items:center;width:34px;height:34px;flex:none;border-radius:11px;background:linear-gradient(135deg,#22d3ee,#8b5cf6);color:#fff;font-size:.72rem;font-weight:900;box-shadow:0 7px 18px rgba(34,211,238,.2);}
+.panel-title small,.unit-head small{display:block;color:#67e8f9;font-size:.6rem;font-weight:900;letter-spacing:1.6px;}
+.panel-title h2,.unit-head h2{font-family:inherit;color:#f8fafc;font-size:1.05rem;font-weight:900;margin-top:1px;letter-spacing:-.4px;}
 .set-row{display:flex;align-items:flex-start;gap:10px;flex-wrap:wrap;}
-.set-row+.set-row{margin-top:12px;}
-.set-label{font-size:.78rem;font-weight:800;color:var(--dark);min-width:54px;padding-top:9px;}
+.mode-row{margin-top:14px;}
+.time-row{margin-top:16px;padding-top:15px;border-top:1px solid rgba(148,163,184,.16);align-items:center;}
+.set-label{font-size:.76rem;font-weight:900;color:#cbd5e1;min-width:58px;padding-top:8px;}
 .time-opts{display:flex;gap:6px;flex-wrap:wrap;flex:1;}
-.topt{padding:7px 13px;border-radius:18px;border:1.5px solid #e2e8f0;background:#f8fafc;color:#64748b;font-family:inherit;font-weight:800;font-size:.78rem;cursor:pointer;transition:all .15s;}
-.topt.on{background:var(--ink);border-color:var(--ink);color:#fff;box-shadow:0 8px 18px rgba(15,23,42,.18);}
-.mode-opts{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;flex:1;}
-.mode-btn{border:1.5px solid #e2e8f0;background:#f8fafc;border-radius:16px;padding:12px 12px;text-align:left;font-family:inherit;cursor:pointer;transition:all .16s;position:relative;overflow:hidden;}
-.mode-btn::before{content:'';display:block;width:30px;height:4px;border-radius:999px;background:#cbd5e1;margin-bottom:8px;}
-.mode-btn strong{display:block;font-size:.92rem;font-weight:900;color:var(--dark);line-height:1.2;}
-.mode-btn span{display:block;font-size:.72rem;font-weight:700;color:#64748b;margin-top:4px;line-height:1.35;}
-.mode-btn.on{background:linear-gradient(135deg,#ecfeff,#eff6ff);border-color:var(--blue);box-shadow:0 10px 24px rgba(14,165,233,.18);}
-.mode-btn.on::before{background:linear-gradient(90deg,var(--blue),var(--purple),var(--pink));}
-.mode-btn.on strong{color:#0369a1;}
+.topt{padding:7px 13px;border-radius:999px;border:1px solid rgba(148,163,184,.26);background:#0b1d3d;color:#94a3b8;font-weight:900;font-size:.75rem;cursor:pointer;transition:all .15s;}
+.topt.on{background:#facc15;border-color:#fde047;color:#422006;box-shadow:0 7px 18px rgba(250,204,21,.22);}
+.mode-opts{display:grid;grid-template-columns:repeat(2,1fr);gap:9px;width:100%;}
+.mode-btn{min-height:118px;border:1px solid rgba(148,163,184,.18);background:linear-gradient(155deg,#0d2144,#09162f);border-radius:19px;padding:13px;text-align:left;cursor:pointer;transition:transform .16s,border-color .16s,box-shadow .16s;position:relative;overflow:hidden;color:#fff;}
+.mode-btn::after{content:'';position:absolute;width:88px;height:88px;border-radius:50%;right:-38px;top:-42px;background:var(--mode-glow,#22d3ee);opacity:.13;filter:blur(2px);}
+.mode-btn .mode-icon{display:grid;place-items:center;width:38px;height:38px;border-radius:13px;background:rgba(255,255,255,.09);font-size:1.25rem;font-style:normal;margin-bottom:8px;box-shadow:inset 0 1px 0 rgba(255,255,255,.12);}
+.mode-btn em{position:absolute;right:12px;top:13px;color:var(--mode-glow,#67e8f9);font-size:.55rem;font-weight:900;font-style:normal;letter-spacing:1.1px;}
+.mode-btn strong{display:block;font-family:inherit;font-size:.94rem;font-weight:900;color:#f8fafc;line-height:1.25;letter-spacing:-.35px;}
+.mode-btn span{display:block;font-size:.67rem;font-weight:700;color:#94a3b8;margin-top:3px;line-height:1.35;}
+.mode-btn[data-mode="boss"]{--mode-glow:#fb7185}.mode-btn[data-mode="whack"]{--mode-glow:#facc15}.mode-btn[data-mode="bubble"]{--mode-glow:#22d3ee}.mode-btn[data-mode="tower"]{--mode-glow:#a78bfa}.mode-btn[data-mode="sentence"]{--mode-glow:#34d399;grid-column:1/-1;min-height:104px}.mode-btn[data-mode="sentence"] .mode-icon{float:left;margin:0 12px 0 0}.mode-btn[data-mode="sentence"] strong{padding-top:8px}
+.mode-btn.on{transform:translateY(-3px);border-color:var(--mode-glow);box-shadow:0 12px 25px color-mix(in srgb,var(--mode-glow) 20%,transparent),inset 0 0 0 1px color-mix(in srgb,var(--mode-glow) 28%,transparent);}
+.mode-btn.on .mode-icon{background:var(--mode-glow);box-shadow:0 0 18px color-mix(in srgb,var(--mode-glow) 42%,transparent);}
 
-.unit-tabs{display:flex;gap:8px;padding:18px 18px 0;overflow-x:auto;scrollbar-width:none;}
+.unit-head{padding:25px 19px 0;}
+.unit-tabs{display:flex;gap:8px;padding:14px 18px 0;overflow-x:auto;scrollbar-width:none;}
 .unit-tabs::-webkit-scrollbar{display:none;}
-.utab{flex-shrink:0;padding:8px 18px;border-radius:20px;border:1.5px solid #dbe7f0;background:rgba(255,255,255,.86);color:#64748b;font-family:inherit;font-weight:800;font-size:.82rem;cursor:pointer;transition:all .2s;}
-.utab.on{background:#0f172a;border-color:#0f172a;color:#fff;box-shadow:0 8px 20px rgba(15,23,42,.16);}
+.utab{flex-shrink:0;padding:8px 18px;border-radius:999px;border:1px solid rgba(148,163,184,.22);background:#0a1834;color:#94a3b8;font-weight:900;font-size:.78rem;cursor:pointer;transition:all .2s;}
+.utab.on{background:#22d3ee;border-color:#67e8f9;color:#083344;box-shadow:0 8px 20px rgba(34,211,238,.2);}
 
-.unit-grid{display:grid;grid-template-columns:1fr 1fr;gap:11px;padding:16px 18px 34px;}
-.unit-card{background:rgba(255,255,255,.92);border-radius:18px;padding:15px;box-shadow:0 6px 18px rgba(15,23,42,.08);cursor:pointer;border:1.5px solid rgba(226,232,240,.9);transition:all .18s;position:relative;overflow:hidden;}
-.unit-card::before{content:'';position:absolute;top:0;left:0;right:0;height:5px;background:linear-gradient(90deg,var(--c,var(--blue)),rgba(255,255,255,0));}
-.unit-card:hover,.unit-card:active{transform:translateY(-3px);box-shadow:0 14px 26px rgba(15,23,42,.14);border-color:var(--c,var(--blue));}
-.unit-card .lbl{font-size:.68rem;font-weight:900;color:var(--c,var(--blue));letter-spacing:.5px;margin-bottom:5px;}
-.unit-card h3{font-size:.9rem;font-weight:900;color:#12324a;line-height:1.35;}
-.unit-card .cnt{display:inline-flex;align-items:center;margin-top:9px;font-size:.72rem;font-weight:800;color:#475569;background:#f1f5f9;border-radius:999px;padding:4px 9px;}
-.unit-card .best{font-size:.7rem;font-weight:900;color:#f97316;margin-top:8px;min-height:16px;}
-.all-btn{grid-column:1/-1;background:linear-gradient(135deg,#0f172a 0%,#1d4ed8 58%,#7c3aed 100%);color:#fff;border-radius:20px;padding:17px;text-align:center;cursor:pointer;font-weight:900;font-size:1.02rem;box-shadow:0 16px 30px rgba(29,78,216,.26);transition:all .18s;position:relative;overflow:hidden;}
-.all-btn::before{content:'';position:absolute;inset:0;background:linear-gradient(90deg,rgba(255,255,255,.18),rgba(255,255,255,0) 42%);}
-.all-btn:hover{transform:translateY(-3px);box-shadow:0 20px 34px rgba(29,78,216,.32);}
-.all-btn .best{display:block;font-size:.72rem;font-weight:700;color:#fde68a;margin-top:4px;}
+.unit-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:10px;padding:14px 18px 36px;}
+.unit-card{min-height:126px;background:linear-gradient(150deg,rgba(15,39,76,.96),rgba(7,19,42,.98));border-radius:18px;padding:14px;box-shadow:0 9px 22px rgba(0,0,0,.22);cursor:pointer;border:1px solid rgba(148,163,184,.16);transition:all .18s;position:relative;overflow:hidden;color:#fff;}
+.unit-card::before{content:'';position:absolute;top:0;left:0;right:0;height:4px;background:linear-gradient(90deg,var(--c,var(--blue)),transparent);}
+.unit-card::after{content:'PLAY';position:absolute;right:12px;bottom:12px;color:var(--c,var(--blue));font-size:.55rem;font-weight:900;letter-spacing:1px;}
+.unit-card:hover,.unit-card:active{transform:translateY(-3px);box-shadow:0 14px 28px rgba(0,0,0,.32);border-color:var(--c,var(--blue));}
+.unit-card .lbl{font-size:.62rem;font-weight:900;color:var(--c,var(--blue));letter-spacing:1px;margin-bottom:7px;}
+.unit-card h3{font-family:inherit;font-size:.9rem;font-weight:900;color:#f8fafc;line-height:1.4;word-break:keep-all;letter-spacing:-.3px;}
+.unit-card .cnt{display:inline-flex;align-items:center;margin-top:10px;font-size:.65rem;font-weight:900;color:#cbd5e1;background:rgba(255,255,255,.07);border-radius:999px;padding:4px 8px;}
+.unit-card .best{font-size:.64rem;font-weight:900;color:#fde68a;margin-top:7px;min-height:14px;}
+.all-btn{grid-column:1/-1;background:linear-gradient(120deg,#0e7490,#2563eb 52%,#7c3aed);color:#fff;border-radius:19px;padding:17px;text-align:left;cursor:pointer;font-family:inherit;font-weight:900;font-size:1rem;box-shadow:0 16px 30px rgba(37,99,235,.24);transition:all .18s;position:relative;overflow:hidden;border:1px solid rgba(103,232,249,.28);}
+.all-btn::before{content:'ALL STAGE';position:absolute;right:14px;top:14px;color:#bae6fd;font-family:inherit;font-size:.55rem;font-weight:900;letter-spacing:1.2px;}
+.all-btn:hover{transform:translateY(-3px);box-shadow:0 20px 34px rgba(37,99,235,.32);}
+.all-btn .best{display:block;font-family:inherit;font-size:.66rem;font-weight:800;color:#fde68a;margin-top:4px;}
+@media(min-width:620px){.unit-grid{grid-template-columns:repeat(4,1fr)}.all-btn{grid-column:1/-1}}
 
 /* ── GAME SCREEN ── */
-#game-screen{display:none;flex-direction:column;align-items:center;}
-#hud{display:flex;justify-content:space-between;align-items:center;width:100%;max-width:480px;padding:10px 12px;background:var(--dark);color:#fff;gap:8px;}
+#game-screen{display:none;flex-direction:column;align-items:center;min-height:100vh;background:radial-gradient(circle at 50% 28%,#112b57 0,#07142d 42%,#040817 100%);}
+#hud{display:flex;justify-content:space-between;align-items:center;width:100%;max-width:480px;padding:10px 12px;background:linear-gradient(90deg,#08152f,#0c2850,#24114f);color:#fff;gap:8px;border-bottom:1px solid rgba(103,232,249,.18);box-shadow:0 8px 22px rgba(0,0,0,.22);position:relative;z-index:2;}
 #hud .hud-score{font-size:1rem;font-weight:800;color:#fde68a;}
 #hud .hud-time{font-size:1.05rem;font-weight:800;color:#a7f3d0;font-variant-numeric:tabular-nums;}
 #hud .hud-time.warn{color:#fde68a;}
@@ -79,15 +88,20 @@ body{
 #hud .hud-quiz{font-size:.78rem;font-weight:600;color:rgba(255,255,255,.8);}
 #hud .hud-stage{font-size:.78rem;font-weight:900;color:#bae6fd;min-width:42px;text-align:center;}
 #hud .hud-combo{font-size:.78rem;font-weight:800;color:#fbbf24;min-width:52px;text-align:center;}
-#hud .hud-back,#hud .hud-pause{background:rgba(255,255,255,.15);border:none;color:#fff;font-family:inherit;font-size:.72rem;font-weight:700;padding:5px 10px;border-radius:20px;cursor:pointer;}
+#hud .hud-back,#hud .hud-pause{background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.11);color:#fff;font-size:.72rem;font-weight:900;padding:6px 10px;border-radius:999px;cursor:pointer;}
 #hud .hud-pause.on{background:#fde68a;color:#854d0e;}
-#drop-meter{position:relative;width:100%;max-width:480px;height:18px;background:#082f49;overflow:hidden;color:#bae6fd;font-size:.65rem;font-weight:800;text-align:center;line-height:18px;}
+#drop-meter{position:relative;width:100%;max-width:480px;height:18px;background:#061127;overflow:hidden;color:#bae6fd;font-size:.65rem;font-weight:900;text-align:center;line-height:18px;}
 #drop-meter span{position:absolute;inset:0 auto 0 0;width:0;background:linear-gradient(90deg,#22c55e,#f59e0b,#ef4444);opacity:.85;transition:width .2s linear;}
 #drop-meter em{position:relative;z-index:1;font-style:normal;text-shadow:0 1px 2px rgba(0,0,0,.35);}
-#game-wrap{position:relative;width:100%;max-width:480px;}
+#grammar-meter{position:relative;width:100%;max-width:480px;height:21px;background:#17153f;overflow:hidden;color:#e0e7ff;font-size:.68rem;font-weight:900;text-align:center;line-height:21px;border-top:1px solid rgba(255,255,255,.08);border-bottom:1px solid rgba(167,139,250,.22);}
+#grammar-meter span{position:absolute;inset:0 auto 0 0;width:0;background:linear-gradient(90deg,#2563eb,#8b5cf6,#ec4899);transition:width .25s ease;}
+#grammar-meter em{position:relative;z-index:1;font-style:normal;text-shadow:0 1px 3px rgba(0,0,0,.55);}
+#grammar-meter.ready span{animation:grammarReady .65s ease-in-out infinite alternate;}
+@keyframes grammarReady{from{filter:brightness(1)}to{filter:brightness(1.45)}}
+#game-wrap{position:relative;width:100%;max-width:480px;box-shadow:0 24px 50px rgba(0,0,0,.34);}
 #gameCanvas{display:block;width:100%;cursor:crosshair;touch-action:none;}
 #next-bubble-preview{position:absolute;bottom:68px;right:16px;display:flex;flex-direction:column;align-items:center;gap:4px;}
-#next-bubble-preview .nb-label{font-size:.65rem;font-weight:700;color:var(--gray);}
+#next-bubble-preview .nb-label{font-size:.62rem;font-weight:900;color:#bae6fd;letter-spacing:1px;text-shadow:0 2px 6px rgba(0,0,0,.45);}
 #next-bubble-preview canvas{display:block;}
 #pause-overlay{display:none;position:fixed;inset:0;background:rgba(15,23,42,.62);z-index:180;align-items:center;justify-content:center;color:#fff;text-align:center;}
 #pause-overlay.show{display:flex;}
@@ -119,7 +133,7 @@ body{
 .speed-stat{background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.14);border-radius:16px;padding:11px 8px;text-align:center;}
 .speed-stat b{display:block;font-size:1.25rem;font-weight:900;color:#fde68a;}
 .speed-stat span{display:block;font-size:.7rem;font-weight:800;color:#bae6fd;margin-top:2px;}
-@media(max-width:420px){.mode-opts,.speed-options{grid-template-columns:1fr;}.speed-hud{flex-wrap:wrap}.speed-pill{order:2;width:100%;text-align:center;}}
+@media(max-width:420px){.speed-options{grid-template-columns:1fr;}.speed-hud{flex-wrap:wrap}.speed-pill{order:2;width:100%;text-align:center;}}
 
 /* ── BOSS BATTLE SCREEN ── */
 #boss-screen{display:none;min-height:100vh;background:linear-gradient(180deg,#111827 0%,#312e81 54%,#0f172a 100%);color:#fff;padding-bottom:28px;}
@@ -592,20 +606,21 @@ body{
 @media(max-width:420px){.boss-options{grid-template-columns:1fr;}.boss-hud{flex-wrap:wrap}.boss-pill{order:2;width:100%;text-align:center;}.skill-panel{grid-template-columns:1fr;}.skill-btn{width:100%;}}
 
 /* ── QUIZ MODAL ── */
-#quiz-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.6);z-index:200;align-items:center;justify-content:center;padding:20px;}
+#quiz-overlay{display:none;position:fixed;inset:0;background:rgba(2,6,23,.72);backdrop-filter:blur(7px);z-index:200;align-items:center;justify-content:center;padding:18px;}
 #quiz-overlay.show{display:flex;}
-#quiz-box{background:var(--white);border-radius:24px;padding:24px 20px 20px;width:100%;max-width:400px;box-shadow:0 12px 40px rgba(0,0,0,.25);animation:popIn .25s cubic-bezier(.34,1.56,.64,1);}
+#quiz-box{background:linear-gradient(155deg,#fff 0%,#eff6ff 58%,#ede9fe 100%);border:2px solid rgba(103,232,249,.7);border-radius:28px;padding:24px 20px 20px;width:100%;max-width:400px;box-shadow:0 22px 60px rgba(0,0,0,.48),0 0 36px rgba(34,211,238,.2),inset 0 1px 0 #fff;animation:popIn .25s cubic-bezier(.34,1.56,.64,1);position:relative;overflow:hidden;}
+#quiz-box::before{content:'✦';position:absolute;right:18px;top:12px;color:#8b5cf6;font-size:1.15rem;opacity:.55;}
 @keyframes popIn{from{transform:scale(.8);opacity:0}to{transform:scale(1);opacity:1}}
-.quiz-chain{font-size:.75rem;font-weight:700;color:#f97316;margin-bottom:6px;letter-spacing:.5px;}
-.quiz-q{font-size:1.05rem;font-weight:700;color:var(--dark);margin-bottom:6px;line-height:1.6;}
-.quiz-kor{font-size:.82rem;color:#1e6fa0;background:#e0f2fe;padding:5px 10px;border-radius:8px;margin-bottom:14px;}
+.quiz-chain{font-family:inherit;font-size:.78rem;font-weight:900;color:#ea580c;margin-bottom:7px;letter-spacing:.1px;}
+.quiz-q{font-family:inherit;font-size:1.02rem;font-weight:900;color:#0f2d4f;margin-bottom:7px;line-height:1.6;}
+.quiz-kor{font-size:.82rem;font-weight:800;color:#155e75;background:rgba(207,250,254,.82);border:1px solid #a5f3fc;padding:7px 10px;border-radius:11px;margin-bottom:14px;}
 .quiz-opts{display:grid;grid-template-columns:1fr 1fr;gap:8px;}
-.quiz-opt{padding:11px 10px;border-radius:12px;border:2px solid #e2e8f0;background:#f8fafc;color:var(--dark);font-family:inherit;font-weight:700;font-size:.9rem;cursor:pointer;transition:all .12s;text-align:center;}
-.quiz-opt:hover:not(:disabled){border-color:var(--blue);background:#e0f2fe;}
+.quiz-opt{min-height:50px;padding:11px 10px;border-radius:15px;border:2px solid #dbeafe;background:rgba(255,255,255,.82);color:#0f2d4f;font-weight:900;font-size:.92rem;cursor:pointer;transition:all .12s;text-align:center;box-shadow:0 5px 12px rgba(30,64,175,.07);}
+.quiz-opt:hover:not(:disabled){transform:translateY(-2px);border-color:#22d3ee;background:#ecfeff;box-shadow:0 8px 17px rgba(34,211,238,.18);}
 .quiz-opt.ok{background:#f0fdf4;border-color:var(--green);color:var(--green);}
 .quiz-opt.ng{background:#fef2f2;border-color:var(--red);color:var(--red);}
 .quiz-opt.reveal{background:#f0fdf4;border-color:var(--green);color:var(--green);}
-.quiz-bonus{text-align:center;margin-top:12px;font-size:.88rem;font-weight:700;color:var(--green);min-height:20px;}
+.quiz-bonus{text-align:center;margin-top:12px;font-size:.86rem;font-weight:900;color:var(--green);min-height:20px;}
 
 /* ── GAME OVER OVERLAY ── */
 #gameover-overlay{display:none;position:fixed;inset:0;background:rgba(12,74,110,.85);z-index:150;align-items:center;justify-content:center;}
@@ -644,48 +659,59 @@ body{
 <!-- ───────── START SCREEN ───────── -->
 <div id="start-screen">
   <div class="start-header">
-    <div style="font-size:11px;font-weight:600;letter-spacing:.5px;color:rgba(255,255,255,.6);margin-bottom:8px;text-align:right;">made by Kicheol Nam</div>
     <div class="badge">🎮 GRAMMAR ARCADE</div>
-    <h1>중학 문법 게임</h1>
-    <p>단원을 고르면 바로 문법 보스전이 시작됩니다. 콤보와 필살기로 복습하세요!</p>
-    <div class="mode-hero">
-      <img src="./assets/boss-battle.png" alt="문법 게임 캐릭터">
-      <span>문법 보스전 · 콤보 공격 업데이트</span>
-    </div>
+    <h1>문법 <span>아케이드</span></h1>
+    <p>게임을 고르고 단원을 선택하세요.<br>짧게 플레이하고, 자연스럽게 문법을 복습해요.</p>
     <div class="bubble-deco" id="deco"></div>
   </div>
   <div class="settings-box">
-    <div class="set-row">
-      <span class="set-label">⏱ 시간</span>
+    <div class="panel-title">
+      <span>01</span>
+      <div><small>GAME MODE</small><h2>어떤 게임으로 복습할까?</h2></div>
+    </div>
+    <div class="set-row mode-row">
+      <div class="mode-opts" id="mode-opts">
+        <button class="mode-btn on" data-mode="boss">
+          <i class="mode-icon">⚔️</i><em>BATTLE</em>
+          <strong>문법 보스전</strong>
+          <span>콤보와 필살기로 보스 격파</span>
+        </button>
+        <button class="mode-btn" data-mode="whack">
+          <i class="mode-icon">🔨</i><em>QUICK</em>
+          <strong>두더지 잡기</strong>
+          <span>튀어나오는 정답을 빠르게 타격</span>
+        </button>
+        <button class="mode-btn" data-mode="bubble">
+          <i class="mode-icon">🫧</i><em>PUZZLE</em>
+          <strong>보글보글</strong>
+          <span>버블 8발 → 문법 찬스 → 폭탄 버블</span>
+        </button>
+        <button class="mode-btn" data-mode="tower">
+          <i class="mode-icon">🏰</i><em>CLIMB</em>
+          <strong>무한의 탑</strong>
+          <span>목숨 3개로 오늘의 최고층 도전</span>
+        </button>
+        <button class="mode-btn" data-mode="sentence">
+          <i class="mode-icon">💥</i><em>NEW · BLOCK</em>
+          <strong>Sentence Blast</strong>
+          <span>블록 45초 → 문장 조립 10초 → 문법 폭발</span>
+        </button>
+      </div>
+    </div>
+    <div class="set-row time-row">
+      <span class="set-label">⏱ 플레이 시간</span>
       <div class="time-opts" id="time-opts">
         <button class="topt" data-min="1">1분</button>
         <button class="topt" data-min="3">3분</button>
         <button class="topt on" data-min="5">5분</button>
         <button class="topt" data-min="10">10분</button>
-        <button class="topt" data-min="0">∞</button>
+        <button class="topt" data-min="0">무제한</button>
       </div>
     </div>
-    <div class="set-row">
-      <span class="set-label">🎲 게임</span>
-      <div class="mode-opts" id="mode-opts">
-        <button class="mode-btn on" data-mode="boss">
-          <strong>문법 보스전</strong>
-          <span>콤보와 필살기로 HP 깎기</span>
-        </button>
-        <button class="mode-btn" data-mode="whack">
-          <strong>두더지 잡기</strong>
-          <span>홀에서 튀어나오는 정답을 두드려요</span>
-        </button>
-        <button class="mode-btn" data-mode="bubble">
-          <strong>보글보글</strong>
-          <span>정답을 맞히고 버블 발사</span>
-        </button>
-        <button class="mode-btn" data-mode="tower">
-          <strong>무한의 탑</strong>
-          <span>목숨 3개 등반 · 오늘의 탑 층수 경쟁</span>
-        </button>
-      </div>
-    </div>
+  </div>
+  <div class="unit-head">
+    <span>02</span>
+    <div><small>LESSON SELECT</small><h2>연습할 단원을 골라요</h2></div>
   </div>
   <div class="unit-tabs">
     <button class="utab on" onclick="filterUnits('all', this)">전체</button>
@@ -707,6 +733,7 @@ body{
     <button class="hud-pause" id="pause-btn" onclick="togglePause()">Ⅱ</button>
   </div>
   <div id="drop-meter"><span id="drop-fill"></span><em id="drop-label">다음 하강 45초</em></div>
+  <div id="grammar-meter"><span id="grammar-fill"></span><em id="grammar-label">📚 문법 찬스 0/8</em></div>
   <div id="game-wrap">
     <canvas id="gameCanvas"></canvas>
     <div id="next-bubble-preview">
@@ -942,7 +969,7 @@ body{
   </div>
 </div>
 
-<script src="./questions.js?v=questions-20260713a"></script>
+<script src="./questions.js?v=questions-20260715a"></script>
 <script src="../score-popup.js"></script>
 <script src="../sounds.js"></script>
 <!-- Phaser는 보스전에서만 쓰여 첫 페인트를 막을 필요가 없다. 아래 인라인 스크립트에서 지연 로드한다. -->
@@ -971,6 +998,7 @@ const COLORS = ['#ef4444','#f97316','#eab308','#22c55e','#0ea5e9','#8b5cf6','#ec
 const BEST_PREFIX = 'mg_bubble_best_v2_';
 const SPEED_BEST_PREFIX = 'mg_speed_best_v1_';
 const BOSS_BEST_PREFIX = 'mg_boss_best_v1_';
+const SENTENCE_BEST_PREFIX = 'mg_sentence_blast_best_v1_';
 const MAX_STAGE = 3;
 const STAGE_CONFIG = [
   { label: '1단계', initRows: 4, colors: 4, descent: 75, scoreBonus: 1 },
@@ -1063,6 +1091,16 @@ function getBossBest(unitKey) {
   }
 }
 
+function getSentenceBest(unitKey) {
+  try {
+    const seconds = timeLimitSec > 0 ? timeLimitSec : 300;
+    const raw = localStorage.getItem(SENTENCE_BEST_PREFIX + unitKey + '_' + seconds);
+    return raw ? JSON.parse(raw) : null;
+  } catch(e) {
+    return null;
+  }
+}
+
 function saveBossBest(unitKey, score, correct, total, streak, clear) {
   const prev = getBossBest(unitKey);
   if (score <= 0 && correct <= 0) return { isNew: false, prev };
@@ -1084,6 +1122,8 @@ function renderUnitBestBadges() {
   document.querySelectorAll('[data-best-for]').forEach(el => {
     const best = selectedMode === 'speed'
       ? getSpeedBest(el.dataset.bestFor)
+      : selectedMode === 'sentence'
+        ? getSentenceBest(el.dataset.bestFor)
       : selectedMode === 'boss'
         ? getBossBest(el.dataset.bestFor)
         : getBestOverall(el.dataset.bestFor);
@@ -1171,6 +1211,10 @@ function startSelectedGame(unitKey) {
   } else if (selectedMode === 'speed') startSpeedQuiz(unitKey);
   else if (selectedMode === 'whack') location.href = '../whack-grammar/?unit=' + encodeURIComponent(unitKey);
   else if (selectedMode === 'tower') location.href = '../tower/?unit=' + encodeURIComponent(unitKey);
+  else if (selectedMode === 'sentence') {
+    const seconds = timeLimitSec > 0 ? timeLimitSec : 300;
+    location.href = '../sentence-blast/?unit=' + encodeURIComponent(unitKey) + '&seconds=' + seconds;
+  }
   else startGame(unitKey);
 }
 
@@ -1196,6 +1240,8 @@ function goStart() {
   document.getElementById('gameover-overlay').classList.remove('show');
   document.getElementById('quiz-overlay').classList.remove('show');
   document.getElementById('pause-overlay').classList.remove('show');
+  const scoreBadge = document.getElementById('sp-badge');
+  if (scoreBadge) scoreBadge.style.display = '';
   manualPause = false;
   updatePauseButton();
   renderUnitBestBadges();
@@ -3217,8 +3263,9 @@ const GRID_ROWS = 12;
 const SPEED = 10;
 const MAX_BOUNCE = 6;
 const SHOTS_BEFORE_DROP = 8;
-const CORRECT_CLOSE_MS = 180;
-const WRONG_REVIEW_MS = 3600;
+const SHOTS_PER_QUIZ = 8;
+const CORRECT_CLOSE_MS = 700;
+const WRONG_REVIEW_MS = 2000;
 
 // State
 let grid = [];
@@ -3244,14 +3291,18 @@ let bestAnswerStreak = 0;
 let manualPause = false;
 let pauseStartedTs = 0;
 let pausedTotalMs = 0;
+let quizPauseStartedTs = 0;
+let quizPausedTotalMs = 0;
 
 // Special game elements
 let bubbleWrongItems = [];
 let skull = { x: 0, y: 0, dx: 2.2, visible: false };
-let tripleItem = { x: 0, y: 0, visible: false };
-let tripleShotActive = false;
-let sideBubbles = [];
+let bombItem = { x: 0, y: 0, visible: false };
+let bombShotActive = false;
 let shotsFired = 0;
+let shotsTowardQuiz = 0;
+let grammarQuizPending = false;
+let feverPops = 0;
 
 // Timer state
 let timeLimitSec = 300;        // 5 min default; 0 = unlimited
@@ -3371,6 +3422,8 @@ function startGame(unitKey, stage) {
   clearBossTimer();
   clearSpeedTimer();
   closeScorePopupOverlay();
+  const scoreBadge = document.getElementById('sp-badge');
+  if (scoreBadge) scoreBadge.style.display = 'none';
   currentUnit = unitKey;
   currentStage = Math.max(1, Math.min(MAX_STAGE, stage || 1));
   questionPool = stageQuestions(unitKey, currentStage);
@@ -3378,20 +3431,24 @@ function startGame(unitKey, stage) {
   usedQIds.clear();
   gameScore = 0; quizCorrect = 0; quizTotal = 0;
   gamePaused = false; gameOver = false;
-  canShoot = false;
+  canShoot = true;
   manualPause = false;
   pauseStartedTs = 0;
   pausedTotalMs = 0;
+  quizPauseStartedTs = 0;
+  quizPausedTotalMs = 0;
   answerStreak = 0;
   bestAnswerStreak = 0;
   fallingBubbles = []; popAnimations = [];
   jiggleAnimations.clear();
   shooterBubble = null;
   skull.visible = false;
-  tripleItem.visible = false;
-  tripleShotActive = false;
-  sideBubbles = [];
+  bombItem.visible = false;
+  bombShotActive = false;
   shotsFired = 0;
+  shotsTowardQuiz = 0;
+  grammarQuizPending = false;
+  feverPops = 0;
   bubbleWrongItems = [];
   stopBubbleBgm();
 
@@ -3413,20 +3470,21 @@ function startGame(unitKey, stage) {
   lastWarnedSec = -1;
   timeLeftSec = timeLimitSec;
 
-  // Show first quiz immediately (gates first shot)
+  // 버블 플레이부터 시작하고, 8발을 쏜 뒤 문법 찬스를 연다.
   shooterBubble = newShooterBubble();
   updateHUD();
   updateTimerHUD();
   cancelAnimationFrame(rafId);
   rafId = requestAnimationFrame(loop);
   startBubbleBgm();   // 단원 선택 클릭(제스처) 안에서 즉시 — iOS BGM 재생 보장
-  setTimeout(() => triggerQuizModal(), 300);
+  showToast('🎯 버블 8발마다 문법 찬스!', 'ok');
 }
 
 function elapsedSec() {
   if (gameStartTs === 0) return 0;
   const currentPause = manualPause && pauseStartedTs ? Date.now() - pauseStartedTs : 0;
-  return Math.max(0, Math.floor((Date.now() - gameStartTs - pausedTotalMs - currentPause) / 1000));
+  const currentQuizPause = quizPauseStartedTs ? Date.now() - quizPauseStartedTs : 0;
+  return Math.max(0, Math.floor((Date.now() - gameStartTs - pausedTotalMs - quizPausedTotalMs - currentPause - currentQuizPause) / 1000));
 }
 
 function resizeCanvas() {
@@ -3434,8 +3492,10 @@ function resizeCanvas() {
   // HUD·하강바 높이를 빼고 남는 세로 공간에 맞춰 캔버스를 제한한다(가로:세로=480:640 비율 유지).
   const hudEl = document.getElementById('hud');
   const dropEl = document.getElementById('drop-meter');
+  const grammarEl = document.getElementById('grammar-meter');
   const chromeH = (hudEl && hudEl.offsetHeight ? hudEl.offsetHeight : 50)
-                + (dropEl && dropEl.offsetHeight ? dropEl.offsetHeight : 18);
+                + (dropEl && dropEl.offsetHeight ? dropEl.offsetHeight : 18)
+                + (grammarEl && grammarEl.offsetHeight ? grammarEl.offsetHeight : 20);
   const availH = Math.max(320, window.innerHeight - chromeH - 4);
   let cw = Math.min(window.innerWidth, 480);
   let ch = cw * (640/480);
@@ -3561,9 +3621,22 @@ function drawShooter() {
       ctx.fillText('🔒 문제를 맞히세요', CW/2, SHOOTER_Y - R - 14);
     }
     drawBubbleAt(ctx, CW/2, SHOOTER_Y, R-1, shooterBubble.color);
+    if (bombShotActive) drawBombMark(ctx, CW/2, SHOOTER_Y, R);
   } else {
     drawBubbleAt(ctx, shooterBubble.x, shooterBubble.y, R-1, shooterBubble.color);
+    if (shooterBubble.isBomb) drawBombMark(ctx, shooterBubble.x, shooterBubble.y, R);
   }
+}
+
+function drawBombMark(c, x, y, r) {
+  c.save();
+  c.font = `${Math.round(r * 1.15)}px serif`;
+  c.textAlign = 'center';
+  c.textBaseline = 'middle';
+  c.shadowColor = '#facc15';
+  c.shadowBlur = 12;
+  c.fillText('💣', x, y);
+  c.restore();
 }
 
 function drawFalling() {
@@ -3586,11 +3659,36 @@ function drawPopAnimations() {
 }
 
 function drawBackground() {
-  ctx.fillStyle = '#0f172a';
+  const bg = ctx.createLinearGradient(0, 0, 0, CH);
+  bg.addColorStop(0, '#08132f');
+  bg.addColorStop(0.55, '#101a3d');
+  bg.addColorStop(1, '#071022');
+  ctx.fillStyle = bg;
   ctx.fillRect(0, 0, CW, CH);
+
+  // 고정 별빛 패턴 — 매 프레임 위치가 바뀌지 않아 시야를 방해하지 않는다.
+  ctx.save();
+  for (let i = 0; i < 26; i++) {
+    const x = (i * 83 + 29) % CW;
+    const y = (i * 137 + 41) % Math.max(1, SHOOTER_Y - R * 2);
+    const size = i % 5 === 0 ? 1.6 : 0.8;
+    ctx.globalAlpha = i % 3 === 0 ? 0.46 : 0.24;
+    ctx.fillStyle = i % 4 === 0 ? '#67e8f9' : '#ffffff';
+    ctx.beginPath();
+    ctx.arc(x, y, size, 0, Math.PI * 2);
+    ctx.fill();
+  }
+  ctx.restore();
+
+  const glow = ctx.createRadialGradient(CW/2, SHOOTER_Y, R, CW/2, SHOOTER_Y, CW*0.72);
+  glow.addColorStop(0, 'rgba(59,130,246,0.22)');
+  glow.addColorStop(1, 'rgba(59,130,246,0)');
+  ctx.fillStyle = glow;
+  ctx.fillRect(0, SHOOTER_Y - CW*0.72, CW, CW*0.72 + R*2);
+
   // Danger line
   const dangerY = cellY(ROWS-2) + CELL_H;
-  ctx.strokeStyle = 'rgba(239,68,68,0.4)';
+  ctx.strokeStyle = 'rgba(251,113,133,0.5)';
   ctx.lineWidth = 1;
   ctx.setLineDash([6,4]);
   ctx.beginPath();
@@ -3599,7 +3697,10 @@ function drawBackground() {
   ctx.stroke();
   ctx.setLineDash([]);
   // Shooter platform
-  ctx.fillStyle = 'rgba(255,255,255,0.06)';
+  const platform = ctx.createLinearGradient(0, SHOOTER_Y - R - 10, 0, SHOOTER_Y + R + 10);
+  platform.addColorStop(0, 'rgba(96,165,250,0.04)');
+  platform.addColorStop(1, 'rgba(37,99,235,0.20)');
+  ctx.fillStyle = platform;
   ctx.fillRect(0, SHOOTER_Y - R - 10, CW, R*2+20);
 }
 
@@ -3647,27 +3748,20 @@ function loop(ts) {
       if (skull.x < R + 10) { skull.x = R + 10; skull.dx = Math.abs(skull.dx); }
       if (skull.x > CW - R - 10) { skull.x = CW - R - 10; skull.dx = -Math.abs(skull.dx); }
     }
-    if (tripleItem.visible) {
-      tripleItem.y += 0.7;
-      if (tripleItem.y > SHOOTER_Y - R * 2) tripleItem.visible = false;
+    if (bombItem.visible) {
+      bombItem.y += 0.7;
+      if (bombItem.y > SHOOTER_Y - R * 2) bombItem.visible = false;
     }
   }
   drawSkull();
-  drawTripleItem();
+  drawBombItem();
 
   if (!gamePaused) {
     if (shooterBubble && shooterBubble.moving) {
       moveBubble();
     }
-    for (let i = sideBubbles.length - 1; i >= 0; i--) {
-      if (sideBubbles[i].moving) moveSideBubble(i);
-    }
   }
   drawShooter();
-  // Draw side bubbles
-  for (const sb of sideBubbles) {
-    if (sb.moving) drawBubbleAt(ctx, sb.x, sb.y, R-2, sb.color);
-  }
 }
 
 function autoDescend() {
@@ -3739,13 +3833,14 @@ function moveBubble() {
     }
   }
 
-  // Check tripleItem collection
-  if (tripleItem.visible) {
-    const tdx = b.x - tripleItem.x, tdy = b.y - tripleItem.y;
+  // Check bomb item collection — 다음 발이 착탄 지점 주변을 지운다.
+  if (bombItem.visible) {
+    const tdx = b.x - bombItem.x, tdy = b.y - bombItem.y;
     if (tdx*tdx + tdy*tdy < (R*2.5)*(R*2.5)) {
-      tripleItem.visible = false;
-      tripleShotActive = true;
-      showToast('🔫 트리플 샷 발동!', 'ok');
+      bombItem.visible = false;
+      bombShotActive = true;
+      updateHUD();
+      showToast('💣 다음 발은 폭탄 버블!', 'ok');
       playEarn();
     }
   }
@@ -3770,42 +3865,24 @@ function moveBubble() {
   }
 }
 
-function moveSideBubble(idx) {
-  const b = sideBubbles[idx];
-  if (!b || !b.moving) return;
-  b.x += b.dx * SPEED;
-  b.y += b.dy * SPEED;
-
-  if (b.x < R) { b.x = R; b.dx = Math.abs(b.dx); }
-  if (b.x > CW - R) { b.x = CW-R; b.dx = -Math.abs(b.dx); }
-
-  if (b.y <= R) {
-    snapBubble(b, false);
-    sideBubbles.splice(idx, 1);
+function completeMainShot(delay) {
+  if (gameOver) return;
+  shotsTowardQuiz = Math.min(SHOTS_PER_QUIZ, shotsTowardQuiz + 1);
+  grammarQuizPending = shotsTowardQuiz >= SHOTS_PER_QUIZ;
+  updateHUD();
+  if (grammarQuizPending) {
+    canShoot = false;
+    setTimeout(() => triggerQuizModal(), delay || 0);
     return;
   }
-
-  for (let r = 0; r < ROWS; r++) {
-    for (let c = 0; c < COLS; c++) {
-      if (!grid[r][c]) continue;
-      const gx = cellX(r,c), gy = cellY(r);
-      const dx = b.x - gx, dy = b.y - gy;
-      if (dx*dx + dy*dy < (R*2-2)*(R*2-2)) {
-        snapBubble(b, false);
-        sideBubbles.splice(idx, 1);
-        return;
-      }
-    }
-  }
+  canShoot = true;
+  shooterBubble = newShooterBubble();
 }
 
 function snapBubble(b, isMain) {
   const [sr, sc] = findSnapCell(b.x, b.y);
   if (sr < 0) {
-    if (isMain) {
-      canShoot = true;
-      shooterBubble = newShooterBubble();
-    }
+    if (isMain) completeMainShot(0);
     return;
   }
 
@@ -3813,6 +3890,51 @@ function snapBubble(b, isMain) {
   jiggleAround(sr, sc);
   if (isMain) { shooterBubble = null; }
   playSnap();
+
+  if (isMain && b.isBomb) {
+    const blastKeys = new Set([[sr, sc], ...neighbors(sr, sc)].map(([r, c]) => r * 100 + c));
+    const blasted = [];
+    blastKeys.forEach(key => {
+      const r = Math.floor(key / 100), c = key % 100;
+      if (!grid[r] || !grid[r][c]) return;
+      const color = grid[r][c] === '__angel__' ? '#fffde7' : grid[r][c];
+      blasted.push({ r, c, color });
+      popAnimations.push({ x: cellX(r, c), y: cellY(r), color, progress: 0 });
+      grid[r][c] = null;
+    });
+
+    const connected = findConnectedToTop();
+    const orphans = [];
+    for (let r = 0; r < ROWS; r++) {
+      for (let c = 0; c < COLS; c++) {
+        if (grid[r][c] && !connected.has(r * 100 + c)) {
+          const color = grid[r][c] === '__angel__' ? '#fffde7' : grid[r][c];
+          orphans.push({ x: cellX(r,c), y: cellY(r), color, vy: 4 + Math.random() * 3, progress: 0 });
+          grid[r][c] = null;
+        }
+      }
+    }
+    fallingBubbles.push(...orphans);
+
+    const feverActive = feverPops > 0;
+    const bombScore = Math.round((blasted.length * 30 + orphans.length * 12) * (feverActive ? 1.5 : 1));
+    if (feverActive) feverPops--;
+    gameScore += bombScore;
+    updateHUD();
+    playPop();
+    showScoreFx(`💣 BOOM! +${bombScore}`, 'combo');
+    showToast(`💣 ${blasted.length + orphans.length}개 제거! +${bombScore}점`, 'ok');
+
+    let anyBubble = false;
+    for (let r = 0; r < ROWS; r++) for (let c = 0; c < COLS; c++) if (grid[r][c]) anyBubble = true;
+    if (!anyBubble) {
+      gameScore += 500 + (timeLimitSec > 0 ? timeLeftSec * 2 : 0);
+      setTimeout(() => triggerGameOver(true, 'clear'), 700);
+      return;
+    }
+    completeMainShot(650);
+    return;
+  }
 
   // Angel interaction — pop all bubbles of this color
   const angelNeighbors = neighbors(sr, sc).filter(([nr, nc]) => grid[nr][nc] === '__angel__');
@@ -3831,7 +3953,9 @@ function snapBubble(b, isMain) {
       popAnimations.push({ x: cellX(ar,ac), y: cellY(ar), color: '#fffde7', progress: 0 });
       grid[ar][ac] = null;
     }
-    const angelScore = angelPops.length * 25;
+    const feverActive = isMain && feverPops > 0;
+    const angelScore = Math.round(angelPops.length * 25 * (feverActive ? 1.5 : 1));
+    if (feverActive) feverPops--;
     gameScore += angelScore;
     updateHUD();
     playPop();
@@ -3841,19 +3965,17 @@ function snapBubble(b, isMain) {
       let anyBubble = false;
       for (let r=0;r<ROWS;r++) for(let c=0;c<COLS;c++) if(grid[r][c]) anyBubble=true;
       if (!anyBubble) { gameScore += 500; setTimeout(() => triggerGameOver(true, 'clear'), 700); return; }
-      setTimeout(() => triggerQuizModal(), 600);
+      completeMainShot(600);
     }
     return;
   }
 
   const cluster = findCluster(sr, sc, b.color);
   if (cluster.length >= 3) {
-    popCluster(cluster, sr, sc);
+    popCluster(cluster, sr, sc, isMain);
   } else if (isMain) {
     checkGameOver();
-    if (!gameOver) {
-      setTimeout(() => triggerQuizModal(), 250);
-    }
+    if (!gameOver) completeMainShot(250);
   }
 }
 
@@ -3915,7 +4037,7 @@ function findConnectedToTop() {
   return visited;
 }
 
-function popCluster(cluster, snapR, snapC) {
+function popCluster(cluster, snapR, snapC, isMain) {
   // Animate pop
   for (const [r,c] of cluster) {
     popAnimations.push({ x: cellX(r,c), y: cellY(r), color: grid[r][c], progress: 0 });
@@ -3937,14 +4059,17 @@ function popCluster(cluster, snapR, snapC) {
 
   // Score
   const basePopScore = Math.round((cluster.length * 20 + orphans.length * 10) * stageConfig().scoreBonus);
-  const multiplier = 1 + Math.min(answerStreak, 5) * 0.1;
+  const feverActive = isMain && feverPops > 0;
+  const multiplier = (1 + Math.min(answerStreak, 5) * 0.1) * (feverActive ? 1.5 : 1);
   const popScore = Math.round(basePopScore * multiplier);
+  if (feverActive) feverPops--;
   gameScore += popScore;
   updateHUD();
   playPop();
 
-  showScoreFx(answerStreak > 1 ? `콤보 x${multiplier.toFixed(1)}  +${popScore}` : `+${popScore}`, answerStreak > 1 ? 'combo' : 'pop');
-  showToast(answerStreak > 1 ? `콤보 팡! x${multiplier.toFixed(1)} +${popScore}점` : `팡! +${popScore}점`, 'ok');
+  const boosted = answerStreak > 1 || feverActive;
+  showScoreFx(boosted ? `콤보 x${multiplier.toFixed(1)}  +${popScore}` : `+${popScore}`, boosted ? 'combo' : 'pop');
+  showToast(feverActive ? `🔥 피버 팡! x${multiplier.toFixed(1)} +${popScore}점` : answerStreak > 1 ? `콤보 팡! x${multiplier.toFixed(1)} +${popScore}점` : `팡! +${popScore}점`, 'ok');
 
   // Check clear
   let anyBubble = false;
@@ -3955,8 +4080,7 @@ function popCluster(cluster, snapR, snapC) {
     return;
   }
 
-  // Show next quiz after pop animation
-  setTimeout(() => triggerQuizModal(), 600);
+  if (isMain) completeMainShot(600);
 }
 
 // ── Game over / clear ──
@@ -4088,26 +4212,18 @@ function handleShoot(clientX, clientY) {
   canShoot = false;
   playShoot();
 
-  // Triple shot side bubbles
-  if (tripleShotActive) {
-    tripleShotActive = false;
-    const spread = Math.PI / 14; // ~13°
-    for (const offset of [-spread, spread]) {
-      const a = shootAngle + offset;
-      sideBubbles.push({
-        x: CW/2, y: SHOOTER_Y,
-        color: shooterBubble.color,
-        dx: Math.cos(a), dy: Math.sin(a),
-        moving: true, isMain: false
-      });
-    }
+  // 폭탄은 착탄 지점과 주변 6칸을 확실히 제거한다.
+  if (bombShotActive) {
+    shooterBubble.isBomb = true;
+    bombShotActive = false;
+    updateHUD();
   }
 
   shotsFired++;
   // Skull spawns every 12 shots
   if (shotsFired % 12 === 0 && !skull.visible) spawnSkull();
-  // TripleItem spawns every 10 shots (offset 5)
-  if (shotsFired % 10 === 5 && !tripleItem.visible) spawnTripleItem();
+  // 폭탄 아이템은 10발마다 한 번씩 등장한다 (5발 오프셋).
+  if (shotsFired % 10 === 5 && !bombItem.visible) spawnBombItem();
 }
 
 canvas.addEventListener('mousemove', e => handleAim(e.clientX, e.clientY));
@@ -4125,6 +4241,7 @@ canvas.addEventListener('touchend', e => {
 // ── Quiz ──
 function triggerQuizModal() {
   if (gameOver) return;
+  if (!grammarQuizPending || isQuizOpen()) return;
   if (manualPause) {
     setTimeout(() => triggerQuizModal(), 250);
     return;
@@ -4132,7 +4249,14 @@ function triggerQuizModal() {
   const available = questionPool.filter(q => !usedQIds.has(q.id));
   if (available.length === 0) usedQIds.clear();
   const pool = available.length > 0 ? available : questionPool;
-  if (pool.length === 0) { canShoot = true; return; }
+  if (pool.length === 0) {
+    grammarQuizPending = false;
+    shotsTowardQuiz = 0;
+    canShoot = true;
+    if (!shooterBubble) shooterBubble = newShooterBubble();
+    updateHUD();
+    return;
+  }
   const q = pool[Math.floor(Math.random() * pool.length)];
   usedQIds.add(q.id);
   quizTotal++;
@@ -4140,8 +4264,11 @@ function triggerQuizModal() {
 
   gamePaused = true;
   canShoot = false;
+  quizPauseStartedTs = Date.now();
 
-  document.getElementById('quiz-chain').textContent = answerStreak > 0 ? `💭 ${answerStreak}콤보 진행 중!` : '💭 정답을 맞히면 발사 가능!';
+  document.getElementById('quiz-chain').textContent = answerStreak > 0
+    ? `🔥 문법 ${answerStreak}콤보 · 맞히면 폭탄 버블!`
+    : '📚 문법 찬스 · 맞히면 폭탄 버블!';
   renderQError('quiz-q', q);
   document.getElementById('quiz-kor').textContent = q.kor || '';
   document.getElementById('quiz-bonus').textContent = '';
@@ -4184,14 +4311,20 @@ function answerQuiz(chosen, q, optsEl) {
     const streakBonus = Math.min(answerStreak - 1, 5) * 10;
     const earnScore = 30 + streakBonus;
     gameScore += earnScore;
-    bonusEl.textContent = '';
+    bombShotActive = true;
+    if (answerStreak % 3 === 0) {
+      feverPops = 3;
+      bonusEl.textContent = '🔥 3콤보 피버! 다음 3번 폭발 점수 ×1.5';
+    } else {
+      bonusEl.textContent = '💣 폭탄 버블 획득! 주변까지 한 번에 제거';
+    }
     bonusEl.style.color = '#22c55e';
     showScoreFx(answerStreak > 1 ? `${answerStreak}콤보  +${earnScore}` : `+${earnScore}`, answerStreak > 1 ? 'combo' : 'pop');
     showToast(answerStreak > 1 ? `${answerStreak}콤보! 발사하세요` : '정답! 발사하세요', 'ok');
     playEarn();
   } else {
     answerStreak = 0;
-    bonusEl.textContent = `❌ ${makeReviewText(q)}`;
+    bonusEl.textContent = `❌ ${makeReviewText(q)} · 보상 없이 계속!`;
     bonusEl.style.color = '#ef4444';
     showToast('틀렸어요! 정답을 확인하세요', 'ng');
     bubbleWrongItems.push({ question: (q.kor ? q.kor + ' / ' : '') + q.eng, my: chosen, right: q.ans });
@@ -4200,16 +4333,17 @@ function answerQuiz(chosen, q, optsEl) {
 
   setTimeout(() => {
     document.getElementById('quiz-overlay').classList.remove('show');
-    if (gameOver) return;
-    if (isCorrect) {
-      // Earned a shot
-      gamePaused = manualPause;
-      canShoot = true;
-      if (!shooterBubble) shooterBubble = newShooterBubble();
-    } else {
-      // Wrong answer — show next quiz, no shot earned
-      setTimeout(() => triggerQuizModal(), 200);
+    if (quizPauseStartedTs) {
+      quizPausedTotalMs += Date.now() - quizPauseStartedTs;
+      quizPauseStartedTs = 0;
     }
+    if (gameOver) return;
+    grammarQuizPending = false;
+    shotsTowardQuiz = 0;
+    gamePaused = manualPause;
+    canShoot = true;
+    if (!shooterBubble) shooterBubble = newShooterBubble();
+    updateHUD();
   }, isCorrect ? CORRECT_CLOSE_MS : WRONG_REVIEW_MS);
 }
 
@@ -4218,7 +4352,16 @@ function updateHUD() {
   document.getElementById('hud-stage').textContent = `${currentStage}단계`;
   document.getElementById('hud-score').textContent = gameScore.toLocaleString() + '점';
   document.getElementById('hud-quiz').textContent = `문법 ${quizCorrect}/${quizTotal}`;
-  document.getElementById('hud-combo').textContent = `콤보 ${answerStreak}`;
+  document.getElementById('hud-combo').textContent = bombShotActive
+    ? '💣 폭탄 준비'
+    : feverPops > 0 ? `🔥피버 ${feverPops}` : `콤보 ${answerStreak}`;
+  const grammarMeter = document.getElementById('grammar-meter');
+  const grammarPct = Math.min(100, shotsTowardQuiz / SHOTS_PER_QUIZ * 100);
+  document.getElementById('grammar-fill').style.width = grammarPct + '%';
+  document.getElementById('grammar-label').textContent = grammarQuizPending
+    ? '📚 문법 찬스!'
+    : `📚 문법 찬스 ${shotsTowardQuiz}/${SHOTS_PER_QUIZ}`;
+  grammarMeter.classList.toggle('ready', grammarQuizPending);
 }
 
 // ── Toast ──
@@ -4315,10 +4458,10 @@ function spawnSkull() {
   skull.visible = true;
 }
 
-function spawnTripleItem() {
-  tripleItem.x = R * 3 + Math.random() * (CW - R * 6);
-  tripleItem.y = CELL_H * 2;
-  tripleItem.visible = true;
+function spawnBombItem() {
+  bombItem.x = R * 3 + Math.random() * (CW - R * 6);
+  bombItem.y = CELL_H * 2;
+  bombItem.visible = true;
 }
 
 function drawSkull() {
@@ -4333,21 +4476,21 @@ function drawSkull() {
   ctx.restore();
 }
 
-function drawTripleItem() {
-  if (!tripleItem.visible) return;
+function drawBombItem() {
+  if (!bombItem.visible) return;
   ctx.save();
   ctx.font = `${Math.round(R * 1.4)}px serif`;
   ctx.textAlign = 'center';
   ctx.textBaseline = 'middle';
-  ctx.shadowColor = '#00eaff';
+  ctx.shadowColor = '#facc15';
   ctx.shadowBlur = 16;
-  ctx.fillText('🔫', tripleItem.x, tripleItem.y);
+  ctx.fillText('💣', bombItem.x, bombItem.y);
   // Pulsing ring
   const pulse = 0.7 + 0.3 * Math.sin(Date.now() / 200);
-  ctx.strokeStyle = `rgba(0,234,255,${pulse})`;
+  ctx.strokeStyle = `rgba(250,204,21,${pulse})`;
   ctx.lineWidth = 2;
   ctx.beginPath();
-  ctx.arc(tripleItem.x, tripleItem.y, R * 1.5, 0, Math.PI * 2);
+  ctx.arc(bombItem.x, bombItem.y, R * 1.5, 0, Math.PI * 2);
   ctx.stroke();
   ctx.restore();
 }

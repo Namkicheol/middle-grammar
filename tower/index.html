@@ -38,14 +38,15 @@ button{font-family:inherit;}
 
 /* ── 게임 화면 ── */
 #game{position:fixed;inset:0;display:none;flex-direction:column;}
+#game::after{content:'';position:absolute;z-index:2;inset:0;pointer-events:none;background:linear-gradient(90deg,rgba(2,6,23,.18),transparent 44%),radial-gradient(circle at 72% 36%,transparent 24%,rgba(2,6,23,.22) 100%);}
 #bg{position:absolute;inset:0;z-index:0;}
 /* 탑 벽 — 벽돌 패턴이 아래로 흐르면 영웅이 올라가는 느낌 */
 #wall{position:absolute;z-index:1;top:0;bottom:0;left:0;width:30%;max-width:240px;
   background:
-    repeating-linear-gradient(0deg, rgba(0,0,0,.3) 0 4px, transparent 4px 64px),
-    repeating-linear-gradient(90deg, rgba(255,255,255,.045) 0 3px, transparent 3px 54px),
-    repeating-linear-gradient(0deg, transparent 0 230px, rgba(45,212,191,.14) 230px 252px),
-    linear-gradient(90deg,#2c3b46,#1f2c36 70%,#16222b);
+    repeating-linear-gradient(0deg, rgba(0,0,0,.15) 0 4px, transparent 4px 64px),
+    repeating-linear-gradient(90deg, rgba(255,255,255,.025) 0 3px, transparent 3px 54px),
+    repeating-linear-gradient(0deg, transparent 0 230px, rgba(45,212,191,.09) 230px 252px),
+    linear-gradient(90deg,rgba(31,47,58,.42),rgba(20,33,42,.28) 70%,rgba(12,24,34,.2));
   border-right:4px solid rgba(45,212,191,.35);
   transition:background-position-y .5s cubic-bezier(.25,.6,.3,1);}
 #wall::after{content:'';position:absolute;top:0;bottom:0;right:-12px;width:8px;background:repeating-linear-gradient(0deg,rgba(110,231,183,.55) 0 14px,transparent 14px 92px);transition:inherit;background-position-y:inherit;}
@@ -108,6 +109,9 @@ button{font-family:inherit;}
 #mon.hd{background-size:1024px 256px;image-rendering:auto;transform:scale(.72);bottom:calc(8% + 12px)!important;}
 #mon.hd-mi{animation:monsterHd4 .82s steps(4) infinite;}
 #mon.hd-md{animation:monsterHd4 .68s steps(4) 1 forwards;}
+#mon.hd-boss{background-size:1024px 256px;image-rendering:auto;transform:scale(.92);bottom:calc(8% + 12px)!important;filter:drop-shadow(0 10px 30px rgba(192,132,252,.72));}
+#mon.hd-bi{animation:monsterHd4 .88s steps(4) infinite;}
+#mon.hd-bd{animation:monsterHd4 .82s steps(4) 1 forwards;}
 #mon-name{position:absolute;right:6%;bottom:calc(8% + 16px + 84px);background:rgba(0,0,0,.6);border:1.5px solid rgba(239,68,68,.5);border-radius:9px;padding:3px 10px;font-size:.72rem;font-weight:900;color:#fca5a5;display:none;}
 
 /* 이벤트층 배너 칩 */
@@ -337,16 +341,22 @@ const TIERS=[
   {sky:['#03060f','#071226','#0c1d3d'],stars:170,clouds:0,  orb:'#f3f7ff',halo:'rgba(200,220,255,.12)'},
   {sky:['#010103','#04040c','#0a0a1c'],stars:240,clouds:0,  orb:'#ffffff',halo:'rgba(255,255,255,.1)'},
 ];
+const towerBackdrop=new Image();
+towerBackdrop.src='assets/hd-v2/backgrounds/infinite-sky-tower.png';
+towerBackdrop.onload=()=>{if(GS)drawSky(Math.floor(GS.floor/10));};
 let _stars=null,_clouds=null,_bgTier=-1;
 function drawSky(tier){
   const W=bgC.width=window.innerWidth,H=bgC.height=window.innerHeight;
   const t=TIERS[Math.min(tier,TIERS.length-1)];
   const g=bgX.createLinearGradient(0,0,0,H);
   g.addColorStop(0,t.sky[0]);g.addColorStop(.5,t.sky[1]);g.addColorStop(1,t.sky[2]);
-  bgX.fillStyle=g;bgX.fillRect(0,0,W,H);
+  const hasArt=towerBackdrop.complete&&towerBackdrop.naturalWidth;
+  if(hasArt){const ir=towerBackdrop.naturalWidth/towerBackdrop.naturalHeight,cr=W/H;let sx=0,sy=0,sw=towerBackdrop.naturalWidth,sh=towerBackdrop.naturalHeight;if(ir>cr){sw=sh*cr;sx=(towerBackdrop.naturalWidth-sw)/2}else{sh=sw/cr;sy=(towerBackdrop.naturalHeight-sh)/2}bgX.drawImage(towerBackdrop,sx,sy,sw,sh,0,0,W,H);bgX.save();bgX.globalAlpha=.08+Math.min(tier,5)*.07;bgX.fillStyle=g;bgX.fillRect(0,0,W,H);bgX.restore();}
+  else{bgX.fillStyle=g;bgX.fillRect(0,0,W,H);}
   if(!_stars)_stars=Array.from({length:240},()=>({x:Math.random(),y:Math.random(),r:Math.random()*1.7+.4,a:.3+Math.random()*.55}));
   for(let i=0;i<t.stars;i++){const s=_stars[i];bgX.fillStyle=`rgba(255,255,255,${s.a})`;bgX.beginPath();bgX.arc(s.x*W,s.y*H,s.r,0,Math.PI*2);bgX.fill();}
-  // 해/달 — 고도 따라 색이 바뀐다 (새벽 해 → 노을 해 → 창백한 달 → 우주의 백색 항성)
+  if(!hasArt){
+  // fallback 해/달 — 배경 에셋을 불러오지 못했을 때만 표시
   const mx=W*.78,my=H*.2,mr=Math.min(W,H)*.062;
   const halo=bgX.createRadialGradient(mx,my,mr*.4,mx,my,mr*3);
   halo.addColorStop(0,t.halo);halo.addColorStop(1,'transparent');
@@ -363,7 +373,7 @@ function drawSky(tier){
         bgX.fillRect(Math.round((cx-sw/2)/px)*px,Math.round((cy-s*ch*.5)/px)*px,sw,ch*.6);
       }
     });
-  }
+  }}
   _bgTier=tier;
 }
 window.addEventListener('resize',()=>{if(GS)drawSky(Math.floor(GS.floor/10));});
@@ -413,9 +423,9 @@ const MONSTERS=[
   {key:'skeleton',  name:'💀 문법 해골군주', cls:'i4',die:'die', w:150,h:150,base:'../game2/assets/fighters/skeleton/'},
   {key:'flying_eye',name:'👁️ 문법 마안',    cls:'i8',die:'die', w:150,h:150,base:'../game2/assets/fighters/flying_eye/'},
 ];
-const BOSS_MON={key:'king',name:'👹 탑의 수문장 대마왕',cls:'ik boss',die:'kdie boss',w:160,h:111,pad:16,base:'../game2/assets/fighters/king/'};
+const BOSS_MON={key:'storm_warden',name:'⚡ 폭풍의 수문장',cls:'hd-boss hd-bi',die:'hd-boss hd-bd',w:256,h:256,pad:0,idle:'idle.png',death:'death.png',base:'assets/hd-v2/units/storm-warden/'};
 const ITEM_DEFS={
-  shield:   {emoji:'🛡️',label:'방패',  desc:'오답 1회 방어 (자동)',     w:5},
+  shield:   {emoji:'🛡️',label:'방패',  desc:'오답 1회 방어 (자동)',     w:3},
   hourglass:{emoji:'⏳',label:'+7초', desc:'탭하면 시간 +7초',          w:5},
   fifty:    {emoji:'🔍',label:'반반',  desc:'탭하면 오답 2개 제거',       w:5},
   lantern:  {emoji:'🏮',label:'등불',  desc:'탭하면 현재 방해 효과 해제', w:4},
@@ -511,7 +521,7 @@ function startRun(mode){
     seqL1:shuffled(pool.l1,rng),seqL2:shuffled(pool.l2,rng),i1:0,i2:0,
     poolL1:pool.l1,poolL2:pool.l2,
     floor:0,hearts:3,streak:0,maxStreak:0,wrongs:[],
-    items:[],event:null,eventFloor:-1,monster:null,fever:0,windIv:null,activeDisturb:null,
+    items:[],itemHistory:[],event:null,eventFloor:-1,monster:null,fever:0,windIv:null,activeDisturb:null,
     betStake:null,
     over:false,locked:false,timerT:null,
   };
@@ -694,12 +704,17 @@ function banner(txt){
   rb.textContent=txt;rb.classList.add('show');
   clearTimeout(banner._t);banner._t=setTimeout(()=>rb.classList.remove('show'),1500);
 }
-function randItem(){ // 가중치 기반 — 반반 편중 해소
-  const ks=Object.keys(ITEM_DEFS);
+function randItem(){ // 같은 아이템 연속·보유 중복을 피하는 가중 추첨
+  const g=GS;
+  let ks=Object.keys(ITEM_DEFS).filter(k=>!g.items.includes(k));
+  if(!ks.length)ks=Object.keys(ITEM_DEFS);
+  const recent=new Set(g.itemHistory.slice(-2)),fresh=ks.filter(k=>!recent.has(k));
+  if(fresh.length)ks=fresh;
   const tot=ks.reduce((s,k)=>s+ITEM_DEFS[k].w,0);
   let r=GS.rng()*tot;
-  for(const k of ks){ r-=ITEM_DEFS[k].w; if(r<0)return k; }
-  return ks[0];
+  let picked=ks[0];for(const k of ks){r-=ITEM_DEFS[k].w;if(r<0){picked=k;break;}}
+  g.itemHistory.push(picked);if(g.itemHistory.length>4)g.itemHistory.shift();
+  return picked;
 }
 
 function onCorrect(){

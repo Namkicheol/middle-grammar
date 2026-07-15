@@ -52,7 +52,7 @@ button:focus-visible,.unit-card:focus-visible,.all-btn:focus-visible{outline:3px
 .mode-btn em{position:absolute;right:12px;top:13px;color:var(--mode-glow,#67e8f9);font-size:.55rem;font-weight:900;font-style:normal;letter-spacing:1.1px;}
 .mode-btn strong{display:block;font-family:inherit;font-size:.94rem;font-weight:900;color:#f8fafc;line-height:1.25;letter-spacing:-.35px;}
 .mode-btn span{display:block;font-size:.67rem;font-weight:700;color:#94a3b8;margin-top:3px;line-height:1.35;}
-.mode-btn[data-mode="boss"]{--mode-glow:#fb7185}.mode-btn[data-mode="whack"]{--mode-glow:#facc15}.mode-btn[data-mode="bubble"]{--mode-glow:#22d3ee}.mode-btn[data-mode="tower"]{--mode-glow:#a78bfa}.mode-btn[data-mode="sentence"]{--mode-glow:#34d399;grid-column:1/-1;min-height:104px}.mode-btn[data-mode="sentence"] .mode-icon{float:left;margin:0 12px 0 0}.mode-btn[data-mode="sentence"] strong{padding-top:8px}
+.mode-btn[data-mode="boss"]{--mode-glow:#fb7185}.mode-btn[data-mode="whack"]{--mode-glow:#facc15}.mode-btn[data-mode="bubble"]{--mode-glow:#22d3ee}.mode-btn[data-mode="tower"]{--mode-glow:#a78bfa}.mode-btn[data-mode="rangers"]{--mode-glow:#38bdf8;grid-column:1/-1;min-height:104px}.mode-btn[data-mode="sentence"]{--mode-glow:#34d399;grid-column:1/-1;min-height:104px}.mode-btn[data-mode="rangers"] .mode-icon,.mode-btn[data-mode="sentence"] .mode-icon{float:left;margin:0 12px 0 0}.mode-btn[data-mode="rangers"] strong,.mode-btn[data-mode="sentence"] strong{padding-top:8px}
 .mode-btn.on{transform:translateY(-3px);border-color:var(--mode-glow);box-shadow:0 12px 25px color-mix(in srgb,var(--mode-glow) 20%,transparent),inset 0 0 0 1px color-mix(in srgb,var(--mode-glow) 28%,transparent);}
 .mode-btn.on .mode-icon{background:var(--mode-glow);box-shadow:0 0 18px color-mix(in srgb,var(--mode-glow) 42%,transparent);}
 
@@ -691,6 +691,11 @@ button:focus-visible,.unit-card:focus-visible,.all-btn:focus-visible{outline:3px
           <strong>무한의 탑</strong>
           <span>목숨 3개로 오늘의 최고층 도전</span>
         </button>
+        <button class="mode-btn" data-mode="rangers">
+          <i class="mode-icon">⚔️</i><em>LANE BATTLE</em>
+          <strong>문법 레인져스</strong>
+          <span>정답으로 기력을 모아 유닛을 소환하고 적 본진을 격파</span>
+        </button>
         <button class="mode-btn" data-mode="sentence">
           <i class="mode-icon">💥</i><em>NEW · BLOCK</em>
           <strong>Sentence Blast</strong>
@@ -1101,6 +1106,11 @@ function getSentenceBest(unitKey) {
   }
 }
 
+function getRangersBest(unitKey) {
+  try { return JSON.parse(localStorage.getItem('egmGR.best.' + (unitKey || 'all'))) || null; }
+  catch(e) { return null; }
+}
+
 function saveBossBest(unitKey, score, correct, total, streak, clear) {
   const prev = getBossBest(unitKey);
   if (score <= 0 && correct <= 0) return { isNew: false, prev };
@@ -1120,6 +1130,11 @@ function saveBossBest(unitKey, score, correct, total, streak, clear) {
 
 function renderUnitBestBadges() {
   document.querySelectorAll('[data-best-for]').forEach(el => {
+    if (selectedMode === 'rangers') {
+      const best = getRangersBest(el.dataset.bestFor);
+      el.textContent = best ? `최고 ${best.stage}스테이지` : '';
+      return;
+    }
     const best = selectedMode === 'speed'
       ? getSpeedBest(el.dataset.bestFor)
       : selectedMode === 'sentence'
@@ -1211,6 +1226,7 @@ function startSelectedGame(unitKey) {
   } else if (selectedMode === 'speed') startSpeedQuiz(unitKey);
   else if (selectedMode === 'whack') location.href = '../whack-grammar/?unit=' + encodeURIComponent(unitKey);
   else if (selectedMode === 'tower') location.href = '../tower/?unit=' + encodeURIComponent(unitKey);
+  else if (selectedMode === 'rangers') location.href = '../grammar-rangers/?unit=' + encodeURIComponent(unitKey);
   else if (selectedMode === 'sentence') {
     const seconds = timeLimitSec > 0 ? timeLimitSec : 300;
     location.href = '../sentence-blast/?unit=' + encodeURIComponent(unitKey) + '&seconds=' + seconds;

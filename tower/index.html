@@ -34,7 +34,7 @@ button{font-family:inherit;}
 #gate-go{margin-top:22px;font-size:1.2rem;font-weight:900;color:#fff;background:linear-gradient(135deg,#7c3aed,#a855f7);border:none;border-radius:16px;padding:16px 52px;box-shadow:0 12px 32px rgba(124,58,237,.6);cursor:pointer;transition:transform .12s;}
 #gate-go:active{transform:scale(.96);}
 .gate-back{margin-top:16px;color:#94a3b8;font-size:.85rem;text-decoration:none;}
-.gate-hero{height:120px;width:auto;image-rendering:pixelated;filter:drop-shadow(0 6px 18px rgba(124,58,237,.6));margin-bottom:10px;}
+.gate-hero{height:142px;width:auto;filter:drop-shadow(0 8px 22px rgba(45,212,191,.55));margin-bottom:8px;}
 
 /* ── 게임 화면 ── */
 #game{position:fixed;inset:0;display:none;flex-direction:column;}
@@ -75,23 +75,18 @@ button{font-family:inherit;}
     linear-gradient(180deg,#3a4a56,#243039);
   border-top:3px solid rgba(239,68,68,.4);border-radius:6px 0 0 6px;box-shadow:0 6px 14px rgba(0,0,0,.65);}
 #mledge::after{content:'';position:absolute;left:14px;top:16px;border-right:16px solid transparent;border-top:14px solid #1c262e;}
-/* Huntress 2 (LuizMelo, CC-0) — 프레임 100×100, 캐릭터 발은 프레임 바닥에서 33px 위
-   (투명 여백). scale 2.6 기준 33×2.6≈86px 내려서 발이 발코니(8%+16px)에 닿게 한다. */
-#hero{position:absolute;left:8%;bottom:calc(8% + 16px - 86px);width:100px;height:100px;
-  background-image:url('assets/huntress/Idle.png');
-  background-repeat:no-repeat;image-rendering:pixelated;
-  transform:scale(2.6);transform-origin:bottom center;
+/* HD 4-frame sprite. Every strip is ground-aligned at y=248, so all actions share one baseline. */
+#hero{position:absolute;left:0;bottom:calc(8% + 12px);width:256px;height:256px;
+  background-image:url('assets/hd-v2/units/sky-climber/idle.png');background-size:1024px 256px;
+  background-repeat:no-repeat;
+  transform:scale(.58);transform-origin:bottom center;
   filter:drop-shadow(0 8px 20px rgba(45,212,191,.45));}
-@keyframes hIdle{from{background-position-x:0}to{background-position-x:-1000px}}
-@keyframes hRun {from{background-position-x:0}to{background-position-x:-800px}}
-@keyframes hHurt{from{background-position-x:0}to{background-position-x:-300px}}
-@keyframes hDeath{from{background-position-x:0}to{background-position-x:-1000px}}
-@keyframes hAtk {from{background-position-x:0}to{background-position-x:-600px}}
-#hero.atk  {background-image:url('assets/huntress/Attack.png');  animation:hAtk .5s steps(6) 1 forwards;}
-#hero.idle {background-image:url('assets/huntress/Idle.png');    animation:hIdle 1.1s steps(10) infinite;}
-#hero.run  {background-image:url('assets/huntress/Run.png');     animation:hRun .6s steps(8) infinite;}
-#hero.hurt {background-image:url('assets/huntress/Take_hit.png');animation:hHurt .32s steps(3) 1 forwards;}
-#hero.death{background-image:url('assets/huntress/Death.png');   animation:hDeath 1.2s steps(10) 1 forwards;}
+@keyframes h4{from{background-position-x:0}to{background-position-x:-1024px}}
+#hero.atk  {background-image:url('assets/hd-v2/units/sky-climber/attack.png');animation:h4 .5s steps(4) 1 forwards;}
+#hero.idle {background-image:url('assets/hd-v2/units/sky-climber/idle.png');animation:h4 1s steps(4) infinite;}
+#hero.run  {background-image:url('assets/hd-v2/units/sky-climber/run.png');animation:h4 .56s steps(4) infinite;}
+#hero.hurt {background-image:url('assets/hd-v2/units/sky-climber/hurt.png');animation:h4 .34s steps(4) 1 forwards;}
+#hero.death{background-image:url('assets/hd-v2/units/sky-climber/death.png');animation:h4 .8s steps(4) 1 forwards;}
 
 /* 몬스터 (이벤트층 — game2 CC0 몬스터 재활용) */
 #mon{position:absolute;right:6%;bottom:calc(8% + 16px - 88px);width:150px;height:150px;
@@ -109,6 +104,10 @@ button{font-family:inherit;}
 #mon.ik{animation:kIdle8 1s steps(8) infinite;}
 #mon.kdie{animation:kDeath6 .7s steps(6) 1 forwards;}
 #mon.boss{transform:scaleX(-1) scale(2.6);filter:drop-shadow(0 10px 30px rgba(250,204,21,.55));}
+@keyframes monsterHd4{from{background-position-x:0}to{background-position-x:-1024px}}
+#mon.hd{background-size:1024px 256px;image-rendering:auto;transform:scale(.72);bottom:calc(8% + 12px)!important;}
+#mon.hd-mi{animation:monsterHd4 .82s steps(4) infinite;}
+#mon.hd-md{animation:monsterHd4 .68s steps(4) 1 forwards;}
 #mon-name{position:absolute;right:6%;bottom:calc(8% + 16px + 84px);background:rgba(0,0,0,.6);border:1.5px solid rgba(239,68,68,.5);border-radius:9px;padding:3px 10px;font-size:.72rem;font-weight:900;color:#fca5a5;display:none;}
 
 /* 이벤트층 배너 칩 */
@@ -206,7 +205,10 @@ button{font-family:inherit;}
 .rv-mine{font-size:.76rem;color:#fca5a5;margin-top:3px;}
 
 @media (max-width:560px){
-  #hero{transform:scale(2);bottom:calc(8% + 16px - 66px);}
+  #gate{justify-content:flex-start;padding-top:16px;}
+  .gate-hero{height:112px;flex:0 0 auto;}
+  .gate-title{font-size:1.72rem;}
+  #hero{transform:scale(.52);bottom:calc(8% + 12px);}
   #floor-chip{font-size:1.6rem;}
   #q-eng{font-size:1rem;}
   .mode-card{width:100%;max-width:320px;}
@@ -217,7 +219,7 @@ button{font-family:inherit;}
 
 <!-- ── 시작 게이트 ── -->
 <div id="gate">
-  <img class="gate-hero" src="assets/huntress/portrait.png" alt="huntress">
+  <img class="gate-hero" src="assets/hd-v2/units/sky-climber/portrait.png" alt="하늘탑 등반가">
   <div class="gate-title">🗼 문법 무한의 탑</div>
   <div class="gate-sub">한 문제 = 한 층. 목숨 3개로 어디까지 올라갈까?<br>10층마다 보스 관문 · 몬스터·보물·🪙베팅·유령·새·돌풍·안개 변수층 + 아이템!<br>올라갈수록 ⚙️가속! 시간이 점점 짧아진다.</div>
   <div class="mode-cards">
@@ -405,6 +407,7 @@ function bgmStop(){bgm.pause();bgm.currentTime=0;}
 
 // ── 이벤트층 & 아이템 ──
 const MONSTERS=[
+  {key:'mimic',     name:'🧰 가시덩굴 미믹', cls:'hd hd-mi',die:'hd hd-md',w:256,h:256,pad:8,idle:'idle.png',death:'death.png',base:'assets/hd-v2/units/thornjaw-mimic/'},
   {key:'goblin',    name:'👺 문법 고블린',   cls:'i4',die:'die', w:150,h:150,base:'../game2/assets/fighters/goblin/'},
   {key:'mushroom',  name:'🍄 문법 버섯괴물', cls:'i4',die:'die', w:150,h:150,base:'../game2/assets/fighters/mushroom/'},
   {key:'skeleton',  name:'💀 문법 해골군주', cls:'i4',die:'die', w:150,h:150,base:'../game2/assets/fighters/skeleton/'},
@@ -545,7 +548,7 @@ function setMonster(m){
   const nameEl=$('mon-name');
   $('mledge').style.display=m?'block':'none';
   if(!m){mon.style.display='none';nameEl.style.display='none';return;}
-  mon.style.backgroundImage="url('"+m.base+"Idle.png')";
+  mon.style.backgroundImage="url('"+m.base+(m.idle||'Idle.png')+"')";
   mon.style.width=m.w+'px';mon.style.height=m.h+'px';
   mon.style.bottom='calc(8% + 16px - '+(m.pad||88)+'px)';   // 발판 위에 발 정렬
   mon.className=m.cls;
@@ -717,7 +720,7 @@ function onCorrect(){
   if(ev==='monster'||ev==='boss'){
     setHero('atk',700);
     if(g.monster){
-      mon.style.backgroundImage="url('"+g.monster.base+"Death.png')";
+      mon.style.backgroundImage="url('"+g.monster.base+(g.monster.death||'Death.png')+"')";
       mon.className=g.monster.die;
     }
     setTimeout(()=>setMonster(null),ev==='boss'?750:550);

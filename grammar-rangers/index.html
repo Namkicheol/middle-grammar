@@ -44,7 +44,7 @@ button{font-family:inherit;}
 #energy-track{height:16px;background:#0a0f1c;border:1.5px solid rgba(251,191,36,.4);border-radius:99px;overflow:hidden;position:relative;}
 #energy-fill{height:100%;width:0%;background:linear-gradient(90deg,#f59e0b,#fde68a);transition:width .12s;}
 #energy-txt{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-size:.72rem;font-weight:900;color:#1a1206;text-shadow:0 1px 0 rgba(255,255,255,.3);}
-#spd-btn,#bgm-btn{font-size:.82rem;font-weight:900;background:rgba(255,255,255,.08);border:1.5px solid rgba(255,255,255,.2);border-radius:10px;padding:6px 9px;cursor:pointer;white-space:nowrap;}
+#spd-btn,#bgm-btn,#sfx-btn{font-size:.82rem;font-weight:900;background:rgba(255,255,255,.08);border:1.5px solid rgba(255,255,255,.2);border-radius:10px;padding:6px 9px;cursor:pointer;white-space:nowrap;}
 #spd-btn{color:#fde68a;border-color:rgba(251,191,36,.45);}
 
 #stage-wrap{position:relative;width:100%;max-width:900px;}
@@ -151,7 +151,8 @@ button{font-family:inherit;}
     <div id="energy-wrap"><div id="energy-track"><div id="energy-fill"></div><div id="energy-txt">⚡0</div></div></div>
     <div class="hud-chip" id="best-chip2">최고 -</div>
     <button id="spd-btn">▶ 1x</button>
-    <button id="bgm-btn">🔊</button>
+    <button id="bgm-btn" aria-label="배경음악 켜기 또는 끄기">🎵</button>
+    <button id="sfx-btn" aria-label="효과음 켜기 또는 끄기">💥</button>
   </div>
   <div id="stage-wrap">
     <canvas id="field" width="900" height="340"></canvas>
@@ -182,7 +183,7 @@ button{font-family:inherit;}
   </div>
 </div>
 
-<audio id="bgm" src="../tower/assets/bgm/climb-epic.mp3" loop preload="none"></audio>
+<audio id="bgm" src="../game2/assets/bgm/battle-theme.mp3" loop preload="none"></audio>
 <script src="../game/questions.js?v=questions-20260715a"></script>
 <script>
 'use strict';
@@ -199,23 +200,30 @@ const SPRITE_FRAME=256;
 
 // 사운드
 let _ac=null;
+let sfxOn=localStorage.getItem('egmGR.sfx')!=='off';
 function ac(){if(!_ac){try{_ac=new(window.AudioContext||window.webkitAudioContext)();}catch(e){return null;}}if(_ac.state==='suspended')_ac.resume().catch(()=>{});return _ac;}
 ['pointerdown','touchstart','click'].forEach(ev=>window.addEventListener(ev,()=>ac(),{capture:true}));
-function tone(f,d,t,v,w){const c=ac();if(!c)return;const o=c.createOscillator(),g=c.createGain();o.type=t||'square';o.frequency.value=f;g.gain.setValueAtTime(v||.1,c.currentTime+(w||0));g.gain.exponentialRampToValueAtTime(.001,c.currentTime+(w||0)+d);o.connect(g);g.connect(c.destination);o.start(c.currentTime+(w||0));o.stop(c.currentTime+(w||0)+d+.02);}
+function tone(f,d,t,v,w,drop){if(!sfxOn)return;const c=ac();if(!c)return;const at=c.currentTime+(w||0),o=c.createOscillator(),g=c.createGain();o.type=t||'square';o.frequency.setValueAtTime(f,at);if(drop)o.frequency.exponentialRampToValueAtTime(Math.max(35,f*drop),at+d);g.gain.setValueAtTime(v||.1,at);g.gain.exponentialRampToValueAtTime(.001,at+d);o.connect(g);g.connect(c.destination);o.start(at);o.stop(at+d+.02);}
+function noise(d=.08,v=.04,w=0,cut=900){if(!sfxOn)return;const c=ac();if(!c)return;const at=c.currentTime+w,b=c.createBuffer(1,Math.ceil(c.sampleRate*d),c.sampleRate),data=b.getChannelData(0);for(let i=0;i<data.length;i++)data[i]=(Math.random()*2-1)*(1-i/data.length);const src=c.createBufferSource(),filter=c.createBiquadFilter(),g=c.createGain();src.buffer=b;filter.type='lowpass';filter.frequency.value=cut;g.gain.setValueAtTime(v,at);g.gain.exponentialRampToValueAtTime(.001,at+d);src.connect(filter);filter.connect(g);g.connect(c.destination);src.start(at);src.stop(at+d+.02);}
+const soundGate={};
+function allowSound(key,gap){const now=performance.now();if(now-(soundGate[key]||0)<gap)return false;soundGate[key]=now;return true;}
 const sfx={
   ok(){tone(660,.08,'square',.09);tone(880,.1,'square',.09,.06);},
   coin(){tone(880,.05,'square',.07);tone(1175,.07,'square',.07,.05);},
   ng(){tone(200,.16,'sawtooth',.09);tone(150,.2,'sawtooth',.08,.09);},
-  summon(){tone(440,.07,'square',.09);tone(660,.09,'square',.09,.06);},
-  hit(){tone(170,.05,'sawtooth',.05);},
-  arrow(){tone(620,.04,'triangle',.05);},
-  die(){tone(160,.12,'sawtooth',.07);},
-  baseHit(){tone(120,.16,'sawtooth',.11);},
+  summon(){noise(.12,.035,0,1800);tone(330,.09,'sine',.08,0,1.9);tone(660,.12,'triangle',.08,.06);},
+  hit(){if(!allowSound('hit',65))return;noise(.055,.055,0,650);tone(150,.075,'sawtooth',.055,0,.48);},
+  arrow(){if(!allowSound('arrow',55))return;noise(.045,.025,0,3200);tone(760,.055,'triangle',.045,0,.72);},
+  cannon(){noise(.18,.12,0,720);tone(92,.22,'sawtooth',.15,0,.28);tone(185,.08,'square',.05,.015,.42);},
+  fort(){noise(.14,.085,0,900);tone(125,.18,'sawtooth',.11,0,.34);},
+  die(){if(!allowSound('die',90))return;tone(190,.15,'sawtooth',.075,0,.42);noise(.1,.045,.02,520);},
+  baseHit(){if(!allowSound('base',110))return;noise(.12,.09,0,580);tone(105,.19,'sawtooth',.13,0,.32);},
+  upgrade(){[392,523,659,784].forEach((f,i)=>tone(f,.12,'triangle',.08,i*.055));noise(.08,.025,.12,2600);},
   stage(){[523,659,784,1047].forEach((f,i)=>tone(f,.13,'square',.1,i*.1));},
   over(){tone(300,.18,'sawtooth',.11);tone(220,.22,'sawtooth',.11,.16);tone(150,.4,'sawtooth',.11,.34);},
 };
 const bgm=$('bgm');let bgmOn=localStorage.getItem('egmGR.bgm')!=='off';
-function syncBgm(){$('bgm-btn').textContent=bgmOn?'🔊':'🔇';}
+function syncAudioButtons(){$('bgm-btn').textContent=bgmOn?'🎵':'🎵×';$('sfx-btn').textContent=sfxOn?'💥':'💥×';}
 function bgmPlay(){if(bgmOn){bgm.volume=.24;bgm.play().catch(()=>{});}}
 function bgmStop(){bgm.pause();bgm.currentTime=0;}
 
@@ -381,14 +389,14 @@ function upgradeUnit(key){
   const g=GS;if(!g||g.over)return;const lv=g.unitLv[key];if(lv>=3)return;
   const cost=UNIT_UP_COST[lv];if(g.energy<cost){flashPoor(key);return;}g.energy-=cost;g.unitLv[key]++;
   for(const u of g.units){if(u.side!=='my'||u.key!==key||u.dead)continue;const oldMax=u.maxHp;u.level=g.unitLv[key];u.maxHp=Math.round(u.def.hp*(1+(u.level-1)*.28));u.hp=Math.min(u.maxHp,u.hp+(u.maxHp-oldMax));u.dmg=Math.round(u.def.dmg*(1+(u.level-1)*.22));}
-  banner(MY_UNITS.find(u=>u.key===key).name+' Lv.'+g.unitLv[key]+'!');sfx.stage();updateHud();
+  banner(MY_UNITS.find(u=>u.key===key).name+' Lv.'+g.unitLv[key]+'!');sfx.upgrade();updateHud();
 }
 function upgradeTower(key){
   const g=GS;if(!g||g.over)return;const def=TOWER_UPGRADES[key],lv=g.towerLv[key];if(lv>=def.max)return;const cost=def.cost[lv];if(g.energy<cost){banner('기력이 부족합니다');return;}g.energy-=cost;g.towerLv[key]++;
   if(key==='wall'){g.myHPMax=120+g.towerLv.wall*35;g.myHP=Math.min(g.myHPMax,g.myHP+35);}
   if(key==='reactor'){g.energyMax=100+g.towerLv.reactor*20;g.energy=Math.min(g.energyMax,g.energy+20);}
   if(key==='cannon')g.cannonCool=.25;
-  banner(def.icon+' '+def.name+' Lv.'+g.towerLv[key]+'!');sfx.stage();updateHud();
+  banner(def.icon+' '+def.name+' Lv.'+g.towerLv[key]+'!');sfx.upgrade();updateHud();
 }
 function updateUpgradeUI(){
   const g=GS;if(!g)return;
@@ -406,10 +414,10 @@ function update(dt){
   // 문제 정답이 주 수급원. 자동 재생은 전투가 멈추지 않을 정도로만 제공한다.
   g.energy=Math.min(g.energyMax,g.energy+(2+g.towerLv.reactor*.45)*dt);
   // 본진 대포
-  if(g.towerLv.cannon>0){g.cannonCool-=dt;if(g.cannonCool<=0){const enemies=g.units.filter(u=>u.side==='foe'&&!u.dead).sort((a,b)=>a.x-b.x);if(enemies.length){const lv=g.towerLv.cannon,t=enemies[0];g.shots.push({x:112,y:LANE_Y-58,target:t,tx:t.x,ty:t.y,spd:330,dmg:[0,22,34,48][lv],side:'my',splash:[0,42,50,60][lv],color:'#67e8f9',kind:'cannon',ang:0});g.cannonCool=[0,4.5,3.6,2.8][lv];sfx.arrow();}else g.cannonCool=.35;}}
+  if(g.towerLv.cannon>0){g.cannonCool-=dt;if(g.cannonCool<=0){const enemies=g.units.filter(u=>u.side==='foe'&&!u.dead).sort((a,b)=>a.x-b.x);if(enemies.length){const lv=g.towerLv.cannon,t=enemies[0];g.shots.push({x:112,y:LANE_Y-58,target:t,tx:t.x,ty:t.y,spd:330,dmg:[0,22,34,48][lv],side:'my',splash:[0,42,50,60][lv],color:'#67e8f9',kind:'cannon',ang:0});g.cannonCool=[0,4.5,3.6,2.8][lv];sfx.cannon();}else g.cannonCool=.35;}}
   // 병력을 무작정 쌓아 밀어붙일 때만 적 성채가 선두를 견제한다. 소수 정예·강화 플레이는 불이익이 없다.
   const myAlive=g.units.filter(u=>u.side==='my'&&!u.dead),foeAlive=g.units.filter(u=>u.side==='foe'&&!u.dead);
-  if(g.foeHP>0&&myAlive.length-foeAlive.length>=4){g.foeFortCool-=dt;if(g.foeFortCool<=0){const t=myAlive.sort((a,b)=>b.x-a.x)[0];g.shots.push({x:FOEBASE.x-20,y:LANE_Y-62,target:t,tx:t.x,ty:t.y,spd:360,dmg:10+g.stage*2,side:'foe',color:'#fb7185',kind:'fort',ang:0});g.foeFortCool=Math.max(2.2,3.4-g.stage*.05);if(!g.fortWarned){g.fortWarned=true;banner('⚠️ 병력이 몰리면 적 성채가 포격합니다!');}sfx.arrow();}}else g.foeFortCool=Math.min(2.6,g.foeFortCool+dt*.5);
+  if(g.foeHP>0&&myAlive.length-foeAlive.length>=4){g.foeFortCool-=dt;if(g.foeFortCool<=0){const t=myAlive.sort((a,b)=>b.x-a.x)[0];g.shots.push({x:FOEBASE.x-20,y:LANE_Y-62,target:t,tx:t.x,ty:t.y,spd:360,dmg:10+g.stage*2,side:'foe',color:'#fb7185',kind:'fort',ang:0});g.foeFortCool=Math.max(2.2,3.4-g.stage*.05);if(!g.fortWarned){g.fortWarned=true;banner('⚠️ 병력이 몰리면 적 성채가 포격합니다!');}sfx.fort();}}else g.foeFortCool=Math.min(2.6,g.foeFortCool+dt*.5);
   // 적 스폰
   if(g.foeHP>0){g.foeSpawnT-=dt;if(g.foeSpawnT<=0){let key;if(g.stage%5===0&&!g.bossSpawned){key='e_knight';g.bossSpawned=true;}else key=foePick(g.stage);spawnUnit('foe',key);g.foeSpawnT=foeSpawnInterval(g.stage);}}
   for(const u of g.units)u.engaged=0;
@@ -598,8 +606,9 @@ function gameOver(){
 }
 $('btn-retry').onclick=()=>startRun(GS.scope);
 $('spd-btn').onclick=()=>{if(!GS||GS.over)return;GS.speed=GS.speed===1?2:1;$('spd-btn').textContent=GS.speed===2?'▶▶ 2x':'▶ 1x';};
-$('bgm-btn').onclick=()=>{bgmOn=!bgmOn;localStorage.setItem('egmGR.bgm',bgmOn?'on':'off');syncBgm();if(bgmOn&&GS&&!GS.over)bgmPlay();else bgm.pause();};
-syncBgm();
+$('bgm-btn').onclick=()=>{bgmOn=!bgmOn;localStorage.setItem('egmGR.bgm',bgmOn?'on':'off');syncAudioButtons();if(bgmOn&&GS&&!GS.over)bgmPlay();else bgm.pause();};
+$('sfx-btn').onclick=()=>{sfxOn=!sfxOn;localStorage.setItem('egmGR.sfx',sfxOn?'on':'off');syncAudioButtons();if(sfxOn)sfx.coin();};
+syncAudioButtons();
 
 // ── 게이트 ──
 let gateScope='all';

@@ -112,6 +112,7 @@ body{background:#0c2f5c;color:#fff;font-family:ui-rounded,'SF Pro Rounded','Aria
   </section>
 </div>
 
+<audio id="bgm" src="../game/assets/bgm/bubble-theme.mp3" loop preload="auto"></audio>
 <script src="../game/questions.js"></script>
 <script src="../sounds.js"></script>
 <script>
@@ -144,8 +145,9 @@ function formatTime(s){return Math.floor(s/60)+':'+String(s%60).padStart(2,'0')}
 function esc(s){return String(s).replace(/[&<>'"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;',"'":'&#39;','"':'&quot;'}[c]))}
 function toast(msg,type=''){const t=$('toast');t.textContent=msg;t.className='toast show '+type;clearTimeout(t._id);t._id=setTimeout(()=>t.className='toast',1500)}
 
-// 원본 게임 음원을 복제하지 않고 Web Audio로 만든 짧은 버블 계열 효과와 루프입니다.
-let audioCtx=null,musicTimer=null,musicStep=0;
+// 효과음은 Web Audio, 배경음악은 iOS에서도 안정적인 HTMLAudio 트랙을 사용합니다.
+let audioCtx=null;
+const bgm=$('bgm');
 let musicOn=localStorage.getItem('mgSentenceBlast.music')!=='off';
 let sfxOn=localStorage.getItem('mgSentenceBlast.sfx')!=='off';
 function getAudio(){if(!audioCtx){try{audioCtx=new(window.AudioContext||window.webkitAudioContext)()}catch(e){return null}}if(audioCtx.state==='suspended')audioCtx.resume().catch(()=>{});return audioCtx}
@@ -160,13 +162,12 @@ const gameSfx={
   blast(){gameNoise(.24,.11,1200);gameTone(115,.3,'sawtooth',.12,0,42);gameTone(720,.22,'triangle',.06,.08,1180);},
   finish(){[392,523,659,784,1047].forEach((f,i)=>gameTone(f,.16,'triangle',.055,i*.085));}
 };
-function musicTick(){if(!musicOn||phase==='over')return;const notes=[220,277,330,415,330,277,247,330],bass=[110,110,139,139,123,123,165,165],step=musicStep++,f=notes[step%notes.length];gameTone(f,.3,'triangle',.032,0,0,'music');gameTone(f*2,.15,'sine',.016,.035,0,'music');gameTone(bass[step%bass.length],.22,'triangle',.026,0,0,'music');if(step%4===0)gameTone(74,.08,'square',.022,0,48,'music')}
-function startMusic(){if(!musicOn||musicTimer||phase==='over')return;const c=getAudio();if(!c)return;const begin=()=>{if(!musicOn||musicTimer||phase==='over')return;musicTick();musicTimer=setInterval(musicTick,310)};if(c.state==='suspended')c.resume().then(begin).catch(()=>{});else begin()}
-function stopMusic(){clearInterval(musicTimer);musicTimer=null}
+function startMusic(){if(!musicOn||phase==='over'||!bgm.paused)return;bgm.volume=.38;bgm.play().catch(()=>{})}
+function stopMusic(){bgm.pause();bgm.currentTime=0}
 function syncAudio(){const mb=$('music-btn'),sb=$('sfx-btn');mb.textContent=musicOn?'🎵':'🎵×';sb.textContent=sfxOn?'💥':'💥×';mb.classList.toggle('off',!musicOn);sb.classList.toggle('off',!sfxOn)}
 $('music-btn').onclick=()=>{musicOn=!musicOn;localStorage.setItem('mgSentenceBlast.music',musicOn?'on':'off');syncAudio();if(musicOn)startMusic();else stopMusic()};
 $('sfx-btn').onclick=()=>{sfxOn=!sfxOn;localStorage.setItem('mgSentenceBlast.sfx',sfxOn?'on':'off');syncAudio();if(sfxOn)gameSfx.place(2)};
-window.addEventListener('pointerdown',()=>startMusic(),{once:true,capture:true});syncAudio();
+window.addEventListener('pointerdown',startMusic,{capture:true});window.addEventListener('touchend',startMusic,{capture:true,passive:true});syncAudio();
 
 function sentenceFor(q){
   if(!q||q.ans==='O'||q.ans==='X')return '';

@@ -60,12 +60,13 @@ button{font-family:inherit;}
 .tower-btn.maxed,.upgrade-btn.maxed{border-color:#fbbf24;background:linear-gradient(160deg,rgba(120,74,12,.8),rgba(54,35,10,.9));}
 .tower-icon{font-size:1.25rem}.tower-copy{display:flex;flex-direction:column;text-align:left;line-height:1.15}.tower-name{font-size:.72rem;font-weight:900}.tower-cost{font-size:.63rem;color:#fde68a;font-weight:800;margin-top:3px}
 #summon-bar{width:100%;max-width:900px;display:grid;grid-template-columns:repeat(4,1fr);gap:7px;padding:7px 10px 2px;}
-.unit-card{min-width:0;background:rgba(10,25,49,.92);border:1.5px solid rgba(56,189,248,.32);border-radius:13px;padding:5px;display:grid;grid-template-columns:44px 1fr;grid-template-rows:auto auto;gap:3px 5px;align-items:center;}
-.unit-card canvas{width:44px;height:44px;grid-row:1/3;filter:drop-shadow(0 4px 4px rgba(0,0,0,.4));}
+.unit-card{min-width:0;background:rgba(10,25,49,.92);border:1.5px solid rgba(56,189,248,.32);border-radius:13px;padding:5px;display:grid;grid-template-columns:44px 1fr;grid-template-rows:auto auto auto;gap:3px 5px;align-items:center;}
+.unit-card canvas{width:44px;height:44px;grid-row:1/4;filter:drop-shadow(0 4px 4px rgba(0,0,0,.4));}
+.unit-role{font-size:.55rem;line-height:1;color:#7dd3fc;font-weight:900;letter-spacing:.02em;text-align:left;}
 .summon-btn,.upgrade-btn{border:0;border-radius:8px;color:#fff;font-weight:900;cursor:pointer;transition:transform .1s,opacity .1s;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
-.summon-btn{background:linear-gradient(135deg,#0369a1,#0284c7);font-size:.67rem;padding:5px 4px;}
+.summon-btn{background:linear-gradient(135deg,#0369a1,#0284c7);font-size:.67rem;padding:5px 4px;min-height:28px;}
 .s-short{display:none}
-.upgrade-btn{background:linear-gradient(135deg,#92400e,#d97706);font-size:.59rem;padding:4px 3px;color:#fff7d6;}
+.upgrade-btn{background:linear-gradient(135deg,#92400e,#d97706);font-size:.59rem;padding:4px 3px;color:#fff7d6;min-height:25px;}
 .unit-card.lv3{border-color:#fbbf24;box-shadow:0 0 13px rgba(251,191,36,.22);}
 #army-count{font-size:.69rem;color:#bae6fd;text-align:center;grid-column:1/-1;margin-bottom:-1px;}
 
@@ -105,7 +106,7 @@ button{font-family:inherit;}
   #q-eng{font-size:.92rem;} .gate-title{font-size:1.8rem;} .mode-card{width:100%;max-width:320px;}
   #hud{gap:4px;padding-left:6px;padding-right:6px}.hud-chip{padding:6px;font-size:.76rem}#best-chip2{display:none}
   #tower-bar{padding-left:6px;padding-right:6px;gap:4px}.tower-btn{padding:5px 3px;gap:3px}.tower-icon{font-size:1rem}.tower-name{font-size:.62rem}.tower-cost{font-size:.55rem}
-  #summon-bar{padding-left:6px;padding-right:6px;gap:4px}.unit-card{grid-template-columns:35px 1fr;padding:3px;gap:2px}.unit-card canvas{width:35px;height:40px}.summon-btn{font-size:.58rem}.upgrade-btn{font-size:.52rem}
+  #summon-bar{padding-left:6px;padding-right:6px;gap:4px}.unit-card{grid-template-columns:35px 1fr;padding:3px;gap:2px}.unit-card canvas{width:35px;height:40px}.unit-role{font-size:.5rem}.summon-btn{font-size:.58rem;min-height:34px;padding:5px 2px}.upgrade-btn{font-size:.52rem;min-height:32px;padding:4px 2px}
   .s-full{display:none}.s-short{display:inline}
   #qcard{margin-top:4px;padding:8px 9px 9px}.opt{padding:8px 6px;font-size:.86rem}
 }
@@ -192,6 +193,9 @@ button{font-family:inherit;}
 // ═══════════════════════════════════════════════════════════
 const $=id=>document.getElementById(id);
 const AP='assets/hd-v1/';
+const SP='assets/hd-v2/';
+const SPRITE_ACTIONS=['idle','run','attack','hurt'];
+const SPRITE_FRAME=256;
 
 // 사운드
 let _ac=null;
@@ -220,24 +224,29 @@ const IMG={};
 function loadImg(src){return new Promise(res=>{const i=new Image();i.onload=()=>res(i);i.onerror=()=>res(null);i.src=src;});}
 // 내 유닛 (파랑 진영, 오른쪽으로 진격)
 const MY_UNITS=[
-  {key:'soldier',name:'화염 선봉',short:'선봉',emoji:'⚔️',img:'units/flame-vanguard.png',cost:18,hp:54,dmg:9,range:36,atkSpd:.78,speed:51,ranged:false,drawH:100},
-  {key:'archer',name:'숲 궁수',short:'궁수',emoji:'🏹',img:'units/forest-archer.png',cost:26,hp:38,dmg:11,range:158,atkSpd:1.08,speed:48,ranged:true,pcolor:'#fde68a',drawH:103},
-  {key:'warrior',name:'철벽 수호',short:'수호',emoji:'🛡️',img:'units/ironwall-guardian.png',cost:38,hp:126,dmg:14,range:38,atkSpd:1.05,speed:37,ranged:false,drawH:108},
-  {key:'mage',name:'별빛 마도',short:'마도',emoji:'✨',img:'units/star-mage.png',cost:48,hp:48,dmg:23,range:142,atkSpd:1.5,speed:43,ranged:true,splash:44,pcolor:'#c084fc',drawH:106},
+  {key:'soldier',name:'화염 선봉',short:'선봉',role:'근접',emoji:'⚔️',img:'units/flame-vanguard.png',sprite:'units/flame-vanguard/',spriteScale:1.09,cost:18,hp:54,dmg:9,range:36,atkSpd:.78,speed:51,ranged:false,drawH:100},
+  {key:'archer',name:'숲 궁수',short:'궁수',role:'원거리',emoji:'🏹',img:'units/forest-archer.png',sprite:'units/forest-archer/',spriteScale:1.20,cost:26,hp:38,dmg:11,range:158,atkSpd:1.08,speed:48,ranged:true,pcolor:'#fde68a',drawH:103},
+  {key:'warrior',name:'철벽 수호',short:'수호',role:'탱커',emoji:'🛡️',img:'units/ironwall-guardian.png',sprite:'units/ironwall-guardian/',spriteScale:1.09,cost:38,hp:126,dmg:14,range:38,atkSpd:1.05,speed:37,ranged:false,drawH:108},
+  {key:'mage',name:'별빛 마도',short:'마도',role:'광역',emoji:'✨',img:'units/star-mage.png',sprite:'units/star-mage/',spriteScale:1.08,cost:48,hp:48,dmg:23,range:142,atkSpd:1.5,speed:43,ranged:true,splash:44,pcolor:'#c084fc',drawH:106},
 ];
 // 적 유닛 (빨강/몬스터, 왼쪽으로 진격)
 const FOE_UNITS={
-  e_imp:{img:'units/clockwork-imp.png',hp:38,dmg:7,range:34,atkSpd:.72,speed:66,ranged:false,drawH:82},
-  e_bone:{img:'units/bone-raider.png',hp:72,dmg:11,range:42,atkSpd:.95,speed:44,ranged:false,drawH:98},
-  e_boar:{img:'units/war-boar.png',hp:105,dmg:14,range:40,atkSpd:1.0,speed:50,ranged:false,drawH:92},
-  e_ogre:{img:'units/swamp-ogre.png',hp:168,dmg:19,range:46,atkSpd:1.2,speed:31,ranged:false,drawH:124},
-  e_knight:{img:'units/void-knight.png',hp:310,dmg:27,range:52,atkSpd:1.08,speed:35,ranged:false,drawH:138,boss:true},
+  e_imp:{img:'units/clockwork-imp.png',sprite:'units/clockwork-imp/',spriteScale:1.23,hp:38,dmg:7,range:34,atkSpd:.72,speed:66,ranged:false,drawH:82},
+  e_bone:{img:'units/bone-raider.png',sprite:'units/bone-raider/',spriteScale:1.18,hp:72,dmg:11,range:42,atkSpd:.95,speed:44,ranged:false,drawH:98},
+  e_boar:{img:'units/war-boar.png',sprite:'units/war-boar/',spriteScale:1.51,hp:105,dmg:14,range:40,atkSpd:1.0,speed:50,ranged:false,drawH:92},
+  e_ogre:{img:'units/swamp-ogre.png',sprite:'units/swamp-ogre/',spriteScale:1.45,hp:168,dmg:19,range:46,atkSpd:1.2,speed:31,ranged:false,drawH:124},
+  e_knight:{img:'units/void-knight.png',sprite:'units/void-knight/',spriteScale:1.08,hp:310,dmg:27,range:52,atkSpd:1.08,speed:35,ranged:false,drawH:138,boss:true},
 };
 async function loadAssets(){
   if(IMG._done)return;
   const jobs=[];
   MY_UNITS.forEach(u=>jobs.push(loadImg(AP+u.img).then(i=>IMG[u.key]=i)));
   for(const k in FOE_UNITS)jobs.push(loadImg(AP+FOE_UNITS[k].img).then(i=>IMG[k]=i));
+  IMG.sprites={};
+  [...MY_UNITS,...Object.entries(FOE_UNITS).map(([key,def])=>({...def,key}))].forEach(u=>{
+    IMG.sprites[u.key]={};
+    SPRITE_ACTIONS.forEach(action=>jobs.push(loadImg(SP+u.sprite+action+'.png').then(i=>IMG.sprites[u.key][action]=i)));
+  });
   jobs.push(loadImg(AP+'battlefield.png').then(i=>IMG.background=i));
   jobs.push(loadImg(AP+'cannon.png').then(i=>IMG.cannon=i));
   await Promise.all(jobs);
@@ -292,7 +301,7 @@ async function startRun(scope){
     myHP:120, myHPMax:120, foeHP:0, foeHPMax:0,
     units:[], shots:[], floats:[], fxs:[],
     unitLv:{soldier:1,archer:1,warrior:1,mage:1},towerLv:{wall:0,reactor:0,cannon:0},
-    cannonCool:0,nextUnitId:1,foeSpawnT:0,over:false,win:false,time:0,locked:false,
+    cannonCool:0,foeFortCool:2.6,fortWarned:false,nextUnitId:1,foeSpawnT:0,over:false,win:false,time:0,locked:false,
   };
   $('gate').style.display='none';$('result').style.display='none';$('game').style.display='flex';
   $('spd-btn').textContent='▶ 1x';
@@ -331,7 +340,13 @@ function spawnUnit(side,key){
     hp:Math.round(def.hp*hpMul),maxHp:Math.round(def.hp*hpMul),dmg:Math.round(def.dmg*dmgMul),
     range:def.range, atkSpd:def.atkSpd, speed:def.speed, ranged:def.ranged, splash:def.splash,
     cool:0,lunge:0,ft:Math.random(),dead:false,fade:1,engaged:0,
+    anim:'run',animT:Math.random()*.25,animLock:0,siege:null,
   });
+}
+
+function setUnitAnim(u,action,lock=0){
+  if(u.anim!==action){u.anim=action;u.animT=0;}
+  if(lock)u.animLock=Math.max(u.animLock,lock);
 }
 
 // ── 강화 + 소환 바 ──
@@ -346,9 +361,10 @@ function buildSummonBar(){
     const card=document.createElement('div');card.className='unit-card';card.dataset.key=u.key;
     const c=document.createElement('canvas');c.width=88;c.height=88;const cc=c.getContext('2d');cc.imageSmoothingEnabled=true;
     card._draw=()=>{const im=IMG[u.key];if(!im)return;cc.clearRect(0,0,88,88);cc.drawImage(im,0,0,im.width,im.height,0,0,88,88);};
+    const role=document.createElement('span');role.className='unit-role';role.textContent=u.role;
     const summon=document.createElement('button');summon.className='summon-btn';summon.onclick=()=>trySummon(u.key);
     const up=document.createElement('button');up.className='upgrade-btn';up.onclick=()=>upgradeUnit(u.key);
-    card.append(c,summon,up);bar.appendChild(card);
+    card.append(c,role,summon,up);bar.appendChild(card);
   });
   const count=document.createElement('div');count.id='army-count';bar.appendChild(count);
   setTimeout(()=>document.querySelectorAll('.unit-card').forEach(b=>b._draw&&b._draw()),60);updateUpgradeUI();
@@ -377,7 +393,7 @@ function upgradeTower(key){
 function updateUpgradeUI(){
   const g=GS;if(!g)return;
   document.querySelectorAll('.tower-btn').forEach(b=>{const d=TOWER_UPGRADES[b.dataset.key],lv=g.towerLv[b.dataset.key],max=lv>=d.max,c=max?'최대 강화':`Lv.${lv} → ${lv+1} · ⚡${d.cost[lv]}`;b.querySelector('.tower-name').textContent=d.name+' Lv.'+lv;b.querySelector('.tower-cost').textContent=c;b.classList.toggle('maxed',max);b.classList.toggle('poor',!max&&g.energy<d.cost[lv]);});
-  document.querySelectorAll('.unit-card').forEach(card=>{const u=MY_UNITS.find(x=>x.key===card.dataset.key),lv=g.unitLv[u.key],max=lv>=3,cost=UNIT_UP_COST[lv],summon=card.querySelector('.summon-btn');summon.innerHTML=`${u.emoji} <span class="s-full">${u.name}</span><span class="s-short">${u.short}</span> ⚡${u.cost}`;summon.setAttribute('aria-label',`${u.name} 소환, 기력 ${u.cost}`);card.querySelector('.upgrade-btn').textContent=max?'★ MAX':`Lv.${lv} 강화 ⚡${cost}`;card.classList.toggle('lv3',max);card.querySelector('.upgrade-btn').classList.toggle('maxed',max);card.querySelector('.upgrade-btn').classList.toggle('poor',!max&&g.energy<cost);summon.classList.toggle('poor',g.energy<u.cost);});
+  document.querySelectorAll('.unit-card').forEach(card=>{const u=MY_UNITS.find(x=>x.key===card.dataset.key),lv=g.unitLv[u.key],max=lv>=3,cost=UNIT_UP_COST[lv],summon=card.querySelector('.summon-btn');summon.innerHTML=`${u.emoji} <span class="s-full">${u.name}</span><span class="s-short">${u.short}</span> ⚡${u.cost}`;summon.setAttribute('aria-label',`${u.role} ${u.name} 소환, 기력 ${u.cost}`);card.querySelector('.upgrade-btn').textContent=max?'★ MAX':`Lv.${lv} 강화 ⚡${cost}`;card.classList.toggle('lv3',max);card.querySelector('.upgrade-btn').classList.toggle('maxed',max);card.querySelector('.upgrade-btn').classList.toggle('poor',!max&&g.energy<cost);summon.classList.toggle('poor',g.energy<u.cost);});
   const alive=g.units.filter(x=>x.side==='my'&&!x.dead).length;if($('army-count'))$('army-count').textContent=`출전 병력 ${alive} / ${MAX_MY_UNITS} · 스테이지 종료 시 정예 3명만 귀환`;
 }
 function flashPoor(key){const b=[...document.querySelectorAll('.unit-card')].find(x=>x.dataset.key===key);if(b){b.style.transform='translateX(-3px)';setTimeout(()=>b.style.transform='',120);}}
@@ -391,12 +407,17 @@ function update(dt){
   g.energy=Math.min(g.energyMax,g.energy+(2+g.towerLv.reactor*.45)*dt);
   // 본진 대포
   if(g.towerLv.cannon>0){g.cannonCool-=dt;if(g.cannonCool<=0){const enemies=g.units.filter(u=>u.side==='foe'&&!u.dead).sort((a,b)=>a.x-b.x);if(enemies.length){const lv=g.towerLv.cannon,t=enemies[0];g.shots.push({x:112,y:LANE_Y-58,target:t,tx:t.x,ty:t.y,spd:330,dmg:[0,22,34,48][lv],side:'my',splash:[0,42,50,60][lv],color:'#67e8f9',kind:'cannon',ang:0});g.cannonCool=[0,4.5,3.6,2.8][lv];sfx.arrow();}else g.cannonCool=.35;}}
+  // 병력을 무작정 쌓아 밀어붙일 때만 적 성채가 선두를 견제한다. 소수 정예·강화 플레이는 불이익이 없다.
+  const myAlive=g.units.filter(u=>u.side==='my'&&!u.dead),foeAlive=g.units.filter(u=>u.side==='foe'&&!u.dead);
+  if(g.foeHP>0&&myAlive.length-foeAlive.length>=4){g.foeFortCool-=dt;if(g.foeFortCool<=0){const t=myAlive.sort((a,b)=>b.x-a.x)[0];g.shots.push({x:FOEBASE.x-20,y:LANE_Y-62,target:t,tx:t.x,ty:t.y,spd:360,dmg:10+g.stage*2,side:'foe',color:'#fb7185',kind:'fort',ang:0});g.foeFortCool=Math.max(2.2,3.4-g.stage*.05);if(!g.fortWarned){g.fortWarned=true;banner('⚠️ 병력이 몰리면 적 성채가 포격합니다!');}sfx.arrow();}}else g.foeFortCool=Math.min(2.6,g.foeFortCool+dt*.5);
   // 적 스폰
   if(g.foeHP>0){g.foeSpawnT-=dt;if(g.foeSpawnT<=0){let key;if(g.stage%5===0&&!g.bossSpawned){key='e_knight';g.bossSpawned=true;}else key=foePick(g.stage);spawnUnit('foe',key);g.foeSpawnT=foeSpawnInterval(g.stage);}}
   for(const u of g.units)u.engaged=0;
   // 유닛 처리
   for(const u of g.units){
     if(u.dead){u.fade-=dt*2.2;continue;}
+    u.animT+=dt;if(u.animLock>0)u.animLock=Math.max(0,u.animLock-dt);
+    let desiredAnim='idle';
     if(u.lunge>0)u.lunge-=dt;
     // 타겟: 진행방향 앞의 가장 가까운 적 유닛
     const dir=u.side==='my'?1:-1;
@@ -405,22 +426,26 @@ function update(dt){
     const inRange=tgt&&Math.abs(tgt.x-u.x)<=u.range;
     let friendGap=1e9;for(const f of g.units){if(f===u||f.dead||f.side!==u.side)continue;const d=(f.x-u.x)*dir;if(d>0&&d<friendGap)friendGap=d;}
     const blockedByFriend=friendGap<46;
-    // 적 본진/내 본진 공격 판정
-    const reachFoeBase = u.side==='my' && u.x>=FOEBASE.x-26 && (!tgt||td>u.range);
-    const reachMyBase  = u.side==='foe' && u.x<=MYBASE.x+26 && (!tgt||td>u.range);
+    // 기지 135px 전부터 공성 대형을 고정한다. 후방 병력이 매 프레임 다시 전진하는 진동을 막는다.
+    if(u.side==='my'&&u.x>=FOEBASE.x-135)u.siege='foe';
+    if(u.side==='foe'&&u.x<=MYBASE.x+135)u.siege='my';
+    const nearFoeBase = u.side==='my' && u.siege==='foe' && (!tgt||td>u.range);
+    const nearMyBase  = u.side==='foe' && u.siege==='my' && (!tgt||td>u.range);
     if(inRange){
       if(!u.ranged&&tgt.engaged>=FRONTLINE_LIMIT)continue;
       tgt.engaged++;u.cool-=dt;
-      if(u.cool<=0){u.cool=u.atkSpd;u.lunge=.16;attack(u,tgt);}
-    }else if(reachFoeBase||reachMyBase){
-      const contenders=g.units.filter(v=>!v.dead&&v.side===u.side&&(v.side==='my'?v.x>=FOEBASE.x-80:v.x<=MYBASE.x+80)).sort((a,b)=>u.side==='my'?b.x-a.x:a.x-b.x);
+      if(u.cool<=0){u.cool=u.atkSpd;u.lunge=.16;setUnitAnim(u,'attack',.34);attack(u,tgt);}
+    }else if(nearFoeBase||nearMyBase){
+      const siegeTarget=u.side==='my'?'foe':'my';
+      const contenders=g.units.filter(v=>!v.dead&&v.side===u.side&&v.siege===siegeTarget).sort((a,b)=>a.id-b.id);
       const slot=contenders.indexOf(u);
-      if(slot<BASE_ATTACKER_LIMIT){u.cool-=dt;if(u.cool<=0){u.cool=u.atkSpd;u.lunge=.16;hitBase(u);}}
-      else{const hold=u.side==='my'?FOEBASE.x-82-(slot-2)*46:MYBASE.x+82+(slot-2)*46;u.x+=(hold-u.x)*Math.min(1,dt*5);}
+      if(slot<BASE_ATTACKER_LIMIT){const attackX=u.side==='my'?FOEBASE.x-26:MYBASE.x+26,diff=attackX-u.x;if(Math.abs(diff)>3){u.x+=Math.sign(diff)*Math.min(Math.abs(diff),u.speed*dt);desiredAnim='run';}else{u.cool-=dt;if(u.cool<=0){u.cool=u.atkSpd;u.lunge=.16;setUnitAnim(u,'attack',.34);hitBase(u);}}}
+      else{const hold=u.side==='my'?FOEBASE.x-92-(slot-2)*50:MYBASE.x+92+(slot-2)*50;u.x+=(hold-u.x)*Math.min(1,dt*6);}
     }else{
-      if(!blockedByFriend)u.x+=dir*u.speed*dt;
+      if(!blockedByFriend){u.x+=dir*u.speed*dt;desiredAnim='run';}
       u.ft+=dt;
     }
+    if(u.animLock<=0)setUnitAnim(u,desiredAnim);
   }
   // 발사체
   for(const s of g.shots){
@@ -453,7 +478,7 @@ function update(dt){
 
 function trimSurvivors(){
   const g=GS;const keep=g.units.filter(u=>u.side==='my'&&!u.dead).sort((a,b)=>(b.level-a.level)||((b.hp/b.maxHp)-(a.hp/a.maxHp))).slice(0,3);
-  keep.forEach((u,i)=>{u.x=MYBASE.x+48+i*55;u.y=LANE_Y-18+(i-1)*24;u.hp=Math.max(u.hp,Math.round(u.maxHp*.7));u.cool=.4;});
+  keep.forEach((u,i)=>{u.x=MYBASE.x+48+i*55;u.y=LANE_Y-18+(i-1)*24;u.hp=Math.max(u.hp,Math.round(u.maxHp*.7));u.cool=.4;u.siege=null;});
   g.units=keep;g.shots=[];updateHud();
 }
 
@@ -466,12 +491,12 @@ function attack(u,tgt){
 }
 function hitBase(u){
   const g=GS;
-  if(u.side==='my'){g.foeHP=Math.max(0,g.foeHP-u.dmg);addFx(FOEBASE.x,LANE_Y-30,'#fca5a5');}
+  if(u.side==='my'){const siegeMul=u.ranged ? .55 : .78;g.foeHP=Math.max(0,g.foeHP-Math.max(1,Math.round(u.dmg*siegeMul)));addFx(FOEBASE.x,LANE_Y-30,'#fca5a5');}
   else{g.myHP=Math.max(0,g.myHP-u.dmg);addFx(MYBASE.x,LANE_Y-30,'#fca5a5');}
   sfx.baseHit();updateHud();
 }
 function hurt(u,dmg){
-  if(u.dead)return;u.hp-=dmg;
+  if(u.dead)return;u.hp-=dmg;setUnitAnim(u,'hurt',.28);
   if(u.hp<=0){u.dead=true;u.fade=1;sfx.die();
     if(u.side==='foe'){const e=u.def.boss?8:3;GS.energy=Math.min(GS.energyMax,GS.energy+e);addFloat(u.x,u.y-22,'⚡+'+e,'#fde68a');}
   }
@@ -489,7 +514,7 @@ function render(){
   const us=g.units.slice().sort((a,b)=>a.y-b.y);
   for(const u of us)drawUnit(u);
   // 발사체
-  for(const s of g.shots){fx.save();fx.shadowColor=s.color||'#fde68a';fx.shadowBlur=s.kind==='cannon'?12:5;fx.beginPath();fx.arc(s.x,s.y,s.kind==='cannon'?7:4,0,Math.PI*2);fx.fillStyle=s.color||'#fde68a';fx.fill();fx.strokeStyle='rgba(255,255,255,.75)';fx.lineWidth=1.5;fx.stroke();fx.restore();}
+  for(const s of g.shots){fx.save();fx.shadowColor=s.color||'#fde68a';fx.shadowBlur=s.kind==='cannon'||s.kind==='fort'?12:5;fx.beginPath();fx.arc(s.x,s.y,s.kind==='cannon'?7:s.kind==='fort'?6:4,0,Math.PI*2);fx.fillStyle=s.color||'#fde68a';fx.fill();fx.strokeStyle='rgba(255,255,255,.75)';fx.lineWidth=1.5;fx.stroke();fx.restore();}
   // 타격 FX
   for(const f of g.fxs){const a=f.t/0.22;fx.globalAlpha=a;fx.fillStyle=f.color;fx.beginPath();fx.arc(f.x,f.y,3+(1-a)*9,0,Math.PI*2);fx.fill();fx.globalAlpha=1;}
   // 플로팅 텍스트
@@ -505,7 +530,8 @@ function drawBase(x,color,hpRatio){
 function drawUnit(u){
   const img=IMG[u.key];if(!img)return;
   const levelScale=u.side==='my'?1+(u.level-1)*.055:1;
-  const dh=u.def.drawH*levelScale,dw=dh*(img.width/img.height);
+  const sheet=IMG.sprites&&IMG.sprites[u.key]&&IMG.sprites[u.key][u.anim];
+  const dh=u.def.drawH*levelScale*(sheet?(u.def.spriteScale||1):1),dw=sheet?dh:dh*(img.width/img.height);
   let dx=u.x, dy=u.y;
   const bob=u.dead?0:Math.sin((u.ft*8)+(u.id||0))*(u.lunge>0?1:2.2);dy+=bob;
   if(u.lunge>0){const dir=u.side==='my'?1:-1;dx+=dir*8*(u.lunge/.16);}
@@ -514,7 +540,8 @@ function drawUnit(u){
   if(u.dead){fx.rotate((1-u.fade)*0.5);fx.globalAlpha=Math.max(0,u.fade)*0.9;}
   fx.fillStyle='rgba(0,0,0,.28)';fx.beginPath();fx.ellipse(0,2,dw*.25,5,0,0,Math.PI*2);fx.fill();
   if(u.side==='my'&&u.level>=2){fx.shadowColor=u.level===3?'#fbbf24':'#7dd3fc';fx.shadowBlur=u.level===3?16:8;}
-  fx.drawImage(img,0,0,img.width,img.height,-dw/2,-dh+10,dw,dh);
+  if(sheet){const loop=u.anim==='idle'||u.anim==='run',raw=Math.floor(u.animT*(u.anim==='run'?11:10)),frame=loop?raw%4:Math.min(3,raw);fx.drawImage(sheet,frame*SPRITE_FRAME,0,SPRITE_FRAME,SPRITE_FRAME,-dw/2,-dh+10,dw,dh);}
+  else fx.drawImage(img,0,0,img.width,img.height,-dw/2,-dh+10,dw,dh);
   fx.restore();
   // HP 바
   if(!u.dead&&u.hp<u.maxHp){const bw=dw*0.7;fx.fillStyle='rgba(0,0,0,.55)';fx.fillRect(u.x-bw/2,u.y-dh+4,bw,3);

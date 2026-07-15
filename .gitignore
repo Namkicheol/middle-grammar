@@ -36,5 +36,7 @@ game2/assets/hd-v1/source/
 grammar-rangers/assets/hd-v1/source/
 game2/assets/hd-v2/source/
 game2/assets/hd-v2/atlas/
+grammar-rangers/assets/hd-v2/source/
+grammar-rangers/assets/hd-v2/atlas/
 .playwright-cli/
 .vercel

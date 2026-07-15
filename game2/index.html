@@ -336,7 +336,7 @@ canvas#c{position:absolute;inset:0;width:100%;height:100%;}
       <span class="stance-lbl">⚔️ 자세</span>
       <div class="stance-btns">
         <button class="stance-btn" data-stance="combo" style="--sc:#a855f7" onclick="setStance('combo')">🗡️ 연타<span class="sb-sub">콤보 쌓기</span></button>
-        <button class="stance-btn" data-stance="power" style="--sc:#ef4444" onclick="setStance('power')">💥 강타<span class="sb-sub">한 방 크게</span></button>
+        <button class="stance-btn" data-stance="power" style="--sc:#ef4444" onclick="setStance('power')">💥 강타<span class="sb-sub">콤보 초기화</span></button>
         <button class="stance-btn" data-stance="guard" style="--sc:#38bdf8" onclick="setStance('guard')">🛡️ 수비<span class="sb-sub">피해↓·회복</span></button>
       </div>
     </div>
@@ -823,21 +823,21 @@ function stageSpeedMul() { return Math.max(0.78, Math.pow(0.92, (GS ? GS.stage :
 const RUN_NODES = {
   boss:     { icon:'⚔️', title:'일반 보스',  desc:'표준 전투\n강화카드 1장',        color:'#a855f7', cards:1 },
   elite:    { icon:'💀', title:'정예 보스',  desc:'더 강하다!\n강화카드 2장',        color:'#ef4444', cards:2, elite:true },
-  rest:     { icon:'❤️', title:'안식처',     desc:'약한 적·체력 회복\n강화카드 1장',  color:'#22c55e', cards:1, easy:true },
-  treasure: { icon:'💰', title:'보물 수호자', desc:'약한 적\n레어 강화 2개',         color:'#fbbf24', cards:1, easy:true, treasure:true },
+  rest:     { icon:'❤️', title:'안식처',     desc:'약한 적·체력 +35\n강화카드 없음', color:'#22c55e', cards:0, easy:true },
+  treasure: { icon:'💰', title:'보물 수호자', desc:'표준 전투\n강화카드 2장',          color:'#fbbf24', cards:2, treasure:true },
 };
 function nodeKind() { return GS ? GS.nodeKind : 'boss'; }
-function nodeDmgMul()   { return nodeKind()==='elite' ? 1.4 : (nodeKind()==='rest'||nodeKind()==='treasure') ? 0.6 : 1; }
-function nodeSpeedMul() { return nodeKind()==='elite' ? 0.7 : (nodeKind()==='rest'||nodeKind()==='treasure') ? 1.35 : 1; }
-function nodeTimeMul()  { return nodeKind()==='elite' ? 0.85 : (nodeKind()==='rest'||nodeKind()==='treasure') ? 1.25 : 1; }
+function nodeDmgMul()   { return nodeKind()==='elite' ? 1.4 : nodeKind()==='rest' ? 0.6 : 1; }
+function nodeSpeedMul() { return nodeKind()==='elite' ? 0.7 : nodeKind()==='rest' ? 1.35 : 1; }
+function nodeTimeMul()  { return nodeKind()==='elite' ? 0.85 : nodeKind()==='rest' ? 1.25 : 1; }
 function isElite()      { return nodeKind()==='elite'; }
 
 // ── 전투 스탠스(능동 선택) ──
-// 콤보 스케일링을 키워(combo*0.09+0.91 → 콤보12=1.99배) 연타와 강타가 진짜 트레이드오프가 되게:
-//  콤보 낮을 땐 강타(1.7 즉발)가 유리, 콤보 높을 땐 연타(최대 2배 램프)가 역전. 교차점이 생겨 선택이 의미를 가짐.
+// 연타는 콤보가 쌓일수록 강해지고, 강타는 누적 콤보를 적용하지 않은 뒤 1로 초기화한다.
+// 콤보를 유지할지 즉시 1.7배 피해로 바꿀지 선택하게 해 한 자세가 항상 유리하지 않도록 한다.
 const STANCES = {
   combo: { dmg:1.0,  comboGrow:1, heal:0, label:'🗡️ 연타' },   // 콤보 램프(많이 쌓으면 최강 DPS)
-  power: { dmg:1.7,  comboGrow:0, heal:0, label:'💥 강타' },   // 즉발 버스트(콤보 안 쌓음 — 콤보 낮을 때/마무리에 강함)
+  power: { dmg:1.7,  comboGrow:0, heal:0, label:'💥 강타' },   // 즉발 버스트(누적 콤보 미적용·사용 후 초기화)
   guard: { dmg:0.55, comboGrow:1, heal:8, label:'🛡️ 수비' },   // 생존(피해 줄이고 +8 회복 — HP 위험할 때)
 };
 function setStance(s) {
@@ -906,14 +906,15 @@ const G = {
     const nd = RUN_NODES[kind]; if (!nd) return;
     GS.nextNode = kind;
     document.getElementById('node-pick').classList.remove('show');
-    showCardPick();   // 노드 선택 후 보상 카드
+    if (nd.cards === 0) this._advanceStage();
+    else showCardPick();   // 보상이 있는 노드는 카드 선택 후 진행
   },
   _advanceStage() {
-    // 누적 점수/스테이지/강화 유지, 보스 새로, 영웅 풀피
+    // 누적 점수/스테이지/강화/체력을 유지하고, 안식처를 골랐을 때만 체력을 회복한다.
     document.getElementById('result').classList.remove('show');
     document.getElementById('victory-cut').classList.remove('show');
     document.getElementById('card-pick').classList.remove('show');
-    const stage = GS.stage + 1, score = GS.score, maxCombo = GS.maxCombo, upgrades = GS.upgrades;
+    const stage = GS.stage + 1, score = GS.score, maxCombo = GS.maxCombo, upgrades = GS.upgrades, heroHP = GS.heroHP;
     const savedQuestions = GS.questions, savedQIdx = GS.qIdx;   // 문제 진행상황 유지 — 스테이지 넘어가도 본 문제 반복 안 함
     const stance = GS.stance, kind = GS.nextNode || 'boss';
     GS = initGS(this._qs);
@@ -921,7 +922,7 @@ const G = {
     GS.questions = savedQuestions; GS.qIdx = savedQIdx;   // 이어서 안 본 문제부터 출제
     GS.stance = stance;          // 스탠스 유지
     GS.nodeKind = kind;          // 이번 스테이지 노드 종류
-    GS.heroHP = 100;             // 새 스테이지마다 풀피로 시작
+    GS.heroHP = kind === 'rest' ? Math.min(100, heroHP + 35) : heroHP;
     clearDropsDOM();   // 이전 스테이지 남은 아이템 DOM 제거 (보이는데 안 먹히던 버그)
     wrongLog = [];
     setCharSprites(0);
@@ -1119,10 +1120,10 @@ const SPRITE_DEFS = {
     }},
 };
 
-function animatedHdFighter(name,portrait,scale){
+function animatedHdFighter(name,portrait,scale,runY=0){
   const file=action=>`${name}/${action}.png`;
   return {
-    base:'assets/hd-v2/',portrait:'assets/hd-v1/'+portrait,fw:313,fh:313,scale,flip:false,footPad:8,
+    base:'assets/hd-v2/',portrait:'assets/hd-v1/'+portrait,fw:313,fh:313,scale,flip:false,footPad:8,runY,
     anims:{
       idle:{file:file('idle'),n:4,fps:6,loop:true},
       run:{file:file('run'),n:4,fps:11,loop:true},
@@ -1135,9 +1136,9 @@ function animatedHdFighter(name,portrait,scale){
   };
 }
 const HD_SPRITE_DEFS={
-  hero_moonblade:animatedHdFighter('hero-moonblade','hero-moonblade.png',.78),
-  hero_nebula:animatedHdFighter('hero-nebula','hero-nebula.png',.80),
-  hero_phoenix:animatedHdFighter('hero-phoenix','hero-phoenix.png',.82),
+  hero_moonblade:animatedHdFighter('hero-moonblade','hero-moonblade.png',.78,4),
+  hero_nebula:animatedHdFighter('hero-nebula','hero-nebula.png',.80,10),
+  hero_phoenix:animatedHdFighter('hero-phoenix','hero-phoenix.png',.82,4),
   jester:animatedHdFighter('ironmask-jester','ironmask-jester.png',.80),
   bloom:animatedHdFighter('bloom-colossus','bloom-colossus.png',.85),
   bone:animatedHdFighter('bone-samurai','bone-samurai.png',.82),
@@ -1158,7 +1159,7 @@ function bossKeyFor(st, phase) {
 
 // 화면 폭에 따른 스프라이트 축소 배율 — 좁은 화면(모바일)에서 두 캐릭터가 겹치지 않게.
 function viewScale() {
-  return Math.max(0.68, Math.min(1, window.innerWidth / 760));
+  return Math.max(0.58, Math.min(0.92, window.innerWidth / 820));
 }
 function makeFighter(el, defKey) {
   const def=HD_SPRITE_DEFS[defKey];
@@ -1176,7 +1177,8 @@ function makeFighter(el, defKey) {
       const a = def.anims[state];
       el.style.backgroundImage = 'url(' + def.base + a.file + ')';
       el.style.backgroundSize  = (def.fw*S*a.n) + 'px ' + (def.fh*S) + 'px';
-      el.style.backgroundPosition = '0 0';
+      const y = state==='run' ? (def.runY||0)*S : 0;
+      el.style.backgroundPosition = `0 ${y}px`;
     },
     update(dt) {
       const a = def.anims[this.state]; if (!a) return;
@@ -1193,7 +1195,7 @@ function makeFighter(el, defKey) {
             this.play(nx); if (cb) cb(); return; }
         }
       }
-      if (frameChanged) el.style.backgroundPosition = (-(this.frame*def.fw*S)) + 'px 0';
+      if (frameChanged) { const y=this.state==='run'?(def.runY||0)*S:0;el.style.backgroundPosition=(-(this.frame*def.fw*S))+'px '+y+'px'; }
     },
     flash() { el.classList.remove('flash'); void el.offsetWidth; el.classList.add('flash'); },
   };
@@ -1245,9 +1247,9 @@ function setCharSprites(phase) {
   const bk = bossKeyFor(st, phase);
   if (hk !== _heroKey) { heroFighter = makeFighter(heroImg, hk); _heroKey = hk; } else heroFighter.play('idle');
   if (bk !== _bossKey) { bossFighter = makeFighter(bossImg, bk); _bossKey = bk; } else bossFighter.play('idle');
-  // 스테이지 올라갈수록 보스 더 크게 (보스다움 ↑, 최대 +40%). 정예는 챔피언이라 더 큼.
-  const bossStageScale = Math.min(1.4, 1 + 0.14 * (st - 1)) * (isElite() ? 1.22 : 1);
-  const heroStageScale = Math.min(1.22, 1 + 0.045 * (st - 1));
+  // 모바일 전장을 가리지 않도록 성장 폭을 제한하되, 보스가 더 큰 위계는 유지한다.
+  const bossStageScale = Math.min(1.32, 1 + 0.10 * (st - 1)) * (isElite() ? 1.16 : 1);
+  const heroStageScale = Math.min(1.14, 1 + 0.03 * (st - 1));
   const _hScreen = (h.scale || 1) * heroStageScale;
   // 영웅도 보스와 동일하게 footPad(발밑 투명 여백, native px) 우선 적용해 발을 바닥에 정확히 붙임.
   const _hFoot = (heroFighter.def.footPad != null)
@@ -1662,9 +1664,10 @@ function finishQuestion(isCorrect) {
     let dmg = 6 + GS.bossPhase * 2;
     if (crit) dmg = Math.round(dmg * 1.5);
     if (GS.hasPower) { dmg = Math.round(dmg * 1.6); GS.hasPower = false; }
-    dmg = Math.round(dmg * stance.dmg * (GS.combo * .09 + .91) * (1 + (GS.upgrades.atk || 0)));
+    const comboMul = GS.stance === 'power' ? 1 : (GS.combo * .09 + .91);
+    dmg = Math.round(dmg * stance.dmg * comboMul * (1 + (GS.upgrades.atk || 0)));
     GS.bossHP = Math.max(0, GS.bossHP - dmg);
-    GS.combo = Math.min(GS.combo + stance.comboGrow, 12);
+    GS.combo = GS.stance === 'power' ? 1 : Math.min(GS.combo + stance.comboGrow, 12);
     GS.maxCombo = Math.max(GS.maxCombo, GS.combo);
     GS.score += Math.round(dmg * GS.combo * (1 + (GS.upgrades.score || 0)));
     GS.correct++;

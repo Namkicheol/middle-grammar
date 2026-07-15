@@ -82,8 +82,8 @@ body{background:#0c2f5c;color:#fff;font-family:ui-rounded,'SF Pro Rounded','Aria
       <div class="stat"><b id="rescue-left">2</b><span>RESCUE</span></div>
     </div>
   </header>
-  <div class="phase"><div class="phase-fill" id="phase-fill"></div><span class="phase-label" id="phase-label">문장 챌린지까지 45초</span></div>
-  <section class="mission"><strong id="unit-label">블록을 채워 줄을 지워요</strong><span>45초 집중 플레이<br>문제 시간은 차감되지 않아요</span></section>
+  <div class="phase"><div class="phase-fill" id="phase-fill"></div><span class="phase-label" id="phase-label">문장 챌린지까지 30초</span></div>
+  <section class="mission"><strong id="unit-label">블록을 채워 줄을 지워요</strong><span>30초 집중 플레이<br>문제 시간은 차감되지 않아요</span></section>
   <section class="board-wrap"><div class="board" id="board" aria-label="8×8 블록 보드"></div><div class="impact-layer" id="impact-layer"></div><div class="blast-flash" id="blast-flash"></div></section>
   <div class="tray-title"><strong>BLOCKS</strong><span>블록을 끌어 보드에 놓으세요</span></div>
   <section class="tray" id="tray"></section>
@@ -118,7 +118,7 @@ body{background:#0c2f5c;color:#fff;font-family:ui-rounded,'SF Pro Rounded','Aria
 <script src="../sounds.js"></script>
 <script>
 'use strict';
-const SIZE=8, PLAY_PHASE_SECONDS=45, CHALLENGE_SECONDS=10, FREE_RESCUES=2, EMERGENCY_RESCUE_PENALTY=300;
+const SIZE=8, PLAY_PHASE_SECONDS=30, CHALLENGE_SECONDS=10, FREE_RESCUES=2, EMERGENCY_RESCUE_PENALTY=300;
 const COLORS=[['#0891b2','#67e8f9'],['#2563eb','#93c5fd'],['#7c3aed','#c4b5fd'],['#db2777','#f9a8d4'],['#ea580c','#fdba74'],['#059669','#6ee7b7'],['#ca8a04','#fde047']];
 const SHAPES=[
   {n:'1',c:[[0,0]]},{n:'2',c:[[0,0],[0,1]]},{n:'3',c:[[0,0],[0,1],[0,2]]},{n:'4',c:[[0,0],[0,1],[0,2],[0,3]]},

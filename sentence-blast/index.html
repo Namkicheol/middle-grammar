@@ -79,6 +79,7 @@ body{background:#0c2f5c;color:#fff;font-family:ui-rounded,'SF Pro Rounded','Aria
       <div class="stat"><b id="lines">0</b><span>LINES</span></div>
       <div class="stat"><b id="combo">0</b><span>COMBO</span></div>
       <div class="stat"><b id="grammar">0/0</b><span>GRAMMAR</span></div>
+      <div class="stat"><b id="rescue-left">2</b><span>RESCUE</span></div>
     </div>
   </header>
   <div class="phase"><div class="phase-fill" id="phase-fill"></div><span class="phase-label" id="phase-label">문장 챌린지까지 45초</span></div>
@@ -86,7 +87,7 @@ body{background:#0c2f5c;color:#fff;font-family:ui-rounded,'SF Pro Rounded','Aria
   <section class="board-wrap"><div class="board" id="board" aria-label="8×8 블록 보드"></div><div class="impact-layer" id="impact-layer"></div><div class="blast-flash" id="blast-flash"></div></section>
   <div class="tray-title"><strong>BLOCKS</strong><span>블록을 끌어 보드에 놓으세요</span></div>
   <section class="tray" id="tray"></section>
-  <p class="tip">놓을 곳이 없어도 보드 구조대가 자동으로 도와줘요.</p>
+  <p class="tip">무료 구조 2회 · 이후 긴급 구조는 점수와 콤보가 줄어요.</p>
 </main>
 
 <div class="toast" id="toast"></div>
@@ -117,7 +118,7 @@ body{background:#0c2f5c;color:#fff;font-family:ui-rounded,'SF Pro Rounded','Aria
 <script src="../sounds.js"></script>
 <script>
 'use strict';
-const SIZE=8, PLAY_PHASE_SECONDS=45, CHALLENGE_SECONDS=10;
+const SIZE=8, PLAY_PHASE_SECONDS=45, CHALLENGE_SECONDS=10, FREE_RESCUES=2, EMERGENCY_RESCUE_PENALTY=300;
 const COLORS=[['#0891b2','#67e8f9'],['#2563eb','#93c5fd'],['#7c3aed','#c4b5fd'],['#db2777','#f9a8d4'],['#ea580c','#fdba74'],['#059669','#6ee7b7'],['#ca8a04','#fde047']];
 const SHAPES=[
   {n:'1',c:[[0,0]]},{n:'2',c:[[0,0],[0,1]]},{n:'3',c:[[0,0],[0,1],[0,2]]},{n:'4',c:[[0,0],[0,1],[0,2],[0,3]]},
@@ -130,8 +131,10 @@ const requestedUnitKey=params.get('unit')||'all';
 const unitKey=GAME_QUESTIONS[requestedUnitKey]?requestedUnitKey:'all';
 const duration=Math.max(60,Math.min(600,Number(params.get('seconds'))||300));
 let remaining=duration, phaseRemaining=PLAY_PHASE_SECONDS, phase='play';
+let remainingMs=duration*1000, phaseRemainingMs=PLAY_PHASE_SECONDS*1000, playDeadline=0, phaseDeadline=0, challengeDeadline=0;
 let board=Array(SIZE*SIZE).fill(null), tray=[], selected=-1;
 let score=0, lines=0, combo=0, bestCombo=0, grammarCorrect=0, grammarTotal=0;
+let rescuesRemaining=FREE_RESCUES, rescueUses=0, emergencyRescues=0;
 let challengeLeft=CHALLENGE_SECONDS, currentQuestion=null, currentSentence='', chosen=[], locked=false, timerId=null, dragState=null;
 const usedSentenceIds=new Set();
 
@@ -162,12 +165,15 @@ const gameSfx={
   blast(){gameNoise(.24,.11,1200);gameTone(115,.3,'sawtooth',.12,0,42);gameTone(720,.22,'triangle',.06,.08,1180);},
   finish(){[392,523,659,784,1047].forEach((f,i)=>gameTone(f,.16,'triangle',.055,i*.085));}
 };
-function startMusic(){if(!musicOn||phase==='over'||!bgm.paused)return;bgm.volume=.38;bgm.play().catch(()=>{})}
-function stopMusic(){bgm.pause();bgm.currentTime=0}
+function startMusic(){if(!musicOn||phase==='over'||document.hidden||!bgm.paused)return;bgm.volume=.38;bgm.play().catch(()=>{})}
+function pauseMusic(){bgm.pause()}
+function stopMusic(){pauseMusic();bgm.currentTime=0}
 function syncAudio(){const mb=$('music-btn'),sb=$('sfx-btn');mb.textContent=musicOn?'🎵':'🎵×';sb.textContent=sfxOn?'💥':'💥×';mb.classList.toggle('off',!musicOn);sb.classList.toggle('off',!sfxOn)}
 $('music-btn').onclick=()=>{musicOn=!musicOn;localStorage.setItem('mgSentenceBlast.music',musicOn?'on':'off');syncAudio();if(musicOn)startMusic();else stopMusic()};
 $('sfx-btn').onclick=()=>{sfxOn=!sfxOn;localStorage.setItem('mgSentenceBlast.sfx',sfxOn?'on':'off');syncAudio();if(sfxOn)gameSfx.place(2)};
-window.addEventListener('pointerdown',startMusic,{capture:true});window.addEventListener('touchend',startMusic,{capture:true,passive:true});syncAudio();
+window.addEventListener('pointerdown',startMusic,{capture:true});window.addEventListener('touchend',startMusic,{capture:true,passive:true});
+document.addEventListener('visibilitychange',()=>{if(document.hidden)pauseMusic();else{tick();startMusic()}});
+window.addEventListener('pagehide',pauseMusic);window.addEventListener('pageshow',()=>{tick();startMusic()});syncAudio();
 
 function sentenceFor(q){
   if(!q||q.ans==='O'||q.ans==='X')return '';
@@ -196,7 +202,7 @@ function renderTray(){
   const el=$('tray');el.innerHTML='';
   tray.forEach((item,i)=>{const box=shapeBox(item.shape),b=document.createElement('button');b.className='piece'+(selected===i?' on':'')+(item.used?' used':'');b.style.setProperty('--piece',COLORS[item.color][0]);b.style.setProperty('--piece-hi',COLORS[item.color][1]);const cells=new Set(item.shape.c.map(x=>x.join(',')));let mini='';for(let r=0;r<box.rows;r++)for(let c=0;c<box.cols;c++)mini+=cells.has(r+','+c)?'<i></i>':'<span></span>';b.innerHTML=`<div class="mini" style="grid-template-columns:repeat(${box.cols},20px)">${mini}</div><small>${esc(item.shape.n)}</small>`;b.onclick=()=>{selected=item.used?-1:i;renderTray()};b.onpointerdown=e=>startDrag(e,i);el.appendChild(b)});
 }
-function newTray(){tray=Array.from({length:3},()=>({shape:SHAPES[Math.floor(Math.random()*SHAPES.length)],color:Math.floor(Math.random()*COLORS.length),used:false}));selected=tray.findIndex(x=>!x.used);renderTray();setTimeout(checkMoves,0)}
+function newTray(ensurePlayable=false){tray=Array.from({length:3},()=>({shape:SHAPES[Math.floor(Math.random()*SHAPES.length)],color:Math.floor(Math.random()*COLORS.length),used:false}));if(ensurePlayable)tray[0].shape=SHAPES[0];selected=tray.findIndex(x=>!x.used);renderTray();setTimeout(checkMoves,0)}
 function cellsFor(index,shape){const row=Math.floor(index/SIZE),col=index%SIZE;return shape.c.map(([dr,dc])=>[row+dr,col+dc]).filter(([r,c])=>r>=0&&r<SIZE&&c>=0&&c<SIZE).map(([r,c])=>r*SIZE+c)}
 function canPlace(index,shape){const targets=cellsFor(index,shape);return targets.length===shape.c.length&&targets.every(i=>board[i]===null)}
 function previewAt(index){clearPreview();if(phase!=='play'||selected<0||!tray[selected]||tray[selected].used)return;const item=tray[selected],targets=cellsFor(index,item.shape);targets.forEach(i=>{const c=$('board').children[i];if(c){c.classList.add(canPlace(index,item.shape)?'preview':'bad');c.style.setProperty('--preview',COLORS[item.color][0])}})}
@@ -230,26 +236,46 @@ function clearLines(){
   const gone=new Set();fullRows.forEach(r=>{for(let c=0;c<SIZE;c++)gone.add(r*SIZE+c)});fullCols.forEach(c=>{for(let r=0;r<SIZE;r++)gone.add(r*SIZE+c)});gone.forEach(i=>board[i]=null);lines+=fullRows.length+fullCols.length;return{count:fullRows.length+fullCols.length,gone:[...gone]};
 }
 function hasAnyMove(){return tray.some(item=>!item.used&&board.some((_,i)=>canPlace(i,item.shape)))}
-function checkMoves(){if(phase!=='play'||hasAnyMove())return;const filled=board.map((v,i)=>v!==null?i:null).filter(i=>i!==null);shuffle(filled).slice(0,Math.max(8,Math.ceil(filled.length*.35))).forEach(i=>board[i]=null);combo=0;gameSfx.rescue();newTray();renderBoard();updateHUD();toast('🛟 보드 구조대! 막힌 칸을 정리했어요','ok')}
+function checkMoves(){
+  if(phase!=='play'||hasAnyMove())return;
+  const filled=board.map((v,i)=>v!==null?i:null).filter(i=>i!==null),free=rescuesRemaining>0;
+  const clearCount=Math.max(free?8:16,Math.ceil(filled.length*(free?.35:.5)));
+  shuffle(filled).slice(0,clearCount).forEach(i=>board[i]=null);
+  rescueUses++;combo=0;
+  if(free){rescuesRemaining--;toast(`🛟 무료 구조! 남은 구조 ${rescuesRemaining}회`,'ok')}
+  else{emergencyRescues++;score=Math.max(0,score-EMERGENCY_RESCUE_PENALTY);toast(`🚨 긴급 구조! -${EMERGENCY_RESCUE_PENALTY}점 · 콤보 초기화`,'ng')}
+  gameSfx.rescue();newTray(true);renderBoard();updateHUD();
+}
+
+function reconcilePlayClock(now=performance.now()){
+  remainingMs=Math.max(0,playDeadline-now);phaseRemainingMs=Math.max(0,phaseDeadline-now);
+  remaining=Math.ceil(remainingMs/1000);phaseRemaining=Math.ceil(phaseRemainingMs/1000);
+}
+function resumePlayClocks(resetPhase=false){
+  const now=performance.now();if(resetPhase)phaseRemainingMs=PLAY_PHASE_SECONDS*1000;
+  playDeadline=now+remainingMs;phaseDeadline=now+phaseRemainingMs;
+  remaining=Math.ceil(remainingMs/1000);phaseRemaining=Math.ceil(phaseRemainingMs/1000);
+}
 
 function updateHUD(){
-  $('score').textContent=score.toLocaleString();$('lines').textContent=lines;$('combo').textContent=combo;$('grammar').textContent=grammarCorrect+'/'+grammarTotal;$('time').textContent=formatTime(remaining);$('time').classList.toggle('crit',remaining<=20);
-  const pct=Math.max(0,phaseRemaining/PLAY_PHASE_SECONDS*100);$('phase-fill').style.width=pct+'%';$('phase-label').textContent=`문장 챌린지까지 ${phaseRemaining}초`;
+  $('score').textContent=score.toLocaleString();$('lines').textContent=lines;$('combo').textContent=combo;$('grammar').textContent=grammarCorrect+'/'+grammarTotal;$('rescue-left').textContent=rescuesRemaining;$('time').textContent=formatTime(remaining);$('time').classList.toggle('crit',remaining<=20);
+  const pct=phase==='challenge'?0:Math.max(0,phaseRemaining/PLAY_PHASE_SECONDS*100);$('phase-fill').style.width=pct+'%';$('phase-label').textContent=phase==='challenge'?'문장 챌린지 진행 중 · 게임 시간 멈춤':`문장 챌린지까지 ${phaseRemaining}초`;
 }
 function tick(){
   if(phase==='play'){
-    remaining--;phaseRemaining--;updateHUD();
-    if(remaining<=0){finish();return}
-    if(phaseRemaining<=0)openChallenge();
-  }else if(phase==='challenge'&&!locked){challengeLeft--;$('challenge-time').textContent=challengeLeft;if(challengeLeft<=0)resolveChallenge(false,true)}
+    reconcilePlayClock();updateHUD();
+    if(remainingMs<=0){finish();return}
+    if(phaseRemainingMs<=0)openChallenge();
+  }else if(phase==='challenge'&&!locked){challengeLeft=Math.max(0,Math.ceil((challengeDeadline-performance.now())/1000));$('challenge-time').textContent=challengeLeft;if(challengeLeft<=0)resolveChallenge(false,true)}
 }
 function openChallenge(){
-  if(!sentenceQuestions.length){phaseRemaining=PLAY_PHASE_SECONDS;return}
+  reconcilePlayClock();if(remainingMs<=0){finish();return}
+  if(!sentenceQuestions.length){phaseRemaining=PLAY_PHASE_SECONDS;phaseRemainingMs=PLAY_PHASE_SECONDS*1000;phaseDeadline=performance.now()+phaseRemainingMs;return}
   phase='challenge';locked=false;chosen=[];
   let pool=sentenceQuestions.filter(q=>!usedSentenceIds.has(q.id));if(!pool.length){usedSentenceIds.clear();pool=sentenceQuestions.slice()}
   if(grammarTotal<2){const intro=pool.filter(q=>Number(q.level||1)===1);if(intro.length)pool=intro}
   currentQuestion=pool[Math.floor(Math.random()*pool.length)];usedSentenceIds.add(currentQuestion.id);currentSentence=sentenceFor(currentQuestion).replace(/\s+/g,' ').trim();grammarTotal++;
-  const wordCount=currentSentence.split(' ').length;challengeLeft=(wordCount<=7?12:wordCount<=10?18:24)+(Number(currentQuestion.level||1)>=2?2:0);
+  const wordCount=currentSentence.split(' ').length;challengeLeft=(wordCount<=7?12:wordCount<=10?18:24)+(Number(currentQuestion.level||1)>=2?2:0);challengeDeadline=performance.now()+challengeLeft*1000;
   $('challenge-time').textContent=challengeLeft;$('challenge-kor').textContent=currentQuestion.kor||'올바른 영어 문장을 만드세요.';$('feedback').textContent='';$('feedback').className='feedback';$('check-btn').disabled=false;$('check-btn').textContent='BLAST';$('check-btn').onclick=checkSentence;$('reset-btn').disabled=false;
   const words=currentSentence.split(' ');let shuffled=shuffle(words.map((w,i)=>({w,i})));if(shuffled.map(x=>x.w).join(' ')===currentSentence)shuffled.reverse();
   const chips=$('chips');chips.innerHTML='';shuffled.forEach(item=>{const b=document.createElement('button');b.className='word';b.textContent=item.w;b.dataset.token=item.i;b.onclick=()=>chooseWord(b,item);chips.appendChild(b)});renderChosen();$('challenge').classList.add('show');updateHUD();
@@ -275,12 +301,12 @@ function applyGrammarBlast(){
   const r=rowCounts.indexOf(Math.max(...rowCounts)),c=colCounts.indexOf(Math.max(...colCounts));let removed=0;for(let x=0;x<SIZE;x++){const ri=r*SIZE+x,ci=x*SIZE+c;if(board[ri]!==null){board[ri]=null;removed++}if(board[ci]!==null){board[ci]=null;removed++}}
   gameSfx.blast();navigator.vibrate?.([25,25,45]);$('blast-flash').classList.remove('on');void $('blast-flash').offsetWidth;$('blast-flash').classList.add('on');renderBoard();toast(removed?`💥 문법 폭발! ${removed}칸 제거`:'💥 완벽한 보드! 보너스 +500','ok');
 }
-function closeChallenge(){$('challenge').classList.remove('show');phase='play';phaseRemaining=PLAY_PHASE_SECONDS;locked=false;renderTray();checkMoves();updateHUD()}
-function finish(){phase='over';clearInterval(timerId);gameSfx.finish();setTimeout(stopMusic,700);const key=`mg_sentence_blast_best_v1_${unitKey}_${duration}`;let best=0;try{const old=JSON.parse(localStorage.getItem(key)||'null');best=old&&old.score||0;if(score>best)localStorage.setItem(key,JSON.stringify({score,lines,correct:grammarCorrect,total:grammarTotal,combo:bestCombo,date:new Date().toLocaleDateString('ko-KR')}))}catch(e){}$('final-score').textContent=score.toLocaleString()+'점';$('end-sub').innerHTML=`완성한 줄 ${lines}개 · 문법 ${grammarCorrect}/${grammarTotal}<br>최고 콤보 ${bestCombo}`+(score>best?' · <strong>신기록!</strong>':'');$('gameover').classList.add('show')}
+function closeChallenge(){$('challenge').classList.remove('show');phase='play';phaseRemaining=PLAY_PHASE_SECONDS;phaseRemainingMs=PLAY_PHASE_SECONDS*1000;locked=false;resumePlayClocks();renderTray();checkMoves();updateHUD()}
+function finish(){phase='over';clearInterval(timerId);gameSfx.finish();setTimeout(stopMusic,700);const key=`mg_sentence_blast_best_v1_${unitKey}_${duration}`;let best=0;try{const old=JSON.parse(localStorage.getItem(key)||'null');best=old&&old.score||0;if(score>best)localStorage.setItem(key,JSON.stringify({score,lines,correct:grammarCorrect,total:grammarTotal,combo:bestCombo,rescues:rescueUses,emergencyRescues,date:new Date().toLocaleDateString('ko-KR')}))}catch(e){}$('final-score').textContent=score.toLocaleString()+'점';$('end-sub').innerHTML=`완성한 줄 ${lines}개 · 문법 ${grammarCorrect}/${grammarTotal}<br>최고 콤보 ${bestCombo} · 구조대 ${rescueUses}회${emergencyRescues?` (긴급 ${emergencyRescues}회)`:''}`+(score>best?' · <strong>신기록!</strong>':'');$('gameover').classList.add('show')}
 
 $('check-btn').onclick=checkSentence;$('reset-btn').onclick=resetWords;
 $('unit-label').textContent=(unit&&unit.label?unit.label:'전체 랜덤')+' · 줄을 완성해요';
-renderBoard();newTray();updateHUD();timerId=setInterval(tick,1000);
+renderBoard();newTray();resumePlayClocks();updateHUD();timerId=setInterval(tick,250);
 </script>
 </body>
 </html>

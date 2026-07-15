@@ -59,7 +59,8 @@ canvas#c{position:absolute;inset:0;width:100%;height:100%;}
 /* ── CHARACTERS ── */
 #hero-wrap{position:absolute;left:8%;bottom:26%;transform-origin:bottom center;transition:left .35s cubic-bezier(.22,1,.36,1), transform .15s;}
 #boss-wrap{position:absolute;right:8%;bottom:26%;transform-origin:bottom center;transition:right .35s cubic-bezier(.22,1,.36,1), transform .15s;}
-#hero-img,#boss-img{background-repeat:no-repeat;background-position:0 0;transform-origin:bottom center;will-change:background-position,transform,filter;}
+#hero-wrap::after,#boss-wrap::after{content:"";position:absolute;z-index:0;left:50%;bottom:-5px;width:64%;height:15px;transform:translateX(-50%);border-radius:50%;background:radial-gradient(ellipse,rgba(0,0,0,.72) 0%,rgba(0,0,0,.38) 48%,transparent 74%);filter:blur(1px);}
+#hero-img,#boss-img{position:relative;z-index:1;background-repeat:no-repeat;background-position:0 0;transform-origin:bottom center;will-change:background-position,transform,filter;}
 #hero-img{filter:drop-shadow(0 8px 22px rgba(14,165,233,.45));}
 #boss-img{filter:drop-shadow(0 10px 26px rgba(239,68,68,.5));}
 @keyframes dmgFlash{0%{filter:brightness(1)}28%{filter:brightness(2.6) drop-shadow(0 0 30px #fff)}100%{filter:brightness(1)}}
@@ -510,27 +511,24 @@ const ctx = canvas.getContext('2d');
 let CW = 0, CH = 0;
 // 바닥선 위치(화면 높이 대비) — setCharSprites에서 실제 캐릭터 발 위치로 동기화.
 let GROUND_FRAC = 0.72;
-// 세로로 긴 화면일수록 arena(캐릭터)를 위로 올려 가운데로. 가로/PC는 그대로.
-function arenaBasePct() {
-  const ar = window.innerHeight / Math.max(1, window.innerWidth);
-  return ar <= 1.0 ? 0 : Math.min(18, (ar - 1.0) * 24);  // 세로비율↑ → 최대 18% 위로
-}
 function updateGround() {
   const arena = document.getElementById('arena');
-  if (arena) arena.style.bottom = arenaBasePct() + '%';
+  if (arena) arena.style.bottom = '0';
   markGroundDirty();
 }
-// ── 문제 팝업이 뜨면 아레나를 팝업 위로 끌어올려 전투가 항상 보이게 한다 ──
+// 가로 화면은 배경 발판에 고정한다. 세로 폰만 문제창 바로 위 바닥선으로 올려
+// 캐릭터가 문제창 뒤에 완전히 가려지지 않게 한다.
 function liftArenaForQpop() {
   const arena = document.getElementById('arena');
   const qp = document.getElementById('qpop');
   if (!arena || !qp) return;
-  const vh = window.innerHeight;
-  const feetAbove = vh * 0.72 * 0.26;          // hero-wrap bottom:26% (arena 높이 72vh 기준)
-  let target = Math.max(vh * arenaBasePct() / 100, qp.offsetHeight + 20 - feetAbove);
-  target = Math.min(target, vh * 0.42);        // HUD와 겹치지 않게 상한
-  arena.style.bottom = target + 'px';
-  markGroundDirty();
+  if (window.innerWidth < 600 && window.innerHeight > window.innerWidth) {
+    const feetAbove = arena.offsetHeight * 0.26;
+    arena.style.bottom = Math.max(0, qp.offsetHeight + 22 - feetAbove) + 'px';
+    markGroundDirty();
+    return;
+  }
+  updateGround();
 }
 function restoreArena() {
   if (GS && GS.practice && GS.practiceDone < GS.practiceTotal) return;  // 연습 중엔 연속 출제라 내리지 않음
@@ -1121,21 +1119,31 @@ const SPRITE_DEFS = {
     }},
 };
 
-function hdFighter(file,scale,portrait=file){
-  const still={file,n:1,fps:9,loop:true};
-  const once={file,n:1,fps:9,loop:false,next:'idle'};
-  return {base:'assets/hd-v1/',portrait:'assets/hd-v1/'+portrait,fw:512,fh:512,scale,flip:false,footPad:0,anims:{idle:still,run:still,atk:once,atk2:once,special:once,hurt:once,death:{file,n:1,fps:8,loop:false,hold:true}}};
+function animatedHdFighter(name,portrait,scale){
+  const file=action=>`${name}/${action}.png`;
+  return {
+    base:'assets/hd-v2/',portrait:'assets/hd-v1/'+portrait,fw:313,fh:313,scale,flip:false,footPad:8,
+    anims:{
+      idle:{file:file('idle'),n:4,fps:6,loop:true},
+      run:{file:file('run'),n:4,fps:11,loop:true},
+      atk:{file:file('attack'),n:4,fps:12,loop:false,next:'idle'},
+      atk2:{file:file('attack'),n:4,fps:14,loop:false,next:'idle'},
+      special:{file:file('attack'),n:4,fps:10,loop:false,next:'idle'},
+      hurt:{file:file('hurt'),n:4,fps:10,loop:false,next:'idle'},
+      death:{file:file('hurt'),n:4,fps:7,loop:false,hold:true},
+    }
+  };
 }
 const HD_SPRITE_DEFS={
-  hero_moonblade:hdFighter('hero-moonblade.png',.48),
-  hero_nebula:hdFighter('hero-nebula.png',.49),
-  hero_phoenix:hdFighter('hero-phoenix.png',.50),
-  jester:hdFighter('ironmask-jester.png',.49),
-  bloom:hdFighter('bloom-colossus.png',.52),
-  bone:hdFighter('bone-samurai.png',.50),
-  manta:hdFighter('void-manta.png',.55),
-  sorceress:hdFighter('rift-sorceress.png',.50),
-  dragonlord:hdFighter('obsidian-dragonlord.png',.55),
+  hero_moonblade:animatedHdFighter('hero-moonblade','hero-moonblade.png',.78),
+  hero_nebula:animatedHdFighter('hero-nebula','hero-nebula.png',.80),
+  hero_phoenix:animatedHdFighter('hero-phoenix','hero-phoenix.png',.82),
+  jester:animatedHdFighter('ironmask-jester','ironmask-jester.png',.80),
+  bloom:animatedHdFighter('bloom-colossus','bloom-colossus.png',.85),
+  bone:animatedHdFighter('bone-samurai','bone-samurai.png',.82),
+  manta:animatedHdFighter('void-manta','void-manta.png',.90),
+  sorceress:animatedHdFighter('rift-sorceress','rift-sorceress.png',.82),
+  dragonlord:animatedHdFighter('obsidian-dragonlord','obsidian-dragonlord.png',.90),
 };
 const HERO_SPRITE=['hero_moonblade','hero_nebula','hero_phoenix'];
 const BOSS_SPRITE=['jester','sorceress','dragonlord'];

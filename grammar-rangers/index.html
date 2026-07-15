@@ -264,7 +264,7 @@ async function loadAssets(){
 // ── 스테이지 ──
 const FW=900,FH=340;
 const MYBASE={x:54}, FOEBASE={x:FW-54};
-const LANE_Y=FH*0.66, LANE_H=70; // 유닛이 흩어질 세로 밴드
+const LANE_Y=FH*0.79, LANE_H=38; // 배경 도로 위에서만 유닛이 흩어지는 지면 밴드
 const MAX_MY_UNITS=8, BASE_ATTACKER_LIMIT=2, FRONTLINE_LIMIT=3;
 const UNIT_UP_COST=[0,46,82];
 const TOWER_UPGRADES={
@@ -344,7 +344,7 @@ function spawnUnit(side,key){
   const dmgMul=side==='my'?(1+(lv-1)*.22):stMul;
   g.units.push({
     id:g.nextUnitId++,side,key,def,level:lv,x:side==='my'?MYBASE.x+18:FOEBASE.x-18,
-    y: LANE_Y - 10 + (Math.random()-0.5)*LANE_H,
+    y: LANE_Y + (Math.random()-0.5)*LANE_H,
     hp:Math.round(def.hp*hpMul),maxHp:Math.round(def.hp*hpMul),dmg:Math.round(def.dmg*dmgMul),
     range:def.range, atkSpd:def.atkSpd, speed:def.speed, ranged:def.ranged, splash:def.splash,
     cool:0,lunge:0,ft:Math.random(),dead:false,fade:1,engaged:0,
@@ -486,7 +486,7 @@ function update(dt){
 
 function trimSurvivors(){
   const g=GS;const keep=g.units.filter(u=>u.side==='my'&&!u.dead).sort((a,b)=>(b.level-a.level)||((b.hp/b.maxHp)-(a.hp/a.maxHp))).slice(0,3);
-  keep.forEach((u,i)=>{u.x=MYBASE.x+48+i*55;u.y=LANE_Y-18+(i-1)*24;u.hp=Math.max(u.hp,Math.round(u.maxHp*.7));u.cool=.4;u.siege=null;});
+  keep.forEach((u,i)=>{u.x=MYBASE.x+48+i*55;u.y=LANE_Y+(i-1)*18;u.hp=Math.max(u.hp,Math.round(u.maxHp*.7));u.cool=.4;u.siege=null;});
   g.units=keep;g.shots=[];updateHud();
 }
 
@@ -541,12 +541,12 @@ function drawUnit(u){
   const sheet=IMG.sprites&&IMG.sprites[u.key]&&IMG.sprites[u.key][u.anim];
   const dh=u.def.drawH*levelScale*(sheet?(u.def.spriteScale||1):1),dw=sheet?dh:dh*(img.width/img.height);
   let dx=u.x, dy=u.y;
-  const bob=u.dead?0:Math.sin((u.ft*8)+(u.id||0))*(u.lunge>0?1:2.2);dy+=bob;
+  const bob=u.dead?0:Math.sin((u.ft*8)+(u.id||0))*(u.lunge>0?.6:.9);dy+=bob;
   if(u.lunge>0){const dir=u.side==='my'?1:-1;dx+=dir*8*(u.lunge/.16);}
   fx.save();fx.globalAlpha=u.dead?Math.max(0,u.fade):1;
   fx.translate(dx,dy);
   if(u.dead){fx.rotate((1-u.fade)*0.5);fx.globalAlpha=Math.max(0,u.fade)*0.9;}
-  fx.fillStyle='rgba(0,0,0,.28)';fx.beginPath();fx.ellipse(0,2,dw*.25,5,0,0,Math.PI*2);fx.fill();
+  fx.fillStyle='rgba(0,0,0,.32)';fx.beginPath();fx.ellipse(0,7,dw*.25,5,0,0,Math.PI*2);fx.fill();
   if(u.side==='my'&&u.level>=2){fx.shadowColor=u.level===3?'#fbbf24':'#7dd3fc';fx.shadowBlur=u.level===3?16:8;}
   if(sheet){const loop=u.anim==='idle'||u.anim==='run',raw=Math.floor(u.animT*(u.anim==='run'?11:10)),frame=loop?raw%4:Math.min(3,raw);fx.drawImage(sheet,frame*SPRITE_FRAME,0,SPRITE_FRAME,SPRITE_FRAME,-dw/2,-dh+10,dw,dh);}
   else fx.drawImage(img,0,0,img.width,img.height,-dw/2,-dh+10,dw,dh);

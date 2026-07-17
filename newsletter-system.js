@@ -5,7 +5,6 @@
   var endpoint = String(config.endpoint || '').trim();
   var siteKey = String(config.siteKey || '').trim();
   var siteName = String(config.siteName || document.title || '학습자료');
-  var ownerEmail = String(config.ownerEmail || 'obangti@gmail.com');
 
   function escapeHtml(value) {
     return String(value || '')
@@ -79,16 +78,6 @@
       '</form>';
   }
 
-  function mailtoFallback(action, values) {
-    var subject = action === 'subscribe'
-      ? '[' + siteName + '] 업데이트 알림 신청'
-      : '[' + siteName + ' 오류 신고] ' + currentItemId();
-    var body = action === 'subscribe'
-      ? '업데이트 알림을 신청합니다.\n\n이메일: ' + (values.email || '') + '\n개인정보 수집·이용: 동의함'
-      : '페이지: ' + location.href + '\n종류: ' + (values.category || '') + '\n\n' + (values.description || '');
-    location.href = 'mailto:' + ownerEmail + '?subject=' + encodeURIComponent(subject) + '&body=' + encodeURIComponent(body);
-  }
-
   async function submitForm(form) {
     var status = form.querySelector('.ns-status');
     var submit = form.querySelector('[type="submit"]');
@@ -97,8 +86,7 @@
     status.textContent = '전송 중…';
 
     if (!endpoint) {
-      mailtoFallback(values.action, values);
-      status.textContent = '메일 작성 창을 열었습니다.';
+      status.textContent = '현재 접수 시스템을 사용할 수 없습니다. 잠시 후 다시 시도해 주세요.';
       submit.disabled = false;
       return;
     }
@@ -115,8 +103,7 @@
         : '오류 신고를 접수했습니다. 감사합니다.';
       form.reset();
     } catch (error) {
-      status.textContent = '자동 전송에 실패해 메일 작성 창을 엽니다.';
-      mailtoFallback(values.action, values);
+      status.textContent = '전송에 실패했습니다. 잠시 후 다시 시도해 주세요.';
     } finally {
       submit.disabled = false;
     }

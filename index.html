@@ -88,6 +88,23 @@ body{
 }
 
 .header-inner{position:relative;z-index:2;}
+.header-utility{
+  position:absolute;z-index:3;top:14px;right:16px;
+  display:flex;align-items:center;justify-content:flex-end;gap:6px;
+}
+.header-utility-btn{
+  height:29px;padding:0 10px;border-radius:8px;
+  display:inline-flex;align-items:center;justify-content:center;gap:5px;
+  color:#fff;text-decoration:none;font-family:'Pretendard',sans-serif;
+  font-size:.75rem;font-weight:800;letter-spacing:-.2px;
+  box-shadow:0 3px 9px rgba(30,41,59,.16);
+  transition:transform .18s,box-shadow .18s;
+}
+.header-utility-btn:hover{transform:translateY(-1px);box-shadow:0 5px 12px rgba(30,41,59,.24);}
+.header-utility-btn:focus-visible{outline:3px solid rgba(99,102,241,.35);outline-offset:2px;}
+.header-utility-btn.update{background:linear-gradient(135deg,#0ea5e9 0%,#6366f1 100%);}
+.header-utility-btn.report{background:linear-gradient(135deg,#f97316 0%,#c2410c 100%);}
+.header-utility-icon{font-size:.78rem;line-height:1;}
 
 /* 뱃지 */
 .hbadge{
@@ -146,11 +163,6 @@ body{
   transition:transform .18s,box-shadow .18s;
 }
 .header-action:hover{transform:translateY(-3px);box-shadow:0 20px 44px rgba(99,102,241,.42);}
-.header-action.tool{
-  background:linear-gradient(135deg,#1d2d8c 0%,#a8431c 100%);
-  box-shadow:0 14px 32px rgba(168,67,28,.30);
-}
-.header-action.tool:hover{box-shadow:0 20px 44px rgba(168,67,28,.42);}
 .header-action .play-ico{
   width:24px;height:24px;border-radius:8px;
   background:rgba(255,255,255,.22);
@@ -405,6 +417,9 @@ body{
 @media(max-width:480px){
   .header{padding:54px 18px 84px;}
   .header h1{font-size:2.5rem;}
+  .header-utility{top:10px;right:10px;gap:4px;}
+  .header-utility-btn{height:26px;padding:0 7px;border-radius:7px;font-size:.68rem;gap:4px;}
+  .header-utility-icon{font-size:.7rem;}
   .header-action{width:100%;max-width:320px;min-width:0;min-height:60px;font-size:1.12rem;}
   .stat{padding:14px 22px;}
   .stat-n{font-size:1.85rem;}
@@ -538,6 +553,17 @@ body{
   <div class="blob blob--1"></div>
   <div class="blob blob--2"></div>
   <div class="blob blob--3"></div>
+
+  <nav class="header-utility" aria-label="사이트 업데이트와 오류 신고">
+    <a class="header-utility-btn update" href="#newsletter" data-newsletter-open title="새 워크시트 업데이트 알림 신청">
+      <span class="header-utility-icon" aria-hidden="true">✉️</span>
+      <span>업데이트 알림</span>
+    </a>
+    <a class="header-utility-btn report" href="#error-report" data-error-report-open title="워크시트 오류 신고">
+      <span class="header-utility-icon" aria-hidden="true">🚨</span>
+      <span>오류 신고</span>
+    </a>
+  </nav>
 
   <div class="sticker sticker--1"><svg viewBox="0 0 40 40"><use href="#s-star"/></svg></div>
   <div class="sticker sticker--2"><svg viewBox="0 0 40 40"><use href="#s-bubble"/></svg></div>
@@ -1434,6 +1460,16 @@ body{
   document.addEventListener('keydown', function (e) { if (e.key === 'Escape') closePrintModal(); });
 })();
 </script>
+
+<script>
+window.NEWSLETTER_SYSTEM = {
+  endpoint: '',
+  siteKey: 'middle-grammar',
+  siteName: '중학 영어 문법 워크시트',
+  ownerEmail: 'obangti@gmail.com'
+};
+</script>
+<script src="newsletter-system.js?v=20260717-1"></script>
 
 </body>
 </html>

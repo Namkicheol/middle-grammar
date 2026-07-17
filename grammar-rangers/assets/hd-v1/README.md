@@ -9,3 +9,5 @@ Project-specific 2D game art generated with OpenAI image generation in July 2026
 - `battlefield.png` is a wide original battlefield background with blue and red fortresses at opposite edges.
 
 Runtime assets live in `units/`, `cannon.png`, and `battlefield.png`. Chroma-key source renders are kept in `source/` for later reprocessing.
+
+July 2026 unit expansion: `rock-giant`, `arcane-catapult`, `battle-priest`, `rift-warlock`, `castle-marksman`, `abyss-warlord`, and `crimson-dragon-tyrant` were generated as original project-specific cutouts with the same pipeline.

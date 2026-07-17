@@ -1,5 +1,11 @@
 문법 레인저스 에셋 출처 (전부 CC0 / public domain — 재배포 허용)
 
+음악: "Hope (Orchestral battle music)" by MintoDog
+- https://opengameart.org/content/hopeorchestral-battle-music
+- License: Creative Commons Zero (CC0) v1.0 Universal
+- 원본 OGG를 브라우저 호환용 MP3로 변환
+- 입수: 2026-07-17
+
 미술: "16x16 Puny Characters" + "PunyMonsters" by Shade (merchant-shade)
 - https://merchant-shade.itch.io/16x16-puny-characters
 - License: Creative Commons Zero (CC0) v1.0 Universal

@@ -134,9 +134,10 @@ body{font-family:'Baloo 2','Noto Sans KR',sans-serif;background:var(--bg);paddin
 @keyframes fadein{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}
 @keyframes pop{0%{transform:scale(.8)}70%{transform:scale(1.1)}100%{transform:scale(1)}}
 @media(max-width:480px){.header h1{font-size:1.7rem;}.h-letter.l-a{font-size:90px;}.h-letter.l-b{font-size:60px;}.h-letter.l-c{font-size:70px;}.h-letter.l-d{font-size:52px;}}
+.sec#s1 .sec-hdr{display:none;}body.topic-perceive .topic-indirect,body.topic-perceive .indirect-passage{display:none!important;}body.topic-indirect .topic-perceive,body.topic-indirect .perceive-passage{display:none!important;}
 </style>
 </head>
-<body>
+<body class="topic-perceive">
 <div id="toast"></div>
 
 <div class="header">
@@ -149,7 +150,7 @@ body{font-family:'Baloo 2','Noto Sans KR',sans-serif;background:var(--bg);paddin
   <div class="header-inner">
     <div class="hbadge"><span class="hbadge-dot"></span>중2 L6 · Advanced</div>
     <h1>지각동사 &amp; <em>간접의문문</em> 심화</h1>
-    <p>문맥 파악 · 오류 수정 · 문장 전환 · 짧은 지문 · 총 25문제</p>
+    <p>문법별 탭 · 총 25문제</p>
   </div>
 </div>
 
@@ -163,8 +164,8 @@ body{font-family:'Baloo 2','Noto Sans KR',sans-serif;background:var(--bg);paddin
   <div class="pbg"><div class="pfill" id="pf" style="width:0%"></div></div>
 </div>
 <div class="tabs">
-  <button class="tab active" onclick="sw(0,this)">⚡ 종합 훈련 (15문제)</button>
-  <button class="tab" onclick="sw(1,this)">📖 짧은 지문 (10문제)</button>
+  <button class="tab active" data-topic="perceive" onclick="sw('perceive',this)">👀 지각동사 (12문제)</button>
+  <button class="tab" data-topic="indirect" onclick="sw('indirect',this)">❓ 간접의문문 (13문제)</button>
 </div>
 
 <!-- ═══ Section A : 종합 훈련 15문제
@@ -174,9 +175,9 @@ body{font-family:'Baloo 2','Noto Sans KR',sans-serif;background:var(--bg);paddin
      a12-a15: 우리말 영작 ═══ -->
 <div class="sec show" id="s0">
   <div class="sec-hdr">
-    <div class="lbl">Part 1 · 15문제</div>
-    <h2>종합 문법 훈련</h2>
-    <div class="desc">문맥 파악 · 오류 수정 · 문장 전환 · 우리말 영작</div>
+    <div class="lbl">Advanced · Topic tabs</div>
+    <h2>문법별 집중 훈련</h2>
+    <div class="desc">탭을 선택해 해당 문법 문제를 풀어 보세요</div>
   </div>
 
   <!-- 문맥 파악 (a1-a4) -->
@@ -367,7 +368,7 @@ body{font-family:'Baloo 2','Noto Sans KR',sans-serif;background:var(--bg);paddin
 <!-- ═══ Section B : 짧은 지문 10문제
      b1-b5  : Passage A — 지각동사 동사원형/-ing
      b6-b10 : Passage B — 간접의문문 어순 ═══ -->
-<div class="sec" id="s1">
+<div class="sec show" id="s1">
   <div class="sec-hdr">
     <div class="lbl">Part 2 · 10문제</div>
     <h2>짧은 지문 읽고 빈칸 채우기</h2>
@@ -511,7 +512,8 @@ body{font-family:'Baloo 2','Noto Sans KR',sans-serif;background:var(--bg);paddin
 </div>
 
 <script>
-var TOTAL=25,SECTOTALS={a:15,b:10},secC={a:0,b:0},secW={a:0,b:0};
+var TOTAL=25,SECTOTALS={perceive:12,indirect:13},secC={perceive:0,indirect:0},secW={perceive:0,indirect:0};
+var topicById={a1:'perceive',a2:'perceive',a3:'indirect',a4:'indirect',a5:'perceive',a6:'perceive',a7:'indirect',a8:'indirect',a9:'perceive',a10:'indirect',a11:'indirect',a12:'perceive',a13:'perceive',a14:'indirect',a15:'indirect',b1:'perceive',b2:'perceive',b3:'perceive',b4:'perceive',b5:'perceive',b6:'indirect',b7:'indirect',b8:'indirect',b9:'indirect',b10:'indirect'};
 var answered={},correct=0,wrong=0;
 
 function norm(s){
@@ -525,10 +527,11 @@ function norm(s){
   return s;
 }
 
-function sw(i,btn){
-  document.querySelectorAll('.sec').forEach(function(s){s.classList.remove('show');});
+function sw(topic,btn){
+  document.body.classList.remove('topic-perceive','topic-indirect');
+  document.body.classList.add('topic-'+topic);
+  document.querySelectorAll('.sec').forEach(function(s){s.classList.add('show');});
   document.querySelectorAll('.tab').forEach(function(b){b.classList.remove('active');});
-  document.getElementById('s'+i).classList.add('show');
   btn.classList.add('active');
   window.scrollTo({top:0,behavior:'smooth'});
 }
@@ -565,30 +568,43 @@ document.addEventListener('keydown',function(e){
     checkBlank(e.target.id.replace('bi-',''));
 });
 
+function wrongItemsFor(topic){
+  return Object.keys(answered).filter(function(k){return topicById[k]===topic&&!answered[k].got;}).map(function(k){
+    var v=answered[k],card=document.getElementById('qc-'+k);
+    var q=card.querySelector('.q-text');
+    var num=card.querySelector('.q-num');
+    return {question:'문항 '+(num?num.textContent:k)+' · '+(q?q.textContent.replace(/\s+/g,' ').trim():k),my:v.my,right:v.right,hintHtml:(document.getElementById('ah-'+k)||{innerHTML:''}).innerHTML};
+  });
+}
+
 function mark(k,got,my,right){
   if(answered[k])return;
   answered[k]={got:got,my:my,right:right};
   var card=document.getElementById('qc-'+k);
   card.classList.add(got?'ok':'ng');
   var b=document.createElement('div');b.className='done-badge';b.textContent=got?'✅':'❌';card.appendChild(b);
-  var pre=k[0];
-  if(got){correct++;secC[pre]++;toast('🎉 정답!','ok');}
-  else{wrong++;secW[pre]++;document.getElementById('ah-'+k).classList.add('show');toast('틀렸어요! 힌트 확인 👆','ng');}
+  var topic=topicById[k];
+  if(got){correct++;secC[topic]++;toast('🎉 정답!','ok');}
+  else{wrong++;secW[topic]++;document.getElementById('ah-'+k).classList.add('show');toast('틀렸어요! 힌트 확인 👆','ng');}
   var done=correct+wrong;
   document.getElementById('sc-t').textContent=done;
   document.getElementById('sc-c').textContent=correct;
   document.getElementById('sc-w').textContent=wrong;
   document.getElementById('pt').textContent=done+' / '+TOTAL;
   document.getElementById('pf').style.width=(done/TOTAL*100)+'%';
-  var secDone=secC[pre]+secW[pre];
-  if(secDone===SECTOTALS[pre]){
+  var secDone=secC[topic]+secW[topic];
+  if(secDone===SECTOTALS[topic] && done<TOTAL){
     (function(p,sc){
       setTimeout(function(){
-        var opts={};
-        if(p==='a')opts={nextText:'짧은 지문 탭으로 →',onNextClick:function(){var ol=document.getElementById('sp-overlay');if(ol)ol.remove();sw(1,document.querySelectorAll('.tab')[1]);}};
-        showScorePopup(sc,SECTOTALS[p],opts);
+        var other=p==='perceive'?'indirect':'perceive';
+        var otherBtn=document.querySelector('.tab[data-topic="'+other+'"]');
+        showScorePopup(sc,SECTOTALS[p],{
+          nextText:(other==='perceive'?'👀 지각동사 탭으로 →':'❓ 간접의문문 탭으로 →'),
+          onNextClick:function(){var ol=document.getElementById('sp-overlay');if(ol)ol.remove();sw(other,otherBtn);},
+          wrongItems:wrongItemsFor(p)
+        });
       },800);
-    })(pre,secC[pre]);
+    })(topic,secC[topic]);
   }
   if(done===TOTAL)setTimeout(showResult,800);
 }
@@ -619,6 +635,12 @@ function toast(msg,type){
 </script>
 <script>
 document.addEventListener('DOMContentLoaded',function(){
+  var nums={perceive:0,indirect:0};
+  Object.keys(topicById).forEach(function(k){var c=document.getElementById('qc-'+k);if(c){var t=topicById[k];c.classList.add('topic-'+t);nums[t]++;var n=c.querySelector('.q-num');if(n)n.textContent=nums[t];}});
+  var ps=document.querySelectorAll('.passage');
+  if(ps[0])ps[0].classList.add('perceive-passage');
+  if(ps[1])ps[1].classList.add('indirect-passage');
+  document.body.classList.add('topic-perceive');
   document.querySelectorAll('.vocab').forEach(function(v){
     var btn=document.createElement('button');
     btn.className='vocab-toggle';btn.textContent='📖 단어 보기 ▾';

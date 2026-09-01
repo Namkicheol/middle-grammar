@@ -119,7 +119,7 @@ body{background:#0c2f5c;color:#fff;font-family:ui-rounded,'SF Pro Rounded','Aria
 </div>
 
 <audio id="bgm" src="../game/assets/bgm/bubble-theme.mp3" loop preload="auto"></audio>
-<script src="../game/questions.js"></script>
+<script src="../game/questions.js?v=questions-20260901-all-split"></script>
 <script src="../sounds.js"></script>
 <script>
 'use strict';
@@ -144,7 +144,7 @@ let challengeLeft=CHALLENGE_SECONDS, currentQuestion=null, currentSentence='', c
 const usedSentenceIds=new Set();
 
 const $=id=>document.getElementById(id);
-const units=Object.entries(GAME_QUESTIONS).filter(([k])=>k!=='all');
+const units=Object.entries(GAME_QUESTIONS).filter(([k,u])=>k!=='all'&&!u.hidden);
 const unit=GAME_QUESTIONS[unitKey]||GAME_QUESTIONS.all;
 const rawQuestions=unitKey==='all'?units.flatMap(([,u])=>u.questions):unit.questions;
 

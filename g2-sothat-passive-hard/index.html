@@ -135,9 +135,10 @@ body{font-family:'Baloo 2','Noto Sans KR',sans-serif;background:var(--bg);paddin
 @keyframes fadein{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}
 @keyframes pop{0%{transform:scale(.8)}70%{transform:scale(1.1)}100%{transform:scale(1)}}
 @media(max-width:480px){.header h1{font-size:1.7rem;}.h-letter.l-a{font-size:90px;}.h-letter.l-b{font-size:60px;}.h-letter.l-c{font-size:70px;}.h-letter.l-d{font-size:52px;}}
+.sec#s1 .sec-hdr{display:none;}body.topic-sothat .topic-passive,body.topic-sothat .passive-passage{display:none!important;}body.topic-passive .topic-sothat,body.topic-passive .sothat-passage{display:none!important;}
 </style>
 </head>
-<body>
+<body class="topic-sothat">
 <div id="toast"></div>
 
 <div class="header">
@@ -150,7 +151,7 @@ body{font-family:'Baloo 2','Noto Sans KR',sans-serif;background:var(--bg);paddin
   <div class="header-inner">
     <div class="hbadge"><span class="hbadge-dot"></span>중2 L4 · Advanced</div>
     <h1>so ~ that &amp; <em>수동태</em> 심화</h1>
-    <p>문맥 파악 · 오류 수정 · 문장 전환 · 짧은 지문 · 총 25문제</p>
+    <p>문법별 탭 · 총 25문제</p>
   </div>
 </div>
 
@@ -164,8 +165,8 @@ body{font-family:'Baloo 2','Noto Sans KR',sans-serif;background:var(--bg);paddin
   <div class="pbg"><div class="pfill" id="pf" style="width:0%"></div></div>
 </div>
 <div class="tabs">
-  <button class="tab active" onclick="sw(0,this)">⚡ 종합 훈련 (15문제)</button>
-  <button class="tab" onclick="sw(1,this)">📖 짧은 지문 (10문제)</button>
+  <button class="tab active" data-topic="sothat" onclick="sw('sothat',this)">🎯 so ~ that (12문제)</button>
+  <button class="tab" data-topic="passive" onclick="sw('passive',this)">🛡️ 수동태 (13문제)</button>
 </div>
 
 <!-- ═══ Section A : 종합 훈련 15문제
@@ -175,9 +176,9 @@ body{font-family:'Baloo 2','Noto Sans KR',sans-serif;background:var(--bg);paddin
      a12–a15: 우리말 영작 ═══ -->
 <div class="sec show" id="s0">
   <div class="sec-hdr">
-    <div class="lbl">Part 1 · 15문제</div>
-    <h2>종합 문법 훈련</h2>
-    <div class="desc">문맥 파악 · 오류 수정 · 문장 전환 · 우리말 영작</div>
+    <div class="lbl">Advanced · Topic tabs</div>
+    <h2>문법별 집중 훈련</h2>
+    <div class="desc">탭을 선택해 해당 문법 문제를 풀어 보세요</div>
   </div>
 
   <!-- 문맥 파악 (a1-a4) -->
@@ -334,7 +335,7 @@ body{font-family:'Baloo 2','Noto Sans KR',sans-serif;background:var(--bg);paddin
   <div class="question-card" id="qc-a15"><span class="q-num">15</span><span class="q-type kor">우리말 영작</span>
     <div class="q-text">
       <span class="kor-hint">🇰🇷 영화가 너무 길어서 우리는 다 보지 못했다.</span>
-      The movie was <input class="blank" id="bi-a15" placeholder="so ___ that ___" data-ans="so long that we couldn't finish it" data-ans2="so long that we could not finish it" autocomplete="off" style="min-width:285px">. <span class="ex">(so ~ that / long / finish)</span>
+      The movie was <input class="blank" id="bi-a15" placeholder="so ___ that ___" data-ans="so long that we couldn't finish it" autocomplete="off" style="min-width:285px">. <span class="ex">(so ~ that / long / finish)</span>
     </div>
     <button class="check-btn" onclick="checkBlank('a15')">✔ 확인</button>
     <div class="answer-hint" id="ah-a15">💡 정답: <strong>so long that we couldn't finish it</strong> — so + 형용사(long) + that + 결과절(we couldn't finish it).<br>📝 해석: 영화가 너무 길어서 우리는 다 보지 못했다.</div>
@@ -345,7 +346,7 @@ body{font-family:'Baloo 2','Noto Sans KR',sans-serif;background:var(--bg);paddin
 <!-- ═══ Section B : 짧은 지문 10문제
      b1–b5  : Passage A — so ~ that
      b6–b10 : Passage B — 수동태 ═══ -->
-<div class="sec" id="s1">
+<div class="sec show" id="s1">
   <div class="sec-hdr">
     <div class="lbl">Part 2 · 10문제</div>
     <h2>짧은 지문 읽고 빈칸 채우기</h2>
@@ -489,7 +490,8 @@ body{font-family:'Baloo 2','Noto Sans KR',sans-serif;background:var(--bg);paddin
 </div>
 
 <script>
-var TOTAL=25,SECTOTALS={a:15,b:10},secC={a:0,b:0},secW={a:0,b:0};
+var TOTAL=25,SECTOTALS={sothat:12,passive:13},secC={sothat:0,passive:0},secW={sothat:0,passive:0};
+var topicById={a1:'sothat',a2:'passive',a3:'sothat',a4:'passive',a5:'passive',a6:'passive',a7:'sothat',a8:'sothat',a9:'passive',a10:'sothat',a11:'passive',a12:'passive',a13:'sothat',a14:'passive',a15:'sothat',b1:'sothat',b2:'sothat',b3:'sothat',b4:'sothat',b5:'sothat',b6:'passive',b7:'passive',b8:'passive',b9:'passive',b10:'passive'};
 var answered={},correct=0,wrong=0;
 
 function norm(s){
@@ -505,10 +507,11 @@ function norm(s){
   return s;
 }
 
-function sw(i,btn){
-  document.querySelectorAll('.sec').forEach(function(s){s.classList.remove('show');});
+function sw(topic,btn){
+  document.body.classList.remove('topic-sothat','topic-passive');
+  document.body.classList.add('topic-'+topic);
+  document.querySelectorAll('.sec').forEach(function(s){s.classList.add('show');});
   document.querySelectorAll('.tab').forEach(function(b){b.classList.remove('active');});
-  document.getElementById('s'+i).classList.add('show');
   btn.classList.add('active');
   window.scrollTo({top:0,behavior:'smooth'});
 }
@@ -545,30 +548,43 @@ document.addEventListener('keydown',function(e){
     checkBlank(e.target.id.replace('bi-',''));
 });
 
+function wrongItemsFor(topic){
+  return Object.keys(answered).filter(function(k){return topicById[k]===topic&&!answered[k].got;}).map(function(k){
+    var v=answered[k],card=document.getElementById('qc-'+k);
+    var q=card.querySelector('.q-text');
+    var num=card.querySelector('.q-num');
+    return {question:'문항 '+(num?num.textContent:k)+' · '+(q?q.textContent.replace(/\s+/g,' ').trim():k),my:v.my,right:v.right,hintHtml:(document.getElementById('ah-'+k)||{innerHTML:''}).innerHTML};
+  });
+}
+
 function mark(k,got,my,right){
   if(answered[k])return;
   answered[k]={got:got,my:my,right:right};
   var card=document.getElementById('qc-'+k);
   card.classList.add(got?'ok':'ng');
   var b=document.createElement('div');b.className='done-badge';b.textContent=got?'✅':'❌';card.appendChild(b);
-  var pre=k[0];
-  if(got){correct++;secC[pre]++;toast('🎉 정답!','ok');}
-  else{wrong++;secW[pre]++;document.getElementById('ah-'+k).classList.add('show');toast('틀렸어요! 힌트 확인 👆','ng');}
+  var topic=topicById[k];
+  if(got){correct++;secC[topic]++;toast('🎉 정답!','ok');}
+  else{wrong++;secW[topic]++;document.getElementById('ah-'+k).classList.add('show');toast('틀렸어요! 힌트 확인 👆','ng');}
   var done=correct+wrong;
   document.getElementById('sc-t').textContent=done;
   document.getElementById('sc-c').textContent=correct;
   document.getElementById('sc-w').textContent=wrong;
   document.getElementById('pt').textContent=done+' / '+TOTAL;
   document.getElementById('pf').style.width=(done/TOTAL*100)+'%';
-  var secDone=secC[pre]+secW[pre];
-  if(secDone===SECTOTALS[pre]){
+  var secDone=secC[topic]+secW[topic];
+  if(secDone===SECTOTALS[topic] && done<TOTAL){
     (function(p,sc){
       setTimeout(function(){
-        var opts={};
-        if(p==='a')opts={nextText:'짧은 지문 탭으로 →',onNextClick:function(){var ol=document.getElementById('sp-overlay');if(ol)ol.remove();sw(1,document.querySelectorAll('.tab')[1]);}};
-        showScorePopup(sc,SECTOTALS[p],opts);
+        var other=p==='sothat'?'passive':'sothat';
+        var otherBtn=document.querySelector('.tab[data-topic="'+other+'"]');
+        showScorePopup(sc,SECTOTALS[p],{
+          nextText:(other==='sothat'?'🎯 so ~ that 탭으로 →':'🛡️ 수동태 탭으로 →'),
+          onNextClick:function(){var ol=document.getElementById('sp-overlay');if(ol)ol.remove();sw(other,otherBtn);},
+          wrongItems:wrongItemsFor(p)
+        });
       },800);
-    })(pre,secC[pre]);
+    })(topic,secC[topic]);
   }
   if(done===TOTAL)setTimeout(showResult,800);
 }
@@ -599,6 +615,12 @@ function toast(msg,type){
 </script>
 <script>
 document.addEventListener('DOMContentLoaded',function(){
+  var nums={sothat:0,passive:0};
+  Object.keys(topicById).forEach(function(k){var c=document.getElementById('qc-'+k);if(c){var t=topicById[k];c.classList.add('topic-'+t);nums[t]++;var n=c.querySelector('.q-num');if(n)n.textContent=nums[t];}});
+  var ps=document.querySelectorAll('.passage');
+  if(ps[0])ps[0].classList.add('sothat-passage');
+  if(ps[1])ps[1].classList.add('passive-passage');
+  document.body.classList.add('topic-sothat');
   document.querySelectorAll('.vocab').forEach(function(v){
     var btn=document.createElement('button');
     btn.className='vocab-toggle';btn.textContent='📖 단어 보기 ▾';

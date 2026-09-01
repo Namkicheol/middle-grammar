@@ -84,7 +84,7 @@ body{font-family:'Baloo 2','Noto Sans KR',sans-serif;background:var(--bg);paddin
 <div class="header">
   <div class="hbadge">📝 Unit 03 Grammar</div>
   <h1>과거형 &amp; 시간 접속사 when</h1>
-  <p>be·일반동사 과거 · 부정/의문 · when절 · 총 50문제</p>
+  <p>be·일반동사 과거 · 부정/의문 · when절 · 총 52문제</p>
 </div>
 <div class="scoreboard">
   <div class="sc t"><div class="n" id="sc-t">0</div><div class="l">완료</div></div>
@@ -92,13 +92,13 @@ body{font-family:'Baloo 2','Noto Sans KR',sans-serif;background:var(--bg);paddin
   <div class="sc w"><div class="n" id="sc-w">0</div><div class="l">❌ 오답</div></div>
 </div>
 <div class="pw">
-  <div class="plabel"><span>진행률</span><span id="pt">0 / 50</span></div>
+  <div class="plabel"><span>진행률</span><span id="pt">0 / 52</span></div>
   <div class="pbg"><div class="pfill" id="pf" style="width:0%"></div></div>
 </div>
 <div class="tabs">
   <button class="tab active" onclick="sw(0,this)">📌 be동사 과거 (15)</button>
   <button class="tab" onclick="sw(1,this)">🏃 일반동사 과거 (15)</button>
-  <button class="tab" onclick="sw(2,this)">🔗 when 접속사 (10)</button>
+  <button class="tab" onclick="sw(2,this)">🔗 when 접속사 (12)</button>
   <button class="tab" onclick="sw(3,this)">🔀 단어 배열 (10)</button>
 </div>
 
@@ -354,7 +354,7 @@ body{font-family:'Baloo 2','Noto Sans KR',sans-serif;background:var(--bg);paddin
 
 <!-- ── Section C: 시간 접속사 when ── -->
 <div class="sec" id="s2">
-  <div class="sec-hdr"><div class="lbl">Point C · 10문제</div><h2>시간 접속사 when</h2><div class="desc">「when + 주어 + 과거동사」 · 선택형(1–5) + 빈칸(6–10)</div></div>
+  <div class="sec-hdr"><div class="lbl">Point C · 12문제</div><h2>시간 접속사 when</h2><div class="desc">「when + 주어 + 과거동사」 · 선택형(1–5) + 빈칸(6–12)</div></div>
 
   <div class='question-card' id='qc-c1'><span class='q-num'>1</span>
     <div class='q-text'><em>___</em> Paul came home, his sister was watching TV.</div>
@@ -435,6 +435,23 @@ body{font-family:'Baloo 2','Noto Sans KR',sans-serif;background:var(--bg);paddin
     <div class='answer-hint' id='ah-c10'>💡 정답: <strong>was</strong> — when절·주절 모두 과거: I(단수) + was<br>📝 해석: 내가 어린아이였을 때, 나는 개를 무서워했다.</div>
     <button class='hint-btn' onclick="showHint('c10')">💡 힌트 보기</button>
   </div>
+  <!-- 출처: L3 어법드릴문제 변형 (주어·사건 변형) -->
+  <div class='question-card' id='qc-c11'><span class='q-num'>11</span>
+    <div class='q-text'>When the bus arrived, we <input class="blank" id="bi-c11" placeholder="___" data-ans="got" autocomplete="off" style="min-width:90px"> on. <span class="ex">(get)</span></div>
+    <div class='q-kor'>버스가 도착했을 때, 우리는 탔다.</div>
+    <button class='check-btn' onclick="checkBlank('c11')">✔ 확인</button>
+    <div class='answer-hint' id='ah-c11'>💡 정답: <strong>got</strong> — when절과 주절 모두 과거이며 get의 과거형은 got입니다.<br>📝 해석: 버스가 도착했을 때, 우리는 탔다.</div>
+    <button class='hint-btn' onclick="showHint('c11')">💡 힌트 보기</button>
+  </div>
+
+  <!-- 출처: 창작 예문 -->
+  <div class='question-card' id='qc-c12'><span class='q-num'>12</span>
+    <div class='q-text'>I was reading a novel <input class="blank" id="bi-c12" placeholder="___" data-ans="when" autocomplete="off" style="min-width:90px"> the power went out. <span class="ex">(접속사)</span></div>
+    <div class='q-kor'>전기가 나갔을 때 나는 소설을 읽고 있었다.</div>
+    <button class='check-btn' onclick="checkBlank('c12')">✔ 확인</button>
+    <div class='answer-hint' id='ah-c12'>💡 정답: <strong>when</strong> — when절은 주절 뒤에서 두 과거 사건을 연결합니다.<br>📝 해석: 전기가 나갔을 때 나는 소설을 읽고 있었다.</div>
+    <button class='hint-btn' onclick="showHint('c12')">💡 힌트 보기</button>
+  </div>
 </div>
 
 <!-- ── Section D: 단어 배열 ── -->
@@ -466,7 +483,7 @@ body{font-family:'Baloo 2','Noto Sans KR',sans-serif;background:var(--bg);paddin
 </div>
 
 <script>
-var TOTAL=50,SECTOTALS={a:15,b:15,c:10,d:10},secC={a:0,b:0,c:0,d:0},secW={a:0,b:0,c:0,d:0};
+var TOTAL=52,SECTOTALS={a:15,b:15,c:12,d:10},secC={a:0,b:0,c:0,d:0},secW={a:0,b:0,c:0,d:0};
 var placed={"d1":[],"d2":[],"d3":[],"d4":[],"d5":[],"d6":[],"d7":[],"d8":[],"d9":[],"d10":[]},answered={},correct=0,wrong=0;
 
 function norm(s){
@@ -571,7 +588,7 @@ function mark(k,got,my,right){
   document.getElementById('pt').textContent=done+' / '+TOTAL;
   document.getElementById('pf').style.width=(done/TOTAL*100)+'%';
   var secDone=secC[pre]+secW[pre];
-  if(secDone===SECTOTALS[pre]){
+  if(secDone===SECTOTALS[pre] && done<TOTAL){
     (function(p,sc){
       setTimeout(function(){
         var opts={};

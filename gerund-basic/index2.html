@@ -426,7 +426,7 @@ function mark(k, got) {
     document.getElementById('pt').textContent = done+' / '+TOTAL;
     document.getElementById('pf').style.width = (done/TOTAL*100)+'%';
     var secDone = secC[si]+secW[si];
-    if (secDone === SECTOTALS[si]) {
+    if (secDone === SECTOTALS[si] && done < TOTAL) {
         (function(i, sc) {
             setTimeout(function() {
                 var opts = {};

@@ -980,7 +980,7 @@ button:focus-visible,.unit-card:focus-visible,.all-btn:focus-visible{outline:3px
   </div>
 </div>
 
-<script src="./questions.js?v=questions-20260715a"></script>
+<script src="./questions.js?v=questions-20260901-all-split"></script>
 <script src="../score-popup.js"></script>
 <script src="../sounds.js"></script>
 <!-- Phaser는 보스전에서만 쓰여 첫 페인트를 막을 필요가 없다. 아래 인라인 스크립트에서 지연 로드한다. -->
@@ -1211,12 +1211,12 @@ cleanupZeroScoreRecords();
   // unit cards
   const grid = document.getElementById('unit-grid');
   Object.entries(GAME_QUESTIONS).forEach(([key, unit]) => {
-    if (key === 'all') return;
+    if (key === 'all' || unit.hidden) return;
     const card = document.createElement('div');
     card.className = 'unit-card';
     card.dataset.group = key.startsWith('g1') ? 'g1' : 'g2';
     card.style.setProperty('--c', unit.color);
-    card.innerHTML = `<div class="lbl">${key.toUpperCase().replace('-L','-L')}</div><h3>${unit.label.split(' · ')[1]}</h3><div class="cnt">${unit.questions.length}문제</div><div class="best" data-best-for="${key}"></div>`;
+    card.innerHTML = `<div class="lbl">${unit.code || key.toUpperCase().replace('-L','-L')}</div><h3>${unit.label.split(' · ')[1]}</h3><div class="cnt">${unit.questions.length}문제</div><div class="best" data-best-for="${key}"></div>`;
     card.onclick = () => startSelectedGame(key);
     grid.appendChild(card);
   });
@@ -3447,7 +3447,7 @@ function collectQuestions(unitKey) {
   if (unitKey === 'all') {
     const all = [];
     Object.entries(GAME_QUESTIONS).forEach(([k, v]) => {
-      if (k !== 'all') all.push(...v.questions);
+      if (k !== 'all' && !v.hidden) all.push(...v.questions);
     });
     return all;
   }

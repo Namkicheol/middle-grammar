@@ -684,7 +684,7 @@ function mark(k,got,my,right){
   document.getElementById('pt').textContent=done+' / '+TOTAL;
   document.getElementById('pf').style.width=(done/TOTAL*100)+'%';
   var secDone=secC[pre]+secW[pre];
-  if(secDone===SECTOTALS[pre]){
+  if(secDone===SECTOTALS[pre] && done<TOTAL){
     (function(p,sc){
       setTimeout(function(){
         var opts={};

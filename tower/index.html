@@ -322,7 +322,7 @@ button{font-family:inherit;}
 </div>
 
 <audio id="bgm" src="assets/bgm/climb-epic.mp3" loop preload="none"></audio>
-<script src="../game/questions.js?v=questions-20260715a"></script>
+<script src="../game/questions.js?v=questions-20260901-all-split"></script>
 <script>
 'use strict';
 // ═════════════════════════════════════════════════════════
@@ -405,7 +405,7 @@ window.addEventListener('resize',()=>{if(GS)drawSky(Math.floor(GS.floor/10));});
 // ── 문제 풀 ──
 const params=new URLSearchParams(location.search);
 // questions.js의 'all' 키와 허브 unit=all은 단원이 아니라 전 단원 취급
-const UNIT_KEYS=Object.keys(GAME_QUESTIONS).filter(k=>k!=='all');
+const UNIT_KEYS=Object.keys(GAME_QUESTIONS).filter(k=>k!=='all'&&!GAME_QUESTIONS[k].hidden);
 const _u=params.get('unit');
 const unitParam=(_u&&_u!=='all'&&GAME_QUESTIONS[_u])?_u:null;
 function buildPool(scope){ // null/'all'=전 단원, 'g1'/'g2'=학년 전체, 그 외=단원 키
@@ -975,7 +975,7 @@ function buildUnitChips(){
   mk(rand,'all','전체');mk(rand,'g1','중1 전체');mk(rand,'g2','중2 전체');
   UNIT_KEYS.forEach(k=>{
     const grid=k.startsWith('g1')?$('up-grid-g1'):$('up-grid-g2');
-    mk(grid,k,GAME_QUESTIONS[k].label.split('·')[0].trim().replace(/^중[12]\s*/,''));
+    mk(grid,k,GAME_QUESTIONS[k].label.replace(/^중[12]\s*/,''));
   });
 }
 const SCOPE_LABEL={all:'전 단원 랜덤',g1:'중1 전체 랜덤',g2:'중2 전체 랜덤'};

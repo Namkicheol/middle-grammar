@@ -135,9 +135,10 @@ body{font-family:'Baloo 2','Noto Sans KR',sans-serif;background:var(--bg);paddin
 @keyframes fadein{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}
 @keyframes pop{0%{transform:scale(.8)}70%{transform:scale(1.1)}100%{transform:scale(1)}}
 @media(max-width:480px){.header h1{font-size:1.7rem;}.h-letter.l-a{font-size:90px;}.h-letter.l-b{font-size:60px;}.h-letter.l-c{font-size:70px;}.h-letter.l-d{font-size:52px;}}
+.sec#s1 .sec-hdr{display:none;}body.topic-dummyit .topic-whword,body.topic-dummyit .whword-passage{display:none!important;}body.topic-whword .topic-dummyit{display:none!important;}
 </style>
 </head>
-<body>
+<body class="topic-dummyit">
 <div id="toast"></div>
 
 <div class="header">
@@ -150,7 +151,7 @@ body{font-family:'Baloo 2','Noto Sans KR',sans-serif;background:var(--bg);paddin
   <div class="header-inner">
     <div class="hbadge"><span class="hbadge-dot"></span>중2 L8 · Advanced</div>
     <h1>가주어 it &amp; <em>의문사+to부정사</em> 심화</h1>
-    <p>문맥 파악 · 오류 수정 · 문장 전환 · 짧은 지문 · 총 25문제</p>
+    <p>문법별 탭 · 총 27문제</p>
   </div>
 </div>
 
@@ -160,24 +161,26 @@ body{font-family:'Baloo 2','Noto Sans KR',sans-serif;background:var(--bg);paddin
   <div class="sc w"><div class="n" id="sc-w">0</div><div class="l">❌ 오답</div></div>
 </div>
 <div class="pw">
-  <div class="plabel"><span>진행률</span><span id="pt">0 / 25</span></div>
+  <div class="plabel"><span>진행률</span><span id="pt">0 / 27</span></div>
   <div class="pbg"><div class="pfill" id="pf" style="width:0%"></div></div>
 </div>
 <div class="tabs">
-  <button class="tab active" onclick="sw(0,this)">⚡ 종합 훈련 (15문제)</button>
-  <button class="tab" onclick="sw(1,this)">📖 짧은 지문 (10문제)</button>
+  <button class="tab active" data-topic="dummyit" onclick="sw('dummyit',this)">📌 가주어 it (12문제)</button>
+  <button class="tab" data-topic="whword" onclick="sw('whword',this)">🧭 의문사+to부정사 (15문제)</button>
 </div>
 
-<!-- ═══ Section A : 종합 훈련 15문제
+<!-- ═══ Section A : 종합 훈련 17문제
      a1-a4  : 문맥 파악 MCQ
      a5-a8  : 오류 수정
      a9-a11 : 문장 전환
-     a12-a15: 우리말 영작 ═══ -->
+     a12-a15: 우리말 영작
+     a16    : 문장 전환
+     a17    : 가주어 it 구분 ═══ -->
 <div class="sec show" id="s0">
   <div class="sec-hdr">
-    <div class="lbl">Part 1 · 15문제</div>
-    <h2>종합 문법 훈련</h2>
-    <div class="desc">문맥 파악 · 오류 수정 · 문장 전환 · 우리말 영작</div>
+    <div class="lbl">Advanced · Topic tabs</div>
+    <h2>문법별 집중 훈련</h2>
+    <div class="desc">탭을 선택해 해당 문법 문제를 풀어 보세요</div>
   </div>
 
   <!-- 문맥 파악 (a1-a4) -->
@@ -363,12 +366,38 @@ body{font-family:'Baloo 2','Noto Sans KR',sans-serif;background:var(--bg);paddin
     <div class="answer-hint" id="ah-a15">💡 정답: <strong>when to start</strong> — 「언제 ~할지」 when + to + 동사원형<br>📝 해석: 나는 코치에게 언제 그 경기를 시작할지 여쭤봤다.</div>
     <button class="hint-btn" onclick="showHint('a15')">💡 힌트 보기</button>
   </div>
+
+  <div class="question-card" id="qc-a16"><span class="q-num">16</span><span class="q-type trans">문장 전환</span>
+    <div class="q-text">
+      <span class="orig">가주어 it을 사용해 바꾸세요: To organize the science notes is not easy.</span><br>
+      → It is not easy
+      <input class="blank" id="bi-a16" placeholder="___" data-ans="to organize the science notes" autocomplete="off" style="min-width:220px">.
+    </div>
+    <div class="q-kor">과학 노트를 정리하는 것은 쉽지 않다.</div>
+    <div class="vocab"><span class="vw">organize 정리하다</span><span class="vw">science notes 과학 노트</span></div>
+    <button class="check-btn" onclick="checkBlank('a16')">✔ 확인</button>
+    <div class="answer-hint" id="ah-a16">💡 정답: <strong>to organize the science notes</strong> — 긴 to부정사 주어를 뒤로 보내고 가주어 It을 쓴다: It is not easy to organize the science notes.<br>📝 해석: 과학 노트를 정리하는 것은 쉽지 않다.</div>
+    <button class="hint-btn" onclick="showHint('a16')">💡 힌트 보기</button>
+  </div>
+
+  <div class="question-card" id="qc-a17"><span class="q-num">17</span><span class="q-type ctx">가주어 it 구분</span>
+    <div class="q-text">다음 중 밑줄 친 <em>It</em>이 가주어인 문장을 고르세요.</div>
+    <div class="choices" data-qid="a17" data-ans="It is surprising to see snow in April.">
+      <button class="choice" onclick="pickChoice(this)">It is surprising to see snow in April.</button>
+      <button class="choice" onclick="pickChoice(this)">It is cold in the hallway.</button>
+      <button class="choice" onclick="pickChoice(this)">I found a key on the desk. It is rusty.</button>
+      <button class="choice" onclick="pickChoice(this)">It is ten kilometers from the station.</button>
+    </div>
+    <div class="vocab"><span class="vw">surprising 놀라운</span><span class="vw">hallway 복도</span><span class="vw">rusty 녹슨</span><span class="vw">station 역</span></div>
+    <div class="answer-hint" id="ah-a17">💡 정답: <strong>It is surprising to see snow in April.</strong> — It 뒤의 to see snow in April이 진주어로 쓰였다. 나머지 문장의 It은 날씨·거리·사물을 가리킨다.<br>📝 해석: 4월에 눈을 보는 것은 놀랍다.</div>
+    <button class="hint-btn" onclick="showHint('a17')">💡 힌트 보기</button>
+  </div>
 </div>
 
 <!-- ═══ Section B : 짧은 지문 10문제
      b1-b5  : Passage A — 가주어 it + 의문사 to부정사 혼합 빈칸
      b6-b10 : Passage B — 의문사 to부정사 (의문사 빈칸) ═══ -->
-<div class="sec" id="s1">
+<div class="sec show" id="s1">
   <div class="sec-hdr">
     <div class="lbl">Part 2 · 10문제</div>
     <h2>짧은 지문 읽고 빈칸 채우기</h2>
@@ -519,7 +548,8 @@ body{font-family:'Baloo 2','Noto Sans KR',sans-serif;background:var(--bg);paddin
 </div>
 
 <script>
-var TOTAL=25,SECTOTALS={a:15,b:10},secC={a:0,b:0},secW={a:0,b:0};
+var TOTAL=27,SECTOTALS={dummyit:12,whword:15},secC={dummyit:0,whword:0},secW={dummyit:0,whword:0};
+var topicById={a1:'dummyit',a2:'dummyit',a3:'whword',a4:'whword',a5:'dummyit',a6:'whword',a7:'dummyit',a8:'whword',a9:'dummyit',a10:'whword',a11:'whword',a12:'dummyit',a13:'dummyit',a14:'whword',a15:'whword',a16:'dummyit',a17:'dummyit',b1:'dummyit',b2:'whword',b3:'dummyit',b4:'whword',b5:'dummyit',b6:'whword',b7:'whword',b8:'whword',b9:'whword',b10:'whword'};
 var answered={},correct=0,wrong=0;
 
 function norm(s){
@@ -533,10 +563,11 @@ function norm(s){
   return s;
 }
 
-function sw(i,btn){
-  document.querySelectorAll('.sec').forEach(function(s){s.classList.remove('show');});
+function sw(topic,btn){
+  document.body.classList.remove('topic-dummyit','topic-whword');
+  document.body.classList.add('topic-'+topic);
+  document.querySelectorAll('.sec').forEach(function(s){s.classList.add('show');});
   document.querySelectorAll('.tab').forEach(function(b){b.classList.remove('active');});
-  document.getElementById('s'+i).classList.add('show');
   btn.classList.add('active');
   window.scrollTo({top:0,behavior:'smooth'});
 }
@@ -573,30 +604,43 @@ document.addEventListener('keydown',function(e){
     checkBlank(e.target.id.replace('bi-',''));
 });
 
+function wrongItemsFor(topic){
+  return Object.keys(answered).filter(function(k){return topicById[k]===topic&&!answered[k].got;}).map(function(k){
+    var v=answered[k],card=document.getElementById('qc-'+k);
+    var q=card.querySelector('.q-text');
+    var num=card.querySelector('.q-num');
+    return {question:'문항 '+(num?num.textContent:k)+' · '+(q?q.textContent.replace(/\s+/g,' ').trim():k),my:v.my,right:v.right,hintHtml:(document.getElementById('ah-'+k)||{innerHTML:''}).innerHTML};
+  });
+}
+
 function mark(k,got,my,right){
   if(answered[k])return;
   answered[k]={got:got,my:my,right:right};
   var card=document.getElementById('qc-'+k);
   card.classList.add(got?'ok':'ng');
   var b=document.createElement('div');b.className='done-badge';b.textContent=got?'✅':'❌';card.appendChild(b);
-  var pre=k[0];
-  if(got){correct++;secC[pre]++;toast('🎉 정답!','ok');}
-  else{wrong++;secW[pre]++;document.getElementById('ah-'+k).classList.add('show');toast('틀렸어요! 힌트 확인 👆','ng');}
+  var topic=topicById[k];
+  if(got){correct++;secC[topic]++;toast('🎉 정답!','ok');}
+  else{wrong++;secW[topic]++;document.getElementById('ah-'+k).classList.add('show');toast('틀렸어요! 힌트 확인 👆','ng');}
   var done=correct+wrong;
   document.getElementById('sc-t').textContent=done;
   document.getElementById('sc-c').textContent=correct;
   document.getElementById('sc-w').textContent=wrong;
   document.getElementById('pt').textContent=done+' / '+TOTAL;
   document.getElementById('pf').style.width=(done/TOTAL*100)+'%';
-  var secDone=secC[pre]+secW[pre];
-  if(secDone===SECTOTALS[pre]){
+  var secDone=secC[topic]+secW[topic];
+  if(secDone===SECTOTALS[topic] && done<TOTAL){
     (function(p,sc){
       setTimeout(function(){
-        var opts={};
-        if(p==='a')opts={nextText:'짧은 지문 탭으로 →',onNextClick:function(){var ol=document.getElementById('sp-overlay');if(ol)ol.remove();sw(1,document.querySelectorAll('.tab')[1]);}};
-        showScorePopup(sc,SECTOTALS[p],opts);
+        var other=p==='dummyit'?'whword':'dummyit';
+        var otherBtn=document.querySelector('.tab[data-topic="'+other+'"]');
+        showScorePopup(sc,SECTOTALS[p],{
+          nextText:(other==='dummyit'?'📌 가주어 it 탭으로 →':'🧭 의문사+to부정사 탭으로 →'),
+          onNextClick:function(){var ol=document.getElementById('sp-overlay');if(ol)ol.remove();sw(other,otherBtn);},
+          wrongItems:wrongItemsFor(p)
+        });
       },800);
-    })(pre,secC[pre]);
+    })(topic,secC[topic]);
   }
   if(done===TOTAL)setTimeout(showResult,800);
 }
@@ -627,6 +671,12 @@ function toast(msg,type){
 </script>
 <script>
 document.addEventListener('DOMContentLoaded',function(){
+  var nums={dummyit:0,whword:0};
+  Object.keys(topicById).forEach(function(k){var c=document.getElementById('qc-'+k);if(c){var t=topicById[k];c.classList.add('topic-'+t);nums[t]++;var n=c.querySelector('.q-num');if(n)n.textContent=nums[t];}});
+  var ps=document.querySelectorAll('.passage');
+  if(ps[0])ps[0].classList.add('mixed-passage');
+  if(ps[1])ps[1].classList.add('whword-passage');
+  document.body.classList.add('topic-dummyit');
   document.querySelectorAll('.vocab').forEach(function(v){
     var btn=document.createElement('button');
     btn.className='vocab-toggle';btn.textContent='📖 단어 보기 ▾';

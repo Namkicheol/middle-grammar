@@ -142,6 +142,7 @@ body{font-family:'Baloo 2','Noto Sans KR',sans-serif;background:var(--bg);paddin
 @keyframes fadein{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}
 @keyframes pop{0%{transform:scale(.8)}70%{transform:scale(1.1)}100%{transform:scale(1)}}
 @media(max-width:480px){.header h1{font-size:1.7rem;}.h-letter.l-a{font-size:90px;}.h-letter.l-b{font-size:60px;}.h-letter.l-c{font-size:70px;}.h-letter.l-d{font-size:52px;}}
+.sec#s1 .sec-hdr{display:none;}body.topic-past .topic-when,body.topic-past .when-passage{display:none!important;}body.topic-when .topic-past,body.topic-when .past-passage{display:none!important;}
 </style>
 </head>
 <body>
@@ -159,7 +160,7 @@ body{font-family:'Baloo 2','Noto Sans KR',sans-serif;background:var(--bg);paddin
   <div class="header-inner">
     <div class="hbadge"><span class="hbadge-dot"></span>Unit 03 · Advanced</div>
     <h1>과거형 &amp; when <em>심화</em></h1>
-    <p>be·일반동사 과거 · 오류 수정 · 문장 전환 · when절 · 짧은 지문 · 총 25문제</p>
+    <p>be·일반동사 과거 · 오류 수정 · 문장 전환 · when절 · 짧은 지문 · 총 31문제</p>
   </div>
 </div>
 
@@ -169,12 +170,12 @@ body{font-family:'Baloo 2','Noto Sans KR',sans-serif;background:var(--bg);paddin
   <div class="sc w"><div class="n" id="sc-w">0</div><div class="l">❌ 오답</div></div>
 </div>
 <div class="pw">
-  <div class="plabel"><span>진행률</span><span id="pt">0 / 25</span></div>
+  <div class="plabel"><span>진행률</span><span id="pt">0 / 31</span></div>
   <div class="pbg"><div class="pfill" id="pf" style="width:0%"></div></div>
 </div>
 <div class="tabs">
-  <button class="tab active" onclick="sw(0,this)">⚡ 종합 훈련 (15문제)</button>
-  <button class="tab" onclick="sw(1,this)">📖 짧은 지문 (10문제)</button>
+  <button class="tab active" onclick="sw('past',this)">⏪ 과거형 (19문제)</button>
+  <button class="tab" onclick="sw('when',this)">⏱️ when절 (12문제)</button>
 </div>
 
 <!-- ═══════════════════════════════════════
@@ -185,7 +186,7 @@ body{font-family:'Baloo 2','Noto Sans KR',sans-serif;background:var(--bg);paddin
        a12-a15: 우리말 → 영어 빈칸
 ═══════════════════════════════════════ -->
 <div class="sec show" id="s0">
-  <div class="sec-hdr"><div class="lbl">Part 1 · 15문제</div><h2>종합 문법 훈련</h2><div class="desc">be·일반동사 과거 · 오류 수정 · 문장 전환 · when절 · 우리말 영작</div></div>
+  <div class="sec-hdr"><div class="lbl">Advanced · Topic tabs</div><h2>과거형 · when절</h2><div class="desc">위 탭에서 한 문법 주제씩 풀어 보세요. 총 31문제</div></div>
 
   <!-- ─── 문맥 파악 mcq (a1-a4) ─── -->
   <div class="question-card" id="qc-a1"><span class="q-num">1</span><span class="q-type ctx">문맥 파악</span>
@@ -379,6 +380,15 @@ body{font-family:'Baloo 2','Noto Sans KR',sans-serif;background:var(--bg);paddin
     <div class="answer-hint" id="ah-a15">💡 정답: <strong>were</strong> — The shoes(복수) + 과거 → were<br>📝 해석: 그 신발들은 우리 형의 것이었다.</div>
     <button class="hint-btn" onclick="showHint('a15')">💡 힌트 보기</button>
   </div>
+  <div class="question-card" id="qc-a16"><span class="q-num">16</span><span class="q-type ctx">when절 배열</span><div class="q-text">단어를 배열해 문장을 완성하세요: <strong>the lights / went out / When</strong>, everyone became quiet.</div><div class="q-kor">불이 꺼졌을 때, 모두가 조용해졌다.</div><input class="blank" id="bi-a16" data-ans="When the lights went out" placeholder="문장 입력" autocomplete="off"><button class="check-btn" onclick="checkBlank('a16')">✔ 확인</button><div class="answer-hint" id="ah-a16">💡 정답: <strong>When the lights went out</strong> — when절은 시간을 나타내며 주절 앞에 올 수 있습니다.<br>📝 해석: 불이 꺼졌을 때, 모두가 조용해졌다.</div></div>
+  <div class="question-card" id="qc-a17"><span class="q-num">17</span><span class="q-type ctx">문맥 선택</span><div class="q-text">The bell rang. Then the students left the room.<br>두 사건을 when으로 자연스럽게 연결한 문장을 고르세요.</div><div class="choices full" data-qid="a17" data-ans="When the bell rang, the students left the room."><button class="choice" onclick="pickChoice(this)">When did the bell ring, the students left the room.</button><button class="choice" onclick="pickChoice(this)">When the bell rang, the students left the room.</button><button class="choice" onclick="pickChoice(this)">When the bell rang, the students did left the room.</button><button class="choice" onclick="pickChoice(this)">When the bell ring, the students left the room.</button></div><div class="answer-hint" id="ah-a17">💡 정답: <strong>When the bell rang, the students left the room.</strong> — 먼저 일어난 사건을 when절로 연결합니다.<br>📝 해석: 종이 울렸을 때, 학생들은 교실을 나갔다.</div></div>
+  <div class="question-card" id="qc-a18"><span class="q-num">18</span><span class="q-type trans">절 위치 바꾸기</span><div class="q-text">같은 뜻이 되도록 문장을 완성하세요.<br>When the concert ended, we took the last bus home.<br>→ We took the last bus home <input class="blank" id="bi-a18" data-ans="when the concert ended" placeholder="___" autocomplete="off">.</div><div class="q-kor">공연이 끝났을 때, 우리는 막차를 타고 집에 갔다.</div><button class="check-btn" onclick="checkBlank('a18')">✔ 확인</button><div class="answer-hint" id="ah-a18">💡 정답: <strong>when the concert ended</strong> — when절은 주절 뒤에도 올 수 있으며 이때 쉼표를 쓰지 않습니다.<br>📝 해석: 공연이 끝났을 때, 우리는 막차를 타고 집에 갔다.</div></div>
+  <div class="question-card" id="qc-a19"><span class="q-num">19</span><span class="q-type trans">문장 합치기</span><div class="q-text">두 문장을 when으로 연결하세요: The baby woke up. / The dog barked loudly. → <input class="blank" id="bi-a19" data-ans="When the dog barked loudly" placeholder="___" autocomplete="off">, the baby woke up.</div><div class="q-kor">개가 큰 소리로 짖었을 때, 아기가 깨어났다.</div><button class="check-btn" onclick="checkBlank('a19')">✔ 확인</button><div class="answer-hint" id="ah-a19">💡 정답: <strong>When the dog barked loudly</strong><br>📝 해석: 개가 큰 소리로 짖었을 때, 아기가 깨어났다.</div></div>
+  <!-- 출처: L3 문법연습문제 심화 변형 (주어·장소·사건 변형) -->
+  <div class="question-card" id="qc-a20"><span class="q-num">20</span><span class="q-type trans">절 위치 바꾸기</span><div class="q-text">같은 뜻이 되도록 문장을 완성하세요.<br>When the coach arrived, the players warmed up.<br>→ The players warmed up <input class="blank" id="bi-a20" data-ans="when the coach arrived" placeholder="___" autocomplete="off">.</div><div class="q-kor">코치가 도착했을 때, 선수들은 준비 운동을 했다.</div><button class="check-btn" onclick="checkBlank('a20')">✔ 확인</button><div class="answer-hint" id="ah-a20">💡 정답: <strong>when the coach arrived</strong> — when절은 주절 뒤에 올 수 있으며 쉼표 없이 씁니다.<br>📝 해석: 코치가 도착했을 때, 선수들은 준비 운동을 했다.</div></div>
+
+  <!-- 출처: 창작 예문 -->
+  <div class="question-card" id="qc-a21"><span class="q-num">21</span><span class="q-type kor">우리말 영작</span><div class="q-text"><span class="kor-hint">🇰🇷 내가 창문을 열었을 때, 신선한 공기가 방으로 들어왔다.</span><br>When I <input class="blank" id="bi-a21" data-ans="opened the window" placeholder="___" autocomplete="off">, fresh air came into the room.</div><div class="q-kor">내가 창문을 열었을 때, 신선한 공기가 방으로 들어왔다.</div><button class="check-btn" onclick="checkBlank('a21')">✔ 확인</button><div class="answer-hint" id="ah-a21">💡 정답: <strong>opened the window</strong> — when절은 when + 주어 + 과거동사 어순입니다.<br>📝 해석: 내가 창문을 열었을 때, 신선한 공기가 방으로 들어왔다.</div></div>
 </div>
 
 <!-- ═══════════════════════════════════════
@@ -526,7 +536,8 @@ body{font-family:'Baloo 2','Noto Sans KR',sans-serif;background:var(--bg);paddin
 </div>
 
 <script>
-var TOTAL=25,SECTOTALS={a:15,b:10},secC={a:0,b:0},secW={a:0,b:0};
+var TOTAL=31,SECTOTALS={past:19,when:12},secC={past:0,when:0},secW={past:0,when:0};
+var topicById={a1:'past',a2:'past',a3:'when',a4:'past',a5:'past',a6:'past',a7:'when',a8:'when',a9:'past',a10:'past',a11:'past',a12:'past',a13:'when',a14:'past',a15:'past',a16:'when',a17:'when',a18:'when',a19:'when',a20:'when',a21:'when',b1:'past',b2:'past',b3:'when',b4:'past',b5:'past',b6:'past',b7:'past',b8:'when',b9:'past',b10:'past'};
 var answered={},correct=0,wrong=0;
 
 function norm(s){
@@ -539,10 +550,8 @@ function norm(s){
   return s;
 }
 
-function sw(i,btn){
-  document.querySelectorAll('.sec').forEach(function(s){s.classList.remove('show');});
+function sw(topic,btn){document.body.classList.remove('topic-past','topic-when');document.body.classList.add('topic-'+topic);document.querySelectorAll('.sec').forEach(function(s){s.classList.add('show');});
   document.querySelectorAll('.tab').forEach(function(b){b.classList.remove('active');});
-  document.getElementById('s'+i).classList.add('show');
   btn.classList.add('active');
   window.scrollTo({top:0,behavior:'smooth'});
 }
@@ -578,30 +587,32 @@ document.addEventListener('keydown',function(e){
     checkBlank(e.target.id.replace('bi-',''));
 });
 
+function topicWrongItems(topic){return Object.keys(answered).filter(function(k){return topicById[k]===topic&&!answered[k].got;}).map(function(k){var c=document.getElementById('qc-'+k);return {question:c?c.textContent:'',my:answered[k].my,right:answered[k].right,hintHtml:(document.getElementById('ah-'+k)||{}).innerHTML||''};});}
 function mark(k,got,my,right){
   if(answered[k])return;
   answered[k]={got:got,my:my,right:right};
   var card=document.getElementById('qc-'+k);
   card.classList.add(got?'ok':'ng');
   var b=document.createElement('div');b.className='done-badge';b.textContent=got?'✅':'❌';card.appendChild(b);
-  var pre=k[0];
-  if(got){correct++;secC[pre]++;toast('🎉 정답!','ok');}
-  else{wrong++;secW[pre]++;document.getElementById('ah-'+k).classList.add('show');toast('틀렸어요! 힌트 확인 👆','ng');}
+  var topic=topicById[k];
+  if(got){correct++;secC[topic]++;toast('🎉 정답!','ok');}
+  else{wrong++;secW[topic]++;document.getElementById('ah-'+k).classList.add('show');toast('틀렸어요! 힌트 확인 👆','ng');}
   var done=correct+wrong;
   document.getElementById('sc-t').textContent=done;
   document.getElementById('sc-c').textContent=correct;
   document.getElementById('sc-w').textContent=wrong;
   document.getElementById('pt').textContent=done+' / '+TOTAL;
   document.getElementById('pf').style.width=(done/TOTAL*100)+'%';
-  var secDone=secC[pre]+secW[pre];
-  if(secDone===SECTOTALS[pre]){
+  var secDone=secC[topic]+secW[topic];
+  if(secDone===SECTOTALS[topic]&&done<TOTAL){
     (function(p,sc){
       setTimeout(function(){
-        var opts={};
-        if(p==='a') opts={nextText:'짧은 지문 탭으로 →',onNextClick:function(){var ol=document.getElementById('sp-overlay');if(ol)ol.remove();sw(1,document.querySelectorAll('.tab')[1]);}};
+        var opts={wrongItems:topicWrongItems(p)};
+        if(p==='past') opts={nextText:'when절 탭으로 →',wrongItems:topicWrongItems(p),onNextClick:function(){var ol=document.getElementById('sp-overlay');if(ol)ol.remove();sw('when',document.querySelectorAll('.tab')[1]);}};
+        if(p==='when') opts={nextText:'과거형 탭으로 →',wrongItems:topicWrongItems(p),onNextClick:function(){var ol=document.getElementById('sp-overlay');if(ol)ol.remove();sw('past',document.querySelectorAll('.tab')[0]);}};
         showScorePopup(sc,SECTOTALS[p],opts);
       },800);
-    })(pre,secC[pre]);
+    })(topic,secC[topic]);
   }
   if(done===TOTAL)setTimeout(showResult,800);
 }
@@ -632,6 +643,7 @@ function toast(msg,type){
 </script>
 <script>
 document.addEventListener('DOMContentLoaded',function(){
+  var nums={past:0,when:0};Object.keys(topicById).forEach(function(k){var c=document.getElementById('qc-'+k);if(c){var t=topicById[k];c.classList.add('topic-'+t);nums[t]++;var n=c.querySelector('.q-num');if(n)n.textContent=nums[t];}});document.body.classList.add('topic-past');document.querySelectorAll('.sec').forEach(function(s){s.classList.add('show');});
   document.querySelectorAll('.vocab').forEach(function(v){
     var btn=document.createElement('button');
     btn.className='vocab-toggle';btn.textContent='📖 단어 보기 ▾';

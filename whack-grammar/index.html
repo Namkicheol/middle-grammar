@@ -369,6 +369,9 @@ header{display:flex;align-items:center;gap:8px;padding:12px 14px 6px;position:re
 .panel .units button:hover{background:rgba(34,211,238,.14);border-color:rgba(34,211,238,.55);}
 .panel .units button.on{background:linear-gradient(135deg,rgba(34,211,238,.32),rgba(168,85,247,.28));
   border-color:var(--neon-cyan);color:#fff;box-shadow:0 0 16px rgba(34,211,238,.55);text-shadow:0 0 8px rgba(34,211,238,.7);}
+#screen-start .panel{max-height:calc(100% - 24px);display:flex;flex-direction:column;}
+#screen-start .panel .units{min-height:0;overflow-y:auto;overscroll-behavior:contain;padding-right:3px;}
+#screen-start .panel .go{flex-shrink:0;}
 .panel .go{background:linear-gradient(135deg,#22d3ee 0%,#a855f7 100%);border:none;color:#fff;
   font-family:inherit;font-weight:900;font-size:1.1rem;padding:14px 20px;border-radius:16px;width:100%;cursor:pointer;
   box-shadow:0 0 22px rgba(34,211,238,.45),0 0 44px rgba(168,85,247,.35),0 8px 18px rgba(0,0,0,.5);
@@ -526,7 +529,7 @@ header{display:flex;align-items:center;gap:8px;padding:12px 14px 6px;position:re
 <script>function toast(msg, type){}</script>
 <script src="../sounds.js"></script>
 <script src="../score-popup.js"></script>
-<script src="../game/questions.js?v=questions-20260715a"></script>
+<script src="../game/questions.js?v=questions-20260901-all-split"></script>
 <script>
 const SLOT_COUNT = 9;
 const ROUND_QUESTIONS = 10;
@@ -550,7 +553,7 @@ function applyRoundDifficulty() {
   MAX_LIVE_MOLES = Math.min(5, 3 + Math.floor(r / 2));
 }
 
-let unitKey = 'g1-l1';
+let unitKey = Object.keys(GAME_QUESTIONS).find(key => key !== 'all' && !GAME_QUESTIONS[key].hidden) || 'all';
 let questionPool = [];
 let qIdx = 0;
 let score = 0;
@@ -620,8 +623,9 @@ function buildUnitList() {
   const list = document.getElementById('unit-list');
   list.innerHTML = '';
   Object.entries(GAME_QUESTIONS).forEach(([key, info]) => {
+    if (info.hidden) return;
     const btn = document.createElement('button');
-    btn.textContent = info.label.replace('중1 ', '').replace('중2 ', 'g2-');
+    btn.textContent = info.label;
     btn.dataset.key = key;
     if (key === unitKey) btn.classList.add('on');
     btn.addEventListener('click', () => {
@@ -642,10 +646,11 @@ function shuffle(arr) {
 }
 
 function pickQuestionPool(key) {
-  const src = GAME_QUESTIONS[key];
-  if (!src) return [];
+  const sources = key === 'all'
+    ? Object.entries(GAME_QUESTIONS).filter(([k, info]) => k !== 'all' && !info.hidden).map(([, info]) => info)
+    : GAME_QUESTIONS[key] ? [GAME_QUESTIONS[key]] : [];
   // 빈칸형(___) 또는 OX(O/X 판단) 문항만 사용. OX는 빈칸이 없어도 O/X 두더지로 출제.
-  const playable = src.questions.filter(q => /_{3,}/.test(q.eng || '') || q.type === 'ox');
+  const playable = sources.flatMap(src => src.questions).filter(q => /_{3,}/.test(q.eng || '') || q.type === 'ox');
   return shuffle(playable.slice()).slice(0, ROUND_QUESTIONS);
 }
 

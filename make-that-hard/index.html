@@ -130,6 +130,7 @@ body{font-family:'Baloo 2','Noto Sans KR',sans-serif;background:var(--bg);paddin
 @keyframes fadein{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}
 @keyframes pop{0%{transform:scale(.8)}70%{transform:scale(1.1)}100%{transform:scale(1)}}
 @media(max-width:480px){.header h1{font-size:1.7rem;}.h-letter.l-a{font-size:90px;}.h-letter.l-b{font-size:60px;}.h-letter.l-c{font-size:70px;}.h-letter.l-d{font-size:52px;}}
+.sec#s1 .sec-hdr{display:none;}body.topic-make .topic-that,body.topic-make .that-passage{display:none!important;}body.topic-that .topic-make,body.topic-that .make-passage{display:none!important;}
 </style>
 </head>
 <body>
@@ -146,7 +147,7 @@ body{font-family:'Baloo 2','Noto Sans KR',sans-serif;background:var(--bg);paddin
   <div class="header-inner">
     <div class="hbadge"><span class="hbadge-dot"></span>Unit 07 · Advanced</div>
     <h1>make + 형용사 &amp; that <em>심화</em></h1>
-    <p>오류 수정 · 문장 합치기 · 짧은 지문 · 총 25문제</p>
+    <p>오류 수정 · 문장 합치기 · 짧은 지문 · 총 26문제</p>
   </div>
 </div>
 
@@ -156,12 +157,12 @@ body{font-family:'Baloo 2','Noto Sans KR',sans-serif;background:var(--bg);paddin
   <div class="sc w"><div class="n" id="sc-w">0</div><div class="l">❌ 오답</div></div>
 </div>
 <div class="pw">
-  <div class="plabel"><span>진행률</span><span id="pt">0 / 25</span></div>
+  <div class="plabel"><span>진행률</span><span id="pt">0 / 26</span></div>
   <div class="pbg"><div class="pfill" id="pf" style="width:0%"></div></div>
 </div>
 <div class="tabs">
-  <button class="tab active" onclick="sw(0,this)">⚡ 종합 훈련 (15문제)</button>
-  <button class="tab" onclick="sw(1,this)">📖 짧은 지문 (10문제)</button>
+  <button class="tab active" onclick="sw('make',this)">⚙️ make + 목적어 + 형용사 (12문제)</button>
+  <button class="tab" onclick="sw('that',this)">🔗 that절 (14문제)</button>
 </div>
 
 <!-- ══════════════════════════════════════
@@ -172,7 +173,7 @@ body{font-family:'Baloo 2','Noto Sans KR',sans-serif;background:var(--bg);paddin
        a12-a15: 우리말 → 영작
 ══════════════════════════════════════ -->
 <div class="sec show" id="s0">
-  <div class="sec-hdr"><div class="lbl">Part 1 · 15문제</div><h2>종합 문법 훈련</h2><div class="desc">문맥 파악 · 오류 수정 · 두 문장 합치기 · 우리말 영작</div></div>
+  <div class="sec-hdr"><div class="lbl">Advanced · Topic tabs</div><h2>make + 목적어 + 형용사 · that절</h2><div class="desc">위 탭에서 한 문법 주제씩 풀어 보세요. 총 26문제</div></div>
 
   <!-- ─── 문맥 파악 MCQ (a1-a4) ─── -->
   <div class="question-card" id="qc-a1"><span class="q-num">1</span><span class="q-type ctx">문맥 파악</span>
@@ -280,7 +281,7 @@ body{font-family:'Baloo 2','Noto Sans KR',sans-serif;background:var(--bg);paddin
       <button class="choice" onclick="pickChoice(this)">That Sarah hopes her brother will visit her this weekend.</button>
       <button class="choice" onclick="pickChoice(this)">Sarah hopes her brother that will visit her this weekend.</button>
     </div>
-    <div class="answer-hint" id="ah-a9">💡 정답: <strong>①</strong> — 첫 문장의 동사 hopes 뒤에 that을 두고 두 번째 문장을 연결<br>📝 해석: Sarah는 오빠가 이번 주말에 자신을 방문할 것이라고 희망한다.</div>
+    <div class="answer-hint" id="ah-a9">💡 정답: <strong>Sarah hopes that her brother will visit her this weekend.</strong> — 첫 문장의 동사 hopes 뒤에 that을 두고 두 번째 문장을 연결<br>📝 해석: Sarah는 오빠가 이번 주말에 자신을 방문할 것이라고 희망한다.</div>
     <button class="hint-btn" onclick="showHint('a9')">💡 힌트 보기</button>
   </div>
 
@@ -295,7 +296,7 @@ body{font-family:'Baloo 2','Noto Sans KR',sans-serif;background:var(--bg);paddin
       <button class="choice" onclick="pickChoice(this)">That we didn't know the library closes early on Fridays.</button>
       <button class="choice" onclick="pickChoice(this)">We didn't know the library that closes early on Fridays.</button>
     </div>
-    <div class="answer-hint" id="ah-a10">💡 정답: <strong>②</strong> — know 뒤에 that + 절. because는 이유 접속사라 어색<br>📝 해석: 우리는 도서관이 금요일에 일찍 문을 닫는다는 것을 몰랐다.</div>
+    <div class="answer-hint" id="ah-a10">💡 정답: <strong>We didn't know that the library closes early on Fridays.</strong> — know 뒤에 that + 절<br>📝 해석: 우리는 도서관이 금요일에 일찍 문을 닫는다는 것을 몰랐다.</div>
     <button class="hint-btn" onclick="showHint('a10')">💡 힌트 보기</button>
   </div>
 
@@ -310,7 +311,7 @@ body{font-family:'Baloo 2','Noto Sans KR',sans-serif;background:var(--bg);paddin
       <button class="choice" onclick="pickChoice(this)">Math thinks that Mia is the most interesting subject.</button>
       <button class="choice" onclick="pickChoice(this)">Mia that thinks math is the most interesting subject.</button>
     </div>
-    <div class="answer-hint" id="ah-a11">💡 정답: <strong>①</strong> — Mia thinks + that + 두 번째 문장 그대로. ③은 주어와 목적어가 뒤바뀐 비문<br>📝 해석: Mia는 수학이 가장 재미있는 과목이라고 생각한다.</div>
+    <div class="answer-hint" id="ah-a11">💡 정답: <strong>Mia thinks that math is the most interesting subject.</strong> — Mia thinks + that + 절<br>📝 해석: Mia는 수학이 가장 재미있는 과목이라고 생각한다.</div>
     <button class="hint-btn" onclick="showHint('a11')">💡 힌트 보기</button>
   </div>
 
@@ -361,6 +362,19 @@ body{font-family:'Baloo 2','Noto Sans KR',sans-serif;background:var(--bg);paddin
     <button class="check-btn" onclick="checkBlank('a15')">✔ 확인</button>
     <div class="answer-hint" id="ah-a15">💡 정답: <strong>Mia said that the book was interesting.</strong><br>📝 해석: Mia는 그 책이 재미있다고 말했다.<br>👉 「say + that + 절」, 시제 일치로 보통 was 사용 (현재 시제 is도 가능)</div>
     <button class="hint-btn" onclick="showHint('a15')">💡 힌트 보기</button>
+  </div>
+  <!-- 출처: L7 어법드릴문제 변형 (주어·목적어·상태 변형) -->
+  <div class="question-card" id="qc-a16"><span class="q-num">16</span><span class="q-type fix">오류 수정</span>
+    <div class="q-text">
+      <span class="orig">❌ The unexpected message made the new student <span class="wrong">nervously</span>.</span><br>
+      → 밑줄 친 부분을 바르게 고치세요:
+      <input class="blank" id="bi-a16" placeholder="___" data-ans="nervous" autocomplete="off" style="min-width:120px">
+    </div>
+    <div class="q-kor">뜻밖의 메시지는 새 학생을 긴장하게 만들었다.</div>
+    <div class="vw-box"><span class="vw">unexpected 뜻밖의</span><span class="vw">message 메시지</span><span class="vw">nervous 긴장한</span></div>
+    <button class="check-btn" onclick="checkBlank('a16')">✔ 확인</button>
+    <div class="answer-hint" id="ah-a16">💡 정답: <strong>nervous</strong> — make + 목적어 뒤에는 상태를 나타내는 형용사 nervous를 씁니다. nervously는 부사입니다.<br>📝 해석: 뜻밖의 메시지는 새 학생을 긴장하게 만들었다.</div>
+    <button class="hint-btn" onclick="showHint('a16')">💡 힌트 보기</button>
   </div>
 </div>
 
@@ -469,14 +483,9 @@ body{font-family:'Baloo 2','Noto Sans KR',sans-serif;background:var(--bg);paddin
   </div>
 
   <div class="question-card" id="qc-b8"><span class="q-num">8</span>
-    <div class="q-text">Her mom said <em>___</em> Mia could go to the concert.</div>
-    <div class="choices" data-qid="b8" data-ans="that">
-      <button class="choice" onclick="pickChoice(this)">that</button>
-      <button class="choice" onclick="pickChoice(this)">because</button>
-      <button class="choice" onclick="pickChoice(this)">if</button>
-      <button class="choice" onclick="pickChoice(this)">which</button>
-    </div>
-    <div class="answer-hint" id="ah-b8">💡 정답: <strong>that</strong> — 「say + that + 절」 = "~라고 말하다"<br>📝 해석: 그녀의 엄마는 Mia가 콘서트에 갈 수 있다고 말했다.</div>
+    <div class="q-text">that절 전체를 쓰세요.<br>Her mom said <input class="blank" id="bi-b8" data-ans="that Mia could go to the concert" placeholder="that ..." autocomplete="off" style="min-width:290px">.</div>
+    <button class="check-btn" onclick="checkBlank('b8')">✔ 확인</button>
+    <div class="answer-hint" id="ah-b8">💡 정답: <strong>that Mia could go to the concert</strong> — say 뒤에 that + 주어 + 동사 어순의 절을 둡니다.<br>📝 해석: 그녀의 엄마는 Mia가 콘서트에 갈 수 있다고 말했다.</div>
     <button class="hint-btn" onclick="showHint('b8')">💡 힌트 보기</button>
   </div>
 
@@ -493,14 +502,9 @@ body{font-family:'Baloo 2','Noto Sans KR',sans-serif;background:var(--bg);paddin
   </div>
 
   <div class="question-card" id="qc-b10"><span class="q-num">10</span>
-    <div class="q-text">Her friend knew <em>___</em> Mia had saved enough allowance for two tickets.</div>
-    <div class="choices" data-qid="b10" data-ans="that">
-      <button class="choice" onclick="pickChoice(this)">because</button>
-      <button class="choice" onclick="pickChoice(this)">which</button>
-      <button class="choice" onclick="pickChoice(this)">that</button>
-      <button class="choice" onclick="pickChoice(this)">when</button>
-    </div>
-    <div class="answer-hint" id="ah-b10">💡 정답: <strong>that</strong> — 「know + that + 절」 = "~라는 것을 알다"<br>📝 해석: 그녀의 친구는 Mia가 표 두 장을 살 만큼 용돈을 모았다는 것을 알았다.</div>
+    <div class="q-text">두 문장을 that으로 연결하세요.<br>Her friend knew it. / Mia had saved enough allowance for two tickets.<br>→ Her friend knew <input class="blank" id="bi-b10" data-ans="that Mia had saved enough allowance for two tickets" placeholder="that ..." autocomplete="off" style="min-width:360px">.</div>
+    <button class="check-btn" onclick="checkBlank('b10')">✔ 확인</button>
+    <div class="answer-hint" id="ah-b10">💡 정답: <strong>that Mia had saved enough allowance for two tickets</strong> — know의 내용을 that절로 연결합니다.<br>📝 해석: 그녀의 친구는 Mia가 표 두 장을 살 만큼 용돈을 모았다는 것을 알았다.</div>
     <button class="hint-btn" onclick="showHint('b10')">💡 힌트 보기</button>
   </div>
 </div>
@@ -519,7 +523,8 @@ body{font-family:'Baloo 2','Noto Sans KR',sans-serif;background:var(--bg);paddin
 </div>
 
 <script>
-var TOTAL=25,SECTOTALS={a:15,b:10},secC={a:0,b:0},secW={a:0,b:0};
+var TOTAL=26,SECTOTALS={make:12,that:14},secC={make:0,that:0},secW={make:0,that:0};
+var topicById={a1:'make',a2:'that',a3:'make',a4:'that',a5:'make',a6:'make',a7:'that',a8:'that',a9:'that',a10:'that',a11:'that',a12:'make',a13:'make',a14:'that',a15:'that',a16:'make',b1:'make',b2:'make',b3:'make',b4:'make',b5:'make',b6:'that',b7:'that',b8:'that',b9:'that',b10:'that'};
 var answered={},correct=0,wrong=0;
 
 function norm(s){
@@ -533,10 +538,8 @@ function norm(s){
   return s;
 }
 
-function sw(i,btn){
-  document.querySelectorAll('.sec').forEach(function(s){s.classList.remove('show');});
+function sw(topic,btn){document.body.classList.remove('topic-make','topic-that');document.body.classList.add('topic-'+topic);document.querySelectorAll('.sec').forEach(function(s){s.classList.add('show');});
   document.querySelectorAll('.tab').forEach(function(b){b.classList.remove('active');});
-  document.getElementById('s'+i).classList.add('show');
   btn.classList.add('active');
 }
 function showHint(k){document.getElementById('ah-'+k).classList.add('show');}
@@ -572,30 +575,32 @@ document.addEventListener('keydown',function(e){
     checkBlank(e.target.id.replace('bi-',''));
 });
 
+function topicWrongItems(topic){return Object.keys(answered).filter(function(k){return topicById[k]===topic&&!answered[k].got;}).map(function(k){var c=document.getElementById('qc-'+k);return {question:c?c.textContent:'',my:answered[k].my,right:answered[k].right,hintHtml:(document.getElementById('ah-'+k)||{}).innerHTML||''};});}
 function mark(k,got,my,right){
   if(answered[k])return;
   answered[k]={got:got,my:my,right:right};
   var card=document.getElementById('qc-'+k);
   card.classList.add(got?'ok':'ng');
   var b=document.createElement('div');b.className='done-badge';b.textContent=got?'✅':'❌';card.appendChild(b);
-  var pre=k[0];
-  if(got){correct++;secC[pre]++;toast('🎉 정답!','ok');}
-  else{wrong++;secW[pre]++;document.getElementById('ah-'+k).classList.add('show');toast('틀렸어요! 힌트 확인 👆','ng');}
+  var topic=topicById[k];
+  if(got){correct++;secC[topic]++;toast('🎉 정답!','ok');}
+  else{wrong++;secW[topic]++;document.getElementById('ah-'+k).classList.add('show');toast('틀렸어요! 힌트 확인 👆','ng');}
   var done=correct+wrong;
   document.getElementById('sc-t').textContent=done;
   document.getElementById('sc-c').textContent=correct;
   document.getElementById('sc-w').textContent=wrong;
   document.getElementById('pt').textContent=done+' / '+TOTAL;
   document.getElementById('pf').style.width=(done/TOTAL*100)+'%';
-  var secDone=secC[pre]+secW[pre];
-  if(secDone===SECTOTALS[pre]){
+  var secDone=secC[topic]+secW[topic];
+  if(secDone===SECTOTALS[topic]&&done<TOTAL){
     (function(p,sc){
       setTimeout(function(){
-        var opts={};
-        if(p==='a') opts={nextText:'짧은 지문 탭으로 →',onNextClick:function(){var ol=document.getElementById('sp-overlay');if(ol)ol.remove();sw(1,document.querySelectorAll('.tab')[1]);}};
+        var opts={wrongItems:topicWrongItems(p)};
+        if(p==='make') opts={nextText:'that절 탭으로 →',wrongItems:topicWrongItems(p),onNextClick:function(){var ol=document.getElementById('sp-overlay');if(ol)ol.remove();sw('that',document.querySelectorAll('.tab')[1]);}};
+        if(p==='that') opts={nextText:'make + 목적어 + 형용사 탭으로 →',wrongItems:topicWrongItems(p),onNextClick:function(){var ol=document.getElementById('sp-overlay');if(ol)ol.remove();sw('make',document.querySelectorAll('.tab')[0]);}};
         showScorePopup(sc,SECTOTALS[p],opts);
       },800);
-    })(pre,secC[pre]);
+    })(topic,secC[topic]);
   }
   if(done===TOTAL)setTimeout(showResult,800);
 }
@@ -626,6 +631,7 @@ function toast(msg,type){
 </script>
 <script>
 document.addEventListener('DOMContentLoaded',function(){
+  var nums={make:0,that:0};Object.keys(topicById).forEach(function(k){var c=document.getElementById('qc-'+k);if(c){var t=topicById[k];c.classList.add('topic-'+t);nums[t]++;var n=c.querySelector('.q-num');if(n)n.textContent=nums[t];}});var ps=document.querySelectorAll('.passage');if(ps[0])ps[0].classList.add('make-passage');if(ps[1])ps[1].classList.add('that-passage');document.body.classList.add('topic-make');document.querySelectorAll('.sec').forEach(function(s){s.classList.add('show');});
   document.querySelectorAll('.vw-box').forEach(function(v){
     var btn=document.createElement('button');
     btn.className='vocab-toggle';btn.textContent='📖 단어 보기 ▾';

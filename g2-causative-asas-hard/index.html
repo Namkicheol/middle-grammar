@@ -134,6 +134,7 @@ body{font-family:'Baloo 2','Noto Sans KR',sans-serif;background:var(--bg);paddin
 @keyframes fadein{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}
 @keyframes pop{0%{transform:scale(.8)}70%{transform:scale(1.1)}100%{transform:scale(1)}}
 @media(max-width:480px){.header h1{font-size:1.7rem;}.h-letter.l-a{font-size:90px;}.h-letter.l-b{font-size:60px;}.h-letter.l-c{font-size:70px;}.h-letter.l-d{font-size:52px;}}
+.sec#s1 .sec-hdr{display:none;}body.topic-causative .topic-compare,body.topic-causative .compare-passage{display:none!important;}body.topic-compare .topic-causative,body.topic-compare .causative-passage{display:none!important;}
 </style>
 </head>
 <body>
@@ -163,8 +164,8 @@ body{font-family:'Baloo 2','Noto Sans KR',sans-serif;background:var(--bg);paddin
   <div class="pbg"><div class="pfill" id="pf" style="width:0%"></div></div>
 </div>
 <div class="tabs">
-  <button class="tab active" onclick="sw(0,this)">⚡ 종합 훈련 (15문제)</button>
-  <button class="tab" onclick="sw(1,this)">📖 짧은 지문 (10문제)</button>
+  <button class="tab active" onclick="sw('causative',this)">⚙️ 사역동사 (12문제)</button>
+  <button class="tab" onclick="sw('compare',this)">⚖️ 원급 비교 (13문제)</button>
 </div>
 
 <!-- ═══ Section A : 종합 훈련 15문제
@@ -174,7 +175,7 @@ body{font-family:'Baloo 2','Noto Sans KR',sans-serif;background:var(--bg);paddin
      a12-a15: 우리말 영작 ═══ -->
 <div class="sec show" id="s0">
   <div class="sec-hdr">
-    <div class="lbl">Part 1 · 15문제</div>
+    <div class="lbl">Advanced · Topic tabs</div>
     <h2>종합 문법 훈련</h2>
     <div class="desc">문맥 파악 · 오류 수정 · 문장 전환 · 우리말 영작</div>
   </div>
@@ -510,7 +511,9 @@ body{font-family:'Baloo 2','Noto Sans KR',sans-serif;background:var(--bg);paddin
 </div>
 
 <script>
-var TOTAL=25,SECTOTALS={a:15,b:10},secC={a:0,b:0},secW={a:0,b:0};
+var TOTAL=25,SECTOTALS={causative:12,compare:13},secC={causative:0,compare:0},secW={causative:0,compare:0};
+var topicById={a1:'causative',a2:'compare',a3:'causative',a4:'compare',a5:'causative',a6:'causative',a7:'compare',a8:'compare',a9:'causative',a10:'compare',a11:'compare',a12:'causative',a13:'causative',a14:'compare',a15:'compare',b1:'causative',b2:'causative',b3:'causative',b4:'causative',b5:'causative',b6:'compare',b7:'compare',b8:'compare',b9:'compare',b10:'compare'};
+var topicOrder=['causative','compare'],topicLabels={causative:'사역동사',compare:'원급 비교'},topicWrongs={causative:[],compare:[]};
 var answered={},correct=0,wrong=0;
 
 function norm(s){
@@ -524,10 +527,10 @@ function norm(s){
   return s;
 }
 
-function sw(i,btn){
-  document.querySelectorAll('.sec').forEach(function(s){s.classList.remove('show');});
+function sw(topic,btn){
+  document.body.classList.remove('topic-causative','topic-compare');document.body.classList.add('topic-'+topic);
+  document.querySelectorAll('.sec').forEach(function(s){s.classList.add('show');});
   document.querySelectorAll('.tab').forEach(function(b){b.classList.remove('active');});
-  document.getElementById('s'+i).classList.add('show');
   btn.classList.add('active');
   window.scrollTo({top:0,behavior:'smooth'});
 }
@@ -570,26 +573,27 @@ function mark(k,got,my,right){
   var card=document.getElementById('qc-'+k);
   card.classList.add(got?'ok':'ng');
   var b=document.createElement('div');b.className='done-badge';b.textContent=got?'✅':'❌';card.appendChild(b);
-  var pre=k[0];
-  if(got){correct++;secC[pre]++;toast('🎉 정답!','ok');}
-  else{wrong++;secW[pre]++;document.getElementById('ah-'+k).classList.add('show');toast('틀렸어요! 힌트 확인 👆','ng');}
+  var topic=topicById[k];
+  if(got){correct++;secC[topic]++;toast('🎉 정답!','ok');}
+  else{wrong++;secW[topic]++;document.getElementById('ah-'+k).classList.add('show');topicWrongs[topic].push({question:card.querySelector('.q-text').innerText,my:my,right:right,hintHtml:document.getElementById('ah-'+k).innerHTML});toast('틀렸어요! 힌트 확인 👆','ng');}
   var done=correct+wrong;
   document.getElementById('sc-t').textContent=done;
   document.getElementById('sc-c').textContent=correct;
   document.getElementById('sc-w').textContent=wrong;
   document.getElementById('pt').textContent=done+' / '+TOTAL;
   document.getElementById('pf').style.width=(done/TOTAL*100)+'%';
-  var secDone=secC[pre]+secW[pre];
-  if(secDone===SECTOTALS[pre]){
+  var secDone=secC[topic]+secW[topic];
+  if(done===TOTAL){setTimeout(showResult,800);}
+  else if(secDone===SECTOTALS[topic]){
     (function(p,sc){
       setTimeout(function(){
-        var opts={};
-        if(p==='a')opts={nextText:'짧은 지문 탭으로 →',onNextClick:function(){var ol=document.getElementById('sp-overlay');if(ol)ol.remove();sw(1,document.querySelectorAll('.tab')[1]);}};
+        var other=topicOrder.find(function(t){return t!==p&&(secC[t]+secW[t])<SECTOTALS[t];});
+        var opts={wrongItems:topicWrongs[p]};
+        if(other){var idx=topicOrder.indexOf(other);opts.nextText=topicLabels[other]+' 탭으로 →';opts.onNextClick=function(){var ol=document.getElementById('sp-overlay');if(ol)ol.remove();sw(other,document.querySelectorAll('.tab')[idx]);};}
         showScorePopup(sc,SECTOTALS[p],opts);
       },800);
-    })(pre,secC[pre]);
+    })(topic,secC[topic]);
   }
-  if(done===TOTAL)setTimeout(showResult,800);
 }
 function showResult(){
   document.querySelectorAll('.sec').forEach(function(s){s.style.display='none';});
@@ -618,6 +622,7 @@ function toast(msg,type){
 </script>
 <script>
 document.addEventListener('DOMContentLoaded',function(){
+  var nums={causative:0,compare:0};Object.keys(topicById).forEach(function(k){var c=document.getElementById('qc-'+k);if(c){var t=topicById[k];c.classList.add('topic-'+t);nums[t]++;var n=c.querySelector('.q-num');if(n)n.textContent=nums[t];}});var ps=document.querySelectorAll('.passage');if(ps[0])ps[0].classList.add('causative-passage');if(ps[1])ps[1].classList.add('compare-passage');document.body.classList.add('topic-causative');document.querySelectorAll('.sec').forEach(function(s){s.classList.add('show');});
   document.querySelectorAll('.vocab').forEach(function(v){
     var btn=document.createElement('button');
     btn.className='vocab-toggle';btn.textContent='📖 단어 보기 ▾';

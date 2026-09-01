@@ -130,6 +130,7 @@ body{font-family:'Baloo 2','Noto Sans KR',sans-serif;background:var(--bg);paddin
 @keyframes fadein{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}
 @keyframes pop{0%{transform:scale(.8)}70%{transform:scale(1.1)}100%{transform:scale(1)}}
 @media(max-width:480px){.header h1{font-size:1.7rem;}.h-letter.l-a{font-size:90px;}.h-letter.l-b{font-size:60px;}.h-letter.l-c{font-size:70px;}.h-letter.l-d{font-size:52px;}}
+.sec#s1 .sec-hdr{display:none;}body.topic-look .topic-because,body.topic-look .because-passage{display:none!important;}body.topic-because .topic-look,body.topic-because .look-passage{display:none!important;}
 </style>
 </head>
 <body>
@@ -146,7 +147,7 @@ body{font-family:'Baloo 2','Noto Sans KR',sans-serif;background:var(--bg);paddin
   <div class="header-inner">
     <div class="hbadge"><span class="hbadge-dot"></span>Unit 06 · Advanced</div>
     <h1>감각동사 look &amp; because <em>심화</em></h1>
-    <p>오류 수정 · 문장 합치기 · 짧은 지문 · 총 25문제</p>
+  <p>오류 수정 · 문장 합치기 · 짧은 지문 · 총 26문제</p>
   </div>
 </div>
 
@@ -156,12 +157,12 @@ body{font-family:'Baloo 2','Noto Sans KR',sans-serif;background:var(--bg);paddin
   <div class="sc w"><div class="n" id="sc-w">0</div><div class="l">❌ 오답</div></div>
 </div>
 <div class="pw">
-  <div class="plabel"><span>진행률</span><span id="pt">0 / 25</span></div>
+  <div class="plabel"><span>진행률</span><span id="pt">0 / 26</span></div>
   <div class="pbg"><div class="pfill" id="pf" style="width:0%"></div></div>
 </div>
 <div class="tabs">
-  <button class="tab active" onclick="sw(0,this)">⚡ 종합 훈련 (15문제)</button>
-  <button class="tab" onclick="sw(1,this)">📖 짧은 지문 (10문제)</button>
+  <button class="tab active" onclick="sw('look',this)">👀 look + 형용사 (12문제)</button>
+  <button class="tab" onclick="sw('because',this)">🔗 because (14문제)</button>
 </div>
 
 <!-- ══════════════════════════════════════
@@ -172,7 +173,7 @@ body{font-family:'Baloo 2','Noto Sans KR',sans-serif;background:var(--bg);paddin
        a12-a15: 우리말 → 영작 input
 ══════════════════════════════════════ -->
 <div class="sec show" id="s0">
-  <div class="sec-hdr"><div class="lbl">Part 1 · 15문제</div><h2>종합 문법 훈련</h2><div class="desc">문맥 파악 · 오류 수정 · 문장 합치기 · 우리말 영작</div></div>
+  <div class="sec-hdr"><div class="lbl">Advanced · Topic tabs</div><h2>look + 형용사 · because</h2><div class="desc">위 탭에서 한 문법 주제씩 풀어 보세요. 총 26문제</div></div>
 
   <!-- ─── 문맥 파악 MCQ (a1-a4) ─── -->
   <div class='question-card' id='qc-a1'><span class='q-num'>1</span>
@@ -328,7 +329,7 @@ body{font-family:'Baloo 2','Noto Sans KR',sans-serif;background:var(--bg);paddin
     <div class="q-text">
       <span class="kor-hint">비가 많이 왔기 때문에, 경기가 취소되었다.</span>
       → 영어로 쓰세요: <span class="ex">(Because / rain heavily / game / cancel)</span><br>
-      <input class="blank" id="bi-a13" placeholder="Because ..." data-ans="Because it rained heavily the game was canceled" data-ans2="The game was canceled because it rained heavily" autocomplete="off" style="min-width:300px;margin-top:6px;">
+      <input class="blank" id="bi-a13" placeholder="Because ..." data-ans="Because it rained heavily, the game was canceled" data-ans2="The game was canceled because it rained heavily" autocomplete="off" style="min-width:300px;margin-top:6px;">
     </div>
     <div class="vw-box"><span class="vw">rain heavily 비가 많이 오다</span><span class="vw">cancel 취소하다</span></div>
     <button class="check-btn" onclick="checkBlank('a13')">✔ 확인</button>
@@ -352,12 +353,25 @@ body{font-family:'Baloo 2','Noto Sans KR',sans-serif;background:var(--bg);paddin
     <div class="q-text">
       <span class="kor-hint">그는 너무 피곤했기 때문에 일찍 잠자리에 들었다.</span>
       → 영어로 쓰세요: <span class="ex">(very tired / go to bed early)</span><br>
-      <input class="blank" id="bi-a15" placeholder="He ..." data-ans="He went to bed early because he was very tired" data-ans2="Because he was very tired he went to bed early" autocomplete="off" style="min-width:300px;margin-top:6px;">
+      <input class="blank" id="bi-a15" placeholder="He ..." data-ans="He went to bed early because he was very tired" data-ans2="Because he was very tired, he went to bed early" autocomplete="off" style="min-width:300px;margin-top:6px;">
     </div>
     <div class="vw-box"><span class="vw">tired 피곤한</span><span class="vw">go to bed 잠자리에 들다</span><span class="vw">early 일찍</span></div>
     <button class="check-btn" onclick="checkBlank('a15')">✔ 확인</button>
     <div class="answer-hint" id="ah-a15">💡 정답: <strong>He went to bed early because he was very tired.</strong><br>📝 해석: 그는 너무 피곤했기 때문에 일찍 잠자리에 들었다.<br>또는: Because he was very tired, he went to bed early.</div>
     <button class="hint-btn" onclick="showHint('a15')">💡 힌트 보기</button>
+  </div>
+  <!-- 출처: L6 어법드릴문제 변형 (주어·상태·시간 변형) -->
+  <div class="question-card" id="qc-a16"><span class="q-num">16</span><span class="q-type fix">오류 수정</span>
+    <div class="q-text">
+      <span class="orig">❌ The new blankets look <span class="wrong">softly</span> after washing.</span><br>
+      → 밑줄 친 부분을 바르게 고치세요:
+      <input class="blank" id="bi-a16" placeholder="___" data-ans="soft" autocomplete="off" style="min-width:110px">
+    </div>
+    <div class="q-kor">새 담요들은 세탁 후에 부드러워 보인다.</div>
+    <div class="vw-box"><span class="vw">blanket 담요</span><span class="vw">soft 부드러운</span><span class="vw">after washing 세탁 후에</span></div>
+    <button class="check-btn" onclick="checkBlank('a16')">✔ 확인</button>
+    <div class="answer-hint" id="ah-a16">💡 정답: <strong>soft</strong> — look 뒤에는 상태를 나타내는 형용사 soft를 씁니다. softly는 부사입니다.<br>📝 해석: 새 담요들은 세탁 후에 부드러워 보인다.</div>
+    <button class="hint-btn" onclick="showHint('a16')">💡 힌트 보기</button>
   </div>
 </div>
 
@@ -466,14 +480,9 @@ body{font-family:'Baloo 2','Noto Sans KR',sans-serif;background:var(--bg);paddin
   </div>
 
   <div class="question-card" id="qc-b8"><span class="q-num">8</span>
-    <div class="q-text">We couldn't visit the museum <em>___</em> the buses weren't available.</div>
-    <div class="choices" data-qid="b8" data-ans="because">
-      <button class="choice" onclick="pickChoice(this)">because</button>
-      <button class="choice" onclick="pickChoice(this)">so</button>
-      <button class="choice" onclick="pickChoice(this)">but</button>
-      <button class="choice" onclick="pickChoice(this)">and</button>
-    </div>
-    <div class="answer-hint" id="ah-b8">💡 정답: <strong>because</strong> — 박물관에 못 간 이유(버스 없음) → because<br>📝 해석: 버스를 이용할 수 없었기 때문에 우리는 박물관을 방문할 수 없었다.</div>
+    <div class="q-text">두 문장을 because로 연결하세요.<br>The buses weren't available. / We couldn't visit the museum.<br>→ We couldn't visit the museum <input class="blank" id="bi-b8" data-ans="because the buses weren't available" placeholder="___" autocomplete="off" style="min-width:260px">.</div>
+    <button class="check-btn" onclick="checkBlank('b8')">✔ 확인</button>
+    <div class="answer-hint" id="ah-b8">💡 정답: <strong>because the buses weren't available</strong> — 결과 뒤에 because + 원인절을 둡니다.<br>📝 해석: 버스를 이용할 수 없었기 때문에 우리는 박물관을 방문할 수 없었다.</div>
     <button class="hint-btn" onclick="showHint('b8')">💡 힌트 보기</button>
   </div>
 
@@ -490,14 +499,9 @@ body{font-family:'Baloo 2','Noto Sans KR',sans-serif;background:var(--bg);paddin
   </div>
 
   <div class="question-card" id="qc-b10"><span class="q-num">10</span>
-    <div class="q-text">Jake was especially happy <em>___</em> he got to try the new board game.</div>
-    <div class="choices" data-qid="b10" data-ans="because">
-      <button class="choice" onclick="pickChoice(this)">because</button>
-      <button class="choice" onclick="pickChoice(this)">so</button>
-      <button class="choice" onclick="pickChoice(this)">when</button>
-      <button class="choice" onclick="pickChoice(this)">although</button>
-    </div>
-    <div class="answer-hint" id="ah-b10">💡 정답: <strong>because</strong> — Jake가 행복했던 이유 = 새 보드게임을 할 수 있었기 때문<br>📝 해석: Jake는 새 보드게임을 해볼 수 있었기 때문에 특히 행복했다.</div>
+    <div class="q-text">이유를 나타내는 절 전체를 쓰세요.<br>Jake was especially happy <input class="blank" id="bi-b10" data-ans="because he got to try the new board game" placeholder="because ..." autocomplete="off" style="min-width:310px">.</div>
+    <button class="check-btn" onclick="checkBlank('b10')">✔ 확인</button>
+    <div class="answer-hint" id="ah-b10">💡 정답: <strong>because he got to try the new board game</strong> — because 뒤에는 주어와 동사가 있는 원인절이 옵니다.<br>📝 해석: Jake는 새 보드게임을 해볼 수 있었기 때문에 특히 행복했다.</div>
     <button class="hint-btn" onclick="showHint('b10')">💡 힌트 보기</button>
   </div>
 </div>
@@ -516,7 +520,8 @@ body{font-family:'Baloo 2','Noto Sans KR',sans-serif;background:var(--bg);paddin
 </div>
 
 <script>
-var TOTAL=25,SECTOTALS={a:15,b:10},secC={a:0,b:0},secW={a:0,b:0};
+var TOTAL=26,SECTOTALS={look:12,because:14},secC={look:0,because:0},secW={look:0,because:0};
+var topicById={a1:'look',a2:'because',a3:'look',a4:'because',a5:'look',a6:'look',a7:'because',a8:'because',a9:'because',a10:'because',a11:'because',a12:'look',a13:'because',a14:'look',a15:'because',a16:'look',b1:'look',b2:'look',b3:'look',b4:'look',b5:'look',b6:'because',b7:'because',b8:'because',b9:'because',b10:'because'};
 var answered={},correct=0,wrong=0;
 
 function norm(s){
@@ -530,10 +535,8 @@ function norm(s){
   return s;
 }
 
-function sw(i,btn){
-  document.querySelectorAll('.sec').forEach(function(s){s.classList.remove('show');});
+function sw(topic,btn){document.body.classList.remove('topic-look','topic-because');document.body.classList.add('topic-'+topic);document.querySelectorAll('.sec').forEach(function(s){s.classList.add('show');});
   document.querySelectorAll('.tab').forEach(function(b){b.classList.remove('active');});
-  document.getElementById('s'+i).classList.add('show');
   btn.classList.add('active');
 }
 function showHint(k){document.getElementById('ah-'+k).classList.add('show');}
@@ -569,30 +572,32 @@ document.addEventListener('keydown',function(e){
     checkBlank(e.target.id.replace('bi-',''));
 });
 
+function topicWrongItems(topic){return Object.keys(answered).filter(function(k){return topicById[k]===topic&&!answered[k].got;}).map(function(k){var c=document.getElementById('qc-'+k);return {question:c?c.textContent:'',my:answered[k].my,right:answered[k].right,hintHtml:(document.getElementById('ah-'+k)||{}).innerHTML||''};});}
 function mark(k,got,my,right){
   if(answered[k])return;
   answered[k]={got:got,my:my,right:right};
   var card=document.getElementById('qc-'+k);
   card.classList.add(got?'ok':'ng');
   var b=document.createElement('div');b.className='done-badge';b.textContent=got?'✅':'❌';card.appendChild(b);
-  var pre=k[0];
-  if(got){correct++;secC[pre]++;toast('🎉 정답!','ok');}
-  else{wrong++;secW[pre]++;document.getElementById('ah-'+k).classList.add('show');toast('틀렸어요! 힌트 확인 👆','ng');}
+  var topic=topicById[k];
+  if(got){correct++;secC[topic]++;toast('🎉 정답!','ok');}
+  else{wrong++;secW[topic]++;document.getElementById('ah-'+k).classList.add('show');toast('틀렸어요! 힌트 확인 👆','ng');}
   var done=correct+wrong;
   document.getElementById('sc-t').textContent=done;
   document.getElementById('sc-c').textContent=correct;
   document.getElementById('sc-w').textContent=wrong;
   document.getElementById('pt').textContent=done+' / '+TOTAL;
   document.getElementById('pf').style.width=(done/TOTAL*100)+'%';
-  var secDone=secC[pre]+secW[pre];
-  if(secDone===SECTOTALS[pre]){
+  var secDone=secC[topic]+secW[topic];
+  if(secDone===SECTOTALS[topic]&&done<TOTAL){
     (function(p,sc){
       setTimeout(function(){
-        var opts={};
-        if(p==='a') opts={nextText:'짧은 지문 탭으로 →',onNextClick:function(){var ol=document.getElementById('sp-overlay');if(ol)ol.remove();sw(1,document.querySelectorAll('.tab')[1]);}};
+        var opts={wrongItems:topicWrongItems(p)};
+        if(p==='look') opts={nextText:'because 탭으로 →',wrongItems:topicWrongItems(p),onNextClick:function(){var ol=document.getElementById('sp-overlay');if(ol)ol.remove();sw('because',document.querySelectorAll('.tab')[1]);}};
+        if(p==='because') opts={nextText:'look + 형용사 탭으로 →',wrongItems:topicWrongItems(p),onNextClick:function(){var ol=document.getElementById('sp-overlay');if(ol)ol.remove();sw('look',document.querySelectorAll('.tab')[0]);}};
         showScorePopup(sc,SECTOTALS[p],opts);
       },800);
-    })(pre,secC[pre]);
+    })(topic,secC[topic]);
   }
   if(done===TOTAL)setTimeout(showResult,800);
 }
@@ -623,6 +628,7 @@ function toast(msg,type){
 </script>
 <script>
 document.addEventListener('DOMContentLoaded',function(){
+  var nums={look:0,because:0};Object.keys(topicById).forEach(function(k){var c=document.getElementById('qc-'+k);if(c){var t=topicById[k];c.classList.add('topic-'+t);nums[t]++;var n=c.querySelector('.q-num');if(n)n.textContent=nums[t];}});var ps=document.querySelectorAll('.passage');if(ps[0])ps[0].classList.add('look-passage');if(ps[1])ps[1].classList.add('because-passage');document.body.classList.add('topic-look');document.querySelectorAll('.sec').forEach(function(s){s.classList.add('show');});
   document.querySelectorAll('.vw-box').forEach(function(v){
     var btn=document.createElement('button');
     btn.className='vocab-toggle';btn.textContent='📖 단어 보기 ▾';

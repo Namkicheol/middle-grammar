@@ -451,7 +451,7 @@ canvas#c{position:absolute;inset:0;width:100%;height:100%;}
   </div>
 </div>
 
-<script src="../game/questions.js?v=questions-20260715a"></script>
+<script src="../game/questions.js?v=questions-20260901-all-split"></script>
 <script src="../sounds.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
 <script>
@@ -2232,7 +2232,7 @@ function initFromParam() {
   if (typeof GAME_QUESTIONS === 'undefined') { location.replace(HUB_URL); return; }
   const unit = new URLSearchParams(location.search).get('unit');
   if (unit === 'all') {
-    _pendingBattle = { qs: Object.values(GAME_QUESTIONS).flatMap(u => u.questions), label: '전체 단원' };
+    _pendingBattle = { qs: Object.values(GAME_QUESTIONS).filter(u => !u.hidden).flatMap(u => u.questions), label: '전체 단원' };
   } else if (unit && GAME_QUESTIONS[unit]) {
     _pendingBattle = { qs: GAME_QUESTIONS[unit].questions, label: GAME_QUESTIONS[unit].label };
   } else {

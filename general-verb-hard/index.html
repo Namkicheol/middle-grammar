@@ -152,6 +152,7 @@ body{font-family:'Noto Sans KR','Baloo 2',sans-serif;background:var(--bg);paddin
   .h-letter.l-c{font-size:70px;}
   .h-letter.l-d{font-size:52px;}
 }
+.sec#s1 .sec-hdr{display:none;}body.topic-positive .topic-negative,body.topic-positive .negative-passage{display:none!important;}body.topic-negative .topic-positive,body.topic-negative .positive-passage{display:none!important;}
 </style>
 </head>
 <body>
@@ -165,9 +166,9 @@ body{font-family:'Noto Sans KR','Baloo 2',sans-serif;background:var(--bg);paddin
   <div class="h-letter l-d">S</div>
 
   <div class="header-inner">
-    <div class="hbadge"><span class="hbadge-dot"></span>Unit 01 · Advanced · 25문제</div>
+    <div class="hbadge"><span class="hbadge-dot"></span>Unit 01 · Advanced · 28문제</div>
     <h1>일반동사 현재형 <em>심화</em></h1>
-    <p>문맥 파악 · 오류 수정 · 문장 전환 · 짧은 지문 · 총 25문제</p>
+    <p>문맥 파악 · 오류 수정 · 문장 전환 · 짧은 지문 · 총 28문제</p>
   </div>
 </div>
 <div class="scoreboard">
@@ -176,12 +177,12 @@ body{font-family:'Noto Sans KR','Baloo 2',sans-serif;background:var(--bg);paddin
   <div class="sc w"><div class="n" id="sc-w">0</div><div class="l">❌ 오답</div></div>
 </div>
 <div class="pw">
-  <div class="plabel"><span>진행률</span><span id="pt">0 / 25</span></div>
+  <div class="plabel"><span>진행률</span><span id="pt">0 / 28</span></div>
   <div class="pbg"><div class="pfill" id="pf" style="width:0%"></div></div>
 </div>
 <div class="tabs">
-  <button class="tab active" onclick="sw(0,this)">⚡ 종합 훈련 (15문제)</button>
-  <button class="tab" onclick="sw(1,this)">📖 짧은 지문 (10문제)</button>
+  <button class="tab active" onclick="sw('positive',this)">✅ 긍정문 (16문제)</button>
+  <button class="tab" onclick="sw('negative',this)">🚫 부정문 (12문제)</button>
 </div>
 
 <!-- ═══════════════════════════════════════
@@ -192,7 +193,7 @@ body{font-family:'Noto Sans KR','Baloo 2',sans-serif;background:var(--bg);paddin
        a12-a15: 우리말 → 영어 빈칸
 ═══════════════════════════════════════ -->
 <div class="sec show" id="s0">
-  <div class="sec-hdr"><div class="lbl">Part 1 · 15문제</div><h2>종합 문법 훈련</h2><div class="desc">문맥 파악 · 오류 수정 · 문장 전환 · 우리말 영작</div></div>
+  <div class="sec-hdr"><div class="lbl">Advanced · Topic tabs</div><h2>일반동사 긍정문 · 부정문</h2><div class="desc">위 탭에서 한 문법 주제씩 풀어 보세요. 총 28문제</div></div>
 
   <!-- ─── 문맥 파악 mcq (a1-a4) ─── -->
   <div class="question-card" id="qc-a1"><span class="q-num">1</span><span class="q-type ctx">문맥 파악</span>
@@ -388,6 +389,41 @@ body{font-family:'Noto Sans KR','Baloo 2',sans-serif;background:var(--bg);paddin
     <div class="answer-hint" id="ah-a15">💡 정답: <strong>don't have</strong> (= do not have) — We(1인칭 복수) 부정 → don't + 동사원형<br>📝 해석: 우리는 주말에 수업이 없다.</div>
     <button class="hint-btn" onclick="showHint('a15')">💡 힌트 보기</button>
   </div>
+  <div class="question-card" id="qc-a16"><span class="q-num">16</span><span class="q-type fix">부정문 고치기</span>
+    <div class="q-text">❌ Mina <span class="wrong">don't carries</span> an umbrella on sunny days.<br>→ 밑줄 친 부분을 바르게 고치세요: <input class="blank" id="bi-a16" placeholder="___" data-ans="doesn't carry" autocomplete="off" style="min-width:140px"></div>
+    <div class="q-kor">Mina는 맑은 날에 우산을 가지고 다니지 않는다.</div>
+    <button class="check-btn" onclick="checkBlank('a16')">✔ 확인</button>
+    <div class="answer-hint" id="ah-a16">💡 정답: <strong>doesn't carry</strong> — Mina(3인칭 단수)의 부정문은 doesn't + 동사원형<br>📝 해석: Mina는 맑은 날에 우산을 가지고 다니지 않는다.</div>
+    <button class="hint-btn" onclick="showHint('a16')">💡 힌트 보기</button>
+  </div>
+  <!-- 출처: L1 어법드릴문제 변형 (주어·목적어·시간 변형) -->
+  <div class="question-card" id="qc-a17"><span class="q-num">17</span><span class="q-type ctx">문맥 파악</span>
+    <div class="q-text">The art club members <em>___</em> meetings on rainy days; they meet outdoors only in good weather.</div>
+    <div class="q-kor">미술 동아리 회원들은 비 오는 날에는 모임을 하지 않는다. 날씨가 좋을 때만 야외에서 만난다.</div>
+    <div class="vocab"><span class="vw">art club 미술 동아리</span><span class="vw">rainy 비 오는</span><span class="vw">outdoors 야외에서</span></div>
+    <div class="choices" data-qid="a17" data-ans="don't hold">
+      <button class="choice" onclick="pickChoice(this)">doesn't hold</button>
+      <button class="choice" onclick="pickChoice(this)">don't hold</button>
+      <button class="choice" onclick="pickChoice(this)">don't holds</button>
+      <button class="choice" onclick="pickChoice(this)">not hold</button>
+    </div>
+    <div class="answer-hint" id="ah-a17">💡 정답: <strong>don't hold</strong> — The art club members(복수 주어) → don't + 동사원형 hold<br>📝 해석: 미술 동아리 회원들은 비 오는 날에는 모임을 하지 않는다. 날씨가 좋을 때만 야외에서 만난다.</div>
+    <button class="hint-btn" onclick="showHint('a17')">💡 힌트 보기</button>
+  </div>
+
+  <!-- 출처: 창작 예문 -->
+  <div class="question-card" id="qc-a18"><span class="q-num">18</span><span class="q-type kor">우리말 영작</span>
+    <div class="q-text">
+      <span class="kor-hint">🇰🇷 우리 선생님은 수업 중에 휴대전화를 사용하지 않는다.</span>
+      Our teacher
+      <input class="blank" id="bi-a18" placeholder="___" data-ans="doesn't use" autocomplete="off" style="min-width:160px">
+      a cell phone during class. <span class="ex">(use, 부정형)</span>
+    </div>
+    <div class="vocab"><span class="vw">cell phone 휴대전화</span><span class="vw">during class 수업 중에</span></div>
+    <button class="check-btn" onclick="checkBlank('a18')">✔ 확인</button>
+    <div class="answer-hint" id="ah-a18">💡 정답: <strong>doesn't use</strong> (= does not use) — Our teacher(3인칭 단수) → doesn't + 동사원형 use<br>📝 해석: 우리 선생님은 수업 중에 휴대전화를 사용하지 않는다.</div>
+    <button class="hint-btn" onclick="showHint('a18')">💡 힌트 보기</button>
+  </div>
 </div>
 
 <!-- ═══════════════════════════════════════
@@ -535,7 +571,8 @@ body{font-family:'Noto Sans KR','Baloo 2',sans-serif;background:var(--bg);paddin
 </div>
 
 <script>
-var TOTAL=25,SECTOTALS={a:15,b:10},secC={a:0,b:0},secW={a:0,b:0};
+var TOTAL=28,SECTOTALS={positive:16,negative:12},secC={positive:0,negative:0},secW={positive:0,negative:0};
+var topicById={a1:'positive',a2:'positive',a3:'negative',a4:'negative',a5:'positive',a6:'positive',a7:'positive',a8:'negative',a9:'positive',a10:'negative',a11:'negative',a12:'positive',a13:'negative',a14:'positive',a15:'negative',a16:'negative',a17:'negative',a18:'negative',b1:'positive',b2:'positive',b3:'positive',b4:'negative',b5:'positive',b6:'positive',b7:'positive',b8:'negative',b9:'positive',b10:'positive'};
 var answered={},correct=0,wrong=0;
 
 function norm(s){
@@ -548,10 +585,8 @@ function norm(s){
   return s;
 }
 
-function sw(i,btn){
-  document.querySelectorAll('.sec').forEach(function(s){s.classList.remove('show');});
+function sw(topic,btn){document.body.classList.remove('topic-positive','topic-negative');document.body.classList.add('topic-'+topic);document.querySelectorAll('.sec').forEach(function(s){s.classList.add('show');});
   document.querySelectorAll('.tab').forEach(function(b){b.classList.remove('active');});
-  document.getElementById('s'+i).classList.add('show');
   btn.classList.add('active');
   window.scrollTo({top:0,behavior:'smooth'});
 }
@@ -587,30 +622,32 @@ document.addEventListener('keydown',function(e){
     checkBlank(e.target.id.replace('bi-',''));
 });
 
+function topicWrongItems(topic){return Object.keys(answered).filter(function(k){return topicById[k]===topic&&!answered[k].got;}).map(function(k){var c=document.getElementById('qc-'+k);return {question:c?c.textContent:'',my:answered[k].my,right:answered[k].right,hintHtml:(document.getElementById('ah-'+k)||{}).innerHTML||''};});}
 function mark(k,got,my,right){
   if(answered[k])return;
   answered[k]={got:got,my:my,right:right};
   var card=document.getElementById('qc-'+k);
   card.classList.add(got?'ok':'ng');
   var b=document.createElement('div');b.className='done-badge';b.textContent=got?'✅':'❌';card.appendChild(b);
-  var pre=k[0];
-  if(got){correct++;secC[pre]++;toast('🎉 정답!','ok');}
-  else{wrong++;secW[pre]++;document.getElementById('ah-'+k).classList.add('show');toast('틀렸어요! 힌트 확인 👆','ng');}
+  var topic=topicById[k];
+  if(got){correct++;secC[topic]++;toast('🎉 정답!','ok');}
+  else{wrong++;secW[topic]++;document.getElementById('ah-'+k).classList.add('show');toast('틀렸어요! 힌트 확인 👆','ng');}
   var done=correct+wrong;
   document.getElementById('sc-t').textContent=done;
   document.getElementById('sc-c').textContent=correct;
   document.getElementById('sc-w').textContent=wrong;
   document.getElementById('pt').textContent=done+' / '+TOTAL;
   document.getElementById('pf').style.width=(done/TOTAL*100)+'%';
-  var secDone=secC[pre]+secW[pre];
-  if(secDone===SECTOTALS[pre]){
+  var secDone=secC[topic]+secW[topic];
+  if(secDone===SECTOTALS[topic]&&done<TOTAL){
     (function(p,sc){
       setTimeout(function(){
-        var opts={};
-        if(p==='a') opts={nextText:'짧은 지문 탭으로 →',onNextClick:function(){var ol=document.getElementById('sp-overlay');if(ol)ol.remove();sw(1,document.querySelectorAll('.tab')[1]);}};
+        var opts={wrongItems:topicWrongItems(p)};
+        if(p==='positive') opts.nextText='부정문 탭으로 →',opts.onNextClick=function(){var ol=document.getElementById('sp-overlay');if(ol)ol.remove();sw('negative',document.querySelectorAll('.tab')[1]);};
+        if(p==='negative') opts.nextText='긍정문 탭으로 →',opts.onNextClick=function(){var ol=document.getElementById('sp-overlay');if(ol)ol.remove();sw('positive',document.querySelectorAll('.tab')[0]);};
         showScorePopup(sc,SECTOTALS[p],opts);
       },800);
-    })(pre,secC[pre]);
+    })(topic,secC[topic]);
   }
   if(done===TOTAL)setTimeout(showResult,800);
 }
@@ -641,6 +678,7 @@ function toast(msg,type){
 </script>
 <script>
 document.addEventListener('DOMContentLoaded',function(){
+  var nums={positive:0,negative:0};Object.keys(topicById).forEach(function(k){var c=document.getElementById('qc-'+k);if(c){var t=topicById[k];c.classList.add('topic-'+t);nums[t]++;var n=c.querySelector('.q-num');if(n)n.textContent=nums[t];}});document.body.classList.add('topic-positive');document.querySelectorAll('.sec').forEach(function(s){s.classList.add('show');});
   document.querySelectorAll('.vocab').forEach(function(v){
     var btn=document.createElement('button');
     btn.className='vocab-toggle';btn.textContent='📖 단어 보기 ▾';

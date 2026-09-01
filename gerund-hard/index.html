@@ -320,6 +320,27 @@ const vocabMap = {
   40:[{w:'dishes',k:'설거지'}],
 };
 
+function norm(s) {
+    return String(s || '').trim().toLowerCase().replace(/\s+/g, ' ')
+        .replace(/isn't/g,'is not').replace(/aren't/g,'are not')
+        .replace(/wasn't/g,'was not').replace(/weren't/g,'were not')
+        .replace(/don't/g,'do not').replace(/doesn't/g,'does not')
+        .replace(/didn't/g,'did not').replace(/won't/g,'will not')
+        .replace(/shouldn't/g,'should not').replace(/can't/g,'cannot');
+}
+
+function shuffledWords(words, answer) {
+    var shuffled = words.slice();
+    for (var i = shuffled.length - 1; i > 0; i--) {
+        var j = Math.floor(Math.random() * (i + 1));
+        var tmp = shuffled[i]; shuffled[i] = shuffled[j]; shuffled[j] = tmp;
+    }
+    if (shuffled.length > 1 && norm(shuffled.join(' ')) === norm(answer)) {
+        var first = shuffled[0]; shuffled[0] = shuffled[1]; shuffled[1] = first;
+    }
+    return shuffled;
+}
+
 function render() {
     let globalNum = 1;
     [0, 1, 2].forEach(secIdx => {
@@ -328,7 +349,7 @@ function render() {
         let secTitle = ['1. 상황별 진행형', '2. 의미별 동명사', '3. 구조 분석 (영어로)'][secIdx];
         let secDesc = [
             '지금 눈앞에 벌어지는 동작·일시적 상황·변화 과정을 진행형(be + -ing)으로 표현해 보세요.',
-            '주어·보어·전치사 뒤 등 명사 자리에 쓰이는 동명사(-ing)를 의미에 맞게 골라 보세요.',
+            '동사 뒤에서 목적어 역할을 하는 동명사(-ing)를 알맞게 선택하고 문장에 적용해 보세요.',
             '같은 -ing 형태가 진행형인지 동명사인지 문장 구조로 구분해 보세요.'
         ][secIdx];
         html += `<div class="sec-hdr"><div class="lbl">STEP ${secIdx+1}</div><h2>${secTitle}</h2><div class="desc">${secDesc}</div></div>`;
@@ -367,7 +388,7 @@ function render() {
             } else if (q.type === 'scramble') {
                 placed[id] = [];
                 html += `<div class='word-pool' id='pool-${id}'>`;
-                q.words.sort(()=>Math.random()-0.5).forEach((w, wi) => {
+                shuffledWords(q.words, q.ans).forEach((w, wi) => {
                     html += `<button class='chip pool-chip' id='wc-${id}-${wi}' onclick="moveWord('${id}',${wi},this)">${w}</button>`;
                 });
                 html += `</div>`;
@@ -415,10 +436,9 @@ function checkBlank(k) {
     let allGot = true;
     inps.forEach(inp => {
         inp.disabled = true;
-        if(!window._norm){window._norm=function(s){s=s.trim().toLowerCase().replace(/\s+/g,' ');s=s.replace(/isn't/g,'is not').replace(/aren't/g,'are not').replace(/wasn't/g,'was not').replace(/weren't/g,'were not').replace(/don't/g,'do not').replace(/doesn't/g,'does not').replace(/didn't/g,'did not').replace(/won't/g,'will not').replace(/shouldn't/g,'should not').replace(/can't/g,'cannot');return s;};}
-        var typed = window._norm(inp.value);
-        var ans = window._norm(inp.dataset.ans);
-        var got = (typed === ans || (inp.dataset.ans2 && typed === window._norm(inp.dataset.ans2)));
+        var typed = norm(inp.value);
+        var ans = norm(inp.dataset.ans);
+        var got = (typed === ans || (inp.dataset.ans2 && typed === norm(inp.dataset.ans2)));
         inp.classList.add(got ? 'ok' : 'ng');
         if(!got) allGot = false;
     });
@@ -464,8 +484,8 @@ function checkArrange(k, ans) {
     var card = document.getElementById('qc-'+k);
     if (card.classList.contains('ok') || card.classList.contains('ng')) return;
     if (!placed[k].length) { toast('단어를 배열하세요!', 'ng'); return; }
-    var typed = placed[k].map(i => i.w).join(' ').trim().toLowerCase().replace(/\s+/g, ' ');
-    var cleanAns = ans.trim().toLowerCase().replace(/\s+/g, ' ');
+    var typed = norm(placed[k].map(i => i.w).join(' '));
+    var cleanAns = norm(ans);
     card.querySelector('.check-btn').disabled = true;
     document.querySelectorAll('#pool-'+k+' .pool-chip').forEach(c => { c.style.visibility = 'hidden'; c.disabled = true; });
     var chips = document.querySelectorAll('#area-'+k+' .ans-chip');
@@ -494,7 +514,7 @@ function mark(k, got) {
     document.getElementById('pt').textContent = done+' / '+TOTAL;
     document.getElementById('pf').style.width = (done/TOTAL*100)+'%';
     var secDone = secC[si]+secW[si];
-    if (secDone === SECTOTALS[si]) {
+    if (secDone === SECTOTALS[si] && done < TOTAL) {
         (function(i, sc) {
             setTimeout(function() {
                 var opts = {};

@@ -2257,6 +2257,87 @@ const GAME_QUESTIONS = {
         ],
         "type": "ox",
         "level": 2
+      },
+      {
+        "id": "g1_l3_when_7",
+        "kor": "Daeun이 도서관에 돌아왔을 때, 친구들은 축제를 위해 연습하고 있었다.",
+        "eng": "___ Daeun returned to the library, her friends were practicing for the festival.",
+        "ans": "When",
+        "opts": ["When", "What", "Where", "Why"],
+        "level": 2
+      },
+      {
+        "id": "g1_l3_when_8",
+        "kor": "비가 그쳤을 때, 아이들은 밖으로 뛰어나갔다.",
+        "eng": "___ the rain stopped, the children ran outside.",
+        "ans": "When",
+        "opts": ["When", "What", "Where", "Why"],
+        "level": 1
+      },
+      {
+        "id": "g1_l3_when_9",
+        "kor": "버스가 도착했을 때, 나는 신발끈을 묶고 있었다.",
+        "eng": "I was tying my shoes ___ the bus arrived.",
+        "ans": "when",
+        "opts": ["because", "when", "that", "if"],
+        "level": 2
+      },
+      {
+        "id": "g1_l3_when_10",
+        "kor": "조부모님이 방문하셨을 때, 그들은 직접 만든 쿠키를 가져오셨다.",
+        "eng": "My grandparents brought homemade cookies ___ they visited us.",
+        "ans": "when",
+        "opts": ["when", "because", "that", "if"],
+        "level": 1
+      },
+      {
+        "id": "g1_l3_when_11",
+        "kor": "경기가 끝났을 때, 우리는 집에 갔다. — 맞으면 O · 틀리면 X",
+        "eng": "When did the game end, we went home.",
+        "ans": "X",
+        "opts": ["O", "X"],
+        "type": "ox",
+        "level": 2
+      },
+      {
+        "id": "g1_l3_when_12",
+        "kor": "정전이 되었을 때, 교실은 어두워졌다.",
+        "eng": "The classroom became dark ___ the power went out.",
+        "ans": "when",
+        "opts": ["when", "because", "that", "if"],
+        "level": 2
+      },
+      {
+        "id": "g1_l3_when_13",
+        "kor": "우리가 야영장에 도착했을 때, 비는 그쳐 있었다.",
+        "eng": "___ we reached the campsite, the rain had stopped.",
+        "ans": "When",
+        "opts": ["When", "What", "Why", "How"],
+        "level": 2
+      },
+      {
+        "id": "g1_l3_when_14",
+        "kor": "Mina는 깜짝 카드를 열었을 때 미소 지었다.",
+        "eng": "Mina smiled ___ she opened the surprise card.",
+        "ans": "when",
+        "opts": ["when", "because", "that", "if"],
+        "level": 1
+      },
+      {
+        "id": "g1_l3_when_15",
+        "kor": "선생님이 도착했을 때, 우리는 칠판을 닦고 있었다.",
+        "eng": "___ the teacher arrived, we were cleaning the board.",
+        "ans": "When",
+        "opts": ["When", "Because", "What", "That"],
+        "level": 2
+      },
+      {
+        "id": "g1_l3_when_16",
+        "kor": "내가 장을 들고 있을 때, 전화가 울렸다.",
+        "eng": "My phone rang ___ I was carrying the groceries.",
+        "ans": "when",
+        "opts": ["when", "what", "where", "who"],
+        "level": 2
       }
     ]
   },
@@ -3098,6 +3179,7 @@ const GAME_QUESTIONS = {
   "g1-l5": {
     "label": "중1 L5 · 재귀대명사 & to부정사",
     "color": "#8b5cf6",
+    "hidden": true,
     "questions": [
       {
         "id": "g1_l5_fix_to_watch",
@@ -4546,6 +4628,79 @@ const GAME_QUESTIONS = {
         ],
         "type": "ox",
         "level": 2
+      },
+      {
+        "id": "g1_l6_because_1",
+        "kor": "길이 얼어 있었기 때문에 우리는 부츠를 신었다.",
+        "eng": "___ the path was icy, we wore boots.",
+        "ans": "Because",
+        "opts": ["When", "Because", "What", "That"],
+        "level": 2
+      },
+      {
+        "id": "g1_l6_because_2",
+        "kor": "Hana는 추가 도움이 필요했기 때문에 수업 후에 남았다.",
+        "eng": "Hana stayed after class ___ she needed extra help.",
+        "ans": "because",
+        "opts": ["because", "when", "that", "if"],
+        "level": 1
+      },
+      {
+        "id": "g1_l6_because_3",
+        "kor": "바람이 매우 강했기 때문에 우리는 창문을 닫았다.",
+        "eng": "We closed the windows ___ the wind was very strong.",
+        "ans": "because",
+        "opts": ["because", "when", "that", "if"],
+        "level": 2
+      },
+      {
+        "id": "g1_l6_because_4",
+        "kor": "비가 오고 있었기 때문에 팀은 실내에서 연습했다. — 맞으면 O · 틀리면 X",
+        "eng": "The team practiced indoors because it was raining.",
+        "ans": "O",
+        "opts": ["O", "X"],
+        "type": "ox",
+        "level": 1
+      },
+      {
+        "id": "g1_l6_because_5",
+        "kor": "일기 예보에서 폭풍이 올 것이라고 했기 때문에 소풍은 일찍 끝났다.",
+        "eng": "The picnic ended early ___ the forecast predicted a storm.",
+        "ans": "because",
+        "opts": ["because", "because of", "so", "but"],
+        "level": 2
+      },
+      {
+        "id": "g1_l6_because_6",
+        "kor": "미술실을 사용할 수 없었기 때문에 우리는 도서관에서 회의를 했다.",
+        "eng": "___ the art room was unavailable, we held the meeting in the library.",
+        "ans": "Because",
+        "opts": ["Because", "Because of", "So", "But"],
+        "level": 2
+      },
+      {
+        "id": "g1_l6_because_7",
+        "kor": "막차가 이미 떠났기 때문에 우리는 택시를 탔다.",
+        "eng": "We took a taxi ___ the last bus had left.",
+        "ans": "because",
+        "opts": ["because", "because of", "so", "but"],
+        "level": 2
+      },
+      {
+        "id": "g1_l6_because_8",
+        "kor": "도로가 물에 잠겼기 때문에 배달은 늦게 도착했다.",
+        "eng": "___ the road was flooded, the delivery arrived late.",
+        "ans": "Because",
+        "opts": ["Because", "Because of", "So", "But"],
+        "level": 2
+      },
+      {
+        "id": "g1_l6_because_9",
+        "kor": "Jisu의 그림이 1등상을 받았기 때문에 그녀는 미소 지었다.",
+        "eng": "Jisu smiled ___ her painting won first prize.",
+        "ans": "because",
+        "opts": ["because", "because of", "so", "but"],
+        "level": 1
       }
     ]
   },
@@ -5847,6 +6002,47 @@ const GAME_QUESTIONS = {
         ],
         "type": "ox",
         "level": 2
+      },
+      {
+        "id": "g1_l8_something_adjective_1",
+        "kor": "나는 읽을 만한 유용한 것을 찾고 있다.",
+        "eng": "I am looking for ___ to read.",
+        "ans": "something useful",
+        "opts": ["useful something", "something usefully", "something usefulness", "something useful"],
+        "level": 2
+      },
+      {
+        "id": "g1_l8_something_adjective_2",
+        "kor": "우리는 탁자를 닦을 마른 무언가가 필요하다.",
+        "eng": "We need ___ to wipe the table.",
+        "ans": "something dry",
+        "opts": ["dry something", "something dry", "something drying", "a dry"],
+        "level": 1
+      },
+      {
+        "id": "g1_l8_something_adjective_3",
+        "kor": "나는 강가에서 반짝이는 무언가를 발견했다. — 맞으면 O · 틀리면 X",
+        "eng": "I found something shiny near the river.",
+        "ans": "O",
+        "opts": ["O", "X"],
+        "type": "ox",
+        "level": 1
+      },
+      {
+        "id": "g1_l8_something_adjective_4",
+        "kor": "내 여동생은 새 강아지를 위해 부드러운 무언가를 샀다.",
+        "eng": "My sister bought ___ for the new puppy.",
+        "ans": "something soft",
+        "opts": ["soft something", "something softly", "something softness", "something soft"],
+        "level": 1
+      },
+      {
+        "id": "g1_l8_something_adjective_5",
+        "kor": "우리는 커튼 뒤에서 이상한 무언가를 보았다.",
+        "eng": "We saw ___ behind the curtain.",
+        "ans": "something strange",
+        "opts": ["strange something", "something strange", "something strangely", "a strange"],
+        "level": 2
       }
     ]
   },
@@ -6445,11 +6641,44 @@ const GAME_QUESTIONS = {
         ],
         "type": "ox",
         "level": 1
+      },
+      {
+        "id": "g2_l1_relative_pronoun_1",
+        "kor": "그 로봇을 설계한 과학자가 우리 학교를 방문하고 있다.",
+        "eng": "The scientist ___ designed the robot is visiting our school.",
+        "ans": "who",
+        "opts": ["which", "where", "whose", "who"],
+        "level": 2
+      },
+      {
+        "id": "g2_l1_relative_pronoun_2",
+        "kor": "나는 어려운 과학 개념을 분명하게 설명하는 웹사이트를 찾았다.",
+        "eng": "I found a website ___ explains difficult science ideas clearly.",
+        "ans": "which",
+        "opts": ["who", "which", "where", "whom"],
+        "level": 2
+      },
+      {
+        "id": "g2_l1_relative_pronoun_3",
+        "kor": "미술상을 받은 소녀는 내 사촌이다. — 맞으면 O · 틀리면 X",
+        "eng": "The girl which won the art prize is my cousin.",
+        "ans": "X",
+        "opts": ["O", "X"],
+        "type": "ox",
+        "level": 1
+      },
+      {
+        "id": "g2_l1_relative_pronoun_4",
+        "kor": "선명한 사진을 찍는 카메라는 내 삼촌의 것이다.",
+        "eng": "The camera ___ takes clear photos belongs to my uncle.",
+        "ans": "which",
+        "opts": ["who", "which", "where", "whose"],
+        "level": 1
       }
     ]
   },
   "g2-l2": {
-    "label": "중2 L2 · 현재완료 & 비교급",
+    "label": "중2 L2 · 현재완료 & 비교급·최상급",
     "color": "#f97316",
     "questions": [
       {
@@ -7069,6 +7298,94 @@ const GAME_QUESTIONS = {
         ],
         "type": "ox",
         "level": 1
+      },
+      {
+        "id": "g2_l2_comparative_1",
+        "kor": "이 길은 예전 길보다 더 짧다.",
+        "eng": "This route is ___ than the old one.",
+        "ans": "shorter",
+        "opts": ["short", "shorter", "shortest", "more shortest"],
+        "level": 1
+      },
+      {
+        "id": "g2_l2_comparative_2",
+        "kor": "세 벌의 재킷 중 파란 재킷이 가장 따뜻하다.",
+        "eng": "Of the three jackets, the blue one is ___.",
+        "ans": "the warmest",
+        "opts": ["warmer", "warmest", "the warmer", "the warmest"],
+        "level": 2
+      },
+      {
+        "id": "g2_l2_comparative_3",
+        "kor": "이 상자는 선반 위의 상자보다 더 무겁다.",
+        "eng": "This box is ___ than the one on the shelf.",
+        "ans": "heavier",
+        "opts": ["heavy", "heavier", "heaviest", "most heavy"],
+        "level": 1
+      },
+      {
+        "id": "g2_l2_comparative_4",
+        "kor": "내 과학 프로젝트는 예상보다 더 창의적이었다.",
+        "eng": "My science project was ___ than I expected.",
+        "ans": "more creative",
+        "opts": ["creative", "more creative", "most creative", "creativer"],
+        "level": 2
+      },
+      {
+        "id": "g2_l2_comparative_5",
+        "kor": "이곳은 우리 동네에서 가장 붐비는 빵집이다.",
+        "eng": "This is ___ bakery in our neighborhood.",
+        "ans": "the busiest",
+        "opts": ["busy", "busier", "busiest", "the busiest"],
+        "level": 2
+      },
+      {
+        "id": "g2_l2_comparative_6",
+        "kor": "이곳의 겨울 낮은 여름 낮보다 더 짧다.",
+        "eng": "Winter days are ___ than summer days here.",
+        "ans": "shorter",
+        "opts": ["short", "shorter", "shortest", "most short"],
+        "level": 1
+      },
+      {
+        "id": "g2_l2_comparative_7",
+        "kor": "모든 경로 중 이 경로가 가장 안전하다.",
+        "eng": "Of all the routes, this one is ___.",
+        "ans": "the safest",
+        "opts": ["safer", "safest", "the safer", "the safest"],
+        "level": 2
+      },
+      {
+        "id": "g2_l2_comparative_8",
+        "kor": "그녀의 두 번째 연설은 첫 번째보다 더 좋았다.",
+        "eng": "Her second speech was ___ than her first one.",
+        "ans": "better",
+        "opts": ["good", "better", "best", "more good"],
+        "level": 1
+      },
+      {
+        "id": "g2_l2_comparative_9",
+        "kor": "대왕고래는 지구에서 가장 큰 동물이다.",
+        "eng": "The blue whale is ___ animal on Earth.",
+        "ans": "the largest",
+        "opts": ["larger", "largest", "the larger", "the largest"],
+        "level": 1
+      },
+      {
+        "id": "g2_l2_comparative_10",
+        "kor": "출퇴근 시간에는 지하철이 버스보다 더 빠르다.",
+        "eng": "The subway is ___ than the bus during rush hour.",
+        "ans": "faster",
+        "opts": ["fast", "faster", "fastest", "more fastest"],
+        "level": 1
+      },
+      {
+        "id": "g2_l2_comparative_11",
+        "kor": "이 배낭은 내 낡은 배낭보다 더 유용하다.",
+        "eng": "This backpack is ___ than my old one.",
+        "ans": "more useful",
+        "opts": ["useful", "more useful", "most useful", "usefuler"],
+        "level": 2
       }
     ]
   },
@@ -7557,9 +7874,9 @@ const GAME_QUESTIONS = {
         "id": "g2_l3_g2_to_if_hard_a15",
         "kor": "더 많이 연습하지 않으면 그는 다음 대회를 이기지 못할 것이다.",
         "eng": "He will not win the next contest ___.",
-        "ans": "if he doesn",
+        "ans": "if he doesn't practice more",
         "opts": [
-          "if he doesn",
+          "if he doesn't practice more",
           "to announce",
           "don't leave",
           "to write in"
@@ -7730,6 +8047,38 @@ const GAME_QUESTIONS = {
           "X"
         ],
         "type": "ox",
+        "level": 1
+      },
+      {
+        "id": "g2_l3_if_sentence_1",
+        "kor": "경보가 울리면 모두 건물을 떠날 것이다.",
+        "eng": "If the alarm rings, everyone ___ the building.",
+        "ans": "will leave",
+        "opts": ["leaves", "will leave", "will leaves", "is leave"],
+        "level": 2
+      },
+      {
+        "id": "g2_l3_if_sentence_2",
+        "kor": "우리가 불을 끄면 에너지를 절약할 것이다.",
+        "eng": "We will save energy if we ___ off the lights.",
+        "ans": "turn",
+        "opts": ["turned", "turns", "turn", "will turn"],
+        "level": 1
+      },
+      {
+        "id": "g2_l3_if_sentence_3",
+        "kor": "네가 규칙적으로 공부하면 더 자신감을 느낄 것이다.",
+        "eng": "___ you study regularly, you will feel more confident.",
+        "ans": "If",
+        "opts": ["If", "Because", "What", "That"],
+        "level": 2
+      },
+      {
+        "id": "g2_l3_if_sentence_4",
+        "kor": "식물이 충분한 햇빛을 받으면 잘 자랄 것이다.",
+        "eng": "The plants will grow well if they ___ enough sunlight.",
+        "ans": "get",
+        "opts": ["got", "get", "gets", "will get"],
         "level": 1
       }
     ]
@@ -9318,6 +9667,14 @@ const GAME_QUESTIONS = {
         ],
         "type": "ox",
         "level": 2
+      },
+      {
+        "id": "g2_l5_object_relative_sentence_1",
+        "kor": "내가 여행을 위해 산 배낭은 방수가 된다.",
+        "eng": "The backpack ___ I bought for the trip is waterproof.",
+        "ans": "which",
+        "opts": ["who", "which", "where", "whose"],
+        "level": 2
       }
     ]
   },
@@ -9935,6 +10292,54 @@ const GAME_QUESTIONS = {
           "X"
         ],
         "type": "ox",
+        "level": 2
+      },
+      {
+        "id": "g2_l6_indirect_sentence_1",
+        "kor": "미술 동아리가 어디에서 모이는지 아니?",
+        "eng": "Do you know where the art club ___?",
+        "ans": "meets",
+        "opts": ["meet", "meets", "meeting", "met"],
+        "level": 1
+      },
+      {
+        "id": "g2_l6_indirect_sentence_2",
+        "kor": "나는 그 가게가 어제 왜 일찍 문을 닫았는지 궁금하다.",
+        "eng": "I wonder why the store ___ so early yesterday.",
+        "ans": "closed",
+        "opts": ["closed", "closes", "closing", "to close"],
+        "level": 2
+      },
+      {
+        "id": "g2_l6_indirect_sentence_3",
+        "kor": "이 기호가 무엇을 의미하는지 말해 줄 수 있니?",
+        "eng": "Can you tell me what this symbol ___?",
+        "ans": "means",
+        "opts": ["mean", "means", "meaning", "meant"],
+        "level": 1
+      },
+      {
+        "id": "g2_l6_indirect_sentence_4",
+        "kor": "우리는 누가 결승골을 넣었는지 물었다.",
+        "eng": "We asked who ___ the final goal.",
+        "ans": "scored",
+        "opts": ["score", "scored", "scoring", "scores"],
+        "level": 1
+      },
+      {
+        "id": "g2_l6_indirect_sentence_5",
+        "kor": "선생님은 우리가 모형을 어떻게 만들었는지 물었다.",
+        "eng": "The teacher asked how we ___ the model.",
+        "ans": "built",
+        "opts": ["build", "built", "building", "builds"],
+        "level": 2
+      },
+      {
+        "id": "g2_l6_indirect_sentence_6",
+        "kor": "아무도 소포가 언제 도착할지 모른다.",
+        "eng": "Nobody knows when the package ___.",
+        "ans": "will arrive",
+        "opts": ["arrive", "arrives", "will arrive", "will arrives"],
         "level": 2
       }
     ]
@@ -10584,6 +10989,31 @@ const GAME_QUESTIONS = {
         ],
         "type": "ox",
         "level": 2
+      },
+      {
+        "id": "g2_l7_asas_playable_1",
+        "kor": "이 태블릿은 새 모델만큼 비싸지 않다.",
+        "eng": "This tablet is not as ___ as the new model.",
+        "ans": "expensive",
+        "opts": ["expensively", "most expensive", "expensive", "more expensive"],
+        "level": 1
+      },
+      {
+        "id": "g2_l7_asas_playable_2",
+        "kor": "파란 공책은 빨간 공책만큼 가볍다. — 맞으면 O · 틀리면 X",
+        "eng": "The blue notebook is as light as the red one.",
+        "ans": "O",
+        "opts": ["O", "X"],
+        "type": "ox",
+        "level": 2
+      },
+      {
+        "id": "g2_l7_asas_playable_3",
+        "kor": "이 공원은 우리 집 근처의 공원만큼 평화롭다.",
+        "eng": "This park is as ___ as the one near my house.",
+        "ans": "peaceful",
+        "opts": ["peaceful", "peacefully", "more peaceful", "most peaceful"],
+        "level": 1
       }
     ]
   },
@@ -10694,7 +11124,7 @@ const GAME_QUESTIONS = {
       {
         "id": "g2_l8_g2_itto_whatto_basic_index_a14",
         "kor": "그 퍼즐을 혼자 끝내는 것은 그에게 어렵다.",
-        "eng": "It is difficult ___ him to finish the puzzle alone.",
+        "eng": "It is difficult ___ to finish the puzzle alone.",
         "ans": "for him",
         "opts": [
           "for he",
@@ -11241,6 +11671,22 @@ const GAME_QUESTIONS = {
         ],
         "type": "ox",
         "level": 2
+      },
+      {
+        "id": "g2_l8_dummy_it_playable_1",
+        "kor": "매일 아침 식물에 물을 주는 것은 필요하다.",
+        "eng": "It is necessary ___ the plants every morning.",
+        "ans": "to water",
+        "opts": ["water", "to water", "watering", "watered"],
+        "level": 1
+      },
+      {
+        "id": "g2_l8_dummy_it_playable_2",
+        "kor": "쇼핑 전에 목록을 만드는 것은 유용하다.",
+        "eng": "It is useful ___ a list before shopping.",
+        "ans": "to make",
+        "opts": ["make", "to make", "making", "made"],
+        "level": 1
       }
     ]
   },
@@ -11250,3 +11696,191 @@ const GAME_QUESTIONS = {
     "questions": []
   }
 };
+
+// 각 단원의 두 문법 요소를 따로 연습한다. 기존 단원 URL은 숨김 묶음으로 유지한다.
+// 따라서 저장된 링크는 계속 열리고, 전체 랜덤에는 새 단원만 한 번씩 포함된다.
+function splitUnit(legacyKey, first, second, isFirst) {
+  const legacy = GAME_QUESTIONS[legacyKey];
+  legacy.hidden = true;
+  const questions = legacy.questions;
+  const code = legacyKey.toUpperCase();
+  GAME_QUESTIONS[first.key] = {
+    label: first.label,
+    color: legacy.color,
+    code,
+    questions: questions.filter(isFirst)
+  };
+  GAME_QUESTIONS[second.key] = {
+    label: second.label,
+    color: legacy.color,
+    code,
+    questions: questions.filter(q => !isFirst(q))
+  };
+}
+
+const idSet = ids => new Set(ids);
+const hasId = ids => q => ids.has(q.id);
+const numberedIds = (prefix, numbers) => numbers.map(n => `${prefix}${n}`);
+
+splitUnit('g1-l1',
+  {key:'g1-l1-be-verb', label:'중1 L1 · be동사'},
+  {key:'g1-l1-general-verb', label:'중1 L1 · 일반동사'},
+  q => q.id.includes('_be_verb_a') || ['g1_l1_ox_1', 'g1_l1_ox_2'].includes(q.id));
+
+splitUnit('g1-l2',
+  {key:'g1-l2-present-progressive', label:'중1 L2 · 현재진행형'},
+  {key:'g1-l2-gerund', label:'중1 L2 · 동명사'},
+  q => q.id.includes('_s0') || ['g1_l2_ox_1', 'g1_l2_ox_2'].includes(q.id));
+
+const G1_L3_WHEN_IDS = idSet([
+  'g1_l3_fix_when_arrived',
+  ...numberedIds('g1_l3_when_', [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16]),
+  'g1_l3_when_ox1',
+  ...numberedIds('g1_l3_x', [12, 13, 14, 15, 16, 17])
+]);
+splitUnit('g1-l3',
+  {key:'g1-l3-past-tense', label:'중1 L3 · be·일반동사 과거형'},
+  {key:'g1-l3-when', label:'중1 L3 · when'},
+  q => !G1_L3_WHEN_IDS.has(q.id));
+
+const G1_L4_WILL_SHOULD_IDS = idSet([
+  ...numberedIds('g1_l4_to_will_basic_b', Array.from({length:20}, (_, i) => i + 1)),
+  ...numberedIds('g1_l4_to_will_hard_a', [2, 3, 9, 10, 11, 13, 14]),
+  ...numberedIds('g1_l4_to_will_hard_b', [1, 4, 7, 8, 9, 10]),
+  'g1_l4_ox_2', 'g1_l4_ox_3'
+]);
+splitUnit('g1-l4',
+  {key:'g1-l4-to-infinitive', label:'중1 L4 · to부정사'},
+  {key:'g1-l4-will-should', label:'중1 L4 · will / should'},
+  q => !G1_L4_WILL_SHOULD_IDS.has(q.id));
+
+const G1_L5_REFLEXIVE_IDS = new Set([
+  ...Array.from({ length: 20 }, (_, i) => `g1_l5_reflexive_to_basic_a${i + 1}`),
+  'g1_l5_reflexive_to_hard_a2',
+  'g1_l5_reflexive_to_hard_a3',
+  'g1_l5_reflexive_to_hard_a12',
+  'g1_l5_reflexive_to_hard_a14',
+  ...Array.from({ length: 5 }, (_, i) => `g1_l5_reflexive_to_hard_b${i + 1}`)
+]);
+
+splitUnit('g1-l5',
+  {key:'g1-l5-reflexive', label:'중1 L5 · 재귀대명사'},
+  {key:'g1-l5-to-infinitive', label:'중1 L5 · 목적의 to부정사'},
+  hasId(G1_L5_REFLEXIVE_IDS));
+
+const G1_L6_SENSORY_IDS = idSet([
+  ...numberedIds('g1_l6_look_because_basic_a', Array.from({length:20}, (_, i) => i + 1)),
+  'g1_l6_look_because_hard_a3',
+  ...numberedIds('g1_l6_look_because_hard_b', [1, 2, 3, 4, 5]),
+  'g1_l6_wsox_lookbecausehard_1',
+  ...numberedIds('g1_l6_x', [1, 2, 3, 5, 6, 8, 9, 12])
+]);
+splitUnit('g1-l6',
+  {key:'g1-l6-sensory-verbs', label:'중1 L6 · 감각동사'},
+  {key:'g1-l6-because', label:'중1 L6 · because'},
+  hasId(G1_L6_SENSORY_IDS));
+
+const G1_L7_MAKE_IDS = idSet([
+  ...numberedIds('g1_l7_make_that_basic_index_a', Array.from({length:10}, (_, i) => i + 1)),
+  'g1_l7_make_that_hard_index_a3',
+  ...numberedIds('g1_l7_make_that_hard_index_b', [1, 2, 3, 4, 5]),
+  'g1_l7_wsox_makethathard_1',
+  ...numberedIds('g1_l7_x', [1, 2, 3, 4, 5, 6, 12, 14, 16, 18, 19])
+]);
+splitUnit('g1-l7',
+  {key:'g1-l7-make-adjective', label:'중1 L7 · make+형용사'},
+  {key:'g1-l7-that', label:'중1 L7 · 접속사 that'},
+  hasId(G1_L7_MAKE_IDS));
+
+splitUnit('g1-l8',
+  {key:'g1-l8-exclamation', label:'중1 L8 · 감탄문'},
+  {key:'g1-l8-something-adjective', label:'중1 L8 · -thing+형용사'},
+  q => /\b(?:What|How)\b/.test(`${q.eng} ${q.ans}`));
+
+const G2_L1_GIVE_IDS = idSet([
+  'g2_l1_fix_send_to',
+  ...numberedIds('g2_l1_g2_give_relclause_basic_a', [1, 2, 3, 4, 5, 6, 7, 8, 13, 14, 15, 16, 17, 18, 19, 20]),
+  ...numberedIds('g2_l1_g2_give_relclause_hard_a', [1, 2, 10, 12, 13]),
+  ...numberedIds('g2_l1_g2_give_relclause_hard_b', [1, 2, 3, 4, 5]),
+  'g2_l1_wsox_g2giverelclausebasic_1', 'g2_l1_wsox_g2giverelclausebasic_2'
+]);
+splitUnit('g2-l1',
+  {key:'g2-l1-give', label:'중2 L1 · 수여동사'},
+  {key:'g2-l1-relative-pronoun', label:'중2 L1 · 관계대명사'},
+  hasId(G2_L1_GIVE_IDS));
+
+const G2_L2_PERFECT_IDS = idSet([
+  'g2_l2_fix_for_duration',
+  ...numberedIds('g2_l2_g2_perfect_compare_basic_a', [1, 2, 3, 4, 5, 6, 7, 8, 9, 13, 14, 15, 16, 17, 18, 19, 20]),
+  ...numberedIds('g2_l2_g2_perfect_compare_hard_a', [1, 2, 9, 10, 12]),
+  ...numberedIds('g2_l2_g2_perfect_compare_hard_b', [1, 2, 3, 4, 5]),
+  'g2_l2_wsox_g2perfectcomparebasic_1', 'g2_l2_wsox_g2perfectcomparebasic_2'
+]);
+splitUnit('g2-l2',
+  {key:'g2-l2-present-perfect', label:'중2 L2 · 현재완료'},
+  {key:'g2-l2-comparative', label:'중2 L2 · 비교급·최상급'},
+  hasId(G2_L2_PERFECT_IDS));
+
+const G2_L3_TO_IDS = idSet([
+  ...numberedIds('g2_l3_g2_to_if_basic_a', [1, 2, 3, 4, 5, 6, 7, 8, 9, 13, 14, 15, 16, 17, 18, 19, 20]),
+  ...numberedIds('g2_l3_g2_to_if_hard_a', [1, 2, 9, 10, 12, 13]),
+  ...numberedIds('g2_l3_g2_to_if_hard_b', [1, 2, 3, 4, 5]),
+  'g2_l3_wsox_g2toifbasic_1', 'g2_l3_wsox_g2toifbasic_2'
+]);
+splitUnit('g2-l3',
+  {key:'g2-l3-adjective-to-infinitive', label:'중2 L3 · 형용사 to부정사'},
+  {key:'g2-l3-if', label:'중2 L3 · if'},
+  hasId(G2_L3_TO_IDS));
+
+const G2_L4_SO_THAT_IDS = idSet([
+  'g2_l4_fix_so_boring_that',
+  ...numberedIds('g2_l4_g2_sothat_passive_basic_a', [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 13, 14, 15, 16, 17, 18, 19, 20]),
+  ...numberedIds('g2_l4_g2_sothat_passive_hard_a', [1, 3, 10, 13]),
+  ...numberedIds('g2_l4_g2_sothat_passive_hard_b', [1, 2, 3, 4, 5]),
+  'g2_l4_wsox_g2sothatpassivebasic_1'
+]);
+splitUnit('g2-l4',
+  {key:'g2-l4-so-that', label:'중2 L4 · so~that'},
+  {key:'g2-l4-passive', label:'중2 L4 · 수동태'},
+  hasId(G2_L4_SO_THAT_IDS));
+
+const G2_L5_OBJECT_TO_IDS = idSet([
+  ...numberedIds('g2_l5_g2_want_relclause_basic_index_a', [1, 2, 3, 4, 5, 6, 7, 8]),
+  ...numberedIds('g2_l5_g2_want_relclause_hard_index_a', [1, 3]),
+  'g2_l5_wsox_g2wantrelclausebasic_1', 'g2_l5_wsox_g2wantrelclausebasic_2',
+  ...numberedIds('g2_l5_x', [1, 2, 3, 4, 5, 9, 10, 13, 15, 17, 20, 21, 24, 26, 28, 30])
+]);
+splitUnit('g2-l5',
+  {key:'g2-l5-object-to-infinitive', label:'중2 L5 · 동사+목적어+to부정사'},
+  {key:'g2-l5-object-relative-pronoun', label:'중2 L5 · 목적격 관계대명사'},
+  hasId(G2_L5_OBJECT_TO_IDS));
+
+splitUnit('g2-l6',
+  {key:'g2-l6-perception-verb', label:'중2 L6 · 지각동사'},
+  {key:'g2-l6-indirect-question', label:'중2 L6 · 간접의문문'},
+  q => q.id.includes('_basic_index_a') ||
+       ['g2_l6_g2_perceive_indirectq_hard_index_a1', 'g2_l6_g2_perceive_indirectq_hard_index_a2'].includes(q.id) ||
+       q.id.includes('_game_p') || /^g2_l6_ox_0[1-6]$/.test(q.id));
+
+const G2_L7_CAUSATIVE_IDS = idSet([
+  ...numberedIds('g2_l7_g2_causative_asas_basic_index_a', [1, 2, 3, 4, 5, 6, 7, 8, 9]),
+  'g2_l7_g2_causative_asas_hard_index_a1', 'g2_l7_g2_causative_asas_hard_index_a3',
+  'g2_l7_wsox_g2causativeasasbasic_1', 'g2_l7_wsox_g2causativeasasbasic_2', 'g2_l7_wsox_g2causativeasasbasic_3',
+  ...numberedIds('g2_l7_x', [1, 2, 3, 4, 5, 9, 10, 12, 13, 14, 15, 20, 21, 23, 27])
+]);
+splitUnit('g2-l7',
+  {key:'g2-l7-causative', label:'중2 L7 · 사역동사'},
+  {key:'g2-l7-as-as', label:'중2 L7 · 원급 비교'},
+  hasId(G2_L7_CAUSATIVE_IDS));
+
+const G2_L8_DUMMY_IT_IDS = idSet([
+  ...numberedIds('g2_l8_g2_itto_whatto_basic_index_a', [1, 2, 4, 5, 7, 8, 13, 14]),
+  'g2_l8_g2_itto_whatto_hard_index_a1', 'g2_l8_g2_itto_whatto_hard_index_a2',
+  'g2_l8_dummy_it_playable_1', 'g2_l8_dummy_it_playable_2',
+  'g2_l8_wsox_g2ittowhattobasic_1',
+  ...numberedIds('g2_l8_x', [1, 2, 3, 4, 9, 11, 12, 13, 19, 21, 23, 25])
+]);
+splitUnit('g2-l8',
+  {key:'g2-l8-dummy-it', label:'중2 L8 · 가주어 it'},
+  {key:'g2-l8-wh-to-infinitive', label:'중2 L8 · 의문사+to부정사'},
+  hasId(G2_L8_DUMMY_IT_IDS));

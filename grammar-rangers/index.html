@@ -547,7 +547,9 @@ function update(dt){
     let tgt=null,td=1e9;
     for(const e of g.units){if(e.dead||e.side===u.side)continue;const d=(e.x-u.x)*dir;if(d>=-12&&d<td){td=d;tgt=e;}}
     const inRange=tgt&&Math.abs(tgt.x-u.x)<=u.range;
-    let friendGap=1e9;for(const f of g.units){if(f===u||f.dead||f.side!==u.side)continue;const d=(f.x-u.x)*dir;if(d>0&&d<friendGap)friendGap=d;}
+    // 공성 슬롯에 들어간 선두는 간격 계산에서 빼서 후속 유닛도 자기 슬롯까지 진입하게 한다.
+    const enemyBase=u.side==='my'?'foe':'my';
+    let friendGap=1e9;for(const f of g.units){if(f===u||f.dead||f.side!==u.side||f.siege===enemyBase)continue;const d=(f.x-u.x)*dir;if(d>0&&d<friendGap)friendGap=d;}
     // 적 본진 근처에서는 뒤따른 적이 전열 간격에 막히지 않고 전장으로 빠져나간다.
     // 적진을 친 근접 유닛과 선두 적의 간격은 36px라 일반 46px 대기열을 그대로 적용하면 스폰이 영구 정지한다.
     const spawnExit=u.side==='foe'&&u.x>FOEBASE.x-72;
@@ -564,10 +566,12 @@ function update(dt){
       if(u.cool<=0){u.cool=u.atkSpd;u.lunge=.16;setUnitAnim(u,'attack',.34);attack(u,tgt);}
     }else if(nearFoeBase||nearMyBase){
       const siegeTarget=u.side==='my'?'foe':'my';
-      const contenders=g.units.filter(v=>!v.dead&&v.side===u.side&&v.siege===siegeTarget).sort((a,b)=>a.id-b.id);
+      const contenders=g.units.filter(v=>!v.dead&&v.side===u.side&&v.siege===siegeTarget).sort((a,b)=>{const ar=a.def.siegeBonus?0:a.healer?2:1,br=b.def.siegeBonus?0:b.healer?2:1;return ar-br||(b.x-a.x)*dir||a.id-b.id;});
       const slot=contenders.indexOf(u);
-      if(slot<BASE_ATTACKER_LIMIT){const attackGap=u.ranged?Math.min(u.range,230):88,attackX=u.side==='my'?FOEBASE.x-attackGap:MYBASE.x+attackGap,diff=attackX-u.x;if(Math.abs(diff)>3){u.x+=Math.sign(diff)*Math.min(Math.abs(diff),u.speed*dt);desiredAnim='run';}else{u.cool-=dt;if(u.cool<=0){u.cool=u.atkSpd;u.lunge=.16;setUnitAnim(u,'attack',.34);hitBase(u);}}}
-      else{const hold=u.side==='my'?FOEBASE.x-92-(slot-2)*50:MYBASE.x+92+(slot-2)*50;u.x+=(hold-u.x)*Math.min(1,dt*6);}
+      const attackerLimit=u.side==='my'?2:BASE_ATTACKER_LIMIT;
+      if(slot<attackerLimit){const attackGap=u.ranged?Math.min(u.range,230):88,attackStagger=u.side==='my'?slot*40:0,attackX=u.side==='my'?FOEBASE.x-attackGap-attackStagger:MYBASE.x+attackGap,diff=attackX-u.x;if(u.side==='my'){const attackY=LANE_Y+(slot-(attackerLimit-1)/2)*40;u.y+=(attackY-u.y)*Math.min(1,dt*5);}if(Math.abs(diff)>3){u.x+=Math.sign(diff)*Math.min(Math.abs(diff),u.speed*dt);desiredAnim='run';}else{u.cool-=dt;if(u.cool<=0){u.cool=u.atkSpd;u.lunge=.16;setUnitAnim(u,'attack',.34);hitBase(u);}}}
+      else if(u.side==='my'){const reserves=contenders.slice(attackerLimit),supports=reserves.filter(v=>v.healer),fighters=reserves.filter(v=>!v.healer),holdSlot=u.healer?supports.indexOf(u):supports.length+fighters.indexOf(u),attackFront=Math.max(...contenders.slice(0,attackerLimit).map(v=>v.x)),hold=u.healer?Math.max(FOEBASE.x-274,attackFront-u.healRange):FOEBASE.x-274-holdSlot*84,holdY=LANE_Y+(holdSlot%2?-18:18);u.x+=(hold-u.x)*Math.min(1,dt*6);u.y+=(holdY-u.y)*Math.min(1,dt*5);}
+      else{const hold=MYBASE.x+92+(slot-2)*50;u.x+=(hold-u.x)*Math.min(1,dt*6);}
     }else{
       if(!blockedByFriend){u.x+=dir*u.speed*dt;desiredAnim='run';}
       u.ft+=dt;

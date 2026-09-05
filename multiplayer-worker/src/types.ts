@@ -1,4 +1,4 @@
-import type { Question, RoomState, TeacherRoomView } from "./room-engine";
+import type { PlayStyle, Question, RoomMode, RoomState, TeacherRoomView } from "./room-engine";
 
 export interface QuestionBank {
   generatedAt: string;
@@ -18,8 +18,9 @@ export interface Env {
 
 export interface RoomRecord {
   roomId: string;
-  grade: "g1" | "g2";
+  grade: "g1" | "g2" | "custom";
   unitKey: string;
+  setTitle?: string;
   state: RoomState;
   reportStored: boolean;
   socketTickets: Record<string, { playerId: string; expiresAt: number }>;
@@ -30,11 +31,15 @@ export interface RoomInitBody {
   roomId: string;
   code: string;
   teacherEmail: string;
-  grade: "g1" | "g2";
+  grade: "g1" | "g2" | "custom";
   unitKey: string;
+  setTitle?: string;
   durationSeconds: number;
   allowLateJoin: boolean;
   shuffleQuestions: boolean;
+  mode?: RoomMode;
+  playStyle?: PlayStyle;
+  teamCount?: number;
   questions: Question[];
   createdAt: number;
 }
@@ -46,7 +51,7 @@ export interface SocketAttachment {
 }
 
 export interface FinalizedReport {
-  grade: "g1" | "g2";
+  grade: "g1" | "g2" | "custom";
   unitKey: string;
   state: TeacherRoomView;
   teacherEmail: string;

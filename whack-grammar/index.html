@@ -363,15 +363,29 @@ header{display:flex;align-items:center;gap:8px;padding:12px 14px 6px;position:re
 .panel h2{font-family:'Baloo 2',sans-serif;font-size:1.7rem;font-weight:900;color:var(--ink);margin-bottom:6px;
   text-shadow:0 0 14px rgba(224,231,255,.55),0 0 26px rgba(168,85,247,.42);}
 .panel p{font-size:.86rem;font-weight:700;color:var(--ink-dim);margin-bottom:14px;line-height:1.55;}
-.panel .units{display:grid;grid-template-columns:repeat(2,1fr);gap:7px;margin-bottom:16px;}
+.panel .units{display:flex;flex-direction:column;flex:1;min-height:0;margin-bottom:16px;}
+.selector-grade-tabs{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:6px;flex:none;margin:0 0 10px;}
+.selector-grade-btn{min-height:44px;border:1px solid rgba(148,163,184,.35);border-radius:12px;background:rgba(255,255,255,.04);color:var(--ink-dim);font-family:inherit;font-weight:900;font-size:.78rem;cursor:pointer;transition:all .16s;}
+.selector-grade-btn[aria-selected="true"]{background:linear-gradient(135deg,rgba(34,211,238,.26),rgba(168,85,247,.28));border-color:var(--neon-cyan);color:#fff;box-shadow:0 0 14px rgba(34,211,238,.3);}
+.unit-groups{display:grid;gap:7px;flex:1;min-height:0;overflow-y:auto;overscroll-behavior:contain;padding:0 3px 14px 0;}
+.unit-groups details{border:1px solid rgba(148,163,184,.2);border-radius:12px;background:rgba(255,255,255,.025);overflow:hidden;}
+.unit-groups summary{min-height:44px;display:flex;align-items:center;justify-content:space-between;gap:8px;padding:9px 11px;color:var(--neon-cyan);font-size:.76rem;font-weight:900;cursor:pointer;list-style:none;}
+.unit-groups summary::-webkit-details-marker{display:none;}
+.unit-groups summary::after{content:'＋';color:var(--ink-dim);font-size:1rem;}
+.unit-groups details[open] summary::after{content:'−';color:var(--neon-cyan);}
+.unit-groups details[hidden]{display:none;}
+.unit-groups .lesson-count{color:var(--ink-dim);font-size:.68rem;font-weight:800;}
+.unit-groups .lesson-options{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:6px;padding:0 7px 7px;}
 .panel .units button{background:rgba(34,211,238,.06);border:1.2px solid rgba(34,211,238,.32);color:var(--ink);
-  font-family:inherit;font-weight:800;font-size:.78rem;padding:9px;border-radius:12px;cursor:pointer;transition:all .18s;}
+  font-family:inherit;font-weight:800;font-size:.78rem;padding:9px;border-radius:12px;cursor:pointer;transition:all .18s;min-height:44px;}
 .panel .units button:hover{background:rgba(34,211,238,.14);border-color:rgba(34,211,238,.55);}
 .panel .units button.on{background:linear-gradient(135deg,rgba(34,211,238,.32),rgba(168,85,247,.28));
   border-color:var(--neon-cyan);color:#fff;box-shadow:0 0 16px rgba(34,211,238,.55);text-shadow:0 0 8px rgba(34,211,238,.7);}
 #screen-start .panel{max-height:calc(100% - 24px);display:flex;flex-direction:column;}
-#screen-start .panel .units{min-height:0;overflow-y:auto;overscroll-behavior:contain;padding-right:3px;}
+#screen-start .panel .units{min-height:0;}
 #screen-start .panel .go{flex-shrink:0;}
+.first-action{margin:-4px 0 13px;padding:8px 10px;border:1px dashed rgba(251,191,36,.4);border-radius:10px;color:#fde68a;background:rgba(251,191,36,.06);font-size:.69rem;font-weight:800;line-height:1.4;}
+.qcard.prestart-hidden{visibility:hidden;opacity:0;}
 .panel .go{background:linear-gradient(135deg,#22d3ee 0%,#a855f7 100%);border:none;color:#fff;
   font-family:inherit;font-weight:900;font-size:1.1rem;padding:14px 20px;border-radius:16px;width:100%;cursor:pointer;
   box-shadow:0 0 22px rgba(34,211,238,.45),0 0 44px rgba(168,85,247,.35),0 8px 18px rgba(0,0,0,.5);
@@ -490,7 +504,7 @@ header{display:flex;align-items:center;gap:8px;padding:12px 14px 6px;position:re
     <div class="hud-card boost hide" id="hud-boost"><span class="lbl">×2</span><span class="val" id="hud-boost-time">10</span></div>
     <div class="hud-card"><span class="lbl">HP</span><div class="hp-row" id="hud-hp"><span></span><span></span><span></span></div></div>
   </div>
-  <div class="qcard">
+  <div class="qcard prestart-hidden">
     <div class="qkor" id="q-kor">한국어 해석</div>
     <div class="qeng" id="q-eng">English sentence</div>
     <div class="qhint" id="q-hint">⚠ 틀린 부분을 고쳐 두드리세요</div>
@@ -504,6 +518,7 @@ header{display:flex;align-items:center;gap:8px;padding:12px 14px 6px;position:re
     <div class="panel">
       <h2>두더지 문법 잡기</h2>
       <p>두더지 머리 위 단어가 답이면 두드려요.<br>오답을 두드리면 HP가 깎입니다.</p>
+      <div class="first-action">첫 문제 예시 · 빈칸에 맞는 단어가 뜬 두더지를 톡 눌러요.</div>
       <div class="units" id="unit-list"></div>
       <button class="go" id="btn-go">시작!</button>
     </div>
@@ -622,19 +637,74 @@ function buildGrid() {
 function buildUnitList() {
   const list = document.getElementById('unit-list');
   list.innerHTML = '';
+  const activeGrade = unitKey.startsWith('g2-') ? 'g2' : 'g1';
+  const tabs = document.createElement('div');
+  tabs.className = 'selector-grade-tabs';
+  tabs.setAttribute('role', 'tablist');
+  tabs.setAttribute('aria-label', '학년 선택');
+  const groups = document.createElement('div');
+  groups.className = 'unit-groups';
+  const grouped = { g1: new Map(), g2: new Map() };
   Object.entries(GAME_QUESTIONS).forEach(([key, info]) => {
-    if (info.hidden) return;
-    const btn = document.createElement('button');
-    btn.textContent = info.label;
-    btn.dataset.key = key;
-    if (key === unitKey) btn.classList.add('on');
-    btn.addEventListener('click', () => {
-      list.querySelectorAll('button').forEach(b => b.classList.remove('on'));
-      btn.classList.add('on');
-      unitKey = key;
-    });
-    list.appendChild(btn);
+    if (key === 'all' || info.hidden) return;
+    const grade = key.startsWith('g2-') ? 'g2' : 'g1';
+    const lesson = (key.match(/^g[12]-l(\d+)/) || [])[1] || '기타';
+    if (!grouped[grade].has(lesson)) grouped[grade].set(lesson, []);
+    grouped[grade].get(lesson).push({ key, info });
   });
+  ['g1', 'g2'].forEach((grade) => {
+    const tab = document.createElement('button');
+    tab.type = 'button';
+    tab.className = 'selector-grade-btn';
+    tab.textContent = grade === 'g1' ? '중학교 1학년' : '중학교 2학년';
+    tab.dataset.grade = grade;
+    tab.setAttribute('role', 'tab');
+    tab.setAttribute('aria-selected', String(grade === activeGrade));
+    tab.setAttribute('aria-controls', `whack-${grade}-lessons`);
+    tabs.appendChild(tab);
+
+    const gradePanel = document.createElement('div');
+    gradePanel.id = `whack-${grade}-lessons`;
+    gradePanel.dataset.grade = grade;
+    gradePanel.setAttribute('role', 'tabpanel');
+    gradePanel.hidden = grade !== activeGrade;
+    gradePanel.className = 'grade-lesson-panel';
+    grouped[grade].forEach((items, lesson) => {
+      const details = document.createElement('details');
+      details.open = lesson === (unitKey.match(/^g[12]-l(\d+)/) || [])[1];
+      const summary = document.createElement('summary');
+      summary.setAttribute('aria-expanded', String(details.open));
+      summary.innerHTML = `<span>LESSON ${lesson}</span><span class="lesson-count">${items.length}개 주제</span>`;
+      details.addEventListener('toggle', () => summary.setAttribute('aria-expanded', String(details.open)));
+      details.appendChild(summary);
+      const options = document.createElement('div');
+      options.className = 'lesson-options';
+      items.forEach(({ key, info }) => {
+        const btn = document.createElement('button');
+        btn.type = 'button';
+        btn.textContent = info.label.split(' · ')[1] || info.label;
+        btn.dataset.key = key;
+        btn.classList.toggle('on', key === unitKey);
+        btn.setAttribute('aria-pressed', String(key === unitKey));
+        btn.setAttribute('aria-label', `${info.label}, ${info.questions.length}문제`);
+        btn.addEventListener('click', () => {
+          list.querySelectorAll('.lesson-options button').forEach(b => { b.classList.remove('on'); b.setAttribute('aria-pressed', 'false'); });
+          btn.classList.add('on');
+          btn.setAttribute('aria-pressed', 'true');
+          unitKey = key;
+        });
+        options.appendChild(btn);
+      });
+      details.appendChild(options);
+      gradePanel.appendChild(details);
+    });
+    groups.appendChild(gradePanel);
+  });
+  tabs.querySelectorAll('button').forEach(tab => tab.addEventListener('click', () => {
+    tabs.querySelectorAll('button').forEach(t => t.setAttribute('aria-selected', String(t === tab)));
+    groups.querySelectorAll('.grade-lesson-panel').forEach(panel => { panel.hidden = panel.dataset.grade !== tab.dataset.grade; });
+  }));
+  list.append(tabs, groups);
 }
 
 function shuffle(arr) {
@@ -666,6 +736,7 @@ function startGame() {
   clearTimeout(bombTimer); clearTimeout(heartTimer);
   document.getElementById('screen-start').classList.add('hide');
   document.getElementById('screen-end').classList.add('hide');
+  document.querySelector('.qcard').classList.remove('prestart-hidden');
   buildGrid();
   updateHud();
   gameRunning = true;

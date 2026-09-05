@@ -1,6 +1,6 @@
 # 문법 아케이드 멀티플레이 Worker
 
-Cloudflare Worker, SQLite Durable Objects, D1으로 교실 점수전의 방 상태와 종료 리포트를 처리한다. 학생은 계정 없이 참가하고, 교사 경로는 운영 환경에서 Cloudflare Access JWT로 인증한다.
+Cloudflare Worker, SQLite Durable Objects, D1으로 교실 멀티 게임의 방 상태와 종료 리포트를 처리한다. 학생은 계정 없이 참가하고, 교사 경로는 운영 환경에서 Cloudflare Access JWT로 인증한다. 기존 솔로 게임은 별도 경로에서 그대로 유지한다.
 
 ## 로컬 실행
 
@@ -16,9 +16,17 @@ npx wrangler dev --local --persist-to=.wrangler/state --var ENVIRONMENT:developm
 
 로컬 앱은 Wrangler가 제공하는 주소의 `/multiplayer/`에서 연다. 로컬 loopback 주소(`localhost`, `127.0.0.1`, `::1`)에서만 `X-Dev-Teacher-Email`과 교사 WebSocket의 `devTeacherEmail` 쿼리를 개발용으로 인정한다. preview·staging처럼 외부에 공개된 호스트에서는 `ENVIRONMENT=development`여도 두 값을 신뢰하지 않으며, 운영 환경에서도 모두 무시한다.
 
-## 방 설정
+## 방 설정과 게임 모드
 
 교사는 방을 만들 때 제한 시간을 1분, 3분, 5분, 7분, 10분 중에서 고를 수 있다.
+
+플레이 스타일은 개인전이 기본이며, 필요할 때 2~4팀 팀전으로 전환한다. 팀전은 자동으로 인원을 고르게 배정하고 팀 합산 점수와 개인 기록을 따로 보여 준다. 금고 나눔은 같은 팀에만 적용하며, 미궁 조우에서는 팀원을 약탈 대상으로 잡지 않는다.
+
+- `score_race`: 정답 점수와 연속 정답으로 경쟁하는 기본 모드.
+- `treasure_heist`: 정답 뒤 안전 보너스, 협력 나눔, 고위험 금고 중 전략을 선택한다. 실제 결과는 선택 전 서버에만 보관한다.
+- `maze_heist`: 정답 속도와 연속 정답으로 이동권을 얻어 열쇠, 함정, 순간이동, 방패와 숨은 보물을 탐색한다. 이동과 조우 결과는 서버가 판정하고 학생에게는 현재 위치 주변만 공개한다.
+
+교사는 기본 제공 문항 외에도 `/multiplayer/creator.html`에서 직접 입력, Quizlet식 붙여넣기, `.xlsx`, CSV/TSV, 사진 첨부로 5~30문항의 임시 세트를 만들 수 있다. 제작 세트는 현재 교사 브라우저의 로컬 저장소에 보관되며 방 생성 시 서버가 문항 길이, 선택지와 이미지 크기를 다시 검증한다.
 
 `questionCount`는 게임 전체의 최대 풀이 수가 아니라 한 사이클의 문항 묶음 크기다. 학생이 묶음을 전부 풀면 제한 시간이 끝날 때까지 같은 묶음을 다음 사이클로 계속 제공한다. 정답 제출은 화면에 포함된 `occurrenceIndex`를 함께 보내므로 다음 사이클의 같은 문항은 새 문제로 인정하지만, 동일한 출현의 중복 제출은 409로 차단한다.
 
@@ -37,7 +45,7 @@ Durable Object에는 학생별 과거 제출 상세 전체를 쌓지 않는다. 
 npx wrangler d1 create middle-grammar-multiplayer-reports
 ```
 
-명령이 출력한 실제 `database_id`를 `wrangler.jsonc`의 `REPORTS` 바인딩에 넣는다. 현재 `00000000-0000-0000-0000-000000000000`은 로컬·dry-run용 자리표시자다. 운영 마이그레이션은 배포 전에 실행한다.
+명령이 출력한 실제 `database_id`를 `wrangler.jsonc`의 `REPORTS` 바인딩에 넣는다. 운영 마이그레이션은 배포 전에 실행한다.
 
 ```bash
 npx wrangler d1 migrations apply middle-grammar-multiplayer-reports --remote
@@ -76,6 +84,7 @@ npx wrangler deploy --dry-run
 
 ## 후속 TODO
 
-- 문제 제작: 직접 입력, Quizlet 가져오기, Excel 업로드, 사진 업로드와 미리보기
-- `보물 약탈전`: 점수 뺏기·선물하기와 보호 규칙
-- `암호 해킹전`: 정답 보상에 추리·블러프 라운드를 결합한 모드
+- `grammar_escape`: 약한 공포 분위기의 방탈출. 기본 개인전이며 방 생성 때 개인전/2~4팀 협동을 선택하고, 1명 참가 시 같은 엔진을 솔로로 사용한다.
+- 교사 로그인: Cloudflare Access application, 허용 교사 이메일, Audience와 팀 도메인 연결. 유료 플랜이나 결제 설정 없이 별도 승인 후 진행한다.
+- 문제 세트 영구 보관·공유: 현재 브라우저 임시 저장에서 교사 계정별 세트 라이브러리로 확장한다.
+- 수업 리포트: 게임 모드별 아이템·이동·탈출 진행도와 문항별 오답 분포를 추가한다.

@@ -6,6 +6,8 @@ import {
   publicRoomState,
   startRoom,
   submitAnswer,
+  chooseTreasure,
+  mazeMove,
   teacherRoomState,
   type RoomState,
 } from "./room-engine";
@@ -13,6 +15,9 @@ import type { Env, RoomInitBody, RoomRecord, SocketAttachment } from "./types";
 
 const RECORD_KEY = "room";
 const MAX_PLAYERS = 60;
+const MAX_PENDING_TICKETS_PER_PLAYER = 2;
+const MAX_ACTIVE_STUDENT_SOCKETS_PER_PLAYER = 2;
+const MAX_ACTIVE_SOCKETS_PER_ROOM = MAX_PLAYERS + 4;
 const RECONNECT_WINDOW_MS = 60_000;
 const TICKET_TTL_MS = 60_000;
 const REPORT_RETRY_MS = 60_000;
@@ -29,13 +34,13 @@ export class GameRoom implements DurableObject {
     try {
       const url = new URL(request.url);
       if (request.method === "POST" && url.pathname === "/internal/initialize") {
-        return await this.initialize(await request.json<RoomInitBody>());
+        return await this.initialize(readObject(await request.json()) as unknown as RoomInitBody);
       }
       if (request.method === "POST" && url.pathname === "/internal/join") {
-        return await this.join(await request.json<{ nickname: string }>());
+        return await this.join(readObject(await request.json()) as { nickname: string });
       }
       if (request.method === "POST" && url.pathname === "/internal/socket-ticket") {
-        return await this.issueSocketTicket(request, await request.json<{ playerId: string }>());
+        return await this.issueSocketTicket(request, readObject(await request.json()) as { playerId: string });
       }
       if (request.method === "GET" && url.pathname === "/internal/state") {
         return await this.state(request, url);
@@ -45,6 +50,12 @@ export class GameRoom implements DurableObject {
       }
       if (request.method === "POST" && url.pathname === "/internal/finish") {
         return await this.finish(request);
+      }
+      if (request.method === "POST" && url.pathname === "/internal/treasure-choice") {
+        return await this.treasureChoice(request, readObject(await request.json()) as { playerId: string; choiceId: string });
+      }
+      if (request.method === "POST" && url.pathname === "/internal/maze-move") {
+        return await this.mazeMove(request, readObject(await request.json()) as { playerId: string; seq: number; direction: string });
       }
       if (request.method === "GET" && url.pathname === "/internal/ws") {
         return await this.openSocket(request, url);
@@ -84,20 +95,59 @@ export class GameRoom implements DurableObject {
     try {
       const payload = JSON.parse(
         typeof message === "string" ? message : new TextDecoder().decode(message),
-      ) as { type?: string; questionId?: string; occurrenceIndex?: number; answer?: string };
+      ) as { type?: string; questionId?: string; occurrenceIndex?: number; answer?: string; choiceId?: string; seq?: number; direction?: string };
+      if (attachment?.role !== "student" || !attachment.playerId || !attachment.resumeTokenHash) {
+        throw new EngineError("INVALID_ANSWER", "Invalid WebSocket message.");
+      }
+      const record = await this.requireRecord();
+      this.assertPlayerHash(record.state, attachment.playerId, attachment.resumeTokenHash);
+      if (payload.type === "treasure_choice") {
+        if (typeof payload.choiceId !== "string" || !payload.choiceId) {
+          throw new EngineError("TREASURE_NOT_AVAILABLE", "Invalid treasure choice.");
+        }
+        const chosen = chooseTreasure(record.state, {
+          playerId: attachment.playerId,
+          choiceId: payload.choiceId,
+          serverNow: Date.now(),
+        });
+        record.state = chosen.state;
+        await this.putRecord(record);
+        socket.send(JSON.stringify({
+          type: "treasure_result",
+          result: chosen.result,
+          state: studentView(record, attachment.playerId),
+        }));
+        this.broadcastState(record);
+        return;
+      }
+      if (payload.type === "maze_move") {
+        if (!Number.isInteger(payload.seq) || typeof payload.direction !== "string") {
+          throw new EngineError("INVALID_MAZE_MOVE", "Invalid maze move.");
+        }
+        const moved = mazeMove(record.state, {
+          playerId: attachment.playerId,
+          seq: payload.seq!,
+          direction: payload.direction as "up" | "down" | "left" | "right",
+          serverNow: Date.now(),
+        });
+        record.state = moved.state;
+        await this.putRecord(record);
+        socket.send(JSON.stringify({
+          type: "maze_move_result",
+          result: moved.result,
+          state: studentView(record, attachment.playerId),
+        }));
+        this.broadcastState(record);
+        return;
+      }
       if (
         payload.type !== "answer" ||
-        attachment?.role !== "student" ||
-        !attachment.playerId ||
-        !attachment.resumeTokenHash ||
         typeof payload.questionId !== "string" ||
         !Number.isInteger(payload.occurrenceIndex) ||
         typeof payload.answer !== "string"
       ) {
         throw new EngineError("INVALID_ANSWER", "Invalid WebSocket message.");
       }
-      const record = await this.requireRecord();
-      await this.assertPlayerHash(record.state, attachment.playerId, attachment.resumeTokenHash);
       const submitted = submitAnswer(record.state, {
         playerId: attachment.playerId,
         questionId: payload.questionId,
@@ -141,6 +191,9 @@ export class GameRoom implements DurableObject {
       durationSeconds: body.durationSeconds,
       allowLateJoin: body.allowLateJoin,
       shuffleQuestions: body.shuffleQuestions,
+      mode: body.mode,
+      playStyle: body.playStyle,
+      teamCount: body.teamCount,
       questions: body.questions,
       createdAt: body.createdAt,
     });
@@ -148,6 +201,7 @@ export class GameRoom implements DurableObject {
       roomId: body.roomId,
       grade: body.grade,
       unitKey: body.unitKey,
+      setTitle: body.setTitle,
       state,
       reportStored: false,
       socketTickets: {},
@@ -161,6 +215,12 @@ export class GameRoom implements DurableObject {
   }
 
   private async join(body: { nickname: string }): Promise<Response> {
+    if (typeof body.nickname !== "string") {
+      throw new ResponseError(400, "INVALID_NICKNAME", "Enter a nickname.");
+    }
+    const playerId = crypto.randomUUID();
+    const resumeToken = randomSecret();
+    const resumeTokenHash = await sha256(resumeToken);
     const record = await this.requireRecord();
     if (Object.keys(record.state.players).length >= MAX_PLAYERS) {
       throw new ResponseError(409, "ROOM_FULL", "This room already has 60 players.");
@@ -169,12 +229,10 @@ export class GameRoom implements DurableObject {
     if (Object.values(record.state.players).some((player) => player.nickname === nickname)) {
       throw new ResponseError(409, "NICKNAME_TAKEN", "Choose a different nickname.");
     }
-    const playerId = crypto.randomUUID();
-    const resumeToken = randomSecret();
     const joined = joinPlayer(record.state, {
       id: playerId,
       nickname,
-      resumeTokenHash: await sha256(resumeToken),
+      resumeTokenHash,
       joinedAt: Date.now(),
     });
     record.state = joined.state;
@@ -187,30 +245,43 @@ export class GameRoom implements DurableObject {
     request: Request,
     body: { playerId: string },
   ): Promise<Response> {
+    if (typeof body.playerId !== "string" || !body.playerId) {
+      throw new ResponseError(400, "INVALID_PLAYER", "Player identity is invalid.");
+    }
+    const resumeTokenHash = await sha256(request.headers.get("x-resume-token") ?? "");
     const record = await this.requireRecord();
-    await this.assertPlayer(record.state, body.playerId, request.headers.get("x-resume-token") ?? "");
+    this.assertPlayerHash(record.state, body.playerId, resumeTokenHash);
     const disconnectedAt = record.disconnectedAt[body.playerId];
     if (disconnectedAt !== undefined && Date.now() - disconnectedAt > RECONNECT_WINDOW_MS) {
       throw new ResponseError(410, "RECONNECT_EXPIRED", "The 60-second reconnect window expired.");
     }
+    const now = Date.now();
+    pruneTickets(record, now);
+    const pendingForPlayer = Object.values(record.socketTickets)
+      .filter((issued) => issued.playerId === body.playerId).length;
+    if (pendingForPlayer >= MAX_PENDING_TICKETS_PER_PLAYER) {
+      throw new ResponseError(429, "SOCKET_TICKET_LIMIT", "Too many pending socket tickets.");
+    }
     const ticket = randomSecret();
-    const expiresAt = Date.now() + TICKET_TTL_MS;
+    const expiresAt = now + TICKET_TTL_MS;
     record.socketTickets[ticket] = { playerId: body.playerId, expiresAt };
-    pruneTickets(record, Date.now());
     await this.putRecord(record);
     return json({ ticket, expiresAt });
   }
 
   private async state(request: Request, url: URL): Promise<Response> {
+    const playerId = url.searchParams.get("playerId") ?? undefined;
+    const resumeTokenHash = playerId
+      ? await sha256(request.headers.get("x-resume-token") ?? "")
+      : undefined;
     const record = await this.requireRecord();
     const teacherEmail = request.headers.get("x-room-teacher-email");
     if (teacherEmail) {
       this.assertTeacher(record, teacherEmail);
       return json(teacherView(record));
     }
-    const playerId = url.searchParams.get("playerId") ?? undefined;
     if (!playerId) return json(studentView(record));
-    await this.assertPlayer(record.state, playerId, request.headers.get("x-resume-token") ?? "");
+    this.assertPlayerHash(record.state, playerId, resumeTokenHash!);
     return json(studentView(record, playerId));
   }
 
@@ -225,6 +296,53 @@ export class GameRoom implements DurableObject {
     });
     this.broadcast("start", record);
     return json({ state: teacherView(record) });
+  }
+
+  private async treasureChoice(
+    request: Request,
+    body: { playerId: string; choiceId: string },
+  ): Promise<Response> {
+    if (typeof body.playerId !== "string" || !body.playerId || typeof body.choiceId !== "string" || !body.choiceId) {
+      throw new ResponseError(400, "INVALID_TREASURE_CHOICE", "Treasure choice is invalid.");
+    }
+    const resumeTokenHash = await sha256(request.headers.get("x-resume-token") ?? "");
+    const record = await this.requireRecord();
+    this.assertPlayerHash(record.state, body.playerId, resumeTokenHash);
+    const chosen = chooseTreasure(record.state, {
+      playerId: body.playerId,
+      choiceId: body.choiceId,
+      serverNow: Date.now(),
+    });
+    record.state = chosen.state;
+    await this.putRecord(record);
+    this.broadcastState(record);
+    return json({ result: chosen.result, state: studentView(record, body.playerId) });
+  }
+
+  private async mazeMove(
+    request: Request,
+    body: { playerId: string; seq: number; direction: string },
+  ): Promise<Response> {
+    if (
+      typeof body.playerId !== "string" || !body.playerId ||
+      !Number.isInteger(body.seq) ||
+      !["up", "down", "left", "right"].includes(body.direction)
+    ) {
+      throw new ResponseError(400, "INVALID_MAZE_MOVE", "Maze move is invalid.");
+    }
+    const resumeTokenHash = await sha256(request.headers.get("x-resume-token") ?? "");
+    const record = await this.requireRecord();
+    this.assertPlayerHash(record.state, body.playerId, resumeTokenHash);
+    const moved = mazeMove(record.state, {
+      playerId: body.playerId,
+      seq: body.seq,
+      direction: body.direction as "up" | "down" | "left" | "right",
+      serverNow: Date.now(),
+    });
+    record.state = moved.state;
+    await this.putRecord(record);
+    this.broadcastState(record);
+    return json({ result: moved.result, state: studentView(record, body.playerId) });
   }
 
   private async finish(request: Request): Promise<Response> {
@@ -251,6 +369,17 @@ export class GameRoom implements DurableObject {
         delete record.socketTickets[ticket];
         await this.putRecord(record);
         throw new ResponseError(401, "INVALID_SOCKET_TICKET", "Socket ticket is invalid or expired.");
+      }
+      const activeSockets = this.ctx.getWebSockets();
+      if (activeSockets.length >= MAX_ACTIVE_SOCKETS_PER_ROOM) {
+        throw new ResponseError(429, "SOCKET_LIMIT", "This room already has the maximum number of live connections.");
+      }
+      const activeForPlayer = activeSockets.filter((candidate) => {
+        const other = candidate.deserializeAttachment() as SocketAttachment | null;
+        return other?.role === "student" && other.playerId === issued.playerId;
+      }).length;
+      if (activeForPlayer >= MAX_ACTIVE_STUDENT_SOCKETS_PER_PLAYER) {
+        throw new ResponseError(429, "SOCKET_LIMIT", "Too many live connections for this player.");
       }
       const player = record.state.players[issued.playerId];
       if (!player) throw new EngineError("UNKNOWN_PLAYER", "Player not found.");
@@ -292,37 +421,46 @@ export class GameRoom implements DurableObject {
   }
 
   private async storeReport(record: RoomRecord): Promise<void> {
-    const view = teacherRoomState(record.state);
+    const normalized = normalizeLegacyRecord(record);
+    const view = teacherRoomState(normalized.state);
     const statements: D1PreparedStatement[] = [
       this.env.REPORTS.prepare(
         `INSERT INTO room_reports
-          (room_id, code, teacher_email, grade, unit_key, duration_seconds, question_count,
-           participant_count, started_at, finished_at, created_at)
-         VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+          (room_id, code, teacher_email, grade, unit_key, mode, set_title, play_style, team_count,
+           duration_seconds, question_count, participant_count, started_at, finished_at, created_at)
+         VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
          ON CONFLICT(room_id) DO UPDATE SET
+           mode = excluded.mode,
+           set_title = excluded.set_title,
+           play_style = excluded.play_style,
+           team_count = excluded.team_count,
            participant_count = excluded.participant_count,
            started_at = excluded.started_at,
            finished_at = excluded.finished_at`,
       ).bind(
-        record.roomId,
-        record.state.code,
-        record.state.teacherEmail,
-        record.grade,
-        record.unitKey,
-        record.state.durationSeconds,
-        record.state.questions.length,
+        normalized.roomId,
+        normalized.state.code,
+        normalized.state.teacherEmail,
+        normalized.grade,
+        normalized.unitKey,
+        normalized.state.mode,
+        normalized.setTitle,
+        normalized.state.playStyle,
+        normalized.state.teamCount ?? null,
+        normalized.state.durationSeconds,
+        normalized.state.questions.length,
         view.participantCount,
-        record.state.startedAt ?? null,
-        record.state.finishedAt,
-        record.state.createdAt,
+        normalized.state.startedAt ?? null,
+        normalized.state.finishedAt,
+        normalized.state.createdAt,
       ),
       this.env.REPORTS.prepare("DELETE FROM player_results WHERE room_id = ?").bind(record.roomId),
       ...view.leaderboard.map((player) =>
         this.env.REPORTS.prepare(
           `INSERT INTO player_results
             (room_id, player_id, nickname, rank, score, accuracy, correct_count,
-             answered_count, average_response_time_ms)
-           VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+            answered_count, average_response_time_ms, team_id, team_number)
+           VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
         ).bind(
           record.roomId,
           player.playerId,
@@ -333,6 +471,8 @@ export class GameRoom implements DurableObject {
           player.correctCount,
           player.answeredCount,
           player.averageResponseTimeMs,
+          player.teamId ?? null,
+          player.teamNumber ?? null,
         ),
       ),
     ];
@@ -362,11 +502,7 @@ export class GameRoom implements DurableObject {
     return attachment.role === "teacher" ? teacherView(record) : studentView(record, attachment.playerId);
   }
 
-  private async assertPlayer(state: RoomState, playerId: string, resumeToken: string): Promise<void> {
-    await this.assertPlayerHash(state, playerId, await sha256(resumeToken));
-  }
-
-  private async assertPlayerHash(state: RoomState, playerId: string, tokenHash: string): Promise<void> {
+  private assertPlayerHash(state: RoomState, playerId: string, tokenHash: string): void {
     const player = state.players[playerId];
     if (!player || player.resumeTokenHash !== tokenHash) {
       throw new EngineError("UNKNOWN_PLAYER", "Reconnect identity is invalid.");
@@ -385,7 +521,8 @@ export class GameRoom implements DurableObject {
   }
 
   private async getRecord(): Promise<RoomRecord | undefined> {
-    return this.ctx.storage.get<RoomRecord>(RECORD_KEY);
+    const record = await this.ctx.storage.get<RoomRecord>(RECORD_KEY);
+    return record ? normalizeLegacyRecord(record) : undefined;
   }
 
   private async requireRecord(): Promise<RoomRecord> {
@@ -402,11 +539,31 @@ export class GameRoom implements DurableObject {
 }
 
 function teacherView(record: RoomRecord) {
-  return { ...teacherRoomState(record.state), grade: record.grade, unitKey: record.unitKey };
+  const normalized = normalizeLegacyRecord(record);
+  return {
+    ...teacherRoomState(normalized.state),
+    grade: normalized.grade,
+    unitKey: normalized.unitKey,
+    setTitle: normalized.setTitle,
+  };
 }
 
 function studentView(record: RoomRecord, playerId?: string) {
-  return { ...publicRoomState(record.state, playerId), grade: record.grade, unitKey: record.unitKey };
+  const normalized = normalizeLegacyRecord(record);
+  return {
+    ...publicRoomState(normalized.state, playerId),
+    grade: normalized.grade,
+    unitKey: normalized.unitKey,
+    setTitle: normalized.setTitle,
+  };
+}
+
+function normalizeLegacyRecord(record: RoomRecord): RoomRecord {
+  const legacyState = record.state as RoomState & { mode?: RoomState["mode"]; playStyle?: RoomState["playStyle"] };
+  legacyState.mode ??= "score_race";
+  legacyState.playStyle ??= "individual";
+  record.setTitle ??= "";
+  return record;
 }
 
 function pruneTickets(record: RoomRecord, now: number): void {
@@ -430,8 +587,9 @@ function errorPayload(error: unknown) {
 }
 
 function errorResponse(error: unknown): Response {
+  if (error instanceof SyntaxError) return json({ error: "INVALID_JSON", message: "Request body must be valid JSON." }, 400);
   if (error instanceof EngineError) {
-    const status = error.code === "DUPLICATE_ANSWER"
+    const status = error.code === "DUPLICATE_ANSWER" || error.code === "DUPLICATE_TREASURE_CHOICE" || error.code === "DUPLICATE_MAZE_MOVE"
       ? 409
       : error.code === "UNKNOWN_PLAYER"
         ? 401
@@ -443,6 +601,13 @@ function errorResponse(error: unknown): Response {
   if (error instanceof ResponseError) return json({ error: error.code, message: error.message }, error.status);
   console.error(error);
   return json({ error: "INTERNAL_ERROR" }, 500);
+}
+
+function readObject(value: unknown): Record<string, unknown> {
+  if (!value || typeof value !== "object" || Array.isArray(value)) {
+    throw new ResponseError(400, "INVALID_REQUEST", "Request body must be a JSON object.");
+  }
+  return value as Record<string, unknown>;
 }
 
 async function sha256(value: string): Promise<string> {

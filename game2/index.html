@@ -46,6 +46,12 @@ body{background:#030712;overflow:hidden;font-family:'Noto Sans KR',sans-serif;to
 .bs-row{display:flex;align-items:flex-end;gap:24px;margin-bottom:12px;}
 .bs-row img{height:190px;width:auto;filter:drop-shadow(0 12px 30px rgba(124,58,237,.62));}
 .bs-progression{font-size:.82rem;font-weight:800;color:#c4b5fd;margin-bottom:22px;letter-spacing:.01em;}
+.bs-rules{width:min(430px,100%);margin:0 auto 18px;padding:11px 14px;text-align:left;border:1px solid rgba(167,139,250,.25);border-radius:14px;background:rgba(255,255,255,.045);color:#cbd5e1;font-size:.76rem;line-height:1.5;}
+.bs-rules strong{display:block;color:#fde68a;font-size:.72rem;letter-spacing:.08em;margin-bottom:4px;}
+.bs-rules ol{margin:0;padding-left:20px;}
+.bs-length{margin-top:7px;color:#a78bfa;font-size:.72rem;font-weight:800;}
+.bs-invalid{width:min(400px,100%);margin:0 auto 18px;padding:14px;border:1px solid rgba(251,191,36,.36);border-radius:14px;background:rgba(251,191,36,.08);color:#fde68a;font-size:.84rem;font-weight:800;line-height:1.5;}
+.bs-invalid[hidden]{display:none;}
 .bs-diff{display:flex;gap:10px;margin-bottom:22px;}
 .bs-diff-btn{font-family:inherit;display:flex;flex-direction:column;align-items:center;gap:2px;min-width:120px;padding:12px 16px;border-radius:14px;border:2px solid rgba(167,139,250,.4);background:rgba(255,255,255,.05);color:#c4b5fd;font-size:1rem;font-weight:900;cursor:pointer;-webkit-tap-highlight-color:transparent;transition:.15s;}
 .bs-diff-btn small{font-size:.66rem;font-weight:700;color:#94a3b8;}
@@ -290,6 +296,12 @@ canvas#c{position:absolute;inset:0;width:100%;height:100%;}
     <img src="assets/hd-v1/ironmask-jester.png" alt="철가면 광대">
   </div>
   <div class="bs-progression">페이즈 돌파마다 영웅 승급 · 보스 교체</div>
+  <div class="bs-rules" id="bs-rules">
+    <strong>플레이 방법</strong>
+    <ol><li>문제를 풀어 정답이면 보스를 공격해요.</li><li>연속 정답으로 콤보와 필살기를 채워요.</li><li>3단계 보스를 쓰러뜨리면 클리어예요.</li></ol>
+    <div class="bs-length" id="bs-length">약 5~8분 · 총 문항 수를 불러오는 중</div>
+  </div>
+  <div class="bs-invalid" id="bs-invalid" hidden>아직 단원이 선택되지 않았어요.<br>목록에서 학년과 단원을 먼저 골라 주세요.</div>
   <div class="bs-diff" id="bs-diff">
     <button class="bs-diff-btn" data-d="beginner">🐢 초급<small>느리게 · 2단계</small></button>
     <button class="bs-diff-btn on" data-d="medium">⚔️ 중급<small>기본 · 3단계</small></button>
@@ -2229,17 +2241,18 @@ let _pendingBattle = null, _unitKey = '';
 // 허브에서 ?unit=KEY 로 진입 → 시작 게이트를 띄운다(전투 자동 시작 X).
 // 사용자가 '전투 시작' 버튼을 누르는 그 제스처 안에서 G.start→BGM.start 가 실행돼 음악이 바로 난다.
 function initFromParam() {
-  if (typeof GAME_QUESTIONS === 'undefined') { location.replace(HUB_URL); return; }
+  if (typeof GAME_QUESTIONS === 'undefined') { showInvalidBattleStart(); return; }
   const unit = new URLSearchParams(location.search).get('unit');
   if (unit === 'all') {
     _pendingBattle = { qs: Object.values(GAME_QUESTIONS).filter(u => !u.hidden).flatMap(u => u.questions), label: '전체 단원' };
   } else if (unit && GAME_QUESTIONS[unit]) {
     _pendingBattle = { qs: GAME_QUESTIONS[unit].questions, label: GAME_QUESTIONS[unit].label };
   } else {
-    location.replace(HUB_URL); return;
+    showInvalidBattleStart(); return;
   }
   _unitKey = unit;
   document.getElementById('boss-start-unit').textContent = _pendingBattle.label;
+  document.getElementById('bs-length').textContent = `약 5~8분 · 총 ${_pendingBattle.qs.length}문항`;
   try {
     const r = JSON.parse(localStorage.getItem(BOSS_BEST_KEY(unit)) || '{}');
     if (r.score || r.stage) {
@@ -2248,6 +2261,18 @@ function initFromParam() {
     }
   } catch (e) {}
   document.getElementById('boss-start').style.display = 'flex';
+}
+function showInvalidBattleStart() {
+  document.getElementById('boss-start').style.display = 'flex';
+  document.querySelector('.bs-title').textContent = '⚔️ 문법 보스전';
+  document.getElementById('boss-start-unit').textContent = '단원 선택이 필요해요';
+  document.getElementById('bs-record').style.display = 'none';
+  document.querySelector('.bs-row').style.display = 'none';
+  document.querySelector('.bs-progression').style.display = 'none';
+  document.getElementById('bs-rules').style.display = 'none';
+  document.getElementById('bs-diff').style.display = 'none';
+  document.getElementById('boss-start-btn').style.display = 'none';
+  document.getElementById('bs-invalid').hidden = false;
 }
 // ── 난이도 선택 (초급=느리게·2단계 / 중급=기본·3단계) ──
 window.__bossDiff = localStorage.getItem('egm.boss.diff') || 'medium';

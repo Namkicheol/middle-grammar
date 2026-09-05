@@ -142,8 +142,10 @@ button{font-family:inherit;}
 #streak-chip.fever{background:linear-gradient(135deg,rgba(251,191,36,.35),rgba(239,68,68,.25));border-color:#fbbf24;color:#fff;animation:pulse2 .7s infinite;}
 .opt.dimmed{opacity:.25;pointer-events:none;}
 
-/* 👻 유령 / 🐦 새 — 텍스트 위를 슬라이드로 지나가며 가린다 */
-#disturb{position:absolute;inset:0;z-index:8;pointer-events:none;overflow:hidden;border-radius:20px;}
+/* 👻 유령 / 🐦 새 — 문제 프롬프트 안에서만 슬라이드한다. 선택지는 가리지 않는다. */
+#prompt-area{position:relative;overflow:hidden;border-radius:12px;}
+#prompt-area > :not(#disturb){position:relative;z-index:3;}
+#disturb{position:absolute;inset:0;z-index:2;pointer-events:none;overflow:hidden;border-radius:12px;}
 #disturb span{position:absolute;display:flex;align-items:center;justify-content:center;opacity:0;}
 #disturb span::after{font-size:2.7rem;line-height:1;}
 @keyframes passR{0%{left:-22%;opacity:0}9%{opacity:1}91%{opacity:1}100%{left:112%;opacity:0}}
@@ -161,8 +163,9 @@ button{font-family:inherit;}
 
 /* 아이템 슬롯 */
 #items{position:relative;z-index:5;display:flex;gap:8px;justify-content:center;margin:0 auto 8px;}
-.item-btn{font-size:1.3rem;background:rgba(255,255,255,.07);border:2px solid rgba(167,139,250,.45);border-radius:12px;padding:7px 12px;cursor:pointer;transition:transform .12s;position:relative;}
+.item-btn{font-size:1.3rem;background:rgba(255,255,255,.07);border:2px solid rgba(167,139,250,.45);border-radius:12px;padding:7px 12px;cursor:pointer;transition:transform .12s,box-shadow .12s,border-color .12s;position:relative;min-height:44px;}
 .item-btn:active{transform:scale(.92);}
+.item-btn:focus-visible{outline:3px solid #fde68a;outline-offset:2px;}
 .item-btn .it-label{display:block;font-size:.56rem;font-weight:800;color:#c4b5fd;}
 .item-btn.flash{animation:pulse2 .6s 2;}
 
@@ -180,13 +183,18 @@ button{font-family:inherit;}
 #q-eng b{color:#fde68a;}
 #q-kor{font-size:.82rem;color:#a5b4fc;margin:4px 0 12px;}
 #opts{display:grid;grid-template-columns:1fr 1fr;gap:9px;}
-.opt{background:rgba(255,255,255,.06);border:2px solid rgba(167,139,250,.35);border-radius:13px;padding:13px 10px;font-size:1rem;font-weight:800;color:#fff;cursor:pointer;transition:transform .1s,border-color .1s;}
-.opt:active{transform:scale(.97);}
+.opt{background:linear-gradient(145deg,rgba(255,255,255,.1),rgba(124,58,237,.12));border:2px solid rgba(167,139,250,.42);border-radius:13px;padding:9px 10px;font-size:1rem;font-weight:800;color:#fff;cursor:pointer;transition:transform .1s,border-color .1s,box-shadow .1s,background .1s;min-height:44px;display:flex;align-items:center;gap:9px;text-align:left;}
+.opt:hover{border-color:#c4b5fd;box-shadow:0 5px 16px rgba(124,58,237,.28);transform:translateY(-1px);}
+.opt:focus-visible{outline:3px solid #fde68a;outline-offset:2px;box-shadow:0 0 0 5px rgba(250,204,21,.2);}
+.opt:active,.opt.selected{transform:scale(.97);border-color:#fde68a;background:linear-gradient(145deg,rgba(250,204,21,.25),rgba(124,58,237,.28));box-shadow:0 0 0 2px rgba(253,230,138,.35),0 7px 18px rgba(124,58,237,.35);}
+.opt-key{display:grid;place-items:center;flex:0 0 30px;width:30px;height:30px;border-radius:9px;background:#0b1024;border:1.5px solid rgba(253,230,138,.7);color:#fde68a;font-size:.82rem;font-weight:900;box-shadow:inset 0 -2px 0 rgba(0,0,0,.35);}
+.opt-label{min-width:0;line-height:1.25;}
 .opt.ok{background:rgba(34,197,94,.3);border-color:#22c55e;}
 .opt.ng{background:rgba(239,68,68,.3);border-color:#ef4444;animation:shake .35s;}
 .opt:disabled{cursor:default;opacity:.92;}
 /* 🪙 베팅 선택 버튼 */
 .opt.stake{font-size:.98rem;}
+.opt.stake .opt-label{display:block;}
 .opt.stake small{display:block;font-size:.7rem;font-weight:700;margin-top:3px;color:#c4b5fd;}
 .opt.st-bet{border-color:#fbbf24;background:rgba(251,191,36,.15);}
 .opt.st-safe{border-color:#34d399;background:rgba(52,211,153,.13);}
@@ -243,7 +251,7 @@ button{font-family:inherit;}
 <div id="gate">
   <img class="gate-hero" src="assets/hd-v2/units/sky-climber/portrait.png" alt="하늘탑 등반가">
   <div class="gate-title">🗼 문법 무한의 탑</div>
-  <div class="gate-sub">한 문제 = 한 층. 목숨 3개로 어디까지 올라갈까?<br>10층마다 보스 관문 · 몬스터·보물·🪙베팅·유령·새·돌풍·안개 변수층 + 아이템!<br>올라갈수록 ⚙️가속! 시간이 점점 짧아진다.</div>
+  <div class="gate-sub">1. 문제를 맞혀 한 층 올라가기<br>2. 아이템을 탭해 위기 돌파하기<br>3. 하트가 다 닳기 전에 최고층 갱신하기</div>
   <div class="mode-cards">
     <button class="mode-card on" id="card-daily">
       <div class="mc-icon">🗓️</div>
@@ -292,12 +300,14 @@ button{font-family:inherit;}
   </div>
   <div id="items"></div>
   <div id="qcard">
-    <div id="disturb"><span class="d1"></span><span class="d2"></span><span class="d3"></span></div>
     <div id="evt-chip"></div>
     <div id="timer-track"><div id="timer-fill"></div></div>
-    <span id="q-unit"></span>
-    <div id="q-eng"></div>
-    <div id="q-kor"></div>
+    <div id="prompt-area">
+      <div id="disturb"><span class="d1"></span><span class="d2"></span><span class="d3"></span></div>
+      <span id="q-unit"></span>
+      <div id="q-eng"></div>
+      <div id="q-kor"></div>
+    </div>
     <div id="opts"></div>
     <div id="fb">
       <div class="fb-txt" id="fb-txt"></div>
@@ -485,7 +495,7 @@ function renderItems(){
   GS.items.forEach((k,i)=>{
     const d=ITEM_DEFS[k];
     const b=document.createElement('button');
-    b.className='item-btn';b.title=d.desc;
+    b.className='item-btn';b.title=d.desc;b.setAttribute('aria-label',d.label+' — '+d.desc);
     b.innerHTML=d.emoji+'<span class="it-label">'+d.label+'</span>';
     b.onclick=()=>useItem(i);
     box.appendChild(b);
@@ -502,10 +512,10 @@ function useItem(i){
   const g=GS;if(!g||g.over||g.locked)return;
   const k=g.items[i];
   if(k==='shield'){banner('🛡️ 방패는 오답 때 자동 사용돼요');return;}
-  if(k==='hourglass'){g.items.splice(i,1);extendTimer(7000);sfx.heal();}
+  if(k==='hourglass'){g.items.splice(i,1);extendTimer(7000);sfx.heal();banner('⏳ 시간 +7초!');}
   else if(k==='wing'){
     if(g.event==='boss'){banner('👑 보스전에서는 날개를 쓸 수 없어요');return;}
-    g.items.splice(i,1);sfx.climb();skipClimb();
+    g.items.splice(i,1);sfx.climb();banner('🪽 한 층 건너뛰기!');skipClimb();
   }
   else if(k==='potion'){
     if(g.hearts>=3){banner('❤️ 하트가 이미 가득!');return;}
@@ -517,11 +527,11 @@ function useItem(i){
   }
   else if(k==='fifty'){
     const live=[...document.querySelectorAll('.opt')].filter(b=>!b.disabled&&!b.classList.contains('dimmed'));
-    const wrongs=live.filter(b=>b.textContent!==g.cur.ans);
+    const wrongs=live.filter(b=>b.dataset.answer!==g.cur.ans);
     if(wrongs.length<2){banner('🔍 선택지가 2개라 반반을 쓸 수 없어요');return;}
     g.items.splice(i,1);
     shuffled(wrongs,g.rng).slice(0,2).forEach(b=>b.classList.add('dimmed'));
-    sfx.ok();
+    sfx.ok();banner('🔍 오답 2개 제거!');
   }
   renderItems();
 }
@@ -685,9 +695,12 @@ function presentOptions(){
   const g=GS,q=g.cur;
   const opts=shuffled(q.opts,g.rng);
   const box=$('opts');box.innerHTML='';
-  opts.forEach(o=>{
+  opts.forEach((o,i)=>{
     const b=document.createElement('button');
-    b.className='opt';b.textContent=o;
+    const key=String.fromCharCode(65+i);
+    b.className='opt';b.dataset.answer=o;b.setAttribute('aria-label',key+'. '+o);
+    b.innerHTML='<span class="opt-key" aria-hidden="true">'+key+'</span><span class="opt-label"></span>';
+    b.querySelector('.opt-label').textContent=o;
     b.onclick=()=>answer(b,o);
     box.appendChild(b);
   });
@@ -695,7 +708,11 @@ function presentOptions(){
   if(g.event==='wind'&&!document.hidden)startWindShuffle();
   // 시간 단축: 몬스터 60% / 보스 70% / ⚡가속 55% (베팅은 보통 시간)
   const tScale=g.event==='monster'?0.6:g.event==='boss'?0.7:g.event==='rush'?0.55:1;
-  startTimer(Math.max(5.5,timeFor(g.floor)*tScale));
+  // 특수층과 고층은 너무 짧아 문제를 읽지 못하는 상황을 막되, 긴 문항만 소폭 보정한다.
+  const promptLen=(q.eng||'').replace(/<[^>]+>/g,'').length;
+  const fairFloor=(g.event||g.floor>=25)
+    ?Math.min(8.5,7+Math.max(0,promptLen-42)*.025):0;
+  startTimer(Math.max(5.5,timeFor(g.floor)*tScale,fairFloor));
 }
 
 function startWindShuffle(){
@@ -754,10 +771,11 @@ function answer(btn,val){
   $('disturb').className='';   // 유령·새 정지
   $('timer-fill').style.transition='none';
   const correct=val!==null&&val===g.cur.ans;
+  if(btn)btn.classList.add('selected');
   // 정답 표시
   [...document.querySelectorAll('.opt')].forEach(b=>{
     b.disabled=true;
-    if(b.textContent===g.cur.ans)b.classList.add('ok');
+    if(b.dataset.answer===g.cur.ans)b.classList.add('ok');
     else if(b===btn)b.classList.add('ng');
   });
   if(correct)onCorrect();else onWrong(val);

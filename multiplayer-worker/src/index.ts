@@ -3,6 +3,7 @@ import { renderSVG } from "uqr";
 import bundledQuestionBank from "./generated/questions.json";
 import { GameRoom } from "./room";
 import type { Env, QuestionBank } from "./types";
+import type { PlayStyle, Question, RoomMode } from "./room-engine";
 
 export { GameRoom };
 
@@ -118,7 +119,8 @@ export default {
       }
       if (env.ASSETS && request.method === "GET" && url.pathname.startsWith("/multiplayer/")) {
         const assetUrl = new URL(request.url);
-        assetUrl.pathname = assetUrl.pathname.slice("/multiplayer".length) || "/";
+        const assetPath = assetUrl.pathname.slice("/multiplayer".length) || "/";
+        assetUrl.pathname = assetPath === "/" ? "/index.html" : assetPath;
         return env.ASSETS.fetch(new Request(assetUrl, request));
       }
       return json({ error: "NOT_FOUND" }, 404);
@@ -143,17 +145,43 @@ export default {
 
 async function createRoom(request: Request, env: Env, origin: string): Promise<Response> {
   const teacherEmail = await requireTeacher(request, env);
-  const body = await request.json<{
+  assertContentLength(request, 3_000_000);
+  const rawBody = await request.json<unknown>();
+  if (!isPlainObject(rawBody)) {
+    throw new HttpError(400, "INVALID_REQUEST", "Room settings must be a JSON object.");
+  }
+  const body = rawBody as {
     grade?: string;
     unitKey?: string;
+    mode?: RoomMode;
+    playStyle?: PlayStyle;
+    teamCount?: number;
+    setTitle?: string;
+    customQuestions?: Array<{
+      prompt?: string;
+      question?: string;
+      answer?: string;
+      choices?: string[];
+      image?: string;
+    }>;
     durationSeconds?: number;
     questionCount?: number;
     allowLateJoin?: boolean;
     shuffleQuestions?: boolean;
-  }>();
-  if (body.grade !== "g1" && body.grade !== "g2") throw new HttpError(400, "INVALID_GRADE", "Choose a valid grade.");
-  if (typeof body.unitKey !== "string" || !body.unitKey.startsWith(`${body.grade}-`)) {
-    throw new HttpError(400, "INVALID_UNIT", "Choose a unit in the selected grade.");
+  };
+  const mode = body.mode ?? "score_race";
+  if (!["score_race", "treasure_heist", "maze_heist"].includes(mode)) {
+    throw new HttpError(400, "INVALID_MODE", "Choose a valid game mode.");
+  }
+  const playStyle = body.playStyle ?? "individual";
+  if (playStyle !== "individual" && playStyle !== "team") {
+    throw new HttpError(400, "INVALID_PLAY_STYLE", "Choose individual or team play.");
+  }
+  if (playStyle === "team" && (!Number.isInteger(body.teamCount) || body.teamCount! < 2 || body.teamCount! > 4)) {
+    throw new HttpError(400, "INVALID_TEAM_COUNT", "Team play requires 2 to 4 teams.");
+  }
+  if (playStyle === "individual" && body.teamCount !== undefined) {
+    throw new HttpError(400, "INVALID_TEAM_COUNT", "Team count is only available for team play.");
   }
   if (![60, 180, 300, 420, 600].includes(body.durationSeconds ?? 0)) {
     throw new HttpError(400, "INVALID_DURATION", "Choose 1, 3, 5, 7, or 10 minutes.");
@@ -161,9 +189,6 @@ async function createRoom(request: Request, env: Env, origin: string): Promise<R
   if (!Number.isInteger(body.questionCount) || (body.questionCount ?? 0) < 1) {
     throw new HttpError(400, "INVALID_QUESTION_COUNT", "Choose at least one question.");
   }
-  const pool = questionBank(env).units[body.unitKey];
-  if (!pool?.length) throw new HttpError(400, "INVALID_UNIT", "Question unit not found.");
-  if (body.questionCount! > pool.length) throw new HttpError(400, "INVALID_QUESTION_COUNT", "That unit has fewer questions.");
   if (body.allowLateJoin !== undefined && typeof body.allowLateJoin !== "boolean") {
     throw new HttpError(400, "INVALID_LATE_JOIN", "Late join setting must be true or false.");
   }
@@ -172,9 +197,35 @@ async function createRoom(request: Request, env: Env, origin: string): Promise<R
   }
   const allowLateJoin = body.allowLateJoin ?? true;
   const shuffleQuestions = body.shuffleQuestions ?? true;
-  const questions = shuffleQuestions
-    ? randomSample(pool, body.questionCount!)
-    : pool.slice(0, body.questionCount!);
+  if (body.customQuestions !== undefined && !Array.isArray(body.customQuestions)) {
+    throw new HttpError(400, "INVALID_CUSTOM_SET", "Custom questions must be a list.");
+  }
+  const customQuestions = Array.isArray(body.customQuestions) ? normalizeCustomQuestions(body.customQuestions) : null;
+  let grade: string;
+  let unitKey: string;
+  let setTitle = "";
+  let questions: Question[];
+  if (customQuestions) {
+    if (customQuestions.length < 5) throw new HttpError(400, "INVALID_CUSTOM_SET", "Add at least five custom questions.");
+    if (body.questionCount !== customQuestions.length) {
+      throw new HttpError(400, "INVALID_QUESTION_COUNT", "Custom question count does not match.");
+    }
+    grade = "custom";
+    unitKey = "custom-local";
+    setTitle = String(body.setTitle || "내 퀴즈 세트").trim().slice(0, 80) || "내 퀴즈 세트";
+    questions = customQuestions;
+  } else {
+    if (body.grade !== "g1" && body.grade !== "g2") throw new HttpError(400, "INVALID_GRADE", "Choose a valid grade.");
+    if (typeof body.unitKey !== "string" || !body.unitKey.startsWith(`${body.grade}-`)) {
+      throw new HttpError(400, "INVALID_UNIT", "Choose a unit in the selected grade.");
+    }
+    const pool = questionBank(env).units[body.unitKey];
+    if (!pool?.length) throw new HttpError(400, "INVALID_UNIT", "Question unit not found.");
+    if (body.questionCount! > pool.length) throw new HttpError(400, "INVALID_QUESTION_COUNT", "That unit has fewer questions.");
+    grade = body.grade;
+    unitKey = body.unitKey;
+    questions = shuffleQuestions ? randomSample(pool, body.questionCount!) : pool.slice(0, body.questionCount!);
+  }
 
   for (let attempt = 0; attempt < 8; attempt += 1) {
     const code = randomCode();
@@ -185,11 +236,15 @@ async function createRoom(request: Request, env: Env, origin: string): Promise<R
         roomId: crypto.randomUUID(),
         code,
         teacherEmail,
-        grade: body.grade,
-        unitKey: body.unitKey,
+        grade,
+        unitKey,
+        setTitle,
         durationSeconds: body.durationSeconds,
         allowLateJoin,
         shuffleQuestions,
+        mode,
+        playStyle,
+        teamCount: playStyle === "team" ? body.teamCount : undefined,
         questions,
         createdAt: Date.now(),
       }),
@@ -202,6 +257,45 @@ async function createRoom(request: Request, env: Env, origin: string): Promise<R
   throw new HttpError(503, "ROOM_CODE_UNAVAILABLE", "Try creating the room again.");
 }
 
+function normalizeCustomQuestions(input: unknown[]): Question[] {
+  if (input.length > 30) throw new HttpError(400, "INVALID_CUSTOM_SET", "Use 30 questions or fewer.");
+  let imageBytes = 0;
+  const base = input.map((item, index) => {
+    if (!isPlainObject(item)) {
+      throw new HttpError(400, "INVALID_CUSTOM_SET", `Question ${index + 1} is invalid.`);
+    }
+    const prompt = String(item.prompt || item.question || "").trim();
+    const answer = String(item.answer || "").trim();
+    if (!prompt || !answer || prompt.length > 500 || answer.length > 200) {
+      throw new HttpError(400, "INVALID_CUSTOM_SET", `Question ${index + 1} is incomplete or too long.`);
+    }
+    const image = String(item.image || "");
+    if (image) {
+      if (!/^data:image\/(?:png|jpe?g|webp);base64,[a-z0-9+/=]+$/i.test(image) || image.length > 350_000) {
+        throw new HttpError(400, "INVALID_CUSTOM_IMAGE", `Question ${index + 1} image is invalid or too large.`);
+      }
+      imageBytes += image.length;
+    }
+    return {
+      id: `custom-${index + 1}`,
+      kor: "직접 만든 문제",
+      eng: prompt,
+      ans: answer,
+      opts: [...new Set((Array.isArray(item.choices) ? item.choices : []).map((value) => String(value).trim()).filter(Boolean))].slice(0, 4),
+      level: "custom",
+      type: "mcq",
+      ...(image ? { image } : {}),
+    } satisfies Question;
+  });
+  if (imageBytes > 2_500_000) throw new HttpError(400, "INVALID_CUSTOM_IMAGE", "Custom set images are too large together.");
+  const answerPool = [...new Set(base.map((question) => question.ans))];
+  return base.map((question) => {
+    const opts = [...new Set([question.ans, ...question.opts, ...answerPool.filter((answer) => answer !== question.ans)])].slice(0, 4);
+    if (opts.length < 2) throw new HttpError(400, "INVALID_CUSTOM_SET", "Custom questions need at least two different answers.");
+    return { ...question, opts };
+  });
+}
+
 async function forward(
   env: Env,
   code: string,
@@ -209,6 +303,7 @@ async function forward(
   source: Request,
   extraHeaders: Record<string, string> = {},
 ): Promise<Response> {
+  assertContentLength(source, 3_000_000);
   const headers = new Headers(extraHeaders);
   const contentType = source.headers.get("content-type");
   if (contentType) headers.set("content-type", contentType);
@@ -217,6 +312,19 @@ async function forward(
     headers,
     body: source.body,
   });
+}
+
+function isPlainObject(value: unknown): value is Record<string, unknown> {
+  return !!value && typeof value === "object" && !Array.isArray(value);
+}
+
+function assertContentLength(request: Request, maxBytes: number): void {
+  const contentLength = request.headers.get("content-length");
+  if (!contentLength) return;
+  const length = Number(contentLength);
+  if (!Number.isSafeInteger(length) || length < 0 || length > maxBytes) {
+    throw new HttpError(413, "REQUEST_TOO_LARGE", "Request body is too large.");
+  }
 }
 
 async function teacherReport(env: Env, code: string, email: string): Promise<Response> {
@@ -285,6 +393,10 @@ function camelRoom(row: Record<string, unknown>) {
     teacherEmail: row.teacher_email,
     grade: row.grade,
     unitKey: row.unit_key,
+    mode: row.mode || "score_race",
+    playStyle: row.play_style || "individual",
+    teamCount: row.team_count || undefined,
+    setTitle: row.set_title || "",
     durationSeconds: row.duration_seconds,
     questionCount: row.question_count,
     participantCount: row.participant_count,
@@ -305,6 +417,8 @@ function camelPlayer(row: Record<string, unknown>, code: string) {
     correctCount: row.correct_count,
     answeredCount: row.answered_count,
     averageResponseTimeMs: row.average_response_time_ms,
+    teamId: row.team_id || undefined,
+    teamNumber: row.team_number || undefined,
   };
 }
 

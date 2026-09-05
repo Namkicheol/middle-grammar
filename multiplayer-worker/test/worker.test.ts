@@ -193,6 +193,125 @@ describe("room routes", () => {
     expect((await join(open.body.code, "늦은 학생")).response.status).toBe(201);
   });
 
+  it("creates each supported game mode and rejects unknown modes", async () => {
+    for (const mode of ["score_race", "treasure_heist", "maze_heist"]) {
+      const { response, body } = await createRoom(TEACHER, { mode });
+      expect(response.status).toBe(201);
+      expect(body.state).toMatchObject({ mode });
+    }
+
+    const invalid = await createRoom(TEACHER, { mode: "copied_game" });
+    expect(invalid.response.status).toBe(400);
+    expect(invalid.body).toMatchObject({ error: "INVALID_MODE" });
+  });
+
+  it("defaults room creation to individual play and validates team count", async () => {
+    const individual = await createRoom();
+    expect(individual.response.status).toBe(201);
+    expect(individual.body.state).toMatchObject({ playStyle: "individual" });
+    expect(individual.body.state).not.toHaveProperty("teamCount");
+
+    const team = await createRoom(TEACHER, { playStyle: "team", teamCount: 3 });
+    expect(team.response.status).toBe(201);
+    expect(team.body.state).toMatchObject({ playStyle: "team", teamCount: 3 });
+
+    for (const settings of [
+      { playStyle: "team" },
+      { playStyle: "team", teamCount: 1 },
+      { playStyle: "team", teamCount: 5 },
+      { playStyle: "individual", teamCount: 2 },
+      { playStyle: "pairs" },
+    ]) {
+      const invalid = await createRoom(TEACHER, settings);
+      expect(invalid.response.status).toBe(400);
+      expect(["INVALID_PLAY_STYLE", "INVALID_TEAM_COUNT"]).toContain(invalid.body.error);
+    }
+  });
+
+  it("assigns balanced teams in the room API and keeps assignment on reconnect", async () => {
+    const { body: room } = await createRoom(TEACHER, { playStyle: "team", teamCount: 2 });
+    const first = await join(room.code, "첫 번째 팀 학생");
+    const second = await join(room.code, "두 번째 팀 학생");
+    const firstState = await request(`/api/rooms/${room.code}/state?playerId=${first.body.playerId}`, {
+      headers: { "x-resume-token": first.body.resumeToken },
+    });
+    const firstView = await firstState.json<any>();
+    const secondState = await request(`/api/rooms/${room.code}/state?playerId=${second.body.playerId}`, {
+      headers: { "x-resume-token": second.body.resumeToken },
+    });
+    const secondView = await secondState.json<any>();
+    expect(firstView.self.teamNumber).toBe(1);
+    expect(secondView.self.teamNumber).toBe(2);
+    expect(firstView.teamLeaderboard).toEqual(expect.arrayContaining([
+      expect.objectContaining({ teamNumber: 1, memberCount: 1 }),
+      expect.objectContaining({ teamNumber: 2, memberCount: 1 }),
+    ]));
+
+    const ticket = await socketTicket(room.code, first.body.playerId, first.body.resumeToken);
+    expect(ticket.response.status).toBe(200);
+    const reconnected = await request(`/api/rooms/${room.code}/state?playerId=${first.body.playerId}`, {
+      headers: { "x-resume-token": first.body.resumeToken },
+    });
+    expect((await reconnected.json<any>()).self.teamNumber).toBe(firstView.self.teamNumber);
+  });
+
+  it("accepts a validated custom quiz set with an optional local image", async () => {
+    const customQuestions = Array.from({ length: 5 }, (_, index) => ({
+      question: `직접 만든 문제 ${index + 1}`,
+      answer: `정답 ${index + 1}`,
+      choices: [`오답 ${index + 1}`, `정답 ${index + 1}`],
+      ...(index === 0 ? { image: "data:image/png;base64,iVBORw0KGgo=" } : {}),
+    }));
+    const { response, body } = await createRoom(TEACHER, {
+      mode: "maze_heist",
+      setTitle: "우리 반 문법 퀴즈",
+      customQuestions,
+      questionCount: customQuestions.length,
+      shuffleQuestions: false,
+    });
+    expect(response.status).toBe(201);
+    expect(body.state).toMatchObject({
+      grade: "custom",
+      unitKey: "custom-local",
+      setTitle: "우리 반 문법 퀴즈",
+      mode: "maze_heist",
+      questionCount: 5,
+    });
+
+    const player = await join(body.code, "제작 문제 확인");
+    await request(`/api/teacher/rooms/${body.code}/start`, {
+      method: "POST",
+      headers: { "x-dev-teacher-email": TEACHER },
+    });
+    const state = await request(`/api/rooms/${body.code}/state?playerId=${player.body.playerId}`, {
+      headers: { "x-resume-token": player.body.resumeToken },
+    });
+    const view = await state.json<any>();
+    expect(view.self.currentQuestion).toMatchObject({
+      eng: "직접 만든 문제 1",
+      image: "data:image/png;base64,iVBORw0KGgo=",
+    });
+    expect(view.self.currentQuestion.opts).toHaveLength(4);
+    expect(view.self.currentQuestion).not.toHaveProperty("ans");
+  });
+
+  it("rejects incomplete, undersized, and unsafe custom sets", async () => {
+    const base = Array.from({ length: 5 }, (_, index) => ({
+      question: `문제 ${index + 1}`,
+      answer: `정답 ${index + 1}`,
+    }));
+    const cases = [
+      { customQuestions: base.slice(0, 4), questionCount: 4, expected: "INVALID_CUSTOM_SET" },
+      { customQuestions: [{ ...base[0], answer: "" }, ...base.slice(1)], questionCount: 5, expected: "INVALID_CUSTOM_SET" },
+      { customQuestions: [{ ...base[0], image: "https://example.com/tracker.png" }, ...base.slice(1)], questionCount: 5, expected: "INVALID_CUSTOM_IMAGE" },
+    ];
+    for (const entry of cases) {
+      const result = await createRoom(TEACHER, entry);
+      expect(result.response.status).toBe(400);
+      expect(result.body).toMatchObject({ error: entry.expected });
+    }
+  });
+
   it("keeps the unit's stable first questions when shuffleQuestions is false", async () => {
     const { body: room } = await createRoom(TEACHER, { shuffleQuestions: false });
     const { body: player } = await join(room.code, "순서 확인");
@@ -227,10 +346,88 @@ describe("room routes", () => {
     }
   });
 
+  it("returns a bounded 400 for malformed room and join JSON payloads", async () => {
+    const malformedRoom = await request("/api/teacher/rooms", {
+      method: "POST",
+      headers: { "content-type": "application/json", "x-dev-teacher-email": TEACHER },
+      body: "null",
+    });
+    expect(malformedRoom.status).toBe(400);
+    expect(await malformedRoom.json()).toMatchObject({ error: "INVALID_REQUEST" });
+
+    const { body: room } = await createRoom();
+    const malformedJoin = await request(`/api/rooms/${room.code}/join`, {
+      method: "POST",
+      headers: { "content-type": "application/json" },
+      body: "[]",
+    });
+    expect(malformedJoin.status).toBe(400);
+    expect(await malformedJoin.json()).toMatchObject({ error: "INVALID_REQUEST" });
+
+    const invalidCustomSet = await createRoom(TEACHER, {
+      customQuestions: [null, null, null, null, null],
+      questionCount: 5,
+    });
+    expect(invalidCustomSet.response.status).toBe(400);
+    expect(invalidCustomSet.body).toMatchObject({ error: "INVALID_CUSTOM_SET" });
+  });
+
+  it("keeps simultaneous joins instead of losing one room update", async () => {
+    const { body: room } = await createRoom();
+    const [first, second] = await Promise.all([
+      join(room.code, "동시 학생 하나"),
+      join(room.code, "동시 학생 둘"),
+    ]);
+    expect(first.response.status).toBe(201);
+    expect(second.response.status).toBe(201);
+    const state = await request(`/api/rooms/${room.code}/state`);
+    expect((await state.json<any>()).participantCount).toBe(2);
+  });
+
+  it("normalizes a pre-multiplayer room record before viewing and reporting it", async () => {
+    const { body: room } = await createRoom();
+    const stub = env.ROOMS.getByName(room.code);
+    await inspectDurableObject(stub, async (_instance, state) => {
+      const record = await state.storage.get<RoomRecord>("room");
+      const legacyState = record!.state as unknown as Record<string, unknown>;
+      delete legacyState.mode;
+      delete legacyState.playStyle;
+      delete record!.setTitle;
+      await state.storage.put("room", record!);
+    });
+
+    const state = await request(`/api/teacher/rooms/${room.code}/state`, {
+      headers: { "x-dev-teacher-email": TEACHER },
+    });
+    expect(await state.json()).toMatchObject({
+      mode: "score_race",
+      playStyle: "individual",
+      setTitle: "",
+    });
+    expect((await request(`/api/teacher/rooms/${room.code}/start`, {
+      method: "POST",
+      headers: { "x-dev-teacher-email": TEACHER },
+    })).status).toBe(200);
+    expect((await request(`/api/teacher/rooms/${room.code}/finish`, {
+      method: "POST",
+      headers: { "x-dev-teacher-email": TEACHER },
+    })).status).toBe(200);
+    const report = await request(`/api/teacher/reports/${room.code}`, {
+      headers: { "x-dev-teacher-email": TEACHER },
+    });
+    expect(await report.json()).toMatchObject({
+      room: { mode: "score_race", playStyle: "individual", setTitle: "" },
+    });
+  });
+
   it("serves mapped multiplayer assets and a QR targeting that route", async () => {
     const asset = await request("/multiplayer/");
     expect(asset.status).toBe(200);
     expect(asset.headers.get("content-type")).toContain("text/html");
+
+    const creator = await request("/multiplayer/creator.html");
+    expect(creator.status).toBe(200);
+    expect(creator.headers.get("content-type")).toContain("text/html");
 
     const { body } = await createRoom();
     const qr = await request(`/api/rooms/${body.code}/qr.svg`);
@@ -249,6 +446,39 @@ describe("room routes", () => {
 });
 
 describe("socket tickets and scoring", () => {
+  it("caps unconsumed socket tickets for one player", async () => {
+    const { body: room } = await createRoom();
+    const { body: player } = await join(room.code, "티켓 학생");
+    expect((await socketTicket(room.code, player.playerId, player.resumeToken)).response.status).toBe(200);
+    expect((await socketTicket(room.code, player.playerId, player.resumeToken)).response.status).toBe(200);
+    const third = await socketTicket(room.code, player.playerId, player.resumeToken);
+    expect(third.response.status).toBe(429);
+    expect(third.body).toMatchObject({ error: "SOCKET_TICKET_LIMIT" });
+  });
+
+  it("caps live student sockets for one player", async () => {
+    const { body: room } = await createRoom();
+    const { body: player } = await join(room.code, "연결 학생");
+    const firstTicket = await socketTicket(room.code, player.playerId, player.resumeToken);
+    const secondTicket = await socketTicket(room.code, player.playerId, player.resumeToken);
+    const openSocket = (ticket: string) => request(`/api/rooms/${room.code}/ws?ticket=${ticket}`, {
+      headers: { upgrade: "websocket" },
+    });
+    const first = await openSocket(firstTicket.body.ticket);
+    const second = await openSocket(secondTicket.body.ticket);
+    expect(first.status).toBe(101);
+    expect(second.status).toBe(101);
+
+    const thirdTicket = await socketTicket(room.code, player.playerId, player.resumeToken);
+    const blocked = await openSocket(thirdTicket.body.ticket);
+    expect(blocked.status).toBe(429);
+    expect(await blocked.json()).toMatchObject({ error: "SOCKET_LIMIT" });
+    first.webSocket?.accept();
+    second.webSocket?.accept();
+    first.webSocket?.close();
+    second.webSocket?.close();
+  });
+
   it("never lets the public student socket inject the trusted teacher header", async () => {
     const { body: room } = await createRoom();
     const forgedStudent = await request(`/api/rooms/${room.code}/ws`, {
@@ -372,6 +602,26 @@ describe("reports", () => {
       players: [{ nickname: "리포트 학생", rank: 1, roomCode: room.code }],
     });
     expect(body.room).not.toHaveProperty("teacher_email");
+  });
+
+  it("stores team settings and assignments in a finalized report", async () => {
+    const { body: room } = await createRoom(TEACHER, { playStyle: "team", teamCount: 2 });
+    await join(room.code, "팀 리포트 학생");
+    await request(`/api/teacher/rooms/${room.code}/start`, {
+      method: "POST",
+      headers: { "x-dev-teacher-email": TEACHER },
+    });
+    expect((await request(`/api/teacher/rooms/${room.code}/finish`, {
+      method: "POST",
+      headers: { "x-dev-teacher-email": TEACHER },
+    })).status).toBe(200);
+
+    const report = await request(`/api/teacher/reports/${room.code}`, {
+      headers: { "x-dev-teacher-email": TEACHER },
+    });
+    const body = await report.json<any>();
+    expect(body.room).toMatchObject({ playStyle: "team", teamCount: 2 });
+    expect(body.players[0]).toMatchObject({ teamId: "team-1", teamNumber: 1 });
   });
 
   it("preserves two reports that reuse a six-digit code and returns the newest one", async () => {

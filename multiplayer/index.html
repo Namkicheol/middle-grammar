@@ -1,0 +1,38 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#5b46e8">
+  <meta name="description" content="교사가 방을 만들고 학생이 번호로 참여하는 문법 아케이드 교실 점수전">
+  <title>같이 하기 | 문법 아케이드</title>
+  <link rel="stylesheet" href="./styles.css">
+</head>
+<body>
+  <a class="skip-link" href="#app">본문으로 바로가기</a>
+  <header class="site-header">
+    <a class="brand" href="./" aria-label="문법 아케이드 같이 하기 처음으로">
+      <span class="brand-mark" aria-hidden="true">M</span>
+      <span><strong>문법 아케이드</strong><small>같이 하기</small></span>
+    </a>
+    <nav class="header-actions" aria-label="주요 메뉴">
+      <a class="solo-link" href="https://middle-grammar.vercel.app/game/">혼자 하기</a>
+      <span id="connection-badge" class="connection-badge" data-state="idle">준비</span>
+    </nav>
+  </header>
+
+  <div id="status" class="status-message" role="status" aria-live="polite" aria-atomic="true"></div>
+  <main id="app" tabindex="-1"></main>
+
+  <noscript>
+    <div class="noscript">이 게임은 JavaScript를 켜야 참여할 수 있어요.</div>
+  </noscript>
+
+  <footer class="site-footer">
+    <span>학생은 로그인 없이 참여해요.</span>
+    <a href="https://middle-grammar.vercel.app/">학습지 홈</a>
+  </footer>
+
+  <script type="module" src="./app.js"></script>
+</body>
+</html>

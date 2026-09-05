@@ -22,7 +22,7 @@ body{
   min-height:100vh;overflow-x:hidden;
 }
 button{font-family:inherit;}
-button:focus-visible,.unit-card:focus-visible,.all-btn:focus-visible{outline:3px solid #facc15;outline-offset:3px;}
+button:focus-visible,a:focus-visible,.unit-card:focus-visible,.grade-random:focus-visible{outline:3px solid #facc15;outline-offset:3px;}
 
 /* ── START SCREEN ── */
 #start-screen{display:block;width:100%;max-width:720px;margin:0 auto;min-height:100vh;background:linear-gradient(180deg,rgba(255,255,255,.92),#f5f7ff 72%);border-left:1px solid rgba(99,102,241,.08);border-right:1px solid rgba(99,102,241,.08);box-shadow:0 32px 90px rgba(99,102,241,.12);}
@@ -38,50 +38,83 @@ button:focus-visible,.unit-card:focus-visible,.all-btn:focus-visible{outline:3px
 .bubble-deco span{display:inline-block;width:21px;height:21px;border-radius:50%;opacity:.98;animation:bob var(--d,1.2s) ease-in-out infinite alternate;box-shadow:inset 0 5px 8px rgba(255,255,255,.5),0 7px 17px rgba(0,0,0,.25),0 0 12px currentColor;}
 @keyframes bob{0%{transform:translateY(0)}100%{transform:translateY(-8px)}}
 
-.settings-box{margin:-25px 18px 0;padding:18px;background:rgba(255,255,255,.96);border:1px solid #e2e8f0;border-radius:24px;box-shadow:0 18px 42px rgba(30,64,175,.12),inset 0 1px 0 #fff;position:relative;z-index:2;}
+.play-tabs{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:5px;margin:-25px 18px 0;padding:5px;background:rgba(255,255,255,.96);border:1px solid #dbe4f0;border-radius:18px;box-shadow:0 16px 36px rgba(30,64,175,.14);position:relative;z-index:3;}
+.play-tab{display:flex;align-items:center;justify-content:center;min-height:48px;border:0;border-radius:13px;background:transparent;color:#64748b;font-size:.88rem;font-weight:900;text-decoration:none;cursor:pointer;transition:all .16s;}
+.play-tab.on{background:linear-gradient(135deg,#0ea5e9,#6366f1);color:#fff;box-shadow:0 8px 20px rgba(99,102,241,.24);}
+.play-tab.multi{color:#6d28d9;}
+.play-tab.multi::after{content:'NEW';margin-left:7px;padding:3px 6px;border-radius:999px;background:#ede9fe;color:#7c3aed;font-size:.62rem;letter-spacing:.7px;}
+.settings-box{margin:12px 18px 0;padding:18px;background:rgba(255,255,255,.96);border:1px solid #e2e8f0;border-radius:24px;box-shadow:0 18px 42px rgba(30,64,175,.12),inset 0 1px 0 #fff;position:relative;z-index:2;}
 .panel-title,.unit-head{display:flex;align-items:center;gap:11px;}
 .panel-title>span,.unit-head>span{display:grid;place-items:center;width:34px;height:34px;flex:none;border-radius:11px;background:linear-gradient(135deg,#22d3ee,#8b5cf6);color:#fff;font-size:.72rem;font-weight:900;box-shadow:0 7px 18px rgba(34,211,238,.2);}
-.panel-title small,.unit-head small{display:block;color:#4f46e5;font-size:.6rem;font-weight:900;letter-spacing:1.6px;}
+.panel-title small,.unit-head small{display:block;color:#4f46e5;font-size:.7rem;font-weight:900;letter-spacing:1.35px;}
 .panel-title h2,.unit-head h2{font-family:inherit;color:#0f172a;font-size:1.05rem;font-weight:900;margin-top:1px;letter-spacing:-.4px;}
+.helper{margin:9px 0 0;color:#64748b;font-size:.75rem;font-weight:700;line-height:1.5;word-break:keep-all;}
+.grade-opts{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:9px;margin-top:13px;}
+.grade-btn{min-height:52px;border:1px solid #cbd5e1;border-radius:15px;background:#f8fafc;color:#475569;font-size:.92rem;font-weight:900;cursor:pointer;transition:all .16s;}
+.grade-btn.on{border-color:#6366f1;background:linear-gradient(135deg,#0ea5e9,#6366f1);color:#fff;box-shadow:0 9px 22px rgba(99,102,241,.22);}
+.game-select{margin-top:20px;padding-top:18px;border-top:1px solid #e2e8f0;}
 .set-row{display:flex;align-items:flex-start;gap:10px;flex-wrap:wrap;}
 .mode-row{margin-top:10px;}
 .time-row{margin-top:16px;padding-top:15px;border-top:1px solid #e2e8f0;align-items:center;}
 .time-row[hidden]{display:none;}
-.set-label{font-size:.76rem;font-weight:900;color:#475569;min-width:58px;padding-top:8px;}
+.set-label{font-size:.76rem;font-weight:900;color:#475569;min-width:58px;padding-top:12px;}
 .time-opts{display:flex;gap:6px;flex-wrap:wrap;flex:1;}
-.topt{padding:7px 13px;border-radius:999px;border:1px solid #cbd5e1;background:#f8fafc;color:#64748b;font-weight:900;font-size:.75rem;cursor:pointer;transition:all .15s;}
+.topt{min-height:44px;padding:8px 13px;border-radius:999px;border:1px solid #cbd5e1;background:#f8fafc;color:#64748b;font-weight:900;font-size:.75rem;cursor:pointer;transition:all .15s;}
 .topt.on{background:linear-gradient(135deg,#0ea5e9,#6366f1);border-color:#6366f1;color:#fff;box-shadow:0 7px 18px rgba(99,102,241,.24);}
-.mode-opts{display:grid;grid-template-columns:repeat(2,1fr);gap:9px;width:100%;}
+.mode-summary{display:flex;align-items:center;justify-content:space-between;width:100%;min-height:52px;margin-top:12px;padding:10px 14px;border:1px solid #c7d2fe;border-radius:15px;background:linear-gradient(135deg,#eef2ff,#f5f3ff);color:#3730a3;font-size:.88rem;font-weight:900;cursor:pointer;text-align:left;}
+.mode-summary::after{content:'⌄';font-size:1.15rem;color:#7c3aed;transition:transform .16s;}
+.mode-summary[aria-expanded="true"]::after{transform:rotate(180deg);}
+.mode-picker[hidden]{display:none;}
+.mode-opts{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:9px;width:100%;}
 .mode-btn{min-height:114px;border:1px solid #dbe4f0;background:linear-gradient(155deg,#fff,#f8fafc);border-radius:17px;padding:11px;text-align:left;cursor:pointer;transition:transform .16s,border-color .16s,box-shadow .16s;position:relative;overflow:hidden;color:#0f172a;}
 .mode-btn::after{content:'';position:absolute;width:88px;height:88px;border-radius:50%;right:-38px;top:-42px;background:var(--mode-glow,#22d3ee);opacity:.13;filter:blur(2px);}
 .mode-btn .mode-icon{display:grid;place-items:center;width:34px;height:34px;border-radius:11px;background:color-mix(in srgb,var(--mode-glow,#22d3ee) 14%,#fff);font-size:1.14rem;font-style:normal;margin-bottom:6px;box-shadow:inset 0 0 0 1px color-mix(in srgb,var(--mode-glow,#22d3ee) 18%,transparent);}
 .mode-btn em{position:absolute;right:12px;top:13px;color:var(--mode-glow,#67e8f9);font-size:.55rem;font-weight:900;font-style:normal;letter-spacing:1.1px;}
 .mode-btn strong{display:block;font-family:inherit;font-size:.94rem;font-weight:900;color:#0f172a;line-height:1.25;letter-spacing:-.35px;}
-.mode-btn span{display:block;font-size:.66rem;font-weight:700;color:#64748b;margin-top:3px;line-height:1.35;word-break:keep-all;}
+.mode-btn span{display:block;font-size:.75rem;font-weight:700;color:#64748b;margin-top:3px;line-height:1.35;word-break:keep-all;}
 .mode-btn[data-mode="boss"]{--mode-glow:#fb7185}.mode-btn[data-mode="whack"]{--mode-glow:#facc15}.mode-btn[data-mode="bubble"]{--mode-glow:#22d3ee}.mode-btn[data-mode="tower"]{--mode-glow:#a78bfa}.mode-btn[data-mode="rangers"]{--mode-glow:#38bdf8}.mode-btn[data-mode="sentence"]{--mode-glow:#34d399}
 .mode-btn.on{transform:translateY(-3px);border-color:var(--mode-glow);box-shadow:0 12px 25px color-mix(in srgb,var(--mode-glow) 20%,transparent),inset 0 0 0 1px color-mix(in srgb,var(--mode-glow) 28%,transparent);}
 .mode-btn.on .mode-icon{background:var(--mode-glow);box-shadow:0 0 18px color-mix(in srgb,var(--mode-glow) 42%,transparent);}
 
-.unit-head{padding:19px 19px 0;}
-.unit-tabs{display:flex;gap:8px;padding:14px 18px 0;overflow-x:auto;scrollbar-width:none;}
-.unit-tabs::-webkit-scrollbar{display:none;}
-.utab{flex-shrink:0;padding:8px 18px;border-radius:999px;border:1px solid #cbd5e1;background:#fff;color:#64748b;font-weight:900;font-size:.78rem;cursor:pointer;transition:all .2s;}
-.utab.on{background:linear-gradient(135deg,#0ea5e9,#6366f1);border-color:#6366f1;color:#fff;box-shadow:0 8px 20px rgba(99,102,241,.2);}
-
-.unit-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:10px;padding:14px 18px 36px;}
-.unit-card{min-height:126px;background:#fff;border-radius:18px;padding:14px;box-shadow:0 7px 20px rgba(30,64,175,.08);cursor:pointer;border:1px solid #e2e8f0;transition:all .18s;position:relative;overflow:hidden;color:#0f172a;}
+.unit-section{padding:20px 18px 36px;}
+.unit-head{padding:0;}
+.unit-head-copy{min-width:0;}
+.unit-head-copy .helper{margin-top:4px;}
+.lesson-list{display:grid;gap:10px;margin-top:14px;}
+.lesson-row{padding:12px;background:rgba(255,255,255,.95);border:1px solid #e2e8f0;border-radius:18px;box-shadow:0 8px 22px rgba(30,64,175,.08);}
+.lesson-row[hidden]{display:none;}
+.lesson-label{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-bottom:9px;color:#4338ca;font-size:.75rem;font-weight:900;letter-spacing:.7px;}
+.lesson-label span:last-child{color:#94a3b8;font-size:.75rem;letter-spacing:0;}
+.lesson-topics{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;}
+.unit-card{width:100%;min-width:0;min-height:78px;background:#fff;border-radius:14px;padding:11px 10px 10px;box-shadow:0 5px 15px rgba(30,64,175,.07);cursor:pointer;border:1px solid #e2e8f0;transition:all .18s;position:relative;overflow:hidden;color:#0f172a;text-align:left;}
 .unit-card::before{content:'';position:absolute;top:0;left:0;right:0;height:4px;background:linear-gradient(90deg,var(--c,var(--blue)),transparent);}
-.unit-card::after{content:'PLAY';position:absolute;right:12px;bottom:12px;color:var(--c,var(--blue));font-size:.55rem;font-weight:900;letter-spacing:1px;}
 .unit-card:hover,.unit-card:active{transform:translateY(-3px);box-shadow:0 14px 28px rgba(30,64,175,.15);border-color:var(--c,var(--blue));}
-.unit-card .lbl{font-size:.62rem;font-weight:900;color:var(--c,var(--blue));letter-spacing:1px;margin-bottom:7px;}
-.unit-card h3{font-family:inherit;font-size:.9rem;font-weight:900;color:#0f172a;line-height:1.4;word-break:keep-all;letter-spacing:-.3px;}
-.unit-card .cnt{display:inline-flex;align-items:center;margin-top:10px;font-size:.65rem;font-weight:900;color:#475569;background:#f1f5f9;border-radius:999px;padding:4px 8px;}
-.unit-card .best{font-size:.64rem;font-weight:900;color:#a16207;margin-top:7px;min-height:14px;}
-.all-btn{grid-column:1/-1;background:linear-gradient(120deg,#0e7490,#2563eb 52%,#7c3aed);color:#fff;border-radius:19px;padding:17px;text-align:left;cursor:pointer;font-family:inherit;font-weight:900;font-size:1rem;box-shadow:0 16px 30px rgba(37,99,235,.24);transition:all .18s;position:relative;overflow:hidden;border:1px solid rgba(103,232,249,.28);}
-.all-btn::before{content:'ALL STAGE';position:absolute;right:14px;top:14px;color:#bae6fd;font-family:inherit;font-size:.55rem;font-weight:900;letter-spacing:1.2px;}
-.all-btn:hover{transform:translateY(-3px);box-shadow:0 20px 34px rgba(37,99,235,.32);}
-.all-btn .best{display:block;font-family:inherit;font-size:.66rem;font-weight:800;color:#fde68a;margin-top:4px;}
-@media(min-width:620px){.unit-grid{grid-template-columns:repeat(4,1fr)}.all-btn{grid-column:1/-1}}
+.unit-card h3{font-family:inherit;font-size:.83rem;font-weight:900;color:#0f172a;line-height:1.38;word-break:keep-all;overflow-wrap:anywhere;letter-spacing:-.3px;}
+.unit-card .cnt{display:block;margin-top:6px;font-size:.75rem;font-weight:800;color:#64748b;}
+.unit-card .best{font-size:.75rem;font-weight:900;color:#a16207;margin-top:5px;min-height:0;}
+.grade-random{display:flex;align-items:center;justify-content:space-between;width:100%;min-height:52px;margin-top:12px;padding:12px 14px;background:#fff;color:#4338ca;border:1px dashed #818cf8;border-radius:16px;text-align:left;cursor:pointer;font-family:inherit;font-weight:900;font-size:.88rem;box-shadow:0 7px 18px rgba(99,102,241,.08);}
+.grade-random span{color:#64748b;font-size:.75rem;font-weight:800;}
+@media(max-width:420px){
+  .start-header{padding:23px 16px 41px;}
+  .start-header .badge{margin-bottom:8px;}
+  .start-header p{font-size:.82rem;}
+  .bubble-deco{margin-top:12px;}
+  .play-tabs,.settings-box,.unit-section{margin-left:12px;margin-right:12px;}
+  .settings-box{padding:15px;}
+  .unit-section{padding-left:12px;padding-right:12px;}
+  .mode-btn{min-height:108px;padding:10px;}
+  .mode-btn em{right:9px;top:11px;}
+  .time-row{display:block;}
+  .time-row[hidden]{display:none;}
+  .set-label{display:block;padding-top:0;margin-bottom:8px;}
+  .time-opts{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:5px;}
+  .topt{min-width:0;padding:7px 3px;}
+  .lesson-row{padding:10px;}
+  .unit-card{padding:10px 8px 9px;}
+  .unit-card h3{font-size:.79rem;}
+  .grade-random{display:block;}
+  .grade-random span{display:block;margin-top:3px;}
+}
 
 /* ── GAME SCREEN ── */
 #game-screen{display:none;flex-direction:column;align-items:center;min-height:100vh;background:radial-gradient(circle at 50% 28%,#112b57 0,#07142d 42%,#040817 100%);}
@@ -667,46 +700,66 @@ button:focus-visible,.unit-card:focus-visible,.all-btn:focus-visible{outline:3px
   <div class="start-header">
     <div class="badge">🎮 GRAMMAR ARCADE</div>
     <h1>문법 <span>아케이드</span></h1>
-    <p>게임을 고르고 단원을 선택하세요.<br>짧게 플레이하고, 자연스럽게 문법을 복습해요.</p>
+    <p>학년과 게임을 고른 뒤, 배우는 단원으로 바로 들어가요.</p>
     <div class="bubble-deco" id="deco"></div>
   </div>
+  <nav class="play-tabs" aria-label="플레이 방식">
+    <a class="play-tab on" href="./" aria-current="page">혼자 하기</a>
+    <a class="play-tab multi" id="multiplayer-tab" href="../multiplayer/">같이 하기</a>
+  </nav>
   <div class="settings-box">
     <div class="panel-title">
       <span>01</span>
-      <div><small>GAME MODE</small><h2>어떤 게임으로 복습할까?</h2></div>
+      <div><small>GRADE FIRST</small><h2>몇 학년 문법을 연습할까?</h2></div>
     </div>
-    <div class="set-row mode-row">
-      <div class="mode-opts" id="mode-opts">
-        <button class="mode-btn on" data-mode="boss">
-          <i class="mode-icon">⚔️</i><em>BATTLE</em>
-          <strong>문법 보스전</strong>
-          <span>콤보와 필살기로 보스 격파</span>
-        </button>
-        <button class="mode-btn" data-mode="whack">
-          <i class="mode-icon">🔨</i><em>QUICK</em>
-          <strong>두더지 잡기</strong>
-          <span>튀어나오는 정답을 빠르게 타격</span>
-        </button>
-        <button class="mode-btn" data-mode="bubble">
-          <i class="mode-icon">🫧</i><em>PUZZLE</em>
-          <strong>보글보글</strong>
-          <span>버블 8발 → 문법 찬스 → 폭탄 버블</span>
-        </button>
-        <button class="mode-btn" data-mode="tower">
-          <i class="mode-icon">🏰</i><em>CLIMB</em>
-          <strong>무한의 탑</strong>
-          <span>목숨 3개로 오늘의 최고층 도전</span>
-        </button>
-        <button class="mode-btn" data-mode="rangers">
-          <i class="mode-icon">⚔️</i><em>LANE BATTLE</em>
-          <strong>문법 레인저스</strong>
-          <span>정답으로 기력을 모아 유닛을 소환하고 적 본진을 격파</span>
-        </button>
-        <button class="mode-btn" data-mode="sentence">
-          <i class="mode-icon">💥</i><em>NEW · BLOCK</em>
-          <strong>Sentence Blast</strong>
-          <span>블록 30초 → 문장 조립 → 문법 폭발</span>
-        </button>
+    <div class="grade-opts" id="grade-opts">
+      <button class="grade-btn on" type="button" data-grade="g1" aria-pressed="true">중학교 1학년</button>
+      <button class="grade-btn" type="button" data-grade="g2" aria-pressed="false">중학교 2학년</button>
+    </div>
+    <p class="helper">학년을 바꾸면 아래 Lesson과 문법 주제도 함께 바뀌어요.</p>
+
+    <div class="game-select">
+      <div class="panel-title">
+        <span>02</span>
+        <div><small>GAME MODE</small><h2>게임을 골라요</h2></div>
+      </div>
+      <button class="mode-summary" id="mode-summary" type="button" aria-expanded="false" aria-controls="mode-picker">✓ 문법 보스전 · 변경</button>
+      <div class="mode-picker" id="mode-picker" hidden>
+        <p class="helper">하고 싶은 게임을 누르면 선택창이 다시 접혀요.</p>
+        <div class="set-row mode-row">
+          <div class="mode-opts" id="mode-opts">
+            <button class="mode-btn on" type="button" data-mode="boss">
+              <i class="mode-icon">⚔️</i><em>BATTLE</em>
+              <strong>문법 보스전</strong>
+              <span>콤보와 필살기로 보스 격파</span>
+            </button>
+            <button class="mode-btn" type="button" data-mode="whack">
+              <i class="mode-icon">🔨</i><em>QUICK</em>
+              <strong>두더지 잡기</strong>
+              <span>튀어나오는 정답을 빠르게 타격</span>
+            </button>
+            <button class="mode-btn" type="button" data-mode="bubble">
+              <i class="mode-icon">🫧</i><em>PUZZLE</em>
+              <strong>보글보글</strong>
+              <span>버블 8발 → 문법 찬스 → 폭탄 버블</span>
+            </button>
+            <button class="mode-btn" type="button" data-mode="tower">
+              <i class="mode-icon">🏰</i><em>CLIMB</em>
+              <strong>무한의 탑</strong>
+              <span>목숨 3개로 오늘의 최고층 도전</span>
+            </button>
+            <button class="mode-btn" type="button" data-mode="rangers">
+              <i class="mode-icon">⚔️</i><em>LANE BATTLE</em>
+              <strong>문법 레인저스</strong>
+              <span>정답으로 기력을 모아 유닛을 소환하고 적 본진을 격파</span>
+            </button>
+            <button class="mode-btn" type="button" data-mode="sentence">
+              <i class="mode-icon">💥</i><em>NEW · BLOCK</em>
+              <strong>Sentence Blast</strong>
+              <span>블록 15초 → 문법 챌린지 → 문법 폭발</span>
+            </button>
+          </div>
+        </div>
       </div>
     </div>
     <div class="set-row time-row" id="time-row" hidden>
@@ -720,16 +773,20 @@ button:focus-visible,.unit-card:focus-visible,.all-btn:focus-visible{outline:3px
       </div>
     </div>
   </div>
-  <div class="unit-head">
-    <span>02</span>
-    <div><small>LESSON SELECT</small><h2>연습할 단원을 골라요</h2></div>
+  <div class="unit-section">
+    <div class="unit-head">
+      <span>03</span>
+      <div class="unit-head-copy">
+        <small>LESSON SELECT</small><h2 id="unit-heading">중1 문법 주제를 골라요</h2>
+        <p class="helper" id="unit-helper">Lesson마다 두 가지 문법 주제가 있어요.</p>
+      </div>
+    </div>
+    <div class="lesson-list" id="unit-grid"></div>
+    <button class="grade-random" id="grade-random" type="button">
+      🎲 중1 전체에서 랜덤
+      <span>16개 주제 중 하나를 골라 시작</span>
+    </button>
   </div>
-  <div class="unit-tabs">
-    <button class="utab on" onclick="filterUnits('all', this)">전체</button>
-    <button class="utab" onclick="filterUnits('g1', this)">중1</button>
-    <button class="utab" onclick="filterUnits('g2', this)">중2</button>
-  </div>
-  <div class="unit-grid" id="unit-grid"></div>
 </div>
 
 <!-- ───────── GAME SCREEN ───────── -->
@@ -1017,7 +1074,9 @@ const STAGE_CONFIG = [
   { label: '3단계', initRows: 6, colors: 6, descent: 35, scoreBonus: 1.25 }
 ];
 let selectedMode = 'boss';
+let activeGrade = 'g1';
 const TIMED_MODES = new Set(['bubble', 'sentence']);
+const GRADE_LABELS = { g1: '중1', g2: '중2' };
 
 function syncTimeOptionsVisibility() {
   const row = document.getElementById('time-row');
@@ -1199,6 +1258,12 @@ function cleanupZeroScoreRecords() {
 cleanupZeroScoreRecords();
 
 (function buildStartScreen(){
+  const multiplayerTab = document.getElementById('multiplayer-tab');
+  const localHost = ['localhost', '127.0.0.1', '::1'].includes(location.hostname);
+  multiplayerTab.href = localHost
+    ? 'http://127.0.0.1:8787/multiplayer/'
+    : 'https://middle-grammar-multiplayer.obangti.workers.dev/multiplayer/';
+
   // deco bubbles
   const deco = document.getElementById('deco');
   COLORS.forEach((c,i) => {
@@ -1208,25 +1273,63 @@ cleanupZeroScoreRecords();
     deco.appendChild(s);
   });
 
-  // unit cards
+  // grade-first lesson rows
   const grid = document.getElementById('unit-grid');
+  const lessonGroups = new Map();
   Object.entries(GAME_QUESTIONS).forEach(([key, unit]) => {
     if (key === 'all' || unit.hidden) return;
-    const card = document.createElement('div');
-    card.className = 'unit-card';
-    card.dataset.group = key.startsWith('g1') ? 'g1' : 'g2';
-    card.style.setProperty('--c', unit.color);
-    card.innerHTML = `<div class="lbl">${unit.code || key.toUpperCase().replace('-L','-L')}</div><h3>${unit.label.split(' · ')[1]}</h3><div class="cnt">${unit.questions.length}문제</div><div class="best" data-best-for="${key}"></div>`;
-    card.onclick = () => startSelectedGame(key);
-    grid.appendChild(card);
+    const grade = key.startsWith('g1') ? 'g1' : 'g2';
+    const lessonMatch = key.match(/^g[12]-l(\d+)/);
+    if (!lessonMatch) return;
+    const lesson = Number(lessonMatch[1]);
+    const groupKey = `${grade}-l${lesson}`;
+    if (!lessonGroups.has(groupKey)) lessonGroups.set(groupKey, { grade, lesson, units: [] });
+    lessonGroups.get(groupKey).units.push({ key, unit });
   });
 
-  // all button
-  const allBtn = document.createElement('div');
-  allBtn.className = 'all-btn';
-  allBtn.innerHTML = '🎲 전체 랜덤 (모든 단원)<span class="best" data-best-for="all"></span>';
-  allBtn.onclick = () => startSelectedGame('all');
-  grid.appendChild(allBtn);
+  lessonGroups.forEach(group => {
+    const row = document.createElement('section');
+    row.className = 'lesson-row';
+    row.dataset.grade = group.grade;
+    row.hidden = group.grade !== activeGrade;
+    row.innerHTML = `<div class="lesson-label"><span>LESSON ${group.lesson}</span><span>문법 ${group.units.length}개</span></div>`;
+    const topics = document.createElement('div');
+    topics.className = 'lesson-topics';
+    group.units.forEach(({ key, unit }) => {
+      const card = document.createElement('button');
+      card.type = 'button';
+      card.className = 'unit-card';
+      card.dataset.group = group.grade;
+      card.style.setProperty('--c', unit.color);
+      card.setAttribute('aria-label', `${unit.label}, ${unit.questions.length}문제`);
+      card.innerHTML = `<h3>${unit.label.split(' · ')[1]}</h3><span class="cnt">${unit.questions.length}문제</span><span class="best" data-best-for="${key}"></span>`;
+      card.onclick = () => startSelectedGame(key);
+      topics.appendChild(card);
+    });
+    row.appendChild(topics);
+    grid.appendChild(row);
+  });
+
+  const gradeRandom = document.getElementById('grade-random');
+  gradeRandom.addEventListener('click', () => {
+    const keys = Object.keys(GAME_QUESTIONS).filter(key =>
+      key !== 'all' && !GAME_QUESTIONS[key].hidden && key.startsWith(activeGrade + '-')
+    );
+    if (!keys.length) return;
+    startSelectedGame(keys[Math.floor(Math.random() * keys.length)]);
+  });
+
+  document.querySelectorAll('.grade-btn').forEach(btn => {
+    btn.addEventListener('click', () => selectGrade(btn.dataset.grade));
+  });
+
+  const modeSummary = document.getElementById('mode-summary');
+  const modePicker = document.getElementById('mode-picker');
+  modeSummary.addEventListener('click', () => {
+    const willOpen = modePicker.hidden;
+    modePicker.hidden = !willOpen;
+    modeSummary.setAttribute('aria-expanded', String(willOpen));
+  });
 
   // time option buttons
   document.querySelectorAll('.topt').forEach(btn => {
@@ -1238,17 +1341,42 @@ cleanupZeroScoreRecords();
     });
   });
   document.querySelectorAll('.mode-btn').forEach(btn => {
+    btn.setAttribute('aria-pressed', String(btn.classList.contains('on')));
     btn.addEventListener('click', () => {
-      document.querySelectorAll('.mode-btn').forEach(b => b.classList.remove('on'));
+      document.querySelectorAll('.mode-btn').forEach(b => {
+        b.classList.remove('on');
+        b.setAttribute('aria-pressed', 'false');
+      });
       btn.classList.add('on');
+      btn.setAttribute('aria-pressed', 'true');
       selectedMode = btn.dataset.mode || 'bubble';
+      modeSummary.textContent = `✓ ${btn.querySelector('strong').textContent} · 변경`;
+      modePicker.hidden = true;
+      modeSummary.setAttribute('aria-expanded', 'false');
       syncTimeOptionsVisibility();
       renderUnitBestBadges();
     });
   });
+  selectGrade(activeGrade);
   syncTimeOptionsVisibility();
   setTimeout(renderUnitBestBadges, 0);
 })();
+
+function selectGrade(grade) {
+  if (!GRADE_LABELS[grade]) return;
+  activeGrade = grade;
+  document.querySelectorAll('.grade-btn').forEach(btn => {
+    const selected = btn.dataset.grade === grade;
+    btn.classList.toggle('on', selected);
+    btn.setAttribute('aria-pressed', String(selected));
+  });
+  document.querySelectorAll('.lesson-row').forEach(row => {
+    row.hidden = row.dataset.grade !== grade;
+  });
+  const gradeLabel = GRADE_LABELS[grade];
+  document.getElementById('unit-heading').textContent = `${gradeLabel} 문법 주제를 골라요`;
+  document.getElementById('grade-random').innerHTML = `🎲 ${gradeLabel} 전체에서 랜덤<span>16개 주제 중 하나를 골라 시작</span>`;
+}
 
 function startSelectedGame(unitKey) {
   if (selectedMode === 'boss') {
@@ -1262,14 +1390,6 @@ function startSelectedGame(unitKey) {
     location.href = '../sentence-blast/?unit=' + encodeURIComponent(unitKey) + '&seconds=' + seconds;
   }
   else startGame(unitKey);
-}
-
-function filterUnits(group, btn) {
-  document.querySelectorAll('.utab').forEach(t => t.classList.remove('on'));
-  (btn || event.target).classList.add('on');
-  document.querySelectorAll('.unit-card').forEach(c => {
-    c.style.display = (group === 'all' || c.dataset.group === group) ? '' : 'none';
-  });
 }
 
 function goStart() {

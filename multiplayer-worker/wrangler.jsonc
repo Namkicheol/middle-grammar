@@ -1,0 +1,31 @@
+{
+  "$schema": "node_modules/wrangler/config-schema.json",
+  "name": "middle-grammar-multiplayer",
+  "main": "src/index.ts",
+  "compatibility_date": "2026-09-05",
+  "workers_dev": true,
+  "assets": {
+    "directory": "../multiplayer",
+    "binding": "ASSETS",
+    "run_worker_first": true
+  },
+  "durable_objects": {
+    "bindings": [
+      { "name": "ROOMS", "class_name": "GameRoom" }
+    ]
+  },
+  "d1_databases": [
+    {
+      "binding": "REPORTS",
+      "database_name": "middle-grammar-multiplayer-reports",
+      "database_id": "a5bafc2c-4c08-4c78-9c0b-f7d1a54d3f26",
+      "migrations_dir": "migrations"
+    }
+  ],
+  "vars": { "ENVIRONMENT": "production" },
+  "triggers": { "crons": ["0 3 * * *"] },
+  "migrations": [
+    { "tag": "v1", "new_sqlite_classes": ["GameRoom"] }
+  ],
+  "observability": { "enabled": true }
+}

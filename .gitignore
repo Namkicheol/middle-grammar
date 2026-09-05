@@ -40,3 +40,7 @@ grammar-rangers/assets/hd-v2/source/
 grammar-rangers/assets/hd-v2/atlas/
 .playwright-cli/
 .vercel
+
+# 로컬 JavaScript/Cloudflare 개발 산출물
+node_modules/
+.wrangler/

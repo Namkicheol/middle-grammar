@@ -4,6 +4,7 @@ import {
   EngineError,
   chooseTreasure,
   createRoomState,
+  escapeAction,
   joinPlayer,
   mazeMove,
   publicRoomState,
@@ -109,6 +110,20 @@ function mazeRoom(): RoomState {
     durationSeconds: 300,
     shuffleQuestions: false,
     mode: "maze_heist",
+  });
+}
+
+function escapeRoom(playStyle: "individual" | "team" = "individual"): RoomState {
+  return createRoomState({
+    code: "123456",
+    teacherEmail: "teacher@example.com",
+    questions: QUESTIONS,
+    createdAt: 1_000,
+    durationSeconds: 300,
+    shuffleQuestions: false,
+    mode: "grammar_escape",
+    playStyle,
+    ...(playStyle === "team" ? { teamCount: 2 } : {}),
   });
 }
 
@@ -1063,5 +1078,244 @@ describe("room engine", () => {
     expect(teacherRoomState(state).leaderboard.map((entry) => entry.playerId)).toEqual(["player-1", "player-2"]);
     expect(teacherRoomState(state).leaderboard[0].starDust).toBe(20);
     expect(publicRoomState(state, "player-1").leaderboard[0].starDust).toBe(20);
+  });
+});
+
+describe("grammar escape", () => {
+  it("keeps undiscovered digits server-only and completes three rooms with earned focus", () => {
+    let state = startRoom(addPlayer(escapeRoom()), 3_000);
+    let now = 4_000;
+    const initial = publicRoomState(state, "player-1");
+    expect(initial.self?.escape).toMatchObject({ roomsCleared: 0, focus: 0, seq: 0, discoveredCount: 0 });
+    expect(JSON.stringify(initial)).not.toMatch(/digit|"clue"|"rooms"/);
+
+    for (let roomNumber = 0; roomNumber < 3; roomNumber += 1) {
+      for (let hotspotIndex = 0; hotspotIndex < 3; hotspotIndex += 1) {
+        state = submitCurrent(state, "player-1", now).state;
+        now += 1_000;
+        const escape = publicRoomState(state, "player-1").self!.escape!;
+        const inspected = escapeAction(state, {
+          playerId: "player-1",
+          action: "inspect",
+          seq: escape.seq,
+          hotspotId: escape.hotspots[hotspotIndex].id,
+          serverNow: now,
+        });
+        state = inspected.state;
+        now += 1_000;
+      }
+      const escape = publicRoomState(state, "player-1").self!.escape!;
+      const code = escape.lockOrder.map((symbol) => escape.hotspots.find((hotspot) => hotspot.symbol === symbol)?.clue).join("");
+      state = escapeAction(state, {
+        playerId: "player-1",
+        action: "unlock",
+        seq: escape.seq,
+        code,
+        serverNow: now,
+      }).state;
+      now += 1_000;
+    }
+
+    const completed = publicRoomState(state, "player-1").self!.escape!;
+    expect(completed).toMatchObject({ roomsCleared: 3, discoveredCount: 3, escapedAt: expect.any(Number) });
+    expect(publicRoomState(state, "player-1").self?.currentQuestion).toBeUndefined();
+    expectEngineCode(
+      () => submitCurrent(state, "player-1", now),
+      "ESCAPE_COMPLETE",
+    );
+  });
+
+  it("hides questions for every member of an escaped team only", () => {
+    let state = escapeRoom("team");
+    state = addPlayer(state, "one", "한 팀", 2_000);
+    state = addPlayer(state, "two", "다른 팀", 2_001);
+    state = addPlayer(state, "three", "한 팀 동료", 2_002);
+    state = startRoom(state, 3_000);
+    const teamOne = state.escapeRuns!["team:team-1"];
+    state = {
+      ...state,
+      escapeRuns: {
+        ...state.escapeRuns,
+        "team:team-1": { ...teamOne, roomsCleared: 3, escapedAt: 4_000 },
+      },
+    };
+
+    expect(publicRoomState(state, "one").self?.currentQuestion).toBeUndefined();
+    expect(publicRoomState(state, "three").self?.currentQuestion).toBeUndefined();
+    expect(publicRoomState(state, "two").self?.currentQuestion).toBeDefined();
+  });
+
+  it("serializes shared inspections by seq while keeping teams isolated", () => {
+    let state = escapeRoom("team");
+    state = addPlayer(state, "one", "한 팀", 2_000);
+    state = addPlayer(state, "two", "다른 팀", 2_001);
+    state = addPlayer(state, "three", "한 팀 동료", 2_002);
+    state = startRoom(state, 3_000);
+    state = submitCurrent(state, "one", 4_000).state;
+    const firstView = publicRoomState(state, "one").self!.escape!;
+    const inspected = escapeAction(state, {
+      playerId: "one",
+      action: "inspect",
+      seq: firstView.seq,
+      hotspotId: firstView.hotspots[0].id,
+      serverNow: 4_100,
+    });
+    state = inspected.state;
+    expectEngineCode(
+      () => escapeAction(state, {
+        playerId: "three",
+        action: "inspect",
+        seq: firstView.seq,
+        hotspotId: firstView.hotspots[1].id,
+        serverNow: 4_101,
+      }),
+      "ESCAPE_ACTION_OUT_OF_ORDER",
+    );
+    expect(publicRoomState(state, "three").self?.escape?.discoveredCount).toBe(1);
+    expect(publicRoomState(state, "two").self?.escape?.discoveredCount).toBe(0);
+  });
+
+  it("applies the retry boundary without spending focus or advancing seq", () => {
+    let state = startRoom(addPlayer(escapeRoom()), 3_000);
+    let now = 4_000;
+    for (let index = 0; index < 3; index += 1) {
+      state = submitCurrent(state, "player-1", now).state;
+      now += 1_000;
+      const escape = publicRoomState(state, "player-1").self!.escape!;
+      state = escapeAction(state, {
+        playerId: "player-1",
+        action: "inspect",
+        seq: escape.seq,
+        hotspotId: escape.hotspots[index].id,
+        serverNow: now,
+      }).state;
+      now += 1_000;
+    }
+    const before = publicRoomState(state, "player-1").self!.escape!;
+    const expected = before.lockOrder.map((symbol) => before.hotspots.find((hotspot) => hotspot.symbol === symbol)?.clue).join("");
+    const wrongCode = `${expected[0] === "9" ? "8" : "9"}${expected.slice(1)}`;
+    state = escapeAction(state, {
+      playerId: "player-1",
+      action: "unlock",
+      seq: before.seq,
+      code: wrongCode,
+      serverNow: now,
+    }).state;
+    const retried = publicRoomState(state, "player-1").self!.escape!;
+    expect(retried).toMatchObject({ focus: before.focus, seq: before.seq, retryAt: now + 3_000 });
+    expectEngineCode(
+      () => escapeAction(state, {
+        playerId: "player-1",
+        action: "unlock",
+        seq: retried.seq,
+        code: wrongCode,
+        serverNow: now + 2_999,
+      }),
+      "ESCAPE_RETRY_ACTIVE",
+    );
+  });
+
+  it.each([
+    { name: "no focus", action: "inspect" as const, seq: 0, hotspotId: "desk", code: undefined, error: "ESCAPE_NO_FOCUS" },
+    { name: "an invalid hotspot", action: "inspect" as const, seq: 0, hotspotId: "window", code: undefined, error: "INVALID_ESCAPE_ACTION" },
+    { name: "an invalid code payload", action: "unlock" as const, seq: 0, hotspotId: undefined, code: "12", error: "INVALID_ESCAPE_ACTION" },
+    { name: "an out-of-order sequence", action: "inspect" as const, seq: 1, hotspotId: "desk", code: undefined, error: "ESCAPE_ACTION_OUT_OF_ORDER" },
+  ])("rejects $name", ({ action, seq, hotspotId, code, error }) => {
+    const state = startRoom(addPlayer(escapeRoom()), 3_000);
+    expectEngineCode(
+      () => escapeAction(state, { playerId: "player-1", action, seq, hotspotId, code, serverNow: 4_000 }),
+      error,
+    );
+  });
+
+  it("requires every clue even when the submitted code is otherwise correct", () => {
+    const state = startRoom(addPlayer(escapeRoom()), 3_000);
+    const room = state.escapeRuns!["player:player-1"].rooms[0];
+    const code = room.lockOrder.map((symbol) => room.hotspots.find((hotspot) => hotspot.symbol === symbol)!.digit).join("");
+    expectEngineCode(
+      () => escapeAction(state, { playerId: "player-1", action: "unlock", seq: 0, code, serverNow: 4_000 }),
+      "ESCAPE_LOCKED",
+    );
+  });
+
+  it("keeps focus on wrong answers, caps it at six, and makes repeated inspection free", () => {
+    let state = startRoom(addPlayer(escapeRoom()), 3_000);
+    for (let answer = 0; answer < 7; answer += 1) {
+      state = submitCurrent(state, "player-1", 4_000 + answer * 1_000).state;
+    }
+    const capped = publicRoomState(state, "player-1").self!.escape!;
+    expect(capped).toMatchObject({ focus: 6, seq: 6 });
+    state = submitCurrent(state, "player-1", 12_000, false).state;
+    expect(publicRoomState(state, "player-1").self?.escape).toMatchObject({ focus: 6, seq: 6 });
+
+    const first = escapeAction(state, {
+      playerId: "player-1",
+      action: "inspect",
+      seq: 6,
+      hotspotId: "desk",
+      serverNow: 13_000,
+    });
+    const repeated = escapeAction(first.state, {
+      playerId: "player-1",
+      action: "inspect",
+      seq: 7,
+      hotspotId: "desk",
+      serverNow: 13_001,
+    });
+    expect(publicRoomState(repeated.state, "player-1").self?.escape).toMatchObject({ focus: 5, seq: 7, discoveredCount: 1 });
+  });
+
+  it.each([
+    { name: "at the deadline", state: "playing" as const, now: 303_000, error: "ROOM_EXPIRED" },
+    { name: "after the room finishes", state: "finished" as const, now: 4_000, error: "ROOM_NOT_PLAYING" },
+  ])("rejects actions $name", ({ state: status, now, error }) => {
+    let state = startRoom(addPlayer(escapeRoom()), 3_000);
+    if (status === "finished") state = { ...state, status, finishedAt: now };
+    expectEngineCode(
+      () => escapeAction(state, { playerId: "player-1", action: "inspect", seq: 0, hotspotId: "desk", serverNow: now }),
+      error,
+    );
+  });
+
+  it("keeps a late team member on the shared run when the original member re-reads state", () => {
+    let state = escapeRoom("team");
+    state = addPlayer(state, "one", "한 팀", 2_000);
+    state = addPlayer(state, "two", "다른 팀", 2_001);
+    state = startRoom(state, 3_000);
+    state = submitCurrent(state, "one", 4_000).state;
+    const shared = publicRoomState(state, "one").self!.escape!;
+    state = escapeAction(state, {
+      playerId: "one", action: "inspect", seq: shared.seq, hotspotId: "desk", serverNow: 4_100,
+    }).state;
+    state = joinPlayer(state, {
+      id: "three", nickname: "늦은 팀원", resumeTokenHash: "hash-three", joinedAt: 4_200,
+    }).state;
+
+    expect(publicRoomState(state, "three").self?.escape).toMatchObject({ discoveredCount: 1, focus: 0, seq: 2 });
+    expect(publicRoomState(state, "one").self?.escape).toMatchObject({ discoveredCount: 1, focus: 0, seq: 2 });
+  });
+
+  it.each([
+    { name: "an escaped low-score player before an unfinished high-score player", one: { roomsCleared: 3, escapedAt: 6_000, score: 0 }, two: { roomsCleared: 2, score: 9_999 }, first: "one" },
+    { name: "more completed rooms before score", one: { roomsCleared: 2, score: 0 }, two: { roomsCleared: 1, score: 9_999 }, first: "one" },
+    { name: "the earlier escape before a later one", one: { roomsCleared: 3, escapedAt: 6_000, score: 9_999 }, two: { roomsCleared: 3, escapedAt: 5_000, score: 0 }, first: "two" },
+  ])("ranks $name", ({ one, two, first }) => {
+    let state = escapeRoom();
+    state = addPlayer(state, "one", "첫째", 2_000);
+    state = addPlayer(state, "two", "둘째", 2_001);
+    state = {
+      ...state,
+      players: {
+        ...state.players,
+        one: { ...state.players.one, score: one.score },
+        two: { ...state.players.two, score: two.score },
+      },
+      escapeRuns: {
+        ...state.escapeRuns,
+        "player:one": { ...state.escapeRuns!["player:one"], roomsCleared: one.roomsCleared, escapedAt: one.escapedAt },
+        "player:two": { ...state.escapeRuns!["player:two"], roomsCleared: two.roomsCleared, escapedAt: two.escapedAt },
+      },
+    };
+    expect(teacherRoomState(state).leaderboard[0].playerId).toBe(first);
   });
 });

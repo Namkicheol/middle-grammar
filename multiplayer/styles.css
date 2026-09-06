@@ -2131,3 +2131,338 @@ h3 {
     font-size: 23px;
   }
 }
+
+/* Grammar Escape: a dim school scene, notebook, and physical-looking lock rather than a score dashboard. */
+.mode-card:has(input[value="grammar_escape"]) .mode-card-visual {
+  background: radial-gradient(circle at 72% 24%, rgba(45, 212, 191, .55), transparent 22%), linear-gradient(145deg, #06162b, #12304b 72%);
+}
+
+.mode-card:has(input[value="grammar_escape"]) .mode-card-visual img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  filter: saturate(.9) contrast(1.05);
+}
+
+.escape-layout {
+  display: grid;
+  grid-template-columns: minmax(0, 1.6fr) minmax(270px, .62fr);
+  gap: 18px;
+  align-items: start;
+}
+
+.escape-console {
+  min-width: 0;
+  padding: clamp(16px, 3vw, 28px);
+  overflow: hidden;
+  border: 1px solid #315270;
+  border-radius: 20px;
+  background:
+    radial-gradient(circle at 8% 0%, rgba(45, 212, 191, .19), transparent 21rem),
+    radial-gradient(circle at 92% 16%, rgba(251, 191, 36, .14), transparent 17rem),
+    linear-gradient(145deg, #07192d, #0b2238 58%, #081829);
+  color: #edf7fb;
+  box-shadow: 0 20px 45px rgba(2, 8, 23, .28);
+}
+
+.escape-topline,
+.escape-status-strip,
+.escape-workbench,
+.notebook-heading,
+.escape-code-row,
+.escape-complete {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.escape-topline {
+  justify-content: space-between;
+}
+
+.escape-kicker,
+.escape-lock > p,
+.notebook-heading p {
+  margin: 0 0 4px;
+  color: #7ee9dc;
+  font-size: 11px;
+  font-weight: 900;
+  letter-spacing: .14em;
+}
+
+.escape-topline h1 {
+  margin: 0;
+  color: #fffef5;
+  font-size: clamp(24px, 5vw, 34px);
+  letter-spacing: -.04em;
+}
+
+.escape-timer {
+  min-width: 86px;
+  padding: 8px 10px;
+  border: 1px solid rgba(126, 233, 220, .42);
+  border-radius: 10px;
+  background: rgba(2, 14, 27, .55);
+  text-align: right;
+}
+
+.escape-timer span,
+.escape-timer strong { display: block; }
+.escape-timer span { color: #a6c7d5; font-size: 10px; font-weight: 800; }
+.escape-timer strong { color: #fcd34d; font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-size: 20px; }
+.escape-story { max-width: 58ch; margin: 14px 0; color: #cde0e8; line-height: 1.65; }
+
+.escape-meter {
+  height: 7px;
+  overflow: hidden;
+  border-radius: 999px;
+  background: rgba(148, 163, 184, .24);
+}
+
+.escape-meter span { display: block; height: 100%; border-radius: inherit; background: linear-gradient(90deg, #2dd4bf, #fbbf24); }
+
+.escape-status-strip {
+  flex-wrap: wrap;
+  margin: 12px 0 18px;
+}
+
+.escape-status-strip span {
+  min-height: 31px;
+  padding: 7px 9px;
+  border: 1px solid rgba(148, 163, 184, .24);
+  border-radius: 8px;
+  color: #bed6df;
+  background: rgba(2, 14, 27, .38);
+  font-size: 11px;
+  font-weight: 750;
+}
+
+.escape-status-strip strong { color: #fde68a; font-size: 15px; }
+
+.escape-howto {
+  display: flex;
+  flex-wrap: wrap;
+  margin: -8px 0 18px;
+  padding: 0;
+  gap: 7px;
+  list-style: none;
+}
+
+.escape-howto li {
+  min-height: 30px;
+  padding: 6px 8px 6px 5px;
+  border: 1px solid rgba(126, 233, 220, .29);
+  border-radius: 999px;
+  color: #d6eff1;
+  background: rgba(5, 24, 39, .54);
+  font-size: 11px;
+  font-weight: 800;
+}
+
+.escape-howto b {
+  display: inline-grid;
+  width: 18px;
+  height: 18px;
+  margin-right: 3px;
+  border-radius: 50%;
+  color: #082632;
+  background: #7ee9dc;
+  font-size: 10px;
+  place-items: center;
+}
+
+.escape-scene {
+  position: relative;
+  min-height: 255px;
+  overflow: hidden;
+  padding: 20px;
+  border: 1px solid rgba(126, 233, 220, .33);
+  border-radius: 14px;
+  background:
+    linear-gradient(90deg, rgba(4, 16, 29, .77), rgba(4, 16, 29, .18) 68%),
+    var(--escape-scene, url("./assets/night-school.webp")) center / cover,
+    linear-gradient(145deg, #0f3049, #071526);
+  isolation: isolate;
+}
+
+.escape-scene::after {
+  position: absolute;
+  z-index: -1;
+  inset: 0;
+  background: repeating-linear-gradient(0deg, rgba(255,255,255,.025) 0 1px, transparent 1px 5px);
+  content: "";
+  pointer-events: none;
+}
+
+.escape-scene-glow {
+  position: absolute;
+  z-index: -1;
+  top: -35px;
+  right: -25px;
+  width: 190px;
+  height: 190px;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(45, 212, 191, .28), transparent 65%);
+}
+
+.escape-door {
+  position: absolute;
+  bottom: 0;
+  left: clamp(14px, 7vw, 68px);
+  display: grid;
+  width: 88px;
+  height: 170px;
+  padding-top: 24px;
+  border: 4px solid #6f5133;
+  border-bottom: 0;
+  border-radius: 5px 5px 0 0;
+  background: repeating-linear-gradient(90deg, #382615 0 15px, #4a3020 15px 18px);
+  box-shadow: 12px 0 25px rgba(0,0,0,.35);
+  color: #fcd34d;
+  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+  font-size: 11px;
+  font-weight: 900;
+  letter-spacing: .12em;
+  place-items: start center;
+}
+
+.escape-door i { width: 12px; height: 12px; margin-top: 50px; border-radius: 50%; background: #fbbf24; box-shadow: 0 0 11px rgba(251, 191, 36, .8); }
+
+.escape-hotspots {
+  position: relative;
+  z-index: 1;
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 8px;
+  margin-left: clamp(84px, 24vw, 170px);
+}
+
+.escape-hotspot {
+  display: grid;
+  min-width: 0;
+  min-height: 116px;
+  padding: 11px 7px;
+  align-content: center;
+  justify-items: center;
+  gap: 3px;
+  border: 1px solid rgba(178, 231, 229, .63);
+  border-radius: 10px;
+  background: rgba(5, 25, 43, .76);
+  color: #f4fffd;
+  box-shadow: 0 8px 16px rgba(2, 6, 23, .28);
+  transition: transform 140ms ease, background 140ms ease, border-color 140ms ease;
+}
+
+.escape-hotspot:hover:not(:disabled) { border-color: #fcd34d; background: rgba(15, 51, 67, .92); transform: translateY(-3px); }
+.escape-hotspot.found { border-color: #fcd34d; background: rgba(89, 63, 23, .75); }
+.escape-hotspot > span { color: #76eadc; font-size: 27px; line-height: 1; }
+.escape-hotspot.found > span { color: #fde68a; }
+.escape-hotspot strong { max-width: 100%; overflow: hidden; font-size: 12px; text-overflow: ellipsis; white-space: nowrap; }
+.escape-hotspot small { color: #c4dae1; font-size: 10px; font-weight: 700; }
+.escape-scene-help { display: flex; margin: 9px 2px 18px; align-items: center; justify-content: space-between; gap: 10px; color: #b7d1da; font-size: 12px; line-height: 1.55; }
+.escape-study-button { flex: 0 0 auto; min-height: 44px; padding: 8px 12px; border: 1px solid #7ee9dc; border-radius: 8px; color: #062630; background: #7ee9dc; font-size: 12px; font-weight: 950; }
+
+.escape-workbench { align-items: stretch; }
+.clue-notebook,
+.escape-lock {
+  flex: 1 1 0;
+  min-width: 0;
+  padding: 16px;
+  border-radius: 12px;
+}
+
+.clue-notebook {
+  color: #2b312f;
+  background: linear-gradient(90deg, rgba(220, 195, 145, .4) 0 13px, transparent 13px), repeating-linear-gradient(0deg, #fcf4dd 0 28px, #d5e2e0 29px 30px);
+  box-shadow: 0 8px 16px rgba(0,0,0,.2);
+}
+
+.notebook-heading { align-items: flex-start; }
+.notebook-heading > span { display: grid; width: 31px; height: 31px; border-radius: 5px; color: #fff7df; background: #466a68; place-items: center; }
+.notebook-heading h2 { margin: 0; color: #293b3b; font-size: 18px; }
+.notebook-heading p { color: #466a68; }
+.clue-lines { display: grid; gap: 5px; margin: 14px 0 0; padding: 0; list-style: none; }
+.clue-lines li { display: grid; grid-template-columns: 30px 1fr 26px; min-height: 34px; align-items: center; gap: 6px; border-bottom: 1px dashed rgba(51, 65, 85, .3); color: #677270; font-size: 12px; font-weight: 800; }
+.clue-lines li.revealed { color: #2d5050; }
+.clue-lines strong { color: #263d3c; font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-size: 20px; text-align: center; }
+.symbol-token { display: grid; width: 28px; height: 28px; border-radius: 50%; color: #fcf6e7; background: #466a68; font-size: 18px; place-items: center; }
+
+.escape-lock { border: 1px solid #a2742f; background: linear-gradient(145deg, #3c2b17, #211b16); box-shadow: inset 0 0 0 4px rgba(251, 191, 36, .08); }
+.escape-lock h2 { margin: 0 0 14px; color: #fde68a; font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-size: 27px; letter-spacing: .15em; }
+.escape-lock label { display: block; margin-bottom: 7px; color: #e4c999; font-size: 12px; font-weight: 800; }
+.escape-code-row { align-items: stretch; }
+.escape-code-row input { width: 0; min-width: 0; flex: 1; border: 1px solid #d4a84d; border-radius: 8px; color: #fff8df; background: #110e0d; font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-size: 25px; font-weight: 900; letter-spacing: .22em; text-align: center; }
+.escape-unlock { flex: 0 0 auto; padding: 9px 12px; border: 1px solid #fcd34d; border-radius: 8px; color: #30220d; background: linear-gradient(145deg, #fef08a, #fbbf24); font-size: 12px; font-weight: 950; }
+.escape-unlock:hover:not(:disabled) { filter: brightness(1.06); transform: translateY(-1px); }
+.escape-lock > p:last-child { margin: 8px 0 0; color: #d7ba8d; font-size: 11px; letter-spacing: 0; line-height: 1.45; }
+
+.escape-question-fold { display: flex; margin-top: 18px; padding: 13px; align-items: center; justify-content: space-between; gap: 10px; border: 1px dashed rgba(126, 233, 220, .5); border-radius: 10px; color: #d6edf1; background: rgba(3, 18, 31, .42); }
+.escape-question-fold span,
+.escape-question-fold strong { display: block; }
+.escape-question-fold span { color: #7ee9dc; font-size: 10px; font-weight: 900; letter-spacing: .1em; }
+.escape-question-fold strong { margin-top: 3px; font-size: 13px; }
+.escape-fold-button { min-height: 44px; padding: 7px 10px; border: 1px solid rgba(126, 233, 220, .55); border-radius: 8px; color: #d8fbf6; background: rgba(15, 72, 85, .62); font-size: 12px; font-weight: 850; }
+.escape-question { margin-top: 18px; }
+.escape-question .question-console-top { margin-bottom: 16px; }
+.escape-question .escape-fold-button { margin-left: auto; }
+.escape-question .question-kicker { color: #15383d; background: #7ee9dc; }
+
+.escape-sidebar { display: grid; gap: 14px; }
+.escape-side-card { padding: 17px; border: 1px solid #345b72; border-radius: 14px; color: #e7f4f6; background: linear-gradient(155deg, #0b2438, #0a1929); box-shadow: 0 14px 30px rgba(2, 8, 23, .16); }
+.escape-side-card h2 { margin: 0; color: #fffef5; font-size: 16px; }
+.escape-side-card p { margin: 9px 0 12px; color: #b9d1da; font-size: 12px; line-height: 1.55; }
+.escape-progress-list { display: grid; gap: 7px; margin: 0; padding: 0; list-style: none; }
+.escape-progress-row { display: grid; grid-template-columns: 28px minmax(0, 1fr) auto; min-height: 48px; padding: 7px; align-items: center; gap: 8px; border-radius: 8px; background: rgba(2, 13, 24, .43); }
+.escape-progress-row.escaped { background: rgba(76, 109, 61, .33); }
+.escape-progress-mark { display: grid; width: 26px; height: 26px; border-radius: 50%; color: #092532; background: #7ee9dc; font-size: 13px; font-weight: 950; place-items: center; }
+.escape-progress-row.escaped .escape-progress-mark { color: #442d0b; background: #fde68a; }
+.escape-progress-name { min-width: 0; }
+.escape-progress-name strong,
+.escape-progress-name small { display: block; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.escape-progress-name strong { color: #f5fbfd; font-size: 12px; }
+.escape-progress-name small { margin-top: 2px; color: #acd0d9; font-size: 10px; font-weight: 700; }
+.escape-progress-state { color: #7ee9dc; font-size: 10px; font-weight: 900; }
+.escape-progress-row.escaped .escape-progress-state { color: #fde68a; }
+
+.escape-complete { margin: 12px 0 18px; padding: 17px; border: 1px solid rgba(253, 230, 138, .6); border-radius: 12px; background: linear-gradient(115deg, rgba(99, 78, 32, .73), rgba(24, 65, 69, .7)); }
+.escape-complete > span { color: #fde68a; font-size: 32px; }
+.escape-complete strong { color: #fff8db; font-size: 17px; }
+.escape-complete p { margin: 4px 0 0; color: #d5eee8; font-size: 12px; }
+.escape-result .result-rank { color: #4b350f; background: #fde68a; }
+.escape-learning-metrics { display: flex; flex-wrap: wrap; margin: 14px 0 0; padding: 10px 12px; align-items: center; gap: 8px 12px; border: 1px solid #b8d6d1; border-radius: 10px; color: #2d565a; background: #edf9f4; font-size: 12px; }
+.escape-learning-metrics span { color: #527176; font-weight: 850; }
+.escape-learning-metrics strong { font-size: 13px; }
+
+@media (max-width: 860px) {
+  .escape-layout { grid-template-columns: 1fr; }
+  .escape-sidebar { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
+
+@media (max-width: 560px) {
+  .escape-console { margin-inline: -2px; border-radius: 15px; }
+  .escape-scene { min-height: 248px; padding: 14px; }
+  .escape-hotspots { margin-left: 74px; gap: 5px; }
+  .escape-hotspot { min-height: 112px; padding-inline: 4px; }
+  .escape-hotspot strong { font-size: 11px; }
+  .escape-hotspot > span { font-size: 24px; }
+  .escape-door { left: 8px; width: 70px; height: 151px; }
+  .escape-workbench { flex-direction: column; }
+  .escape-sidebar { grid-template-columns: 1fr; }
+  .escape-scene-help { align-items: flex-start; }
+}
+
+@media (max-width: 390px) {
+  .escape-topline { align-items: flex-start; }
+  .escape-timer { min-width: 76px; }
+  .escape-status-strip { gap: 6px; }
+  .escape-status-strip span { padding: 6px 7px; font-size: 10px; }
+  .escape-howto { gap: 5px; }
+  .escape-howto li { padding-right: 6px; font-size: 10px; }
+  .escape-scene { min-height: 236px; }
+  .escape-hotspots { margin-left: 63px; }
+  .escape-hotspot { min-height: 106px; }
+  .escape-hotspot small { font-size: 9px; }
+  .escape-code-row { flex-wrap: wrap; }
+  .escape-code-row input { flex-basis: 100%; min-height: 48px; }
+  .escape-unlock { width: 100%; min-height: 48px; }
+}

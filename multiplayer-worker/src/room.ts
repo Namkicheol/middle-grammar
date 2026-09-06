@@ -7,6 +7,7 @@ import {
   startRoom,
   submitAnswer,
   chooseTreasure,
+  escapeAction,
   mazeMove,
   teacherRoomState,
   type RoomState,
@@ -92,14 +93,16 @@ export class GameRoom implements DurableObject {
 
   async webSocketMessage(socket: WebSocket, message: string | ArrayBuffer): Promise<void> {
     const attachment = socket.deserializeAttachment() as SocketAttachment | null;
+    let record: RoomRecord | undefined;
+    let payload: { type?: string; questionId?: string; occurrenceIndex?: number; answer?: string; choiceId?: string; seq?: number; direction?: string; action?: string; hotspotId?: string; code?: string } = {};
     try {
-      const payload = JSON.parse(
+      payload = JSON.parse(
         typeof message === "string" ? message : new TextDecoder().decode(message),
-      ) as { type?: string; questionId?: string; occurrenceIndex?: number; answer?: string; choiceId?: string; seq?: number; direction?: string };
+      ) as typeof payload;
       if (attachment?.role !== "student" || !attachment.playerId || !attachment.resumeTokenHash) {
         throw new EngineError("INVALID_ANSWER", "Invalid WebSocket message.");
       }
-      const record = await this.requireRecord();
+      record = await this.requireRecord();
       this.assertPlayerHash(record.state, attachment.playerId, attachment.resumeTokenHash);
       if (payload.type === "treasure_choice") {
         if (typeof payload.choiceId !== "string" || !payload.choiceId) {
@@ -140,6 +143,29 @@ export class GameRoom implements DurableObject {
         this.broadcastState(record);
         return;
       }
+      if (payload.type === "escape_action") {
+        if (!Number.isInteger(payload.seq) ||
+          (payload.action !== "inspect" && payload.action !== "unlock")) {
+          throw new EngineError("INVALID_ESCAPE_ACTION", "Invalid escape action.");
+        }
+        const escaped = escapeAction(record.state, {
+          playerId: attachment.playerId,
+          action: payload.action,
+          seq: payload.seq!,
+          hotspotId: payload.hotspotId,
+          code: payload.code,
+          serverNow: Date.now(),
+        });
+        record.state = escaped.state;
+        await this.putRecord(record);
+        socket.send(JSON.stringify({
+          type: "escape_result",
+          result: escaped.result,
+          room: studentView(record, attachment.playerId),
+        }));
+        this.broadcastState(record);
+        return;
+      }
       if (
         payload.type !== "answer" ||
         typeof payload.questionId !== "string" ||
@@ -164,7 +190,11 @@ export class GameRoom implements DurableObject {
       }));
       this.broadcastState(record);
     } catch (error) {
-      socket.send(JSON.stringify(errorPayload(error)));
+      const response = errorPayload(error);
+      if (payload?.type === "escape_action" && record && attachment?.playerId) {
+        response.room = studentView(record, attachment.playerId);
+      }
+      socket.send(JSON.stringify(response));
     }
   }
 
@@ -423,12 +453,24 @@ export class GameRoom implements DurableObject {
   private async storeReport(record: RoomRecord): Promise<void> {
     const normalized = normalizeLegacyRecord(record);
     const view = teacherRoomState(normalized.state);
+    const escapeSummary = normalized.state.mode === "grammar_escape"
+      ? JSON.stringify({
+          escapedCount: view.leaderboard.filter((player) => player.escape?.escapedAt !== undefined).length,
+          participantCount: view.participantCount,
+          teams: view.teamLeaderboard?.map((team) => ({
+            teamId: team.teamId,
+            roomsCleared: team.escape?.roomsCleared ?? 0,
+            discoveredCount: team.escape?.discoveredCount ?? 0,
+            ...(team.escape?.escapedAt !== undefined ? { escapedAt: team.escape.escapedAt } : {}),
+          })),
+        })
+      : null;
     const statements: D1PreparedStatement[] = [
       this.env.REPORTS.prepare(
         `INSERT INTO room_reports
           (room_id, code, teacher_email, grade, unit_key, mode, set_title, play_style, team_count,
-           duration_seconds, question_count, participant_count, started_at, finished_at, created_at)
-         VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+           duration_seconds, question_count, participant_count, started_at, finished_at, created_at, escape_summary_json)
+         VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
          ON CONFLICT(room_id) DO UPDATE SET
            mode = excluded.mode,
            set_title = excluded.set_title,
@@ -436,7 +478,8 @@ export class GameRoom implements DurableObject {
            team_count = excluded.team_count,
            participant_count = excluded.participant_count,
            started_at = excluded.started_at,
-           finished_at = excluded.finished_at`,
+           finished_at = excluded.finished_at,
+           escape_summary_json = excluded.escape_summary_json`,
       ).bind(
         normalized.roomId,
         normalized.state.code,
@@ -453,14 +496,16 @@ export class GameRoom implements DurableObject {
         normalized.state.startedAt ?? null,
         normalized.state.finishedAt,
         normalized.state.createdAt,
+        escapeSummary,
       ),
       this.env.REPORTS.prepare("DELETE FROM player_results WHERE room_id = ?").bind(record.roomId),
       ...view.leaderboard.map((player) =>
         this.env.REPORTS.prepare(
           `INSERT INTO player_results
             (room_id, player_id, nickname, rank, score, accuracy, correct_count,
-            answered_count, average_response_time_ms, team_id, team_number)
-           VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+            answered_count, average_response_time_ms, team_id, team_number,
+            escape_rooms_cleared, escape_discovered_count, escape_escaped_at)
+           VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)` ,
         ).bind(
           record.roomId,
           player.playerId,
@@ -473,6 +518,9 @@ export class GameRoom implements DurableObject {
           player.averageResponseTimeMs,
           player.teamId ?? null,
           player.teamNumber ?? null,
+          player.escape?.roomsCleared ?? null,
+          player.escape?.discoveredCount ?? null,
+          player.escape?.escapedAt ?? null,
         ),
       ),
     ];
@@ -562,6 +610,7 @@ function normalizeLegacyRecord(record: RoomRecord): RoomRecord {
   const legacyState = record.state as RoomState & { mode?: RoomState["mode"]; playStyle?: RoomState["playStyle"] };
   legacyState.mode ??= "score_race";
   legacyState.playStyle ??= "individual";
+  if (legacyState.mode === "grammar_escape") legacyState.escapeRuns ??= {};
   record.setTitle ??= "";
   return record;
 }
@@ -578,7 +627,7 @@ class ResponseError extends Error {
   }
 }
 
-function errorPayload(error: unknown) {
+function errorPayload(error: unknown): { type: "error"; error: string; message: string; room?: ReturnType<typeof studentView> } {
   if (error instanceof EngineError || error instanceof ResponseError) {
     return { type: "error", error: error.code, message: error.message };
   }

@@ -19,7 +19,7 @@ export interface AnswerRecord {
   submittedAt: number;
 }
 
-export type RoomMode = "score_race" | "treasure_heist" | "maze_heist";
+export type RoomMode = "score_race" | "treasure_heist" | "maze_heist" | "grammar_escape";
 export type PlayStyle = "individual" | "team";
 export type TreasureOutcomeKind = "safe_bonus" | "loot" | "share" | "trap";
 export type TreasureStrategy = "safe" | "team" | "risk";
@@ -89,6 +89,52 @@ export interface MazeState {
   collectedTreasures: Record<string, boolean>;
 }
 
+export type EscapeSymbol = "moon" | "star" | "sun";
+export type EscapeActionKind = "inspect" | "unlock";
+
+interface EscapeHotspotState {
+  id: string;
+  label: string;
+  symbol: EscapeSymbol;
+  digit: string;
+  discovered: boolean;
+}
+
+interface EscapeRoomState {
+  title: string;
+  story: string;
+  lockOrder: EscapeSymbol[];
+  hotspots: EscapeHotspotState[];
+}
+
+export interface EscapeRunState {
+  roomIndex: number;
+  roomsCleared: number;
+  focus: number;
+  seq: number;
+  escapedAt?: number;
+  retryAt?: number;
+  rooms: EscapeRoomState[];
+}
+
+export interface EscapeProgressSummary {
+  roomsCleared: number;
+  discoveredCount: number;
+  escapedAt?: number;
+}
+
+export interface EscapePlayerView extends EscapeProgressSummary {
+  roomIndex: number;
+  totalRooms: 3;
+  title: string;
+  story: string;
+  focus: number;
+  seq: number;
+  retryAt?: number;
+  lockOrder: EscapeSymbol[];
+  hotspots: Array<{ id: string; label: string; symbol: EscapeSymbol; clue?: string }>;
+}
+
 export interface MazePlayerView {
   x: number;
   y: number;
@@ -150,6 +196,7 @@ export interface RoomState {
   playStyle: PlayStyle;
   teamCount?: number;
   maze?: MazeState;
+  escapeRuns?: Record<string, EscapeRunState>;
   questions: Question[];
   players: Record<string, PlayerState>;
   createdAt: number;
@@ -177,7 +224,13 @@ export type EngineErrorCode =
   | "DUPLICATE_MAZE_MOVE"
   | "MAZE_MOVE_BLOCKED"
   | "MAZE_NO_MOVES"
-  | "INVALID_MAZE_MOVE";
+  | "INVALID_MAZE_MOVE"
+  | "INVALID_ESCAPE_ACTION"
+  | "ESCAPE_ACTION_OUT_OF_ORDER"
+  | "ESCAPE_NO_FOCUS"
+  | "ESCAPE_LOCKED"
+  | "ESCAPE_RETRY_ACTIVE"
+  | "ESCAPE_COMPLETE";
 
 export class EngineError extends Error {
   readonly code: EngineErrorCode;
@@ -230,6 +283,19 @@ export interface MazeMoveInput {
   serverNow: number;
 }
 
+export interface EscapeActionInput {
+  playerId: string;
+  action: EscapeActionKind;
+  seq: number;
+  hotspotId?: string;
+  code?: string;
+  serverNow: number;
+}
+
+export interface EscapeActionResult {
+  message: string;
+}
+
 export interface AnswerResult {
   questionId: string;
   occurrenceIndex: number;
@@ -269,6 +335,7 @@ export interface PublicLeaderboardEntry {
   score: number;
   isSelf: boolean;
   starDust?: number;
+  escape?: EscapeProgressSummary;
 }
 
 export interface TeamLeaderboardEntry {
@@ -278,6 +345,7 @@ export interface TeamLeaderboardEntry {
   score: number;
   memberCount: number;
   isSelf?: boolean;
+  escape?: EscapeProgressSummary;
 }
 
 export interface TeacherLeaderboardEntry {
@@ -292,6 +360,7 @@ export interface TeacherLeaderboardEntry {
   starDust?: number;
   teamId?: string;
   teamNumber?: number;
+  escape?: EscapeProgressSummary;
 }
 
 export interface SafeQuestion {
@@ -328,6 +397,7 @@ export interface PublicRoomView {
     answeredQuestionIds: string[];
     treasureChoices?: TreasureChoiceView[];
     maze?: MazePlayerView;
+    escape?: EscapePlayerView;
   };
 }
 
@@ -357,7 +427,7 @@ export function createRoomState(input: CreateRoomInput): RoomState {
     ![60, 180, 300, 420, 600].includes(input.durationSeconds) ||
     (input.allowLateJoin !== undefined && typeof input.allowLateJoin !== "boolean") ||
     (input.shuffleQuestions !== undefined && typeof input.shuffleQuestions !== "boolean") ||
-    (input.mode !== undefined && input.mode !== "score_race" && input.mode !== "treasure_heist" && input.mode !== "maze_heist") ||
+    (input.mode !== undefined && input.mode !== "score_race" && input.mode !== "treasure_heist" && input.mode !== "maze_heist" && input.mode !== "grammar_escape") ||
     (input.playStyle !== undefined && input.playStyle !== "individual" && input.playStyle !== "team") ||
     (input.playStyle === "team" && (!Number.isInteger(input.teamCount) || input.teamCount! < 2 || input.teamCount! > 4)) ||
     (input.playStyle !== "team" && input.teamCount !== undefined) ||
@@ -396,6 +466,7 @@ export function createRoomState(input: CreateRoomInput): RoomState {
     playStyle: input.playStyle ?? "individual",
     teamCount: input.playStyle === "team" ? input.teamCount : undefined,
     maze: input.mode === "maze_heist" ? createMazeState() : undefined,
+    escapeRuns: input.mode === "grammar_escape" ? {} : undefined,
     questions,
     players: {},
     createdAt: input.createdAt,
@@ -452,10 +523,18 @@ export function joinPlayer(
       : undefined,
   };
 
+  const escapeRuns = state.mode === "grammar_escape"
+    ? {
+        ...(state.escapeRuns ?? {}),
+        [escapeRunKey(state, player)]: (state.escapeRuns ?? {})[escapeRunKey(state, player)] ?? createEscapeRun(),
+      }
+    : state.escapeRuns;
+
   return {
     state: {
       ...state,
       players: { ...state.players, [player.id]: player },
+      escapeRuns,
     },
     player: clonePlayer(player),
   };
@@ -495,6 +574,9 @@ export function submitAnswer(
   const player = state.players[input.playerId];
   if (!player) {
     throw new EngineError("UNKNOWN_PLAYER", "The player is not in this room.");
+  }
+  if (state.mode === "grammar_escape" && escapeRunForPlayer(state, player)?.escapedAt !== undefined) {
+    throw new EngineError("ESCAPE_COMPLETE", "The escape has already been completed.");
   }
   if (state.mode === "treasure_heist" && player.pendingTreasureChoices?.length) {
     throw new EngineError(
@@ -577,10 +659,13 @@ export function submitAnswer(
       ? createTreasureChoices(state, player.id, input.occurrenceIndex)
       : undefined,
   };
-  const nextState: RoomState = {
+  const stateWithAnswer: RoomState = {
     ...state,
     players: { ...state.players, [player.id]: nextPlayer },
   };
+  const nextState = state.mode === "grammar_escape"
+    ? addEscapeFocus(stateWithAnswer, nextPlayer, correct)
+    : stateWithAnswer;
 
   return {
     state: nextState,
@@ -770,6 +855,193 @@ export function chooseTreasure(
   };
 }
 
+export function escapeAction(
+  state: RoomState,
+  input: EscapeActionInput,
+): { state: RoomState; result: EscapeActionResult } {
+  if (state.status !== "playing") {
+    throw new EngineError("ROOM_NOT_PLAYING", "The room is not accepting escape actions.");
+  }
+  if (state.mode !== "grammar_escape") {
+    throw new EngineError("INVALID_ESCAPE_ACTION", "Escape actions are not available in this room.");
+  }
+  if (!Number.isFinite(input.serverNow) || state.startedAt === undefined ||
+    input.serverNow < state.startedAt ||
+    input.serverNow >= state.startedAt + state.durationSeconds * 1_000) {
+    throw new EngineError("ROOM_EXPIRED", "The room time has expired.");
+  }
+  const player = state.players[input.playerId];
+  if (!player) throw new EngineError("UNKNOWN_PLAYER", "The player is not in this room.");
+  if (!Number.isInteger(input.seq) || input.seq < 0 ||
+    (input.action !== "inspect" && input.action !== "unlock")) {
+    throw new EngineError("INVALID_ESCAPE_ACTION", "The escape action is invalid.");
+  }
+  const key = escapeRunKey(state, player);
+  const run = state.escapeRuns?.[key];
+  if (!run) throw new EngineError("INVALID_ESCAPE_ACTION", "The escape run is unavailable.");
+  if (run.escapedAt !== undefined) {
+    throw new EngineError("ESCAPE_COMPLETE", "The escape has already been completed.");
+  }
+  if (input.seq !== run.seq) {
+    throw new EngineError("ESCAPE_ACTION_OUT_OF_ORDER", "The escape action is out of order.");
+  }
+  const currentRoom = run.rooms[run.roomIndex];
+  if (!currentRoom) throw new EngineError("INVALID_ESCAPE_ACTION", "The escape room is unavailable.");
+
+  if (input.action === "inspect") {
+    if (typeof input.hotspotId !== "string") {
+      throw new EngineError("INVALID_ESCAPE_ACTION", "Choose a valid inspection point.");
+    }
+    const hotspot = currentRoom.hotspots.find((candidate) => candidate.id === input.hotspotId);
+    if (!hotspot) throw new EngineError("INVALID_ESCAPE_ACTION", "Choose a valid inspection point.");
+    if (hotspot.discovered) {
+      return { state, result: { message: "조사한 단서를 다시 확인합니다." } };
+    }
+    if (run.focus <= 0) {
+      throw new EngineError("ESCAPE_NO_FOCUS", "Solve a question correctly to earn focus.");
+    }
+    const rooms = run.rooms.map((room, index) => index === run.roomIndex
+      ? { ...room, hotspots: room.hotspots.map((candidate) => candidate.id === hotspot.id ? { ...candidate, discovered: true } : candidate) }
+      : room);
+    return {
+      state: replaceEscapeRun(state, key, { ...run, rooms, focus: run.focus - 1, seq: run.seq + 1 }),
+      result: { message: "숫자 단서를 찾았습니다." },
+    };
+  }
+
+  if (typeof input.code !== "string" || !/^\d{3}$/.test(input.code)) {
+    throw new EngineError("INVALID_ESCAPE_ACTION", "Enter a three-digit lock code.");
+  }
+  if (run.retryAt !== undefined && input.serverNow < run.retryAt) {
+    throw new EngineError("ESCAPE_RETRY_ACTIVE", "Wait before trying the lock again.");
+  }
+  if (currentRoom.hotspots.some((hotspot) => !hotspot.discovered)) {
+    throw new EngineError("ESCAPE_LOCKED", "Find all three clues before opening the lock.");
+  }
+  const expectedCode = currentRoom.lockOrder
+    .map((symbol) => currentRoom.hotspots.find((hotspot) => hotspot.symbol === symbol)?.digit)
+    .join("");
+  if (input.code !== expectedCode) {
+    return {
+      state: replaceEscapeRun(state, key, { ...run, retryAt: input.serverNow + 3_000 }),
+      result: { message: "자물쇠가 열리지 않습니다. 3초 뒤에 다시 시도하세요." },
+    };
+  }
+  const roomsCleared = run.roomsCleared + 1;
+  const escaped = roomsCleared === run.rooms.length;
+  return {
+    state: replaceEscapeRun(state, key, {
+      ...run,
+      roomsCleared,
+      roomIndex: escaped ? run.roomIndex : run.roomIndex + 1,
+      seq: run.seq + 1,
+      retryAt: undefined,
+      escapedAt: escaped ? input.serverNow : undefined,
+    }),
+    result: { message: escaped ? "야간학교를 탈출했습니다." : "문이 열렸습니다. 다음 방으로 이동하세요." },
+  };
+}
+
+function createEscapeRun(): EscapeRunState {
+  const templates: Array<{ title: string; story: string; hotspots: Array<{ id: string; label: string; symbol: EscapeSymbol }>; lockOrder: EscapeSymbol[] }> = [
+    {
+      title: "교실",
+      story: "비상등 아래 빈 책상이 희미하게 보입니다.",
+      hotspots: [
+        { id: "desk", label: "교탁", symbol: "moon" },
+        { id: "board", label: "칠판", symbol: "star" },
+        { id: "locker", label: "뒤편 사물함", symbol: "sun" },
+      ],
+      lockOrder: ["star", "moon", "sun"],
+    },
+    {
+      title: "자료실",
+      story: "복도 불빛이 자료 보관 선반을 비춥니다.",
+      hotspots: [
+        { id: "cabinet", label: "카드 보관함", symbol: "sun" },
+        { id: "shelf", label: "자료 선반", symbol: "moon" },
+        { id: "lamp", label: "책상 스탠드", symbol: "star" },
+      ],
+      lockOrder: ["moon", "sun", "star"],
+    },
+    {
+      title: "현관",
+      story: "민트빛 출구등이 마지막 문을 가리킵니다.",
+      hotspots: [
+        { id: "umbrella", label: "우산꽂이", symbol: "star" },
+        { id: "notice", label: "게시판", symbol: "sun" },
+        { id: "bench", label: "현관 벤치", symbol: "moon" },
+      ],
+      lockOrder: ["sun", "star", "moon"],
+    },
+  ];
+  return {
+    roomIndex: 0,
+    roomsCleared: 0,
+    focus: 0,
+    seq: 0,
+    rooms: templates.map((room) => ({
+      title: room.title,
+      story: room.story,
+      lockOrder: [...room.lockOrder],
+      hotspots: room.hotspots.map((hotspot) => ({ ...hotspot, digit: randomEscapeDigit(), discovered: false })),
+    })),
+  };
+}
+
+function randomEscapeDigit(): string {
+  return String(crypto.getRandomValues(new Uint32Array(1))[0] % 10);
+}
+
+function escapeRunKey(state: RoomState, player: PlayerState): string {
+  return state.playStyle === "team" ? `team:${player.teamId}` : `player:${player.id}`;
+}
+
+function escapeRunForPlayer(state: RoomState, player: PlayerState): EscapeRunState | undefined {
+  return state.escapeRuns?.[escapeRunKey(state, player)];
+}
+
+function replaceEscapeRun(state: RoomState, key: string, run: EscapeRunState): RoomState {
+  return { ...state, escapeRuns: { ...(state.escapeRuns ?? {}), [key]: run } };
+}
+
+function addEscapeFocus(state: RoomState, player: PlayerState, correct: boolean): RoomState {
+  if (!correct) return state;
+  const key = escapeRunKey(state, player);
+  const run = state.escapeRuns?.[key];
+  if (!run || run.escapedAt !== undefined || run.focus >= 6) return state;
+  return replaceEscapeRun(state, key, { ...run, focus: run.focus + 1, seq: run.seq + 1 });
+}
+
+function escapeSummary(run: EscapeRunState): EscapeProgressSummary {
+  return {
+    roomsCleared: run.roomsCleared,
+    discoveredCount: run.rooms[run.roomIndex]?.hotspots.filter((hotspot) => hotspot.discovered).length ?? 3,
+    ...(run.escapedAt !== undefined ? { escapedAt: run.escapedAt } : {}),
+  };
+}
+
+function escapePlayerView(run: EscapeRunState): EscapePlayerView {
+  const room = run.rooms[run.roomIndex];
+  return {
+    ...escapeSummary(run),
+    roomIndex: run.roomIndex,
+    totalRooms: 3,
+    title: room.title,
+    story: room.story,
+    focus: run.focus,
+    seq: run.seq,
+    ...(run.retryAt !== undefined ? { retryAt: run.retryAt } : {}),
+    lockOrder: [...room.lockOrder],
+    hotspots: room.hotspots.map((hotspot) => ({
+      id: hotspot.id,
+      label: hotspot.label,
+      symbol: hotspot.symbol,
+      ...(hotspot.discovered ? { clue: hotspot.digit } : {}),
+    })),
+  };
+}
+
 export function publicRoomState(
   state: RoomState,
   viewerPlayerId?: string,
@@ -793,6 +1065,9 @@ export function publicRoomState(
     score: player.score,
     isSelf: player.id === viewerPlayerId,
     ...(state.mode === "maze_heist" ? { starDust: player.starDust ?? 0 } : {}),
+    ...(state.mode === "grammar_escape" && escapeRunForPlayer(state, player)
+      ? { escape: escapeSummary(escapeRunForPlayer(state, player)!) }
+      : {}),
   }));
   const viewer = viewerPlayerId ? state.players[viewerPlayerId] : undefined;
 
@@ -816,12 +1091,15 @@ export function publicRoomState(
       : undefined,
     self: viewer
       ? {
-          ...toTeacherEntry(viewer, viewerRankIndex + 1, state.mode === "maze_heist"),
+          ...toTeacherEntry(viewer, viewerRankIndex + 1, state.mode === "maze_heist", state),
           streak: viewer.streak,
           currentQuestion: currentSafeQuestion(state, viewer),
           answeredQuestionIds: answeredQuestionIdsInCurrentCycle(state, viewer),
           treasureChoices: viewer.pendingTreasureChoices?.map(toTreasureChoiceView),
           maze: state.mode === "maze_heist" ? mazePlayerView(state, viewer, Date.now()) : undefined,
+          escape: state.mode === "grammar_escape" && escapeRunForPlayer(state, viewer)
+            ? escapePlayerView(escapeRunForPlayer(state, viewer)!)
+            : undefined,
         }
       : undefined,
   };
@@ -843,7 +1121,7 @@ export function teacherRoomState(state: RoomState): TeacherRoomView {
     finishedAt: state.finishedAt,
     participantCount: ranked.length,
     questionCount: state.questions.length,
-    leaderboard: ranked.map(({ rank, player }) => toTeacherEntry(player, rank, state.mode === "maze_heist")),
+    leaderboard: ranked.map(({ rank, player }) => toTeacherEntry(player, rank, state.mode === "maze_heist", state)),
     teamLeaderboard: playStyle === "team" ? rankedTeams(state) : undefined,
   };
 }
@@ -857,7 +1135,12 @@ export function normalizeNickname(value: string): string {
   return shortened;
 }
 
-function toTeacherEntry(player: PlayerState, rank: number, includeStarDust = false): TeacherLeaderboardEntry {
+function toTeacherEntry(
+  player: PlayerState,
+  rank: number,
+  includeStarDust = false,
+  state?: RoomState,
+): TeacherLeaderboardEntry {
   return {
     rank,
     playerId: player.id,
@@ -869,6 +1152,9 @@ function toTeacherEntry(player: PlayerState, rank: number, includeStarDust = fal
     averageResponseTimeMs:
       player.answered === 0 ? null : Math.round(player.responseTimeTotalMs / player.answered),
     ...(includeStarDust ? { starDust: player.starDust ?? 0 } : {}),
+    ...(state?.mode === "grammar_escape" && escapeRunForPlayer(state, player)
+      ? { escape: escapeSummary(escapeRunForPlayer(state, player)!) }
+      : {}),
     ...(player.teamId ? { teamId: player.teamId, teamNumber: teamNumber(player.teamId) } : {}),
   };
 }
@@ -912,6 +1198,9 @@ function mazePlayerView(state: RoomState, player: PlayerState, now: number): Maz
 
 function currentSafeQuestion(state: RoomState, player: PlayerState): SafeQuestion | undefined {
   if (state.status !== "playing") return undefined;
+  if (state.mode === "grammar_escape" && escapeRunForPlayer(state, player)?.escapedAt !== undefined) {
+    return undefined;
+  }
   const questionId = questionIdForOccurrence(state, player, player.questionIndex);
   const question = state.questions.find((candidate) => candidate.id === questionId);
   if (!question) {
@@ -962,6 +1251,21 @@ function answeredQuestionIdsInCurrentCycle(state: RoomState, player: PlayerState
 function rankedPlayers(state: RoomState): Array<{ rank: number; player: PlayerState }> {
   return Object.values(state.players)
     .sort((left, right) => {
+      if (state.mode === "grammar_escape") {
+        if (state.playStyle === "team") {
+          const teamEscapeDifference = compareEscapeRuns(
+            escapeRunForPlayer(state, left),
+            escapeRunForPlayer(state, right),
+          );
+          if (teamEscapeDifference !== 0) return teamEscapeDifference;
+        } else {
+          const escapeDifference = compareEscapeRuns(
+            escapeRunForPlayer(state, left),
+            escapeRunForPlayer(state, right),
+          );
+          if (escapeDifference !== 0) return escapeDifference;
+        }
+      }
       if (state.playStyle === "team") {
         const teamScoreDifference = teamScore(state, right.teamId) - teamScore(state, left.teamId);
         if (teamScoreDifference !== 0) return teamScoreDifference;
@@ -1037,7 +1341,13 @@ function rankedTeams(state: RoomState, viewerPlayerId?: string): TeamLeaderboard
     teams.set(player.teamId, current);
   }
   return [...teams.entries()]
-    .sort((left, right) => right[1].score - left[1].score || teamNumber(left[0]) - teamNumber(right[0]))
+    .sort((left, right) => {
+      if (state.mode === "grammar_escape") {
+        const escapeDifference = compareEscapeRuns(teamEscapeRun(state, left[0]), teamEscapeRun(state, right[0]));
+        if (escapeDifference !== 0) return escapeDifference;
+      }
+      return right[1].score - left[1].score || teamNumber(left[0]) - teamNumber(right[0]);
+    })
     .map(([teamId, summary], index) => ({
       rank: index + 1,
       teamId,
@@ -1045,7 +1355,26 @@ function rankedTeams(state: RoomState, viewerPlayerId?: string): TeamLeaderboard
       score: summary.score,
       memberCount: summary.memberCount,
       ...(viewerPlayerId ? { isSelf: state.players[viewerPlayerId]?.teamId === teamId } : {}),
+      ...(state.mode === "grammar_escape" && teamEscapeRun(state, teamId)
+        ? { escape: escapeSummary(teamEscapeRun(state, teamId)!) }
+        : {}),
     }));
+}
+
+function teamEscapeRun(state: RoomState, teamId: string): EscapeRunState | undefined {
+  return state.escapeRuns?.[`team:${teamId}`];
+}
+
+function compareEscapeRuns(left?: EscapeRunState, right?: EscapeRunState): number {
+  const leftEscaped = left?.escapedAt !== undefined;
+  const rightEscaped = right?.escapedAt !== undefined;
+  if (leftEscaped !== rightEscaped) return leftEscaped ? -1 : 1;
+  if (leftEscaped && rightEscaped && left!.escapedAt !== right!.escapedAt) {
+    return left!.escapedAt! - right!.escapedAt!;
+  }
+  const roomsDifference = (right?.roomsCleared ?? 0) - (left?.roomsCleared ?? 0);
+  if (roomsDifference !== 0) return roomsDifference;
+  return (right ? escapeSummary(right).discoveredCount : 0) - (left ? escapeSummary(left).discoveredCount : 0);
 }
 
 function shuffled<T>(values: T[], seed: string): T[] {

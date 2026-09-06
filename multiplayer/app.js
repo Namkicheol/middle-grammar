@@ -70,6 +70,10 @@ const state = {
   localSet: initialParams.get("set") === "local" ? loadLocalSet() : null,
   treasureBusy: false,
   mazeBusy: false,
+  escapeBusy: false,
+  escapeAction: null,
+  escapeCode: "",
+  escapeQuestionOpen: true,
 };
 
 function loadLocalSet() {
@@ -214,6 +218,33 @@ function sortedPlayers(room = state.room) {
   });
 }
 
+function sortedEscapePlayers(players = roomPlayers()) {
+  const values = [...players];
+  if (values.some((player) => Number(player?.rank) > 0)) {
+    return values.sort((a, b) => (Number(a?.rank) || Number.MAX_SAFE_INTEGER) - (Number(b?.rank) || Number.MAX_SAFE_INTEGER));
+  }
+  return values.sort((a, b) => {
+    const first = escapeRecord(a);
+    const second = escapeRecord(b);
+    const firstEscaped = Boolean(first.escapedAt);
+    const secondEscaped = Boolean(second.escapedAt);
+    if (firstEscaped !== secondEscaped) return firstEscaped ? -1 : 1;
+    if (firstEscaped && Number(first.escapedAt) !== Number(second.escapedAt)) return Number(first.escapedAt) - Number(second.escapedAt);
+    if (Number(first.roomsCleared || 0) !== Number(second.roomsCleared || 0)) return Number(second.roomsCleared || 0) - Number(first.roomsCleared || 0);
+    if (Number(first.discoveredCount || 0) !== Number(second.discoveredCount || 0)) return Number(second.discoveredCount || 0) - Number(first.discoveredCount || 0);
+    if (playerScore(a) !== playerScore(b)) return playerScore(b) - playerScore(a);
+    return playerAccuracy(b) - playerAccuracy(a);
+  });
+}
+
+function sortedEscapeTeams(teams = teamLeaderboard()) {
+  const values = [...teams];
+  if (values.some((team) => Number(team?.rank) > 0)) {
+    return values.sort((a, b) => (Number(a?.rank) || Number.MAX_SAFE_INTEGER) - (Number(b?.rank) || Number.MAX_SAFE_INTEGER));
+  }
+  return sortedEscapePlayers(values);
+}
+
 function playerRank(player, room = state.room) {
   if (Number(player?.rank) > 0) return Number(player.rank);
   const index = sortedPlayers(room).findIndex((item) => playerId(item) === playerId(player));
@@ -297,6 +328,7 @@ function modeLabel(mode = roomMode()) {
     score_race: "스피드 점수전",
     treasure_heist: "금고 작전",
     maze_heist: "미궁 쟁탈전",
+    grammar_escape: "야간학교 탈출",
   })[mode] || "멀티 게임";
 }
 
@@ -316,8 +348,15 @@ function remainingSeconds(room = state.room) {
 
 function updateClock() {
   const timer = document.querySelector("#game-timer");
-  if (!timer) return;
-  timer.textContent = formatTime(remainingSeconds());
+  if (timer) timer.textContent = formatTime(remainingSeconds());
+  const retry = document.querySelector("[data-escape-retry]");
+  if (retry) {
+    const escape = escapeState();
+    const seconds = escapeRetrySeconds(escape);
+    retry.disabled = Number(escape?.discoveredCount || 0) !== 3 || Boolean(escape?.escapedAt)
+      || seconds > 0 || state.escapeBusy || state.connectionState !== "connected";
+    retry.textContent = seconds > 0 ? `${seconds}초 후 다시 시도` : state.escapeBusy ? "문을 확인하는 중…" : "문 열기";
+  }
 }
 
 function ensureClock() {
@@ -366,6 +405,10 @@ function resetToRole() {
   state.chosenAnswer = null;
   state.pendingQuestionKey = null;
   state.feedback = null;
+  state.escapeBusy = false;
+  state.escapeAction = null;
+  state.escapeCode = "";
+  state.escapeQuestionOpen = true;
   setStatus();
   render();
 }
@@ -383,6 +426,12 @@ function friendlyError(error) {
       MAZE_NO_MOVES: "이동권이 없어요. 문제를 맞혀 이동권을 얻으세요.",
       DUPLICATE_MAZE_MOVE: "이미 처리한 이동이에요. 서버 위치를 다시 확인했어요.",
       MAZE_MOVE_OUT_OF_ORDER: "이동 순서가 어긋났어요. 잠시 뒤 다시 움직여 주세요.",
+      INVALID_ESCAPE_ACTION: "조사할 곳이나 암호를 다시 확인해 주세요.",
+      ESCAPE_ACTION_OUT_OF_ORDER: "팀 진행이 먼저 바뀌었어요. 최신 단서를 확인해 주세요.",
+      ESCAPE_NO_FOCUS: "문제를 맞혀 조사 기회를 먼저 얻어야 해요.",
+      ESCAPE_LOCKED: "세 단서를 모두 찾아야 문을 열 수 있어요.",
+      ESCAPE_RETRY_ACTIVE: "자물쇠가 잠시 멈췄어요. 3초 뒤에 다시 시도해 주세요.",
+      ESCAPE_COMPLETE: "이미 야간학교를 탈출했어요.",
     };
     return byCode[error.code] || error.message;
   }
@@ -416,6 +465,10 @@ function connectLiveRoom() {
     onMessage: handleSocketMessage,
     onStatus: ({ name, attempt, maxReconnects, reason }) => {
       setConnection(name);
+      if (["reconnecting", "closed", "exhausted", "rejected"].includes(name)) {
+        state.escapeBusy = false;
+        state.escapeAction = null;
+      }
       if (name === "reconnecting") {
         setStatus(`연결을 다시 확인하고 있어요 (${attempt}/${maxReconnects}).`);
       } else if (name === "connected") {
@@ -433,11 +486,19 @@ function connectLiveRoom() {
 function handleSocketMessage(message) {
   const type = message?.type;
   if (type === "hello") {
+    const previousEscape = escapeState();
     const room = applyRoom(message);
-    if (room && room !== message) state.room = room;
+    if (room && room !== message) {
+      state.room = room;
+      syncEscapeCode(previousEscape, escapeState());
+    }
+    state.escapeBusy = false;
+    state.escapeAction = null;
   } else if (type === "room_state" || type === "start") {
+    const previousEscape = escapeState();
     const previousQuestionKey = questionOccurrenceKey();
     state.room = applyRoom(message);
+    syncEscapeCode(previousEscape, escapeState());
     const nextQuestionKey = questionOccurrenceKey();
     if (type === "start" || (state.pendingQuestionKey && previousQuestionKey !== nextQuestionKey)) {
       state.pendingQuestionKey = null;
@@ -495,6 +556,17 @@ function handleSocketMessage(message) {
     };
     state.mazeBusy = false;
     setStatus("서버 위치를 확인했어요.", result.event === "trap" ? "" : "success");
+  } else if (type === "escape_result") {
+    const previousEscape = escapeState();
+    if (message.room || message.state) state.room = applyRoom(message);
+    const result = message.result || {};
+    const action = state.escapeAction;
+    const retryActive = action === "unlock" && escapeRetrySeconds(escapeState()) > 0;
+    syncEscapeCode(previousEscape, escapeState());
+    state.escapeBusy = false;
+    state.escapeAction = null;
+    state.feedback = { ...(state.feedback || {}), escapeMessage: result.message || "조사가 반영됐어요.", escapeTone: retryActive ? "wrong" : "correct" };
+    setStatus(result.message || "야간학교의 단서가 갱신됐어요.", retryActive ? "error" : "success");
   } else if (type === "finish") {
     state.room = applyRoom(message);
     if (state.room && !state.room.status) state.room.status = "finished";
@@ -503,6 +575,7 @@ function handleSocketMessage(message) {
     if (state.role === "teacher") loadTeacherReport();
   } else if (type === "error") {
     const error = new ApiError(message.message || "게임 요청을 처리하지 못했어요.", 0, message.code || message.error);
+    if (message.room || message.state) state.room = applyRoom(message);
     setStatus(friendlyError(error), "error");
     if (message.error === "DUPLICATE_ANSWER") {
       state.pendingQuestionKey = null;
@@ -510,6 +583,8 @@ function handleSocketMessage(message) {
     }
     state.treasureBusy = false;
     state.mazeBusy = false;
+    state.escapeBusy = false;
+    state.escapeAction = null;
     state.busy = false;
   }
   render();
@@ -609,6 +684,7 @@ function teacherSetupView() {
             ${modeCard("score_race", "스피드 점수전", "정답·연속 성공으로 실시간 순위 경쟁", "⚡", true)}
             ${modeCard("treasure_heist", "금고 작전", "정답 뒤 금고를 골라 보너스·약탈·나눔", "./assets/treasure-vault.webp")}
             ${modeCard("maze_heist", "미궁 쟁탈전", "정답으로 이동권을 얻고 열쇠·보물·함정 탐험", "./assets/maze-heist.webp")}
+            ${modeCard("grammar_escape", "야간학교 탈출", "문제를 풀고 단서를 찾아, 세 개의 문을 열어라", "./assets/night-school.webp")}
           </div>
         </fieldset>
         ${customSet ? `
@@ -883,7 +959,150 @@ function teamSummaryHtml(room = state.room) {
   </div>`;
 }
 
+const ESCAPE_SYMBOLS = {
+  moon: { icon: "☾", name: "달" },
+  star: { icon: "✦", name: "별" },
+  sun: { icon: "☀", name: "해" },
+};
+
+function escapeState(room = state.room) {
+  return room?.self?.escape || currentPlayer(room)?.escape || null;
+}
+
+function escapeRetrySeconds(escape = escapeState()) {
+  const retryAt = Number(escape?.retryAt || 0);
+  if (!retryAt) return 0;
+  const retryMs = retryAt < 1_000_000_000_000 ? retryAt * 1000 : retryAt;
+  return Math.max(0, Math.ceil((retryMs - Date.now()) / 1000));
+}
+
+function escapeRecord(player, room = state.room) {
+  if (player?.escape) return player.escape;
+  return {
+    roomsCleared: player?.escapeRoomsCleared ?? player?.escape_rooms_cleared ?? 0,
+    discoveredCount: player?.escapeDiscoveredCount ?? player?.escape_discovered_count ?? 0,
+    escapedAt: player?.escapeEscapedAt ?? player?.escape_escaped_at,
+  };
+}
+
+function escapeTimeLabel(record, room = state.room) {
+  const escapedAt = Number(record?.escapedAt || 0);
+  const startedAt = Number(room?.startedAt ?? room?.started_at ?? 0);
+  if (!escapedAt) return "탐색 중";
+  if (startedAt && escapedAt > startedAt) return `${formatTime((escapedAt - startedAt) / 1000)} 탈출`;
+  return "탈출 완료";
+}
+
+function syncEscapeCode(previousEscape, nextEscape) {
+  if (!previousEscape || !nextEscape) return;
+  if (Number(previousEscape.roomIndex) !== Number(nextEscape.roomIndex)
+    || Number(previousEscape.roomsCleared) !== Number(nextEscape.roomsCleared)
+    || (!previousEscape.escapedAt && nextEscape.escapedAt)) {
+    state.escapeCode = "";
+  }
+}
+
+function escapeProgressHtml(players, { team = false } = {}) {
+  if (!players.length) return `<div class="empty-state">탐색 기록을 기다리는 중이에요.</div>`;
+  return `<ol class="escape-progress-list" aria-label="${team ? "팀" : "참가자"} 탈출 진행">
+    ${players.map((entry, index) => {
+      const record = escapeRecord(entry);
+      const name = team ? `${Number(entry.teamNumber) || index + 1}팀` : playerName(entry);
+      const cleared = Math.max(0, Number(record.roomsCleared || 0));
+      const clues = Math.max(0, Number(record.discoveredCount || 0));
+      const escaped = Boolean(record.escapedAt);
+      return `<li class="escape-progress-row ${escaped ? "escaped" : ""}">
+        <span class="escape-progress-mark" aria-hidden="true">${escaped ? "↗" : `${cleared + 1}`}</span>
+        <span class="escape-progress-name"><strong>${escapeHtml(name)}${entry?.isSelf ? " (나)" : ""}</strong><small>${escaped ? escapeTimeLabel(record) : `${cleared}/3개 방 · 단서 ${clues}/3`}</small></span>
+        <span class="escape-progress-state">${escaped ? "탈출" : "탐색"}</span>
+      </li>`;
+    }).join("")}
+  </ol>`;
+}
+
+function escapeQuestionHtml(question, me) {
+  const progress = getProgress();
+  const qId = questionId(question);
+  const qKey = questionOccurrenceKey(question, me);
+  const options = question?.opts || question?.options || [];
+  const answered = state.pendingQuestionKey === qKey || (me?.answeredQuestionIds || []).includes(qId);
+  const imageUrl = safeImageUrl(question?.imageUrl || question?.image);
+  if (!state.escapeQuestionOpen) {
+    return `<section class="escape-question-fold">
+      <div><span>문법 문제</span><strong>조사 기회는 정답마다 1개</strong></div>
+      <button type="button" class="escape-fold-button" data-action="toggle-escape-question" aria-expanded="false">문제 펼치기</button>
+    </section>`;
+  }
+  return `<section id="escape-question" class="question-console escape-question" aria-labelledby="question-title">
+    <div class="question-console-top"><span class="question-kicker">MISSION ${String(progress.current + 1).padStart(2, "0")}</span><button type="button" class="escape-fold-button" data-action="toggle-escape-question" aria-expanded="true">문제 접기</button></div>
+    ${imageUrl ? `<img class="question-image" src="${imageUrl}" alt="문제 참고 이미지">` : ""}
+    <p class="question-kor">${escapeHtml(question?.kor || question?.promptKor || "알맞은 답을 고르세요.")}</p>
+    <h1 id="question-title" class="question-eng" tabindex="-1" role="status" aria-live="polite" aria-atomic="true">${escapeHtml(question?.eng || question?.prompt || question?.text || "문제를 불러오는 중이에요.")}</h1>
+    <p class="answer-prompt">정답마다 조사 기회 1개를 얻어요.</p>
+    <div class="answers" aria-label="답 선택지">${options.map((option, index) => answerButtonHtml(option, answered, qKey, index)).join("")}</div>
+    ${feedbackHtml(qKey)}
+  </section>`;
+}
+
+function escapePlayView() {
+  const me = currentPlayer() || {};
+  const escape = escapeState() || {};
+  const question = currentQuestion();
+  const hotspots = Array.isArray(escape.hotspots) ? escape.hotspots : [];
+  const lockOrder = Array.isArray(escape.lockOrder) ? escape.lockOrder : [];
+  const discovered = Math.max(0, Number(escape.discoveredCount || 0));
+  const isEscaped = Boolean(escape.escapedAt);
+  const retrySeconds = escapeRetrySeconds(escape);
+  const canInspect = Number(escape.focus || 0) > 0 && !state.escapeBusy && state.connectionState === "connected";
+  const canUnlock = discovered === 3 && !isEscaped && !state.escapeBusy && !retrySeconds && state.connectionState === "connected";
+  const teamMode = isTeamMode();
+  const roomNumber = Math.min(3, Math.max(1, Number(escape.roomIndex || 0) + 1));
+  const sceneAsset = isEscaped
+    ? "./assets/night-exit.webp"
+    : ["./assets/night-school.webp", "./assets/night-archive.webp", "./assets/night-exit.webp"][Math.min(2, Math.max(0, Number(escape.roomIndex || 0)))];
+  return `<section class="screen escape-layout" aria-labelledby="escape-title">
+    <article class="escape-console">
+      <div class="escape-topline">
+        <div><p class="escape-kicker">NIGHT SCHOOL · ROOM ${String(roomNumber).padStart(2, "0")}</p><h1 id="escape-title">${escapeHtml(escape.title || "야간학교")}</h1></div>
+        <div class="escape-timer"><span>남은 시간</span><strong id="game-timer">${formatTime(remainingSeconds())}</strong></div>
+      </div>
+      <p class="escape-story">${escapeHtml(escape.story || "비상등이 켜진 복도 끝에서, 잠긴 문이 조용히 기다립니다.")}</p>
+      <div class="escape-meter" aria-label="방 진행 ${Number(escape.roomsCleared || 0)} / 3"><span style="width:${Math.min(100, Math.max(0, Number(escape.roomsCleared || 0)) * 33.34)}%"></span></div>
+      <div class="escape-status-strip"><span>조사 기회 <strong>${Math.max(0, Number(escape.focus || 0))}</strong> / 6</span><span>단서 <strong>${discovered}</strong> / 3</span><span>${isEscaped ? (teamMode ? "팀 탈출 완료" : "탈출 완료") : (teamMode ? "우리 팀과 단서 공유 중" : "내 단서로 탈출 중")}</span></div>
+      ${isEscaped ? "" : `<ol class="escape-howto" aria-label="탈출 방법"><li><b>1</b> 문제 맞히기</li><li><b>2</b> 조사하기</li><li><b>3</b> 기호 순서대로 암호</li></ol>`}
+      ${isEscaped ? `<section class="escape-complete" role="status"><span aria-hidden="true">✦</span><div><strong>야간학교를 탈출했어요</strong><p>${escapeTimeLabel(escape)} · 친구들의 진행을 기다려 주세요.</p></div></section>` : `
+      <section class="escape-scene" style="--escape-scene: url('${sceneAsset}')" aria-label="${escapeHtml(escape.title || "현재 방")} 조사 장면">
+        <div class="escape-scene-glow" aria-hidden="true"></div>
+        <div class="escape-door" aria-hidden="true"><span>LOCK</span><i></i></div>
+        <div class="escape-hotspots">${hotspots.map((spot, index) => {
+          const known = spot.clue !== undefined && spot.clue !== null;
+          const symbol = ESCAPE_SYMBOLS[spot.symbol] || { icon: "?", name: "기호" };
+          return `<button class="escape-hotspot ${known ? "found" : ""}" type="button" data-action="escape-inspect" data-hotspot-id="${escapeHtml(spot.id)}" ${(!known && !canInspect) ? "disabled" : ""} aria-label="${escapeHtml(spot.label)} ${known ? "단서 확인" : "조사"}"><span aria-hidden="true">${symbol.icon}</span><strong>${escapeHtml(spot.label || `조사 지점 ${index + 1}`)}</strong><small>${known ? "단서 확인" : "조사하기"}</small></button>`;
+        }).join("")}</div>
+      </section>
+      <div class="escape-scene-help">${canInspect ? "빛이 닿는 곳을 조사해 보세요. 조사하면 기회 1개를 사용해요." : `<span>새 조사 지점은 문제를 맞힌 뒤에 열려요.</span><button type="button" class="escape-study-button" data-action="escape-open-question">문제 풀기</button>`}</div>`}
+      <div class="escape-workbench">
+        <section class="clue-notebook" aria-labelledby="notebook-title"><div class="notebook-heading"><span aria-hidden="true">▤</span><div><p>CLUE NOTEBOOK</p><h2 id="notebook-title">단서 수첩</h2></div></div>
+          <ol class="clue-lines">${hotspots.map((spot, index) => {
+            const details = ESCAPE_SYMBOLS[spot.symbol] || { icon: "?", name: "기호" };
+            const known = spot.clue !== undefined && spot.clue !== null;
+            return `<li class="${known ? "revealed" : ""}"><span class="symbol-token" aria-label="${details.name}">${details.icon}</span><span>${details.name}</span><strong>${known ? escapeHtml(spot.clue) : "?"}</strong></li>`;
+          }).join("") || `<li><span>단서를 찾는 중</span></li>`}</ol>
+        </section>
+        ${isEscaped ? "" : `<section class="escape-lock" aria-labelledby="lock-title"><p>DOOR LOCK</p><h2 id="lock-title">${lockOrder.map((symbol) => ESCAPE_SYMBOLS[symbol]?.icon || "?").join(" ")}</h2><label for="escape-code">세 기호 순서대로 숫자 입력</label><div class="escape-code-row"><input id="escape-code" name="escapeCode" inputmode="numeric" pattern="[0-9]{3}" maxlength="3" autocomplete="off" value="${escapeHtml(state.escapeCode)}" aria-describedby="lock-help"><button type="button" class="escape-unlock" data-action="escape-unlock" data-escape-retry ${canUnlock ? "" : "disabled"}>${retrySeconds ? `${retrySeconds}초 후 다시 시도` : "문 열기"}</button></div><p id="lock-help">${discovered === 3 ? "수첩의 순서를 확인해 문을 열어 보세요." : "세 단서를 모두 찾으면 자물쇠를 열 수 있어요."}</p></section>`}
+      </div>
+      ${state.feedback?.escapeMessage ? `<div class="feedback ${state.feedback.escapeTone || "correct"}" role="status">${escapeHtml(state.feedback.escapeMessage)}</div>` : ""}
+      ${isEscaped ? "" : escapeQuestionHtml(question, me)}
+    </article>
+    <aside class="escape-sidebar">
+      <section class="escape-side-card"><div class="section-title"><h2>${teamMode ? "팀 탈출 진행" : "참가자 진행"}</h2><span class="tag live">LIVE</span></div><p>${teamMode ? "단서·조사 기회·문 진행은 팀과 함께 공유돼요." : "다른 참가자의 단서는 보이지 않아요."}</p>${escapeProgressHtml(teamMode ? sortedEscapeTeams() : sortedEscapePlayers(), { team: teamMode })}</section>
+      <section class="escape-side-card"><div class="section-title"><h2>현재 목표</h2><span class="tag">${Number(escape.roomsCleared || 0)}/3개 방</span></div><p>${isEscaped ? "탈출 기록이 저장되었습니다. 다른 참가자의 탈출을 지켜보세요." : "문법 문제로 조사 기회를 모으고, 세 단서를 순서대로 맞추세요."}</p></section>
+    </aside>
+  </section>`;
+}
+
 function studentPlayView() {
+  if (roomMode() === "grammar_escape") return escapePlayView();
   const question = currentQuestion();
   const me = currentPlayer() || {};
   const treasureChoices = me?.treasureChoices || me?.treasure_choices || [];
@@ -1038,6 +1257,7 @@ function feedbackHtml(currentKey) {
 }
 
 function teacherLiveView() {
+  if (roomMode() === "grammar_escape") return teacherEscapeLiveView();
   const players = sortedPlayers();
   const average = players.length ? Math.round(players.reduce((sum, player) => sum + playerAccuracy(player), 0) / players.length) : 0;
   const totalAnswers = players.reduce((sum, player) => sum + playerAnswered(player), 0);
@@ -1067,7 +1287,41 @@ function teacherLiveView() {
         </div>
         ${teacherMiniReport(players)}
       </aside>
-    </section>`;
+  </section>`;
+}
+
+function teacherEscapeLiveView() {
+  const players = sortedEscapePlayers();
+  const escaped = players.filter((player) => Boolean(escapeRecord(player).escapedAt)).length;
+  const roomProgress = players.length
+    ? (players.reduce((sum, player) => sum + Number(escapeRecord(player).roomsCleared || 0), 0) / players.length).toFixed(1)
+    : "0.0";
+  const teamMode = isTeamMode();
+  return `<section class="screen game-layout" aria-labelledby="live-title">
+    <article class="panel escape-teacher-panel">
+      ${roomHeader("야간학교 탈출 진행 중")}
+      <div class="game-status" style="margin-top:22px">
+        <div class="mini-stat"><span>탈출</span><strong>${escaped}명</strong></div>
+        <div class="mini-stat"><span>${teamMode ? "팀 평균 방" : "평균 방 진행"}</span><strong>${roomProgress}/3</strong></div>
+        <div class="mini-stat"><span>남은 시간</span><strong id="game-timer">${formatTime(remainingSeconds())}</strong></div>
+      </div>
+      <div class="section-title"><h2 id="live-title">${teamMode ? "팀 탈출 진행표" : "학생 탈출 진행표"}</h2><span class="tag live">● LIVE</span></div>
+      <p class="muted">점수보다 방 진행과 탈출 시간이 먼저 표시됩니다. 단서 숫자와 조사 기회는 공개되지 않아요.</p>
+      ${escapeProgressHtml(teamMode ? sortedEscapeTeams() : players, { team: teamMode })}
+      ${teamMode ? `<div class="leaderboard-divider"></div><div class="section-title"><h2>개인 탈출 기록</h2><span class="tag">개별 기록</span></div>${escapeProgressHtml(players)}` : ""}
+      <button class="danger-button" style="margin-top:18px" type="button" data-action="finish-room" ${state.busy ? "disabled" : ""}>게임 종료</button>
+    </article>
+    <aside class="panel">
+      <h2>문법 풀이 현황</h2>
+      <p class="muted">정답률은 교사 화면에서만 확인할 수 있어요.</p>
+      <div class="stat-grid">
+        <div class="stat-card"><strong>${players.length}명</strong><span>참가 학생</span></div>
+        <div class="stat-card"><strong>${players.filter((player) => playerAnswered(player) > 0).length}명</strong><span>응답한 학생</span></div>
+        <div class="stat-card"><strong>${players.reduce((sum, player) => sum + playerAnswered(player), 0)}</strong><span>총 응답 수</span></div>
+      </div>
+      ${teacherMiniReport(players)}
+    </aside>
+  </section>`;
 }
 
 function teacherMiniReport(players) {
@@ -1080,6 +1334,7 @@ function teacherMiniReport(players) {
 }
 
 function studentResultView() {
+  if (roomMode() === "grammar_escape") return studentEscapeResultView();
   const me = currentPlayer() || state.room?.result || {};
   const rank = playerRank(me) || Number(me.rank) || "-";
   return `
@@ -1100,7 +1355,28 @@ function studentResultView() {
         <button class="primary-button" type="button" data-action="back-role">다른 방 참가하기</button>
         <a class="button secondary-button" style="display:grid;place-items:center;text-decoration:none" href="${soloGameUrl()}">혼자 연습하기</a>
       </div>
-    </section>`;
+  </section>`;
+}
+
+function studentEscapeResultView() {
+  const me = currentPlayer() || state.room?.result || {};
+  const record = escapeRecord(me);
+  const escaped = Boolean(record.escapedAt);
+  return `<section class="screen panel escape-result" aria-labelledby="result-title">
+    <div class="result-hero">
+      <div class="result-rank" aria-label="${escaped ? "탈출" : "탐색 종료"}">${escaped ? "↗" : "☾"}</div>
+      <p class="eyebrow">NIGHT SCHOOL RECORD</p>
+      <h1 id="result-title">${escaped ? "야간학교 탈출 성공" : "탐색 기록"}</h1>
+      <p class="lead">${escaped ? `${escapeTimeLabel(record)}에 마지막 문을 열었어요.` : "시간이 끝났어요. 다음 방에서 다시 단서를 찾아보세요."}</p>
+    </div>
+    <div class="stat-grid">
+      <div class="stat-card"><strong>${Number(record.roomsCleared || 0)}/3</strong><span>연 방</span></div>
+      <div class="stat-card"><strong>${Number(record.discoveredCount || 0)}</strong><span>현재 방 단서</span></div>
+      <div class="stat-card"><strong>${escaped ? escapeTimeLabel(record).replace(" 탈출", "") : "-"}</strong><span>탈출 시간</span></div>
+    </div>
+    <div class="escape-learning-metrics"><span>내 문법 기록</span><strong>정답률 ${playerAccuracy(me)}%</strong><strong>맞힌 문제 ${playerCorrect(me)}개</strong></div>
+    <div class="button-row"><button class="primary-button" type="button" data-action="back-role">다른 방 참가하기</button><a class="button secondary-button" style="display:grid;place-items:center;text-decoration:none" href="${soloGameUrl()}">혼자 연습하기</a></div>
+  </section>`;
 }
 
 function reportRows() {
@@ -1109,6 +1385,7 @@ function reportRows() {
 }
 
 function teacherReportView() {
+  if (roomMode() === "grammar_escape") return teacherEscapeReportView();
   const players = reportRows();
   const teams = state.report?.teamLeaderboard || state.report?.team_leaderboard || state.room?.teamLeaderboard || [];
   const classAccuracy = players.length ? Math.round(players.reduce((sum, player) => sum + playerAccuracy(player), 0) / players.length) : 0;
@@ -1152,7 +1429,19 @@ function teacherReportView() {
           <a class="button secondary-button" style="display:grid;place-items:center;text-decoration:none" href="${soloGameUrl()}">혼자 하기 화면</a>
         </div>
       </article>
-    </section>`;
+  </section>`;
+}
+
+function teacherEscapeReportView() {
+  const players = sortedEscapePlayers(reportRows());
+  const teams = sortedEscapeTeams(state.report?.teamLeaderboard || state.report?.team_leaderboard || state.room?.teamLeaderboard || []);
+  const escaped = players.filter((player) => Boolean(escapeRecord(player).escapedAt)).length;
+  return `<section class="screen room-shell" aria-labelledby="report-title">
+    <article class="panel"><div class="panel-header"><div><p class="eyebrow">PRIVATE TEACHER REPORT</p><h1 id="report-title">야간학교 탈출 결과</h1><p class="muted">방 ${escapeHtml(state.roomCode)} · ${escapeHtml(selectedUnitLabel())}</p></div><button class="back-button" type="button" data-action="leave-room">끝내기</button></div>
+      <div class="stat-grid"><div class="stat-card"><strong>${players.length}명</strong><span>참가 학생</span></div><div class="stat-card"><strong>${escaped}명</strong><span>탈출 성공</span></div><div class="stat-card"><strong>${players.length ? Math.round((escaped / players.length) * 100) : 0}%</strong><span>탈출률</span></div></div></article>
+    ${isTeamMode() && Array.isArray(teams) && teams.length ? `<article class="panel"><div class="section-title"><h2>팀별 탈출 진행</h2><span class="tag team-badge">🛡️ 공유 진행</span></div>${escapeProgressHtml(teams, { team: true })}</article>` : ""}
+    <article class="panel"><div class="section-title"><h2>개인별 탈출 기록</h2><span class="tag">방 진행 · 탈출 시간 우선</span></div><div class="table-wrap"><table class="report-table escape-report-table"><thead><tr><th scope="col">순위</th><th scope="col">닉네임</th><th scope="col">방 진행</th><th scope="col">현재 방 단서</th><th scope="col">탈출 시간</th><th scope="col">정답률</th></tr></thead><tbody>${players.map((player, index) => { const record = escapeRecord(player); return `<tr><td>${Number(player.rank) || index + 1}위</td><td><strong>${escapeHtml(playerName(player))}</strong></td><td>${Number(record.roomsCleared || 0)}/3</td><td>${Number(record.discoveredCount || 0)}/3</td><td>${escapeTimeLabel(record)}</td><td>${playerAccuracy(player)}%</td></tr>`; }).join("") || `<tr><td colspan="6">집계된 학생 기록이 없어요.</td></tr>`}</tbody></table></div><div class="button-row"><button class="primary-button" type="button" data-action="new-room">새 게임방 만들기</button><a class="button secondary-button" style="display:grid;place-items:center;text-decoration:none" href="${soloGameUrl()}">혼자 하기 화면</a></div></article>
+  </section>`;
 }
 
 function captureFocus() {
@@ -1163,6 +1452,7 @@ function captureFocus() {
     name: active.getAttribute("name"),
     action: active.dataset?.action,
     answer: active.dataset?.answer,
+    hotspotId: active.dataset?.hotspotId,
     start: typeof active.selectionStart === "number" ? active.selectionStart : null,
     end: typeof active.selectionEnd === "number" ? active.selectionEnd : null,
   };
@@ -1174,7 +1464,8 @@ function restoreFocus(saved) {
   if (!target && saved.name) target = app.querySelector(`[name="${CSS.escape(saved.name)}"]`);
   if (!target && saved.action) {
     const answer = saved.answer ? `[data-answer="${CSS.escape(saved.answer)}"]` : "";
-    target = app.querySelector(`[data-action="${CSS.escape(saved.action)}"]${answer}`);
+    const hotspot = saved.hotspotId ? `[data-hotspot-id="${CSS.escape(saved.hotspotId)}"]` : "";
+    target = app.querySelector(`[data-action="${CSS.escape(saved.action)}"]${answer}${hotspot}`);
   }
   if (!target || target.disabled) return false;
   target.focus({ preventScroll: true });
@@ -1226,6 +1517,10 @@ function bindEvents() {
     if (action === "answer") element.addEventListener("click", submitAnswer);
     if (action === "treasure-choice") element.addEventListener("click", chooseTreasure);
     if (action === "maze-move") element.addEventListener("click", moveMaze);
+    if (action === "escape-inspect") element.addEventListener("click", inspectEscapeHotspot);
+    if (action === "escape-unlock") element.addEventListener("click", unlockEscapeDoor);
+    if (action === "toggle-escape-question") element.addEventListener("click", toggleEscapeQuestion);
+    if (action === "escape-open-question") element.addEventListener("click", openEscapeQuestion);
     if (action === "new-room") element.addEventListener("click", newRoom);
     if (action === "retry-connection") element.addEventListener("click", retryConnection);
     if (action === "teacher-login") element.addEventListener("click", teacherLogin);
@@ -1237,6 +1532,17 @@ function bindEvents() {
   const codeInput = document.querySelector("#room-code");
   codeInput?.addEventListener("input", () => {
     codeInput.value = sanitizeCode(codeInput.value);
+  });
+  const escapeCodeInput = document.querySelector("#escape-code");
+  escapeCodeInput?.addEventListener("input", () => {
+    state.escapeCode = sanitizeCode(escapeCodeInput.value).slice(0, 3);
+    escapeCodeInput.value = state.escapeCode;
+  });
+  escapeCodeInput?.addEventListener("keydown", (event) => {
+    if (event.key === "Enter") {
+      event.preventDefault();
+      unlockEscapeDoor();
+    }
   });
   app.querySelectorAll('input[name="grade"]').forEach((input) => input.addEventListener("change", (event) => {
     const grade = event.target.value;
@@ -1316,6 +1622,71 @@ function chooseTreasure(event) {
   }
 }
 
+function toggleEscapeQuestion() {
+  state.escapeQuestionOpen = !state.escapeQuestionOpen;
+  render();
+}
+
+function openEscapeQuestion() {
+  if (!state.escapeQuestionOpen) {
+    state.escapeQuestionOpen = true;
+    render();
+  }
+  window.setTimeout(() => {
+    const question = document.querySelector("#escape-question");
+    if (!question) return;
+    question.scrollIntoView({
+      behavior: window.matchMedia("(prefers-reduced-motion: reduce)").matches ? "auto" : "smooth",
+      block: "start",
+    });
+  }, 0);
+}
+
+function sendEscapeAction(action, { hotspotId, code } = {}) {
+  const escape = escapeState();
+  if (!escape || state.escapeBusy || state.connectionState !== "connected" || roomStatus() !== "playing") return;
+  const seq = Number(escape.seq);
+  if (!Number.isInteger(seq) || seq < 0) {
+    setStatus("조사 상태를 확인하지 못했어요. 잠시 뒤 다시 시도해 주세요.", "error");
+    return;
+  }
+  if (action === "unlock" && escapeRetrySeconds(escape) > 0) return;
+  state.escapeBusy = true;
+  state.escapeAction = action;
+  state.feedback = null;
+  render();
+  try {
+    state.socket?.send({
+      type: "escape_action",
+      action,
+      seq,
+      ...(hotspotId ? { hotspotId } : {}),
+      ...(code ? { code } : {}),
+    });
+  } catch (error) {
+    state.escapeBusy = false;
+    state.escapeAction = null;
+    setStatus(friendlyError(error), "error");
+    render();
+  }
+}
+
+function inspectEscapeHotspot(event) {
+  const hotspotId = event.currentTarget.dataset.hotspotId;
+  if (hotspotId) sendEscapeAction("inspect", { hotspotId });
+}
+
+function unlockEscapeDoor() {
+  const code = sanitizeCode(state.escapeCode);
+  state.escapeCode = code;
+  if (code.length !== 3) {
+    setStatus("수첩을 보고 숫자 세 자리를 입력해 주세요.", "error");
+    document.querySelector("#escape-code")?.focus();
+    return;
+  }
+  sendEscapeAction("unlock", { code });
+}
+
 function chooseStudent() {
   state.role = "student";
   state.view = "join";
@@ -1385,6 +1756,10 @@ function newRoom() {
   state.report = null;
   state.roomConfig = null;
   state.roomCode = "";
+  state.escapeBusy = false;
+  state.escapeAction = null;
+  state.escapeCode = "";
+  state.escapeQuestionOpen = true;
   state.teacherLoginRequired = false;
   updateUrl("");
   setStatus();

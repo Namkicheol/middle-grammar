@@ -39,6 +39,7 @@ export default {
           `/internal/${teacherControl.groups.action}`,
           request,
           { "x-room-teacher-email": await requireTeacher(request, env) },
+          false,
         );
       }
 
@@ -170,7 +171,7 @@ async function createRoom(request: Request, env: Env, origin: string): Promise<R
     shuffleQuestions?: boolean;
   };
   const mode = body.mode ?? "score_race";
-  if (!["score_race", "treasure_heist", "maze_heist"].includes(mode)) {
+  if (!["score_race", "treasure_heist", "maze_heist", "grammar_escape"].includes(mode)) {
     throw new HttpError(400, "INVALID_MODE", "Choose a valid game mode.");
   }
   const playStyle = body.playStyle ?? "individual";
@@ -302,15 +303,17 @@ async function forward(
   path: string,
   source: Request,
   extraHeaders: Record<string, string> = {},
+  includeBody = true,
 ): Promise<Response> {
   assertContentLength(source, 3_000_000);
+  if (!includeBody && source.body) await source.arrayBuffer();
   const headers = new Headers(extraHeaders);
   const contentType = source.headers.get("content-type");
   if (contentType) headers.set("content-type", contentType);
   return env.ROOMS.getByName(code).fetch(`https://room${path}`, {
     method: source.method,
     headers,
-    body: source.body,
+    body: includeBody ? source.body : undefined,
   });
 }
 
@@ -403,6 +406,9 @@ function camelRoom(row: Record<string, unknown>) {
     startedAt: row.started_at,
     finishedAt: row.finished_at,
     createdAt: row.created_at,
+    ...(typeof row.escape_summary_json === "string" && row.escape_summary_json
+      ? { escapeSummary: JSON.parse(row.escape_summary_json) }
+      : {}),
   };
 }
 
@@ -419,6 +425,17 @@ function camelPlayer(row: Record<string, unknown>, code: string) {
     averageResponseTimeMs: row.average_response_time_ms,
     teamId: row.team_id || undefined,
     teamNumber: row.team_number || undefined,
+    ...(row.escape_rooms_cleared !== null && row.escape_rooms_cleared !== undefined
+      ? {
+          escape: {
+            roomsCleared: row.escape_rooms_cleared,
+            discoveredCount: row.escape_discovered_count,
+            ...(row.escape_escaped_at !== null && row.escape_escaped_at !== undefined
+              ? { escapedAt: row.escape_escaped_at }
+              : {}),
+          },
+        }
+      : {}),
   };
 }
 

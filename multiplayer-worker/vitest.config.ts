@@ -11,6 +11,10 @@ export default defineConfig(async () => {
         miniflare: {
           bindings: {
             ENVIRONMENT: "test",
+            GOOGLE_CLIENT_ID: "test-client-id",
+            GOOGLE_CLIENT_SECRET: "test-client-secret",
+            AUTH_ORIGIN: "https://test.local",
+            TEACHER_EMAILS: "teacher@example.com",
             TEST_MIGRATIONS: migrations,
           },
         },
@@ -18,7 +22,7 @@ export default defineConfig(async () => {
     ],
     test: {
       setupFiles: ["./test/setup.ts"],
-      include: ["test/room-engine.test.ts", "test/worker.test.ts"],
+      include: ["test/room-engine.test.ts", "test/worker.test.ts", "test/auth.test.ts", "test/teacher-socket.test.ts"],
     },
   };
 });

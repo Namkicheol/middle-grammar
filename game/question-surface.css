@@ -1,0 +1,100 @@
+/* Shared question materials; each game retains its own world and mechanics. */
+:is(#qcard, .qpop-inner, .qcard, #challenge > .card) {
+  background: #efe4c9 url('./assets/arena-v1/projection-frame.webp') center / 100% 100% no-repeat;
+  color: #142c3c;
+  border: 0;
+  border-radius: 4px;
+  padding: 20px 22px;
+  box-shadow: 0 8px 24px #0008;
+  font-family: 'Noto Sans KR', system-ui, sans-serif;
+}
+:is(#q-eng, .qpop-eng, .qeng, #challenge-eng) {
+  color: #142c3c;
+  font-family: 'Noto Sans KR', system-ui, sans-serif;
+  font-size: clamp(1.08rem, 2.2vw, 1.45rem);
+  font-weight: 800;
+  line-height: 1.45;
+  overflow-wrap: anywhere;
+  text-shadow: none;
+}
+:is(#q-eng b, .qeng b) { color: #142c3c; }
+:is(#q-kor, .qpop-kor, .qkor, #challenge-kor) {
+  color: #40505a;
+  font-size: .86rem;
+  font-weight: 600;
+  line-height: 1.5;
+  text-shadow: none;
+  background: none;
+}
+#q-unit { color: #173e42; border-radius: 2px; }
+:is(#q-combo, .qpop-timer) { color: #704517; }
+:is(#q-reward, .qpop-fb, #fb) {
+  color: #f5efe0;
+  background: #132e32;
+  border-radius: 2px;
+  padding: 5px 8px;
+  line-height: 1.5;
+}
+:is(#q-reward, .qpop-fb, #fb):empty { padding: 0; min-height: 0; }
+:is(#opts > .opt, #qpop-opts > .qopt, #challenge.choice-mode #chips > .word) {
+  min-width: 0;
+  min-height: 56px;
+  padding: 14px 16px;
+  border: 2px solid #203438;
+  border-radius: 4px;
+  background: #b95531 url('./assets/arena-v1/answer-panels.webp') 0 50% / 400% 100% no-repeat;
+  color: #fff9ed;
+  font-family: 'Noto Sans KR', system-ui, sans-serif;
+  font-weight: 800;
+  font-size: 1rem;
+  line-height: 1.35;
+  white-space: normal;
+  overflow-wrap: anywhere;
+  text-align: center;
+  text-shadow: 0 1px 2px #0008;
+  box-shadow: 0 3px 0 #07191d;
+  transition: transform .12s, filter .12s;
+}
+:is(#opts > .opt, #qpop-opts > .qopt, #challenge.choice-mode #chips > .word):nth-child(4n+2) { background-position: 33.333333% 50%; background-color: #426680; }
+:is(#opts > .opt, #qpop-opts > .qopt, #challenge.choice-mode #chips > .word):nth-child(4n+3) { background-position: 66.666667% 50%; background-color: #dba22b; color: #152b34; text-shadow: none; }
+:is(#opts > .opt, #qpop-opts > .qopt, #challenge.choice-mode #chips > .word):nth-child(4n) { background-position: 100% 50%; background-color: #257c76; }
+:is(#opts > .opt, #qpop-opts > .qopt, #challenge.choice-mode #chips > .word):focus-visible { outline: 3px solid #fff4bd; outline-offset: 3px; }
+@media (hover: hover) {
+  :is(#opts > .opt, #qpop-opts > .qopt, #challenge.choice-mode #chips > .word):not(:disabled):hover { filter: brightness(1.12); transform: translateY(-2px); }
+}
+:is(#opts > .opt, #qpop-opts > .qopt, #challenge.choice-mode #chips > .word):not(:disabled):active { transform: translateY(2px); }
+#opts > .opt.ok, #qpop-opts > .qopt:is(.ok, .reveal) { background: #145f45 !important; color: #fff !important; border-color: #bbf7d0 !important; }
+#opts > .opt.ng, #qpop-opts > .qopt.ng { background: #8a2834 !important; color: #fff !important; border-color: #fecdd3 !important; }
+#qpop .qpop-fb.ok { color: #dcfce7; background: #114c36; border: 1px solid #4ade80; }
+#qpop .qpop-fb.ng { color: #ffe4e6; background: #651f2b; border: 1px solid #fb7185; }
+#qcard #fb.show { color: #fff; background: #541f2a; border: 1px solid #c56578; }
+#opts > .opt.dimmed { opacity: .58; filter: grayscale(.85); }
+#opts > .opt .opt-key { background: #102e37; color: #fff4d3; border-radius: 2px; border-color: #bac3bf; box-shadow: none; }
+#opts > .opt .opt-label { overflow-wrap: anywhere; }
+#opts > .opt.stake { display: grid; grid-template-rows: auto auto; align-content: center; justify-items: center; gap: 2px; line-height: 1.15; }
+#opts > .opt.stake small { margin: 0; color: inherit; font-size: .72rem; line-height: 1.2; }
+#opts > .opt.st-safe { color: #fff !important; background: #16513f !important; border-color: #65c89c !important; text-shadow: none !important; }
+#opts > .opt.st-bet { color: #152b34 !important; background: #d9a32e !important; border-color: #f1ca63 !important; text-shadow: none !important; }
+.qhint { color: #8b3434; text-shadow: none; }
+.qeng .qwrong { color: #9a2332; background: #f4d7c7; border-color: #9a2332; text-shadow: none; box-shadow: none; animation: none; }
+.qmeta { color: #4b575b; }
+.qpop-inner .timer-bar { background: #142c3c33; }
+#qpop { max-height: calc(100% - 24px); overflow-y: auto; overscroll-behavior: contain; }
+#challenge > .card { width: min(680px, 100%); max-height: calc(100dvh - 32px); overflow-y: auto; }
+#challenge .challenge-head h2 { color: #193d43; font-family: inherit; font-size: 1.1rem; }
+#challenge .challenge-time { border-radius: 3px; background: #17383d; color: #ffe6a4; }
+#challenge.choice-mode #chips { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); background: none; border: 0; padding: 0; max-height: none; }
+#challenge:not(.choice-mode) .word { border-radius: 3px; color: #193d43; background: #fffbef; min-height: 44px; }
+#challenge:not(.choice-mode) .answer-zone .word { color: #fff7e3; background: #24534f; }
+#challenge .guide { color: #4b575b; }
+#challenge .check { background: #225c56; border-radius: 3px; box-shadow: 0 3px 0 #143932; }
+#challenge .reset { border-radius: 3px; }
+@media (max-width: 560px) {
+  :is(#qcard, .qpop-inner, .qcard, #challenge > .card) { padding: 15px 16px; }
+  :is(#q-eng, .qpop-eng, .qeng, #challenge-eng) { font-size: 1.02rem; }
+  :is(#q-kor, .qpop-kor, .qkor, #challenge-kor) { font-size: .8rem; }
+  :is(#opts > .opt, #qpop-opts > .qopt, #challenge.choice-mode #chips > .word) { padding: 10px 12px; min-height: 48px; font-size: .93rem; }
+}
+@media (prefers-reduced-motion: reduce) {
+  :is(#qpop, #opts > .opt, #qpop-opts > .qopt, #challenge > .card) { transition: none; animation: none; }
+}

@@ -20,6 +20,9 @@ handoff-*.md
 .code-review-graph/
 code-review-graph/
 .env
+.dev.vars
+.dev.vars.*
+!.dev.vars.example
 
 # OMC / MCP 툴 아티팩트
 .omc/

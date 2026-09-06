@@ -1,4 +1,9 @@
 const API_ROOT = "/api";
+let csrfToken = "";
+
+function isLoopback() {
+  return new Set(["localhost", "127.0.0.1", "::1"]).has(window.location.hostname);
+}
 
 export class ApiError extends Error {
   constructor(message, status = 0, code = "REQUEST_FAILED") {
@@ -14,8 +19,7 @@ async function request(path, options = {}) {
   if (options.body && !headers.has("Content-Type")) {
     headers.set("Content-Type", "application/json");
   }
-  const loopbackHosts = new Set(["localhost", "127.0.0.1", "::1"]);
-  if (loopbackHosts.has(window.location.hostname) && path.startsWith("/teacher")) {
+  if (isLoopback() && path.startsWith("/teacher")) {
     headers.set("X-Dev-Teacher-Email", "teacher@local.test");
   }
 
@@ -31,9 +35,6 @@ async function request(path, options = {}) {
   }
 
   const contentType = response.headers.get("content-type") || "";
-  if (response.redirected && response.url.includes("/cdn-cgi/access/")) {
-    throw new ApiError("교사 로그인이 필요해요.", 401, "TEACHER_LOGIN_REQUIRED");
-  }
   const payload = contentType.includes("application/json")
     ? await response.json().catch(() => ({}))
     : {};
@@ -46,6 +47,30 @@ async function request(path, options = {}) {
   return payload;
 }
 
+async function getTeacherSession() {
+  const session = await request("/auth/session");
+  csrfToken = session?.authenticated && typeof session.csrfToken === "string" ? session.csrfToken : "";
+  return session;
+}
+
+async function teacherMutation(path, options = {}) {
+  const session = await getTeacherSession();
+  if (!session?.authenticated && !isLoopback()) {
+    throw new ApiError("교사 로그인이 필요해요.", 401, "TEACHER_LOGIN_REQUIRED");
+  }
+  const headers = new Headers(options.headers || {});
+  if (csrfToken) headers.set("X-CSRF-Token", csrfToken);
+  return request(path, { ...options, headers });
+}
+
+function loginUrl(returnTo = "/multiplayer/?teacher=1") {
+  const requested = new URL(returnTo, window.location.origin);
+  const safeReturnTo = requested.origin === window.location.origin
+    ? `${requested.pathname}${requested.search}`
+    : "/multiplayer/?teacher=1";
+  return `${API_ROOT}/auth/google/start?${new URLSearchParams({ returnTo: safeReturnTo })}`;
+}
+
 function friendlyStatus(status) {
   if (status === 401) return "교사 로그인이 필요해요.";
   if (status === 404) return "방 번호를 찾지 못했어요.";
@@ -55,8 +80,24 @@ function friendlyStatus(status) {
 }
 
 export const roomApi = {
+  getTeacherSession,
+
+  loginUrl,
+
+  async logoutTeacher() {
+    const session = await getTeacherSession();
+    if (!session?.authenticated && !isLoopback()) return session;
+    const headers = new Headers();
+    if (csrfToken) headers.set("X-CSRF-Token", csrfToken);
+    try {
+      return await request("/auth/logout", { method: "POST", headers });
+    } finally {
+      csrfToken = "";
+    }
+  },
+
   createRoom(config) {
-    return request("/teacher/rooms", {
+    return teacherMutation("/teacher/rooms", {
       method: "POST",
       body: JSON.stringify(config),
     });
@@ -92,11 +133,11 @@ export const roomApi = {
   },
 
   startRoom(code) {
-    return request(`/teacher/rooms/${encodeURIComponent(code)}/start`, { method: "POST" });
+    return teacherMutation(`/teacher/rooms/${encodeURIComponent(code)}/start`, { method: "POST" });
   },
 
   finishRoom(code) {
-    return request(`/teacher/rooms/${encodeURIComponent(code)}/finish`, { method: "POST" });
+    return teacherMutation(`/teacher/rooms/${encodeURIComponent(code)}/finish`, { method: "POST" });
   },
 
   getReport(code) {

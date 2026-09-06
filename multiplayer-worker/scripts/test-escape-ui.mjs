@@ -6,7 +6,7 @@ import vm from 'node:vm';
 const file = new URL('../../multiplayer/app.js', import.meta.url);
 const source = fs.readFileSync(file, 'utf8')
   .replace(/^import .*?;\n/, '')
-  .replace(/render\(\);\nrestoreStudentSession\(\);\s*$/, '');
+  .replace(/render\(\);\n(?:restoreStudentSession|bootstrap)\(\);\s*$/, '');
 const context = vm.createContext({
   document: { querySelector: () => null },
   window: { addEventListener() {} },

@@ -1,0 +1,737 @@
+/* Student gameplay only; loaded after styles.css. Teacher, lobby and result screens stay untouched. */
+
+body:has(#app .student-play) {
+  min-height: 100svh;
+  padding: 0;
+  overflow-x: hidden;
+  background: #061b22;
+}
+
+body:has(#app .student-play) > .site-header,
+body:has(#app .student-play) > .site-footer {
+  display: none;
+}
+
+body:has(#app .student-play) > .status-message {
+  position: fixed;
+  z-index: 80;
+  top: calc(68px + env(safe-area-inset-top));
+  left: 50%;
+  width: min(560px, calc(100% - 24px));
+  margin: 0;
+  color: #fff7dd;
+  border-color: rgba(242, 190, 74, .52);
+  background: rgba(28, 25, 20, .92);
+  box-shadow: 0 12px 30px rgba(0, 0, 0, .35);
+  transform: translateX(-50%);
+}
+
+body:has(#app .student-play) #app {
+  width: 100%;
+  min-height: 100svh;
+  margin: 0;
+  padding: 0;
+}
+
+#app .arena-game {
+  min-height: 100svh;
+  color: #f8fafc;
+  background: #061b22;
+  animation: none;
+}
+
+#app .arena-scoreboard {
+  position: relative;
+  z-index: 40;
+  display: flex;
+  min-height: 66px;
+  padding: calc(8px + env(safe-area-inset-top)) clamp(14px, 3vw, 40px) 8px;
+  align-items: center;
+  justify-content: space-between;
+  gap: 22px;
+  border-bottom: 1px solid rgba(104, 208, 197, .35);
+  color: #f4f2e8;
+  background: #061b22;
+  box-shadow: 0 8px 30px rgba(0, 0, 0, .32);
+}
+
+#app .arena-scoreboard-brand {
+  display: flex;
+  min-width: max-content;
+  align-items: center;
+  gap: 10px;
+  color: #f6f0df;
+}
+
+#app .arena-scoreboard-brand > strong {
+  font-size: clamp(15px, 1.6vw, 22px);
+  letter-spacing: -.04em;
+}
+
+#app .arena-scoreboard-items {
+  display: flex;
+  min-width: 0;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 0;
+}
+
+#app .arena-score-item {
+  display: grid;
+  min-width: 104px;
+  min-height: 40px;
+  padding: 2px clamp(13px, 2vw, 28px);
+  align-content: center;
+  border-left: 1px solid rgba(184, 215, 212, .26);
+  text-align: center;
+}
+
+#app .arena-score-item > span,
+#app .arena-score-item > strong {
+  display: block;
+}
+
+#app .arena-score-item > span {
+  color: #88aaa9;
+  font-size: 9px;
+  font-weight: 850;
+  letter-spacing: .09em;
+}
+
+#app .arena-score-item > strong {
+  margin-top: 2px;
+  color: #f8f4e7;
+  font-size: clamp(14px, 1.45vw, 20px);
+  font-variant-numeric: tabular-nums;
+  line-height: 1.1;
+}
+
+#app .arena-score-item.arena-time > strong {
+  color: #81dfcb;
+}
+
+#app .arena-floor {
+  position: relative;
+  display: flex;
+  min-height: calc(100svh - 66px - env(safe-area-inset-top));
+  padding: 11vh clamp(14px, 2.5vw, 38px) clamp(18px, 2.5vh, 34px);
+  flex-direction: column;
+  justify-content: flex-start;
+  gap: clamp(14px, 2vh, 24px);
+  overflow: hidden;
+  isolation: isolate;
+  background: url("./assets/arena-v1/gym-background.webp") center / cover no-repeat #071c23;
+}
+
+#app .arena-question-console {
+  display: flex;
+  width: 100%;
+  margin: 0;
+  padding: 0;
+  flex: 0 0 auto;
+  flex-direction: column;
+  justify-content: flex-start;
+  gap: clamp(24px, 3.5vh, 38px);
+  color: #142b46;
+  border: 0;
+  border-radius: 0;
+  background: transparent;
+  box-shadow: none;
+}
+
+#app .arena-projection {
+  position: relative;
+  display: flex;
+  width: min(70vw, 1120px);
+  min-height: clamp(265px, 31vw, 495px);
+  margin: 0 auto;
+  padding: clamp(40px, 3.4vw, 56px) clamp(40px, 3.2vw, 52px);
+  aspect-ratio: 2.25 / 1;
+  flex-direction: column;
+  justify-content: center;
+  border-radius: 7px;
+  background-color: #eee5cc;
+  background-image: url("./assets/arena-v1/projection-frame.webp");
+  background-position: center;
+  background-repeat: no-repeat;
+  background-size: 100% 100%;
+  box-shadow: 0 18px 44px rgba(0, 0, 0, .48);
+}
+
+#app .arena-projection .question-console-top {
+  display: flex;
+  margin: 0 0 clamp(12px, 2vh, 24px);
+  padding: 0;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  border: 0;
+}
+
+#app .arena-projection .question-kicker {
+  min-height: 0;
+  padding: 0;
+  color: #1b3552;
+  border: 0;
+  border-radius: 0;
+  background: transparent;
+  font-size: clamp(12px, 1.15vw, 17px);
+  font-weight: 900;
+  letter-spacing: .02em;
+}
+
+#app .arena-mode-meta {
+  color: #5a6875;
+  font-size: clamp(10px, .9vw, 13px);
+  font-weight: 750;
+  text-align: right;
+}
+
+#app .arena-projection .question-kor {
+  margin: 0 0 clamp(10px, 1.6vh, 20px);
+  color: #55616c;
+  font-size: clamp(18px, 2.4vw, 34px);
+  font-weight: 700;
+  line-height: 1.5;
+}
+
+#app .arena-projection .question-eng {
+  max-width: none;
+  margin: 0;
+  color: #102c4b;
+  font-family: Pretendard, "Noto Sans KR", Arial, sans-serif;
+  font-size: clamp(32px, 6vw, 88px);
+  font-weight: 900;
+  letter-spacing: -.035em;
+  line-height: 1.23;
+  overflow-wrap: anywhere;
+  text-wrap: balance;
+}
+
+#app .arena-projection .question-eng.long-question {
+  font-size: clamp(26px, 3.4vw, 50px);
+  line-height: 1.27;
+  text-wrap: pretty;
+}
+
+#app .arena-projection .question-image {
+  width: auto;
+  max-width: 100%;
+  max-height: 150px;
+  margin: 0 auto 12px;
+  border-radius: 8px;
+  background: rgba(255, 255, 255, .55);
+  object-fit: contain;
+}
+
+#app .arena-answers {
+  display: grid;
+  width: min(96vw, 1420px);
+  margin: auto auto 0;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: clamp(6px, .75vw, 12px);
+}
+
+#app .arena-answers[data-option-count="1"] {
+  grid-template-columns: minmax(0, 540px);
+  justify-content: center;
+}
+
+#app .arena-answers[data-option-count="2"] {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  width: min(72vw, 900px);
+}
+
+#app .arena-answers[data-option-count="3"] {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  width: min(84vw, 1120px);
+}
+
+#app .arena-answers .answer-button,
+#app .escape-question .answer-button {
+  position: relative;
+  display: grid;
+  min-width: 0;
+  min-height: clamp(90px, 10vw, 150px);
+  padding: clamp(17px, 2.2vw, 30px);
+  grid-template-columns: clamp(27px, 2.4vw, 38px) minmax(0, 1fr);
+  align-items: center;
+  gap: clamp(8px, 1vw, 15px);
+  overflow: visible;
+  color: #fffdf4;
+  border: 0;
+  border-radius: clamp(9px, 1.1vw, 16px);
+  background-color: #304e61;
+  background-image: url("./assets/arena-v1/answer-panels.webp");
+  background-repeat: no-repeat;
+  background-position: 0 center;
+  background-size: 400% 100%;
+  box-shadow: 0 11px 0 rgba(3, 13, 18, .7), 0 17px 30px rgba(0, 0, 0, .34);
+  font-size: clamp(24px, 3.8vw, 54px);
+  font-weight: 900;
+  line-height: 1.16;
+  text-align: center;
+  text-shadow: 0 2px 4px rgba(0, 0, 0, .5);
+  overflow-wrap: anywhere;
+  transition: transform 150ms ease, filter 150ms ease, box-shadow 150ms ease;
+}
+
+#app .arena-answers .answer-button:nth-child(2),
+#app .escape-question .answer-button:nth-child(2) {
+  background-position: 33.333% center;
+}
+
+#app .arena-answers .answer-button:nth-child(3),
+#app .escape-question .answer-button:nth-child(3) {
+  background-position: 66.667% center;
+}
+
+#app .arena-answers .answer-button:nth-child(4),
+#app .escape-question .answer-button:nth-child(4) {
+  background-position: 100% center;
+}
+
+#app .arena-answers .answer-button:hover:not(:disabled),
+#app .arena-answers .answer-button:focus-visible,
+#app .arena-answers .answer-button.selected,
+#app .escape-question .answer-button:hover:not(:disabled),
+#app .escape-question .answer-button:focus-visible,
+#app .escape-question .answer-button.selected {
+  color: #fff;
+  border: 0;
+  background-color: #304e61;
+  transform: translateY(-4px);
+  filter: brightness(1.1) saturate(1.08);
+  box-shadow: 0 8px 0 #06161b, 0 0 0 4px #fff2b8, 0 17px 32px rgba(0, 0, 0, .42);
+}
+
+#app .arena-answers .answer-button:focus-visible,
+#app .escape-question .answer-button:focus-visible {
+  outline: 3px solid #7ee9dc;
+  outline-offset: 5px;
+}
+
+#app .arena-answers .answer-button:disabled,
+#app .escape-question .answer-button:disabled {
+  opacity: .86;
+}
+
+#app .arena-answers .answer-button:disabled:not(.correct):not(.wrong):not(.selected),
+#app .escape-question .answer-button:disabled:not(.correct):not(.wrong):not(.selected) {
+  filter: saturate(.65) brightness(.72);
+}
+
+#app .arena-answers .answer-button.correct,
+#app .escape-question .answer-button.correct {
+  color: #fff;
+  border: 0;
+  background-color: #15725e;
+  filter: brightness(1.05) saturate(1.05);
+  box-shadow: 0 8px 0 #073b31, 0 0 0 5px #7cf0bd, 0 0 28px rgba(124, 240, 189, .5);
+}
+
+#app .arena-answers .answer-button.wrong,
+#app .escape-question .answer-button.wrong {
+  color: #fff;
+  border: 0;
+  background-color: #a33032;
+  filter: saturate(.65) brightness(.78);
+  box-shadow: 0 8px 0 #501719, 0 0 0 5px #ff8d8d;
+}
+
+#app .arena-answers .answer-key,
+#app .escape-question .answer-key {
+  display: grid;
+  width: clamp(27px, 2.4vw, 38px);
+  height: clamp(27px, 2.4vw, 38px);
+  border: 2px solid rgba(255, 255, 255, .68);
+  border-radius: 7px;
+  color: #fff;
+  background: rgba(0, 0, 0, .14);
+  font-size: clamp(12px, 1.2vw, 17px);
+  font-weight: 950;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, .42);
+  place-items: center;
+}
+
+#app .arena-answer-status {
+  min-height: 0;
+  text-align: center;
+}
+
+#app .arena-answer-status:empty {
+  display: none;
+}
+
+#app .arena-answer-status:has(> *) {
+  min-height: 42px;
+}
+
+#app .arena-answer-status .answer-pending,
+#app .arena-answer-status .feedback {
+  width: fit-content;
+  margin: 0 auto;
+  padding: 9px 16px;
+  border: 1px solid rgba(255, 255, 255, .3);
+  border-radius: 999px;
+  color: #fff8dc;
+  background: rgba(3, 22, 28, .88);
+  box-shadow: 0 6px 18px rgba(0, 0, 0, .3);
+  font-size: 14px;
+  font-weight: 850;
+}
+
+#app .arena-answer-status .feedback.correct {
+  color: #d5ffe9;
+  background: rgba(5, 84, 65, .92);
+}
+
+#app .arena-answer-status .feedback.wrong {
+  color: #fff0ee;
+  background: rgba(130, 37, 43, .94);
+}
+
+#app .arena-loading {
+  align-items: center;
+  color: #183754;
+  font-size: clamp(20px, 3vw, 38px);
+  font-weight: 900;
+  text-align: center;
+}
+
+#app .arena-ranking {
+  position: absolute;
+  z-index: 25;
+  top: 12px;
+  right: 14px;
+  width: min(340px, calc(100% - 28px));
+  color: #e9f7f5;
+}
+
+#app .arena-ranking > summary {
+  width: fit-content;
+  min-height: 44px;
+  margin-left: auto;
+  padding: 11px 14px;
+  border: 1px solid rgba(126, 233, 220, .48);
+  border-radius: 999px;
+  color: #dffcf6;
+  background: rgba(4, 31, 38, .88);
+  box-shadow: 0 7px 18px rgba(0, 0, 0, .28);
+  cursor: pointer;
+  font-size: 12px;
+  font-weight: 850;
+  list-style-position: inside;
+}
+
+#app .arena-ranking[open] > summary {
+  border-radius: 13px 13px 0 0;
+}
+
+#app .arena-ranking-panel {
+  max-height: min(62vh, 520px);
+  padding: 16px;
+  overflow-y: auto;
+  border: 1px solid rgba(126, 233, 220, .4);
+  border-radius: 13px 0 13px 13px;
+  background: rgba(4, 27, 35, .96);
+  box-shadow: 0 18px 40px rgba(0, 0, 0, .45);
+}
+
+#app .arena-ranking-panel .section-title h2 {
+  margin: 0;
+  color: #f7f6eb;
+  font-size: 15px;
+}
+
+#app .arena-ranking-panel .muted {
+  margin: 7px 0 12px;
+  color: #a8c5c5;
+  font-size: 11px;
+  line-height: 1.45;
+}
+
+#app .arena-ranking-panel .rank-row {
+  color: #e9f3f2;
+  background: rgba(255, 255, 255, .08);
+}
+
+#app .arena-ranking-panel .rank-row.me {
+  color: #fff6cf;
+  background: rgba(226, 177, 57, .18);
+  box-shadow: inset 0 0 0 2px rgba(244, 204, 101, .5);
+}
+
+#app .arena-ranking-panel .rank-number {
+  color: #8bd8cd;
+}
+
+#app .arena-floor > .team-summary {
+  position: absolute;
+  z-index: 22;
+  top: 12px;
+  left: 14px;
+  display: flex;
+  width: auto;
+  min-height: 44px;
+  margin: 0;
+  padding: 6px 10px;
+  align-items: center;
+  gap: 9px;
+  border: 1px solid rgba(126, 233, 220, .42);
+  border-radius: 999px;
+  color: #e8f8f5;
+  background: rgba(4, 31, 38, .86);
+  box-shadow: 0 7px 18px rgba(0, 0, 0, .25);
+}
+
+#app .arena-floor > .team-summary .team-summary-icon {
+  font-size: 17px;
+}
+
+#app .arena-floor > .team-summary small,
+#app .arena-floor > .team-summary strong {
+  display: block;
+  color: inherit;
+  font-size: 10px;
+  line-height: 1.15;
+}
+
+#app .arena-floor > .team-summary strong {
+  margin-top: 2px;
+  font-size: 12px;
+}
+
+#app .arena-floor > .treasure-stage,
+#app .arena-floor > .maze-stage {
+  width: min(1060px, 100%);
+  margin-inline: auto;
+}
+
+/* Escape keeps its dark story world; only the folded quiz reads as a physical paper panel. */
+#app .escape-question {
+  color: #18333c;
+  border: 1px solid #a89162;
+  background:
+    linear-gradient(rgba(255, 253, 239, .95), rgba(235, 225, 196, .97)),
+    radial-gradient(circle at 22% 18%, rgba(255, 255, 255, .8), transparent 32%);
+  box-shadow: 0 12px 30px rgba(2, 21, 31, .34);
+}
+
+#app .escape-question .question-kicker {
+  color: #173f43;
+  background: #bfe8df;
+}
+
+#app .escape-question .question-kor,
+#app .escape-question .answer-prompt {
+  color: #52656a;
+}
+
+#app .escape-question .question-eng {
+  max-width: none;
+  color: #17343c;
+}
+
+#app .escape-question .answers {
+  grid-template-columns: 1fr;
+}
+
+#app .escape-question .answer-button {
+  min-height: 72px;
+  padding: 14px 18px;
+  border-radius: 10px;
+  font-size: 18px;
+}
+
+#app .escape-question .answer-key {
+  width: 30px;
+  height: 30px;
+  font-size: 13px;
+}
+
+@media (max-width: 900px) {
+  #app .arena-scoreboard {
+    gap: 10px;
+  }
+
+  #app .arena-scoreboard-brand > strong {
+    display: none;
+  }
+
+  #app .arena-score-item {
+    min-width: 86px;
+    padding-inline: 12px;
+  }
+
+  #app .arena-projection {
+    width: min(88vw, 850px);
+  }
+}
+
+@media (max-width: 700px) {
+  #app .arena-scoreboard {
+    position: relative;
+    min-height: 62px;
+    padding: calc(7px + env(safe-area-inset-top)) 8px 7px;
+    gap: 5px;
+  }
+
+  #app .arena-scoreboard-items {
+    flex: 1;
+  }
+
+  #app .arena-score-item {
+    min-width: 0;
+    padding-inline: clamp(5px, 2.3vw, 11px);
+    flex: 1;
+  }
+
+  #app .arena-score-item > span {
+    font-size: 10px;
+    letter-spacing: .01em;
+  }
+
+  #app .arena-score-item > strong {
+    font-size: clamp(11px, 3.2vw, 15px);
+  }
+
+  #app .arena-score-item.arena-player {
+    max-width: 80px;
+  }
+
+  #app .arena-score-item.arena-player > strong {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  #app .arena-floor {
+    min-height: calc(100svh - 62px - env(safe-area-inset-top));
+    padding: 64px 10px calc(16px + env(safe-area-inset-bottom));
+    justify-content: flex-start;
+    gap: 14px;
+    overflow: visible;
+    background-position: 58% center;
+  }
+
+  #app .arena-floor:has(> .team-summary) {
+    padding-top: 108px;
+  }
+
+  #app .arena-question-console {
+    flex: 0 0 auto;
+    gap: 14px;
+  }
+
+  #app .arena-projection {
+    width: 100%;
+    min-height: clamp(220px, 62vw, 340px);
+    padding: clamp(37px, 10vw, 52px) clamp(34px, 10vw, 56px);
+    aspect-ratio: auto;
+    background-size: 100% 100%;
+  }
+
+  #app .arena-projection .question-console-top {
+    margin-bottom: 10px;
+    align-items: flex-start;
+  }
+
+  #app .arena-mode-meta {
+    max-width: 48%;
+  }
+
+  #app .arena-projection .question-kor {
+    margin-bottom: 9px;
+    font-size: clamp(13px, 3.4vw, 16px);
+  }
+
+  #app .arena-projection .question-eng {
+    font-size: clamp(24px, 7vw, 36px);
+    line-height: 1.25;
+    text-wrap: pretty;
+  }
+
+  #app .arena-projection .question-eng.long-question {
+    font-size: clamp(19px, 5.7vw, 27px);
+    line-height: 1.3;
+  }
+
+  #app .arena-answers,
+  #app .arena-answers[data-option-count="2"],
+  #app .arena-answers[data-option-count="3"] {
+    width: 100%;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 9px 7px;
+  }
+
+  #app .arena-answers[data-option-count="1"] {
+    grid-template-columns: 1fr;
+  }
+
+  #app .arena-answers .answer-button {
+    min-height: clamp(76px, 25vw, 108px);
+    padding: 13px 11px;
+    grid-template-columns: 26px minmax(0, 1fr);
+    gap: 6px;
+    border-radius: 10px;
+    box-shadow: 0 7px 0 rgba(3, 13, 18, .72), 0 12px 20px rgba(0, 0, 0, .3);
+    font-size: clamp(15px, 4.7vw, 21px);
+    line-height: 1.17;
+  }
+
+  #app .arena-answers .answer-key {
+    width: 26px;
+    height: 26px;
+    font-size: 11px;
+  }
+
+  #app .arena-ranking {
+    top: 9px;
+    right: 9px;
+    width: min(330px, calc(100% - 18px));
+  }
+
+  #app .arena-ranking > summary {
+    min-height: 42px;
+    padding: 10px 12px;
+    font-size: 11px;
+  }
+
+  #app .arena-floor > .team-summary {
+    top: 56px;
+    left: 9px;
+    right: 9px;
+    width: fit-content;
+    max-width: calc(100% - 18px);
+  }
+
+  #app .escape-question .answers {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 390px) {
+  #app .arena-scoreboard-brand {
+    display: none;
+  }
+
+  #app .arena-score-item:first-child {
+    border-left: 0;
+  }
+
+  #app .arena-projection {
+    padding-inline: 31px;
+  }
+
+  #app .arena-projection .question-eng {
+    font-size: clamp(23px, 6.8vw, 31px);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  #app .arena-answers .answer-button,
+  #app .escape-question .answer-button {
+    transition: none;
+  }
+}

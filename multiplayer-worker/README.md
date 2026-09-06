@@ -1,6 +1,6 @@
 # 문법 아케이드 멀티플레이 Worker
 
-Cloudflare Worker, SQLite Durable Objects, D1으로 교실 멀티 게임의 방 상태와 종료 리포트를 처리한다. 학생은 계정 없이 참가하고, 교사 경로는 운영 환경에서 Cloudflare Access JWT로 인증한다. 기존 솔로 게임은 별도 경로에서 그대로 유지한다.
+Cloudflare Worker, SQLite Durable Objects, D1으로 교실 멀티 게임의 방 상태와 종료 리포트를 처리한다. 학생은 계정 없이 참가하고, 교사 경로는 Google 직접 로그인 후 자체 세션으로 인증한다. 기존 솔로 게임은 별도 경로에서 그대로 유지한다. 코드 구현과 실제 Google 연결·운영 배포 상태는 별도로 확인한다.
 
 ## 로컬 실행
 
@@ -58,21 +58,19 @@ npx wrangler d1 migrations apply middle-grammar-multiplayer-reports --remote
 
 방마다 내부 UUID를 사용하므로 6자리 참가 번호가 나중에 재사용되어도 이전 리포트를 덮어쓰지 않는다.
 
-## Cloudflare Access 교사 로그인
+## Google 교사·관리자 로그인 (Access 미사용)
 
-> **2026-09-06 대체 결정:** 아래는 현재 코드의 기존 인증 방식에 대한 기록이며 더 이상 진행할 설치 절차가 아니다. 사용자 지시에 따라 Cloudflare Access와 요금제 선택을 제외하고 [Google 직접 로그인 + 자체 세션 설계](../docs/superpowers/specs/2026-09-06-no-plan-teacher-auth.md)로 전환한다. 코드 전환과 OAuth 연결 전까지 운영 인증 차단은 유지한다.
+Google OAuth 웹 클라이언트의 등록된 callback은 `https://middle-grammar-multiplayer.obangti.workers.dev/api/auth/google/callback`이다. 기존 Google 프로젝트에서 결제 계정 연결 없이 설정할 수 있는지 먼저 확인한다. 새 프로젝트가 결제를 요구하면 생성하지 않는다. Google 약관·동의는 운영자가 직접 확인한다.
 
-1. Cloudflare Zero Trust에서 Google을 identity provider로 연결한다.
-2. `middle-grammar-multiplayer.obangti.workers.dev/api/teacher/*`를 대상으로 hostname 기반 self-hosted Access application을 만든다. 학생용 `/api/rooms/*`와 `/multiplayer/*`는 공개 경로로 유지한다.
-3. Allow 정책에는 사용을 허용할 교사 이메일만 명시한다. 전체 도메인 허용이 필요하다면 학교가 관리하는 도메인인지 확인한 뒤 별도로 설정한다.
-4. Access application의 Audience 태그와 팀 도메인을 Worker 환경 변수로 설정한다. 실제 값은 저장소에 기록하지 않는다.
+필요 설정은 `GOOGLE_CLIENT_ID`, `GOOGLE_CLIENT_SECRET`, `AUTH_ORIGIN`, `ADMIN_EMAILS`, `TEACHER_EMAILS`이다. `AUTH_ORIGIN`은 위 callback의 origin과 같아야 한다. 소유자는 `ADMIN_EMAILS`, 일반 교사는 `TEACHER_EMAILS`의 쉼표 구분 목록에 등록한다. 관리자 역할은 서버 설정에서만 결정하며, 현재 방·리포트 소유권 검사는 두 역할 모두 본인에게만 허용한다. 아직 교사 추가·삭제용 관리자 UI는 없다.
 
-```bash
-npx wrangler secret put ACCESS_TEAM_DOMAIN
-npx wrangler secret put ACCESS_AUD
-```
+비밀값과 실제 허용 이메일은 Git에 넣지 않는다. 운영 설정은 Wrangler secret 입력 또는 보호된 파일 경로로 전달하고, 로컬 `.dev.vars`는 gitignore한다. `0005_teacher_auth.sql` 적용이 필요하다. 설정 누락 시 로그인 화면은 연결 준비 중으로 표시하고 교사 API는 차단한다. 기존 Access 헤더는 인증에 사용하지 않는다.
 
-`ACCESS_TEAM_DOMAIN`은 `학교팀.cloudflareaccess.com` 형식이고, `ACCESS_AUD`는 Access application의 Audience 태그다. 운영 교사 요청은 `Cf-Access-Jwt-Assertion`의 서명, issuer, audience, email claim 검증을 모두 통과해야 한다. MVP는 `workers.dev` 주소를 사용하며, 별도 운영 도메인을 붙일 때는 같은 경로 정책을 새 hostname에도 적용한다.
+- `/api/auth/google/start`, `/api/auth/google/callback`: 일회성 state·nonce·PKCE, Google 서명·issuer·audience·필수 claim 검증.
+- `/api/auth/session`: 로그인 정보와 요청 검증용 CSRF 토큰. 토큰은 프런트 메모리에서만 유지한다.
+- `/api/auth/logout`: 세션 폐기와 연결된 교사 WebSocket 종료. 학생 연결은 유지한다.
+- 세션은 8시간이며 서버에는 opaque cookie의 해시만 저장한다. 관리자 이메일이라도 Google 본인 인증 없이는 로그인할 수 없다.
+- OAuth URL의 일회성 code가 자동 요청 로그에 남지 않도록 invocation log를 끄고, 인증 오류는 안전한 코드만 반환한다.
 
 ## 배포 전 확인
 
@@ -83,7 +81,7 @@ npm run typecheck
 npx wrangler deploy --dry-run
 ```
 
-야간학교의 프런트 회귀 검사는 `node scripts/test-escape-ui.mjs`로 실행한다. 로컬 migration 적용 후 개발 Worker가 `127.0.0.1:8787`에 켜져 있으면 `node scripts/smoke-escape.mjs`로 실제 HTTP/WebSocket 개인 완주·팀 동시 조사·리포트 저장을 검사한다. smoke는 loopback 이외의 서버에서 실행을 거부하며 로컬 테스트 방만 만든다.
+야간학교의 프런트 회귀 검사는 `node scripts/test-escape-ui.mjs`, 교사 인증·로그아웃 화면의 상태 검사는 `node scripts/test-auth-ui.mjs`로 실행한다. 로컬 migration 적용 후 개발 Worker가 `127.0.0.1:8787`에 켜져 있으면 `node scripts/smoke-escape.mjs`로 실제 HTTP/WebSocket 개인 완주·팀 동시 조사·리포트 저장을 검사한다. smoke는 loopback 이외의 서버에서 실행을 거부하며 로컬 테스트 방만 만든다.
 
 그다음 실제 D1 ID, `workers.dev` 또는 custom domain 경로, 원격 마이그레이션 적용 여부를 확인한 후 `npx wrangler deploy`를 실행한다. 교사 인증이 아직 연결되지 않았다면 운영 교사 API의 401 차단을 유지하고, 코드 배포와 수업 사용 가능 상태를 구분해 보고한다. Access 가입이나 요금제 선택으로 이 차단을 해제하지 않는다. 비밀번호, 토큰, 계정 ID는 README나 Git에 넣지 않는다.
 
@@ -93,7 +91,7 @@ npx wrangler deploy --dry-run
 
 ## 후속 TODO
 
-- `grammar_escape` 운영 반영: 로컬 구현·검증과 운영 배포 상태를 구분한다. 실제 사용에는 교사 인증 연결과 원격 `0004` migration·Worker 배포가 필요하다.
-- 교사 로그인: [요금제 선택 없는 인증 설계](../docs/superpowers/specs/2026-09-06-no-plan-teacher-auth.md)에 따라 Google 직접 로그인·허용 교사 목록·자체 세션으로 교체한다. Cloudflare Access 가입·요금제 선택·카드 등록은 하지 않는다.
+- `grammar_escape` 코드와 원격 `0004`는 배포됐다. 교사 로그인도 2026-09-06 운영 연결됐다.
+- 교사 로그인: Google OAuth·운영 비밀 설정·원격 `0005`·인증 코드 배포 완료. Worker 버전 `4078ef21-6d3f-468a-9f2b-0473ddb8d763`에서 실제 관리자 로그인 → 방 생성 → 테스트 학생 참가·응답 → 시간 종료·리포트 → 로그아웃·재로그인을 확인했다. Google 앱은 테스트 상태이며 현재 소유자만 허용한다. 다른 교사 추가와 Google 브랜딩 필수 정보·게시 준비는 별도 후속 작업이다. [인증 설계](../docs/superpowers/specs/2026-09-06-no-plan-teacher-auth.md)를 따른다. Cloudflare Access 가입·요금제 선택·카드 등록은 하지 않는다.
 - 문제 세트 영구 보관·공유: 현재 브라우저 임시 저장에서 교사 계정별 세트 라이브러리로 확장한다.
 - 수업 리포트: 게임 모드별 아이템·이동·탈출 진행도와 문항별 오답 분포를 추가한다.

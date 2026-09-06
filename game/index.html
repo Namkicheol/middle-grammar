@@ -693,6 +693,7 @@ button:focus-visible,a:focus-visible,.unit-card:focus-visible,.grade-random:focu
 #landscape-warn{display:none;position:fixed;inset:0;background:var(--dark);z-index:9999;color:#fff;align-items:center;justify-content:center;font-size:1.1rem;font-weight:700;text-align:center;padding:20px;}
 @media (orientation:landscape) and (max-height:500px){#landscape-warn{display:flex;}}
 </style>
+<link rel="stylesheet" href="./arena.css">
 </head>
 <body>
 <div id="toast"></div>
@@ -701,96 +702,97 @@ button:focus-visible,a:focus-visible,.unit-card:focus-visible,.grade-random:focu
 
 <!-- ───────── START SCREEN ───────── -->
 <div id="start-screen">
-  <div class="start-header">
-    <div class="badge">🎮 GRAMMAR ARCADE</div>
-    <h1>문법 <span>아케이드</span></h1>
-    <p>학년과 게임을 고른 뒤, 배우는 단원으로 바로 들어가요.</p>
-    <div class="bubble-deco" id="deco"></div>
-  </div>
-  <nav class="play-tabs" aria-label="플레이 방식">
-    <a class="play-tab on" href="./" aria-current="page">혼자 하기</a>
-    <a class="play-tab multi" id="multiplayer-tab" href="../multiplayer/">같이 하기</a>
-  </nav>
-  <div class="settings-box">
-    <div class="panel-title">
-      <span>01</span>
-      <div><small>GRADE FIRST</small><h2>몇 학년 문법을 연습할까?</h2></div>
-    </div>
-    <div class="grade-opts" id="grade-opts">
-      <button class="grade-btn on" type="button" data-grade="g1" aria-pressed="true">중학교 1학년</button>
-      <button class="grade-btn" type="button" data-grade="g2" aria-pressed="false">중학교 2학년</button>
-    </div>
-    <p class="helper">학년을 바꾸면 아래 Lesson과 문법 주제도 함께 바뀌어요.</p>
-
-    <div class="game-select">
-      <div class="panel-title">
-        <span>02</span>
-        <div><small>GAME MODE</small><h2>게임을 골라요</h2></div>
+  <header class="start-header">
+    <div class="brand-lockup">
+      <div>
+        <h1>문법 아케이드</h1>
+        <p>학년, 게임, 문법 주제를 고르면 바로 시작해요.</p>
       </div>
-      <button class="mode-summary" id="mode-summary" type="button" aria-expanded="false" aria-controls="mode-picker">✓ 문법 보스전 · 변경</button>
-      <div class="mode-picker" id="mode-picker" hidden>
-        <p class="helper">하고 싶은 게임을 누르면 선택창이 다시 접혀요.</p>
-        <div class="set-row mode-row">
-          <div class="mode-opts" id="mode-opts">
-            <button class="mode-btn on" type="button" data-mode="boss">
-              <i class="mode-icon">⚔️</i><em>BATTLE</em>
-              <strong>문법 보스전</strong>
-              <span>콤보와 필살기로 보스 격파</span>
-            </button>
-            <button class="mode-btn" type="button" data-mode="whack">
-              <i class="mode-icon">🔨</i><em>QUICK</em>
-              <strong>두더지 잡기</strong>
-              <span>튀어나오는 정답을 빠르게 타격</span>
-            </button>
-            <button class="mode-btn" type="button" data-mode="bubble">
-              <i class="mode-icon">🫧</i><em>PUZZLE</em>
-              <strong>보글보글</strong>
-              <span>버블 8발 → 문법 찬스 → 폭탄 버블</span>
-            </button>
-            <button class="mode-btn" type="button" data-mode="tower">
-              <i class="mode-icon">🏰</i><em>CLIMB</em>
-              <strong>무한의 탑</strong>
-              <span>목숨 3개로 오늘의 최고층 도전</span>
-            </button>
-            <button class="mode-btn" type="button" data-mode="rangers">
-              <i class="mode-icon">⚔️</i><em>LANE BATTLE</em>
-              <strong>문법 레인저스</strong>
-              <span>정답으로 기력을 모아 유닛을 소환하고 적 본진을 격파</span>
-            </button>
-            <button class="mode-btn" type="button" data-mode="sentence">
-              <i class="mode-icon">💥</i><em>NEW · BLOCK</em>
-              <strong>Sentence Blast</strong>
-              <span>블록 15초 → 문법 챌린지 → 문법 폭발</span>
-            </button>
+    </div>
+    <div class="bubble-deco" id="deco" aria-hidden="true"></div>
+    <nav class="play-tabs" aria-label="플레이 방식">
+      <a class="play-tab on" href="./" aria-current="page">혼자 하기</a>
+      <a class="play-tab multi" id="multiplayer-tab" href="../multiplayer/">같이 하기</a>
+    </nav>
+  </header>
+  <main class="arena-selector">
+    <div class="settings-box">
+      <section class="grade-select" aria-labelledby="grade-heading">
+        <div class="panel-title">
+          <div><h2 id="grade-heading">학년</h2></div>
+        </div>
+        <div class="grade-opts" id="grade-opts">
+          <button class="grade-btn on" type="button" data-grade="g1" aria-pressed="true">중1</button>
+          <button class="grade-btn" type="button" data-grade="g2" aria-pressed="false">중2</button>
+        </div>
+      </section>
+
+      <section class="game-select" aria-labelledby="mode-heading">
+        <div class="panel-title">
+          <div><h2 id="mode-heading">게임 모드</h2></div>
+        </div>
+        <button class="mode-summary" id="mode-summary" type="button" aria-expanded="false" aria-controls="mode-picker">문법 보스전 · 바꾸기</button>
+        <div class="mode-picker" id="mode-picker" hidden>
+          <p class="helper">플레이할 게임을 선택하세요.</p>
+          <div class="set-row mode-row">
+            <div class="mode-opts" id="mode-opts">
+              <button class="mode-btn on" type="button" data-mode="boss">
+                <i class="mode-thumb">⚔️</i>
+                <span class="mode-copy"><strong>문법 보스전</strong><span>콤보와 필살기로 보스 격파</span></span>
+              </button>
+              <button class="mode-btn" type="button" data-mode="speed">
+                <i class="mode-thumb">⚡</i>
+                <span class="mode-copy"><strong>스피드 퀴즈</strong><span>네 개의 버튼으로 빠르게 정답 선택</span></span>
+              </button>
+              <button class="mode-btn" type="button" data-mode="whack">
+                <i class="mode-thumb">🔨</i>
+                <span class="mode-copy"><strong>두더지 잡기</strong><span>튀어나오는 정답을 빠르게 타격</span></span>
+              </button>
+              <button class="mode-btn" type="button" data-mode="bubble">
+                <i class="mode-thumb">🫧</i>
+                <span class="mode-copy"><strong>보글보글</strong><span>버블 8발마다 문법 찬스</span></span>
+              </button>
+              <button class="mode-btn" type="button" data-mode="tower">
+                <i class="mode-thumb">🏰</i>
+                <span class="mode-copy"><strong>무한의 탑</strong><span>목숨 3개로 최고층 도전</span></span>
+              </button>
+              <button class="mode-btn" type="button" data-mode="rangers">
+                <i class="mode-thumb">🛡️</i>
+                <span class="mode-copy"><strong>문법 레인저스</strong><span>정답으로 유닛을 소환해 본진 격파</span></span>
+              </button>
+              <button class="mode-btn" type="button" data-mode="sentence">
+                <i class="mode-thumb">💥</i>
+                <span class="mode-copy"><strong>Sentence Blast</strong><span>블록 15초 뒤 문법 챌린지</span></span>
+              </button>
+            </div>
           </div>
+        </div>
+      </section>
+      <div class="set-row time-row" id="time-row" hidden>
+        <span class="set-label">플레이 시간</span>
+        <div class="time-opts" id="time-opts">
+          <button class="topt" data-min="1">1분</button>
+          <button class="topt" data-min="3">3분</button>
+          <button class="topt on" data-min="5">5분</button>
+          <button class="topt" data-min="10">10분</button>
+          <button class="topt" data-min="0">무제한</button>
         </div>
       </div>
     </div>
-    <div class="set-row time-row" id="time-row" hidden>
-      <span class="set-label">⏱ 플레이 시간</span>
-      <div class="time-opts" id="time-opts">
-        <button class="topt" data-min="1">1분</button>
-        <button class="topt" data-min="3">3분</button>
-        <button class="topt on" data-min="5">5분</button>
-        <button class="topt" data-min="10">10분</button>
-        <button class="topt" data-min="0">무제한</button>
+    <section class="unit-section" aria-labelledby="unit-heading">
+      <div class="unit-head">
+        <div class="unit-head-copy">
+          <h2 id="unit-heading">중1 문법 주제를 골라요</h2>
+          <p class="helper" id="unit-helper">Lesson마다 두 가지 문법 주제가 있어요.</p>
+        </div>
       </div>
-    </div>
-  </div>
-  <div class="unit-section">
-    <div class="unit-head">
-      <span>03</span>
-      <div class="unit-head-copy">
-        <small>LESSON SELECT</small><h2 id="unit-heading">중1 문법 주제를 골라요</h2>
-        <p class="helper" id="unit-helper">Lesson마다 두 가지 문법 주제가 있어요.</p>
-      </div>
-    </div>
-    <div class="lesson-list" id="unit-grid"></div>
-    <button class="grade-random" id="grade-random" type="button">
-      🎲 중1 전체에서 랜덤
-      <span>16개 주제 중 하나를 골라 시작</span>
-    </button>
-  </div>
+      <div class="lesson-list" id="unit-grid"></div>
+      <button class="grade-random" id="grade-random" type="button">
+        🎲 중1 전체에서 랜덤
+        <span>16개 주제 중 하나를 골라 시작</span>
+      </button>
+    </section>
+  </main>
 </div>
 
 <!-- ───────── GAME SCREEN ───────── -->
@@ -992,14 +994,16 @@ button:focus-visible,a:focus-visible,.unit-card:focus-visible,.grade-random:focu
   </div>
   <div class="speed-wrap">
     <div class="speed-card">
-      <div class="speed-meta">
-        <span id="speed-progress">1/10</span>
-        <span id="speed-combo">콤보 0</span>
+      <div class="speed-projection">
+        <div class="speed-meta">
+          <span id="speed-progress">1/10</span>
+          <span id="speed-combo">콤보 0</span>
+        </div>
+        <div class="speed-kor" id="speed-kor"></div>
+        <div class="speed-q" id="speed-q"></div>
+        <div class="speed-review" id="speed-review"></div>
       </div>
-      <div class="speed-q" id="speed-q"></div>
-      <div class="speed-kor" id="speed-kor"></div>
       <div class="speed-options" id="speed-options"></div>
-      <div class="speed-review" id="speed-review"></div>
     </div>
     <div class="speed-footer">
       <div class="speed-stat"><b id="speed-correct">0</b><span>정답</span></div>
@@ -1020,11 +1024,13 @@ button:focus-visible,a:focus-visible,.unit-card:focus-visible,.grade-random:focu
 <!-- ───────── QUIZ MODAL ───────── -->
 <div id="quiz-overlay">
   <div id="quiz-box">
-    <div class="quiz-chain" id="quiz-chain"></div>
-    <div class="quiz-q" id="quiz-q"></div>
-    <div class="quiz-kor" id="quiz-kor"></div>
+    <div class="quiz-projection">
+      <div class="quiz-chain" id="quiz-chain"></div>
+      <div class="quiz-kor" id="quiz-kor"></div>
+      <div class="quiz-q" id="quiz-q"></div>
+      <div class="quiz-bonus" id="quiz-bonus"></div>
+    </div>
     <div class="quiz-opts" id="quiz-opts"></div>
-    <div class="quiz-bonus" id="quiz-bonus"></div>
   </div>
 </div>
 
@@ -1079,7 +1085,7 @@ const STAGE_CONFIG = [
 ];
 let selectedMode = 'boss';
 let activeGrade = 'g1';
-const TIMED_MODES = new Set(['bubble', 'sentence']);
+const TIMED_MODES = new Set(['bubble', 'speed', 'sentence']);
 const GRADE_LABELS = { g1: '중1', g2: '중2' };
 
 function syncTimeOptionsVisibility() {

@@ -64,7 +64,7 @@ async function nextMessage(socket: WebSocket) {
 }
 
 beforeEach(async () => {
-  await env.REPORTS.exec("DELETE FROM player_results; DELETE FROM room_reports;");
+  await env.REPORTS.exec("DELETE FROM player_results; DELETE FROM room_reports; DELETE FROM teacher_session_rooms; DELETE FROM teacher_sessions; DELETE FROM teacher_identities; DELETE FROM oauth_states; DELETE FROM auth_rate_limits;");
 });
 
 describe("teacher authentication and ownership", () => {
@@ -96,28 +96,14 @@ describe("teacher authentication and ownership", () => {
     }
   });
 
-  it("fails closed when a production JWT arrives without Access configuration", async () => {
+  it("never treats legacy Access assertions as teacher authentication", async () => {
     const response = await request("/api/teacher/rooms", {
       method: "POST",
       headers: { "content-type": "application/json", "cf-access-jwt-assertion": "not-a-jwt" },
       body: "{}",
-    }, { ENVIRONMENT: "production", ACCESS_TEAM_DOMAIN: undefined, ACCESS_AUD: undefined });
-    expect(response.status).toBe(503);
-    expect(await response.json()).toMatchObject({ error: "ACCESS_CONFIG_MISSING" });
-  });
-
-  it("rejects an invalid production JWT even when Access is configured", async () => {
-    const response = await request("/api/teacher/rooms", {
-      method: "POST",
-      headers: { "content-type": "application/json", "cf-access-jwt-assertion": "not-a-jwt" },
-      body: "{}",
-    }, {
-      ENVIRONMENT: "production",
-      ACCESS_TEAM_DOMAIN: "school.cloudflareaccess.com",
-      ACCESS_AUD: "expected-audience",
-    });
+    }, { ENVIRONMENT: "production" });
     expect(response.status).toBe(401);
-    expect(await response.json()).toMatchObject({ error: "INVALID_ACCESS_TOKEN" });
+    expect(await response.json()).toMatchObject({ error: "TEACHER_LOGIN_REQUIRED" });
   });
 
   it("keeps teacher state on a separate owner-only path", async () => {
@@ -134,11 +120,11 @@ describe("teacher authentication and ownership", () => {
     expect(denied.status).toBe(403);
   });
 
-  it("allows the teacher WebSocket query identity only on loopback development", async () => {
+  it("allows the teacher development header only on loopback development", async () => {
     const { body } = await createRoom();
-    const path = `/api/teacher/rooms/${body.code}/ws?devTeacherEmail=${encodeURIComponent(TEACHER)}`;
+    const path = `/api/teacher/rooms/${body.code}/ws`;
     const development = await worker.fetch(
-      new Request(`http://127.0.0.1${path}`, { headers: { upgrade: "websocket" } }),
+      new Request(`http://127.0.0.1${path}`, { headers: { upgrade: "websocket", "x-dev-teacher-email": TEACHER } }),
       { ...env, ENVIRONMENT: "development" } as Env,
     );
     expect(development.status).toBe(101);

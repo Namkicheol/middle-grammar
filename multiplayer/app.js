@@ -3,6 +3,7 @@ import { ApiError, createRoomSocket, roomApi } from "./api.js";
 const SESSION_PLAYER_ID = "mg.multiplayer.playerId";
 const SESSION_RESUME_TOKEN = "mg.multiplayer.resumeToken";
 const LOCAL_SET_KEY = "mg.multiplayer.localSet";
+const TEACHER_SETUP_KEY = "mg.multiplayer.teacherSetup";
 
 const UNIT_OPTIONS = {
   g1: [
@@ -43,10 +44,20 @@ const UNIT_OPTIONS = {
   ],
 };
 
+const GAME_MODES = [
+  { value: "score_race", title: "스피드 점수전", description: "문제를 빠르게 풀고 순위를 겨뤄요.", tag: "개인 경쟁", image: "./assets/cover-score-v2.webp" },
+  { value: "treasure_heist", title: "금고 작전", description: "정답 뒤 금고를 골라 보상을 얻어요.", tag: "선택형", image: "./assets/cover-vault-v2.webp" },
+  { value: "maze_heist", title: "미궁 쟁탈전", description: "문제를 맞히고 미궁을 탐험해요.", tag: "탐험형", image: "./assets/cover-maze-v2.webp" },
+  { value: "grammar_escape", title: "야간학교 탈출", description: "단서를 모아 세 개의 문을 열어요.", tag: "협동 가능", image: "./assets/cover-escape-v2.webp" },
+];
+
 const app = document.querySelector("#app");
 const statusRegion = document.querySelector("#status");
 const connectionBadge = document.querySelector("#connection-badge");
 const initialParams = new URLSearchParams(location.search);
+const initialTeacherIntent = initialParams.get("teacher") === "1";
+const initialAuthError = initialParams.get("auth_error") || "";
+const initialTeacherDraft = loadTeacherDraft();
 
 const state = {
   view: "role",
@@ -64,10 +75,16 @@ const state = {
   feedback: null,
   connectionState: "idle",
   teacherLoginRequired: false,
+  teacherSession: null,
+  teacherAuthLoading: false,
+  teacherSetupDraft: initialTeacherDraft,
+  teacherSetupStep: initialTeacherDraft?.mode ? 2 : 1,
+  selectedGameMode: initialTeacherDraft?.mode || "",
+  unitSearch: "",
   clockTimer: null,
   renderedQuestionKey: null,
   needsQuestionFocus: false,
-  localSet: initialParams.get("set") === "local" ? loadLocalSet() : null,
+  localSet: initialTeacherDraft?.customSet || (initialParams.get("set") === "local" ? loadLocalSet() : null),
   treasureBusy: false,
   mazeBusy: false,
   escapeBusy: false,
@@ -75,6 +92,49 @@ const state = {
   escapeCode: "",
   escapeQuestionOpen: true,
 };
+
+function isLoopback() {
+  return ["localhost", "127.0.0.1", "::1"].includes(location.hostname);
+}
+
+function loadTeacherDraft() {
+  try {
+    const draft = JSON.parse(sessionStorage.getItem(TEACHER_SETUP_KEY) || "null");
+    return draft && typeof draft === "object" ? draft : null;
+  } catch {
+    return null;
+  }
+}
+
+function clearTeacherDraft() {
+  state.teacherSetupDraft = null;
+  sessionStorage.removeItem(TEACHER_SETUP_KEY);
+}
+
+function oauthErrorMessage(code) {
+  return ({
+    access_denied: "Google 로그인이 취소되었어요. 다시 시도해 주세요.",
+    oauth_denied: "Google 로그인이 취소되었어요. 다시 시도해 주세요.",
+    oauth_failed: "Google 로그인을 완료하지 못했어요. 다시 시도해 주세요.",
+    oauth_expired: "로그인 확인 시간이 지났어요. 다시 시도해 주세요.",
+    oauth_state_invalid: "로그인 확인을 다시 시작해 주세요.",
+    teacher_not_allowed: "이 Google 계정은 교사 계정으로 등록되어 있지 않아요.",
+  })[String(code || "").toLowerCase()] || "Google 로그인을 완료하지 못했어요. 다시 시도해 주세요.";
+}
+
+function removeAuthQuery() {
+  const url = new URL(location.href);
+  url.searchParams.delete("teacher");
+  url.searchParams.delete("auth_error");
+  history.replaceState({}, "", url);
+}
+
+function teacherReturnTo() {
+  const url = new URL(location.href);
+  url.searchParams.set("teacher", "1");
+  url.searchParams.delete("auth_error");
+  return `${url.pathname}${url.search}`;
+}
 
 function loadLocalSet() {
   try {
@@ -118,6 +178,12 @@ function safeImageUrl(value) {
 function setStatus(message = "", tone = "") {
   statusRegion.textContent = message;
   statusRegion.dataset.tone = tone;
+}
+
+function clearStaleStudentPlayStatus() {
+  if (!statusRegion || state.role !== "student" || roomStatus() !== "playing") return;
+  const message = statusRegion.textContent || "";
+  if (["참가 완료", "게임 진행 중", "게임방에 다시 연결"].some((prefix) => message.startsWith(prefix))) setStatus();
 }
 
 function setConnection(name) {
@@ -438,6 +504,94 @@ function friendlyError(error) {
   return error?.message || "알 수 없는 오류가 생겼어요.";
 }
 
+function teacherAccountHtml() {
+  const teacher = state.teacherSession?.teacher;
+  if (!teacher?.email) return isLoopback() ? `<span class="teacher-account local">로컬 교사 테스트</span>` : "";
+  const role = teacher.role === "admin" ? "관리자" : teacher.role === "teacher" ? "교사" : "";
+  return `<div class="teacher-account"><span><strong>${escapeHtml(teacher.email)}</strong>${role ? `<small class="teacher-role">${role}</small>` : ""}</span><button class="text-button" type="button" data-action="teacher-logout">로그아웃</button></div>`;
+}
+
+function teacherAuthGateView() {
+  if (state.teacherAuthLoading) {
+    return `<section class="screen teacher-auth-gate teacher-auth-neutral" aria-live="polite"><h1>교사 로그인 확인 중</h1><p>안전하게 교사 권한을 확인하고 있어요.</p></section>`;
+  }
+  const configured = state.teacherSession?.configured;
+  if (configured === false) {
+    return `<section class="screen teacher-auth-gate teacher-auth-neutral"><h1>로그인 연결 준비 중</h1><p>교사 로그인 연결을 준비하고 있어요. 잠시 뒤 다시 확인해 주세요.</p><button class="secondary-button" type="button" data-action="back-role">뒤로</button></section>`;
+  }
+  return `<section class="screen teacher-auth-gate teacher-auth-neutral"><h1>교사 로그인</h1><p>Google 교사 계정으로 로그인하면 게임방을 만들고 진행을 관리할 수 있어요.</p><button class="primary-button" type="button" data-action="teacher-login">Google로 로그인</button><button class="back-button" type="button" data-action="back-role">뒤로</button></section>`;
+}
+
+function isTeacherAuthenticated() {
+  return Boolean(state.teacherSession?.authenticated) || isLoopback();
+}
+
+async function loadTeacherSession({ quiet = false } = {}) {
+  state.teacherAuthLoading = true;
+  if (!quiet) render();
+  try {
+    state.teacherSession = await roomApi.getTeacherSession();
+    state.teacherLoginRequired = !state.teacherSession?.authenticated;
+    return state.teacherSession;
+  } catch (error) {
+    state.teacherSession = { authenticated: false, configured: false };
+    state.teacherLoginRequired = true;
+    if (!quiet) setStatus("교사 로그인 상태를 확인하지 못했어요. 잠시 뒤 다시 시도해 주세요.", "error");
+    return state.teacherSession;
+  } finally {
+    state.teacherAuthLoading = false;
+    if (!quiet) render();
+  }
+}
+
+function handleTeacherAuthError(error) {
+  if (!(error instanceof ApiError) || ![401, 403].includes(error.status)) return false;
+  resetConnection();
+  stopClock();
+  state.room = null;
+  state.report = null;
+  state.busy = false;
+  state.teacherSession = { authenticated: false, configured: state.teacherSession?.configured !== false };
+  state.teacherLoginRequired = true;
+  setStatus("교사 로그인 시간이 끝났어요. Google로 다시 로그인해 주세요.", "error");
+  render();
+  return true;
+}
+
+function saveTeacherDraft() {
+  const form = document.querySelector("#create-form");
+  if (!form) return;
+  const draft = { customSet: state.localSet || null };
+  new FormData(form).forEach((value, key) => {
+    draft[key] = String(value);
+  });
+  draft.allowLateJoin = form.elements.allowLateJoin?.checked === true;
+  draft.shuffleQuestions = form.elements.shuffleQuestions?.checked === true;
+  state.teacherSetupDraft = draft;
+  sessionStorage.setItem(TEACHER_SETUP_KEY, JSON.stringify(draft));
+}
+
+function applyTeacherDraft() {
+  const draft = state.teacherSetupDraft;
+  if (!draft || !document.querySelector("#create-form")) return;
+  if (!state.localSet && draft.customSet) state.localSet = draft.customSet;
+  const grade = String(draft.grade || "g1");
+  const board = document.querySelector("#unit-board");
+  if (board && UNIT_OPTIONS[grade]) board.innerHTML = unitBoardHtml(grade, String(draft.unitKey || ""), state.unitSearch);
+  Object.entries(draft).forEach(([name, value]) => {
+    if (name === "customSet") return;
+    const inputs = app.querySelectorAll(`[name="${CSS.escape(name)}"]`);
+    inputs.forEach((input) => {
+      if (input.type === "checkbox") input.checked = Boolean(value);
+      else if (input.type === "radio") input.checked = input.value === String(value);
+      else input.value = String(value);
+    });
+  });
+  clearTeacherDraft();
+  toggleTeamSettings();
+  refreshMissionSummary();
+}
+
 function connectLiveRoom() {
   resetConnection();
   state.socket = createRoomSocket({
@@ -469,6 +623,16 @@ function connectLiveRoom() {
         state.escapeBusy = false;
         state.escapeAction = null;
       }
+      if (state.role === "teacher" && name === "rejected") {
+        state.room = null;
+        state.report = null;
+        state.busy = false;
+        state.teacherSession = { authenticated: false, configured: state.teacherSession?.configured !== false };
+        state.teacherLoginRequired = true;
+        setStatus("교사 로그인 시간이 끝났어요. Google로 다시 로그인해 주세요.", "error");
+        render();
+        return;
+      }
       if (name === "reconnecting") {
         setStatus(`연결을 다시 확인하고 있어요 (${attempt}/${maxReconnects}).`);
       } else if (name === "connected") {
@@ -494,6 +658,7 @@ function handleSocketMessage(message) {
     }
     state.escapeBusy = false;
     state.escapeAction = null;
+    clearStaleStudentPlayStatus();
   } else if (type === "room_state" || type === "start") {
     const previousEscape = escapeState();
     const previousQuestionKey = questionOccurrenceKey();
@@ -505,7 +670,10 @@ function handleSocketMessage(message) {
       state.chosenAnswer = null;
     }
     if (type === "start") state.feedback = null;
-    if (type === "start") setStatus("게임 진행 중", "success");
+    if (type === "start") {
+      if (state.role === "student") setStatus();
+      else setStatus("게임 진행 중", "success");
+    }
   } else if (type === "answer_result") {
     const result = message.result || message;
     if (message.state || message.room) state.room = applyRoom(message);
@@ -665,30 +833,32 @@ function studentJoinView() {
 }
 
 function teacherSetupView() {
+  if (!isTeacherAuthenticated()) return teacherAuthGateView();
+  if (state.teacherSetupStep !== 2 || !state.selectedGameMode) return teacherGamePickerView();
   const customSet = state.localSet;
   const customCount = customSet?.questions?.length || 0;
+  const selectedGame = GAME_MODES.find((game) => game.value === state.selectedGameMode) || GAME_MODES[0];
+  const initialSetupSummary = customSet
+    ? `${customSet.title} · ${customCount}문항 · ${formatTime(300)}`
+    : `${unitLabel("g1", UNIT_OPTIONS.g1[0][0])} · 15문항 · ${formatTime(300)}`;
   return `
-    <section class="screen panel" aria-labelledby="setup-title">
-      <div class="panel-header">
+    <section class="screen teacher-setup" aria-labelledby="setup-title">
+      <header class="teacher-setup-header">
         <div>
-          <p class="eyebrow">TEACHER HOST</p>
-          <h1 id="setup-title">멀티 게임방 만들기</h1>
-          <p class="muted">문제와 게임 방식을 고르세요. 점수·아이템·정답은 서버가 판정해요.</p>
+          <p class="setup-step-label">2단계 · 문제와 시간 설정</p>
+          <h1 id="setup-title">문제와 시간 설정</h1>
+          <p>수업에 맞는 문법 범위와 진행 방식을 고르세요.</p>
+          ${teacherAccountHtml()}
         </div>
         <button class="back-button" type="button" data-action="back-role">뒤로</button>
-      </div>
-      <form id="create-form" class="form-grid two-column">
-        <fieldset class="choice-field full mode-field">
-          <legend>게임 방식</legend>
-          <div class="mode-grid">
-            ${modeCard("score_race", "스피드 점수전", "정답·연속 성공으로 실시간 순위 경쟁", "⚡", true)}
-            ${modeCard("treasure_heist", "금고 작전", "정답 뒤 금고를 골라 보너스·약탈·나눔", "./assets/treasure-vault.webp")}
-            ${modeCard("maze_heist", "미궁 쟁탈전", "정답으로 이동권을 얻고 열쇠·보물·함정 탐험", "./assets/maze-heist.webp")}
-            ${modeCard("grammar_escape", "야간학교 탈출", "문제를 풀고 단서를 찾아, 세 개의 문을 열어라", "./assets/night-school.webp")}
-          </div>
-        </fieldset>
+      </header>
+      <div class="selected-game-summary"><img src="${selectedGame.image}" alt="" width="160" height="96"><div><span>${escapeHtml(selectedGame.tag)}</span><strong>${escapeHtml(selectedGame.title)}</strong><small>${escapeHtml(selectedGame.description)}</small></div><button type="button" data-action="change-game">게임 바꾸기</button></div>
+      <form id="create-form" class="teacher-config-form">
+        <input type="hidden" name="mode" value="${escapeHtml(selectedGame.value)}">
+        <div class="teacher-config-grid">
+          <div class="teacher-config-main">
         ${customSet ? `
-          <div class="custom-set-card full">
+          <div class="custom-set-card">
             <div><span>내 문제 세트</span><strong>${escapeHtml(customSet.title)}</strong><small>${customCount}문항 · 이 브라우저에 임시 저장됨</small></div>
             <a href="./creator.html">문항 수정</a>
           </div>
@@ -696,27 +866,30 @@ function teacherSetupView() {
           <input type="hidden" name="unitKey" value="custom-local">
           <input type="hidden" name="questionCount" value="${customCount}">
         ` : `
-          <fieldset class="choice-field full grade-field">
-            <legend>어느 학년의 미션인가요?</legend>
+          <fieldset class="setup-field grade-field">
+            <legend>학년</legend>
             <div class="grade-tabs">
               <label class="grade-tab">
                 <input type="radio" name="grade" value="g1" checked>
-                <span><strong>중학교 1학년</strong><small>기초 문법 탐험</small></span>
+                <span>중1</span>
               </label>
               <label class="grade-tab">
                 <input type="radio" name="grade" value="g2">
-                <span><strong>중학교 2학년</strong><small>응용 문법 작전</small></span>
+                <span>중2</span>
               </label>
             </div>
           </fieldset>
-          <fieldset class="choice-field full unit-field">
-            <legend>스테이지 선택</legend>
-            <div id="unit-board" class="unit-board">${unitBoardHtml("g1")}</div>
+          <fieldset class="setup-field unit-field">
+            <legend>문법 찾기</legend>
+            <label class="unit-search"><span class="sr-only">문법 주제 검색</span><input id="unit-search" type="search" placeholder="예: be동사, to부정사" value="${escapeHtml(state.unitSearch)}" autocomplete="off"></label>
+            <div id="unit-board" class="unit-board">${unitBoardHtml("g1", "", state.unitSearch)}</div>
           </fieldset>
-          <div id="mission-summary" class="mission-summary full" aria-live="polite">${missionSummaryHtml({ grade: "g1", unitKey: UNIT_OPTIONS.g1[0][0], questionCount: 15, durationSeconds: 300 })}</div>
-          <a class="build-set-link full" href="./creator.html"><strong>원하는 문제가 없나요?</strong><span>직접 만들거나 Quizlet·Excel/CSV에서 가져오기 →</span></a>
+          <div id="mission-summary" class="mission-summary" aria-live="polite">${missionSummaryHtml({ grade: "g1", unitKey: UNIT_OPTIONS.g1[0][0], questionCount: 15, durationSeconds: 300 })}</div>
+          <a class="build-set-link" href="./creator.html"><strong>원하는 문제가 없나요?</strong><span>직접 만들거나 Quizlet·Excel/CSV에서 가져오기</span></a>
         `}
-        <fieldset class="choice-field full">
+          </div>
+          <aside class="teacher-config-controls" aria-label="게임 진행 설정">
+        <fieldset class="setup-field">
           <legend>제한 시간</legend>
           <div class="choice-grid time-choices">
             ${choicePill("durationSeconds", "60", "1분")}
@@ -726,8 +899,8 @@ function teacherSetupView() {
             ${choicePill("durationSeconds", "600", "10분")}
           </div>
         </fieldset>
-        ${customSet ? "" : `<fieldset class="choice-field full">
-          <legend>반복 문항 묶음</legend>
+        ${customSet ? "" : `<fieldset class="setup-field">
+          <legend>문항 수</legend>
           <div class="choice-grid question-choices">
             ${choicePill("questionCount", "10", "10문항")}
             ${choicePill("questionCount", "15", "15문항", true)}
@@ -735,7 +908,7 @@ function teacherSetupView() {
           </div>
           <p class="choice-help">제한 시간 동안 모두 풀면 처음부터 계속 나와요.</p>
         </fieldset>`}
-        <fieldset class="choice-field full play-style-field">
+        <fieldset class="setup-field play-style-field">
           <legend>플레이 스타일</legend>
           <div class="choice-grid play-style-grid">
             ${choicePill("playStyle", "individual", "개인전", true)}
@@ -751,8 +924,10 @@ function teacherSetupView() {
             </div>
           </div>
         </fieldset>
-        <fieldset class="toggle-list full">
-          <legend>진행 방식</legend>
+        <details class="setup-more">
+          <summary>추가 설정</summary>
+          <fieldset class="toggle-list">
+          <legend class="sr-only">진행 방식</legend>
           <label class="toggle-row">
             <span><strong>중간 입장 허용</strong><small>늦게 들어오면 남은 시간만 플레이해요.</small></span>
             <input type="checkbox" name="allowLateJoin" role="switch" checked>
@@ -764,28 +939,19 @@ function teacherSetupView() {
             <span class="toggle-control" aria-hidden="true"></span>
           </label>
         </fieldset>
-        <button class="primary-button full" type="submit" ${state.busy ? "disabled" : ""}>${state.busy ? "게임방 만드는 중…" : "이 설정으로 게임방 만들기"}</button>
+        </details>
+          </aside>
+        </div>
+        <div class="teacher-setup-sticky"><div id="setup-summary" aria-live="polite">${escapeHtml(initialSetupSummary)}</div><button class="primary-button" type="submit" ${state.busy ? "disabled" : ""}>${state.busy ? "게임방 만드는 중…" : "게임방 만들기"}</button></div>
       </form>
-      ${state.teacherLoginRequired ? `
-        <div class="login-panel" role="alert">
-          <strong>교사 로그인이 필요해요.</strong>
-          <span>허용된 Google 교사 계정으로 로그인한 뒤 다시 만들 수 있습니다.</span>
-          <button class="secondary-button" type="button" data-action="teacher-login">Google 교사 로그인</button>
-        </div>` : ""}
-      <div class="helper-box">같은 방에서는 닉네임을 중복해서 쓸 수 없어요. 처음 만들 때 Google 교사 로그인이 열릴 수 있습니다.</div>
     </section>`;
 }
 
-function modeCard(value, title, description, visual, checked = false) {
-  const art = visual.startsWith("./")
-    ? `<img src="${visual}" alt="" width="96" height="96">`
-    : `<span class="mode-emoji" aria-hidden="true">${visual}</span>`;
-  return `<label class="mode-card">
-    <input type="radio" name="mode" value="${value}" ${checked ? "checked" : ""} required>
-    <span class="mode-card-visual">${art}</span>
-    <span class="mode-card-copy"><strong>${title}</strong><small>${description}</small></span>
-    <span class="mode-check" aria-hidden="true">✓</span>
-  </label>`;
+function teacherGamePickerView() {
+  return `<section class="screen teacher-game-picker" aria-labelledby="game-picker-title">
+    <header class="teacher-setup-header"><div><p class="setup-step-label">1단계 · 게임 선택</p><h1 id="game-picker-title">어떤 게임을 할까요?</h1><p>수업의 분위기에 맞는 방식부터 고르세요.</p>${teacherAccountHtml()}</div><button class="back-button" type="button" data-action="back-role">뒤로</button></header>
+    <div class="game-cover-grid">${GAME_MODES.map((game) => `<button class="game-cover" type="button" data-action="select-game" data-game-mode="${game.value}"><img src="${game.image}" alt="" width="320" height="200"><span class="game-cover-tag">${escapeHtml(game.tag)}</span><strong>${escapeHtml(game.title)}</strong><small>${escapeHtml(game.description)}</small></button>`).join("")}</div>
+  </section>`;
 }
 
 function choicePill(name, value, label, checked = false) {
@@ -795,19 +961,20 @@ function choicePill(name, value, label, checked = false) {
   </label>`;
 }
 
-function unitBoardHtml(grade, selected = "") {
+function unitBoardHtml(grade, selected = "", search = "") {
   const options = UNIT_OPTIONS[grade] || [];
-  const selectedKey = selected || options[0]?.[0] || "";
-  return options.map(([value, label], index) => {
+  const selectedKey = options.some(([value]) => value === selected) ? selected : options[0]?.[0] || "";
+  const query = search.trim().toLowerCase();
+  const groups = new Map();
+  options.forEach(([value, label], index) => {
     const [lesson, ...topicParts] = label.split(" · ");
     const topic = topicParts.join(" · ") || label;
-    return `<label class="mission-tile">
-      <input type="radio" name="unitKey" value="${escapeHtml(value)}" ${value === selectedKey ? "checked" : ""} required>
-      <span class="mission-pin" aria-hidden="true">${escapeHtml(lesson || `L${index + 1}`)}</span>
-      <span class="mission-copy"><strong>${escapeHtml(topic)}</strong><small>문법 미션 ${String(index + 1).padStart(2, "0")}</small></span>
-      <span class="mission-arrow" aria-hidden="true">↗</span>
-    </label>`;
-  }).join("");
+    if (!groups.has(lesson)) groups.set(lesson, []);
+    groups.get(lesson).push({ value, topic, index, matches: !query || `${lesson} ${topic}`.toLowerCase().includes(query) });
+  });
+  const hasMatch = [...groups.values()].some((topics) => topics.some(({ matches }) => matches));
+  const noMatch = hasMatch ? "" : `<p class="unit-empty">일치하는 문법 주제가 없어요.</p>`;
+  return `${[...groups.entries()].map(([lesson, topics]) => `<section class="lesson-group" ${topics.some(({ matches }) => matches) ? "" : "hidden"}><h3>${escapeHtml(lesson)}</h3><div>${topics.map(({ value, topic, matches }) => `<label class="unit-topic" ${matches ? "" : "hidden"}><input type="radio" name="unitKey" value="${escapeHtml(value)}" ${value === selectedKey ? "checked" : ""} required><span>${escapeHtml(topic)}</span></label>`).join("")}</div></section>`).join("")}${noMatch}`;
 }
 
 function unitLabel(grade, unitKey) {
@@ -817,8 +984,7 @@ function unitLabel(grade, unitKey) {
 function missionSummaryHtml({ grade = "g1", unitKey = UNIT_OPTIONS.g1[0][0], questionCount = 15, durationSeconds = 300, custom = false, title = "" } = {}) {
   const label = custom ? title || "내 문제 세트" : unitLabel(grade, unitKey);
   const gradeLabel = grade === "g2" ? "중2" : grade === "g1" ? "중1" : "내 문제";
-  return `<div class="mission-summary-mark" aria-hidden="true">▶</div>
-    <div class="mission-summary-copy"><span>선택한 미션</span><strong>${escapeHtml(label)}</strong></div>
+  return `<div class="mission-summary-copy"><span>선택한 문법</span><strong>${escapeHtml(label)}</strong></div>
     <div class="mission-summary-stats"><span><b>${escapeHtml(gradeLabel)}</b> 학년</span><span><b>${Number(questionCount) || 0}</b> 문항</span><span><b>${formatTime(durationSeconds)}</b> 제한 시간</span></div>`;
 }
 
@@ -895,6 +1061,7 @@ function teacherLobbyView() {
     <section class="screen room-shell" aria-labelledby="teacher-lobby-title">
       <article class="panel">
         ${roomHeader("학생을 초대하세요")}
+        ${teacherAccountHtml()}
       </article>
       <div class="teacher-grid">
         <article class="panel">
@@ -1034,12 +1201,13 @@ function escapeQuestionHtml(question, me) {
     </section>`;
   }
   return `<section id="escape-question" class="question-console escape-question" aria-labelledby="question-title">
-    <div class="question-console-top"><span class="question-kicker">MISSION ${String(progress.current + 1).padStart(2, "0")}</span><button type="button" class="escape-fold-button" data-action="toggle-escape-question" aria-expanded="true">문제 접기</button></div>
+    <div class="question-console-top"><span class="question-kicker">문제 ${progress.current + 1}</span><button type="button" class="escape-fold-button" data-action="toggle-escape-question" aria-expanded="true">문제 접기</button></div>
     ${imageUrl ? `<img class="question-image" src="${imageUrl}" alt="문제 참고 이미지">` : ""}
     <p class="question-kor">${escapeHtml(question?.kor || question?.promptKor || "알맞은 답을 고르세요.")}</p>
     <h1 id="question-title" class="question-eng" tabindex="-1" role="status" aria-live="polite" aria-atomic="true">${escapeHtml(question?.eng || question?.prompt || question?.text || "문제를 불러오는 중이에요.")}</h1>
     <p class="answer-prompt">정답마다 조사 기회 1개를 얻어요.</p>
     <div class="answers" aria-label="답 선택지">${options.map((option, index) => answerButtonHtml(option, answered, qKey, index)).join("")}</div>
+    ${pendingAnswerHtml(qKey)}
     ${feedbackHtml(qKey)}
   </section>`;
 }
@@ -1115,42 +1283,51 @@ function studentPlayView() {
   const maze = roomMode() === "maze_heist" ? me?.maze : null;
   const teamMode = isTeamMode();
   const mainHeadingId = roomMode() === "treasure_heist" && treasureChoices.length ? "treasure-title" : "question-title";
+  const rank = teamMode ? Number(currentTeam()?.rank) || "-" : playerRank(me) || "-";
+  const questionCount = Number(state.room?.questionCount ?? state.room?.question_count ?? state.roomConfig?.questionCount ?? 0) || "-";
+  const questionText = question?.eng || question?.prompt || question?.text || "문제를 불러오는 중이에요.";
+  const longQuestionClass = questionText.length > 80 ? " long-question" : "";
   return `
-    <section class="screen game-layout" aria-labelledby="${mainHeadingId}">
-      <article class="panel">
-        <div class="game-status">
-          <div class="mini-stat"><span>내 점수</span><strong>${playerScore(me).toLocaleString()}</strong></div>
-          <div class="mini-stat"><span>${teamMode ? "우리 팀 순위" : "현재 순위"}</span><strong>${teamMode ? `${Number(currentTeam()?.rank) || "-"}위` : `${playerRank(me) || "-"}위`}</strong></div>
-          <div class="mini-stat"><span>남은 시간</span><strong id="game-timer">${formatTime(remainingSeconds())}</strong></div>
+    <section class="screen student-play arena-game" aria-labelledby="${mainHeadingId}">
+      <header class="arena-scoreboard" aria-label="내 게임 현황">
+        <div class="arena-scoreboard-brand" aria-hidden="true"><strong>문법 아케이드</strong></div>
+        <div class="arena-scoreboard-items">
+          <div class="arena-score-item arena-player"><span>이름</span><strong>${escapeHtml(playerName(me))}</strong></div>
+          <div class="arena-score-item"><span>점수</span><strong>${playerScore(me).toLocaleString()}점</strong></div>
+          <div class="arena-score-item"><span>${teamMode ? "우리 팀 순위" : "현재 순위"}</span><strong>${rank}위</strong></div>
+          <div class="arena-score-item arena-time"><span>남은 시간</span><strong id="game-timer">${formatTime(remainingSeconds())}</strong></div>
         </div>
-        ${teamSummaryHtml()}
-        <div class="solved-banner" role="status" aria-live="polite"><strong>푼 문제 ${progress.current}</strong><span>시간이 남으면 같은 묶음을 계속 풀어요.</span></div>
-        <div class="room-meta compact" aria-label="게임 진행 설정">${teamBadgeHtml()}${questionBundleTag()}${settingTags()}</div>
+      </header>
+      <article class="arena-floor">
+        ${teamMode ? teamSummaryHtml() : ""}
         ${roomMode() === "treasure_heist" && treasureChoices.length ? treasureChoiceView(treasureChoices) : question ? `
-          <div class="question-console">
-            <div class="question-console-top"><span class="question-kicker">MISSION ${String(progress.current + 1).padStart(2, "0")}</span><span class="question-type">문법 체크</span></div>
-            ${imageUrl ? `<img class="question-image" src="${imageUrl}" alt="문제 참고 이미지">` : ""}
-            <p class="question-kor">${escapeHtml(question.kor || question.promptKor || "알맞은 답을 고르세요.")}</p>
-            <h1 id="question-title" class="question-eng" tabindex="-1" role="status" aria-live="polite" aria-atomic="true">${escapeHtml(question.eng || question.prompt || question.text || "문제를 불러오는 중이에요.")}</h1>
-            <p class="answer-prompt">정답을 골라 다음 미션으로 이동하세요 <span aria-hidden="true">↓</span></p>
-            <div class="answers" aria-label="답 선택지">${options.map((option, index) => answerButtonHtml(option, answered, qKey, index)).join("")}</div>
-            ${feedbackHtml(qKey)}
+          <div class="question-console arena-question-console">
+            <div class="arena-projection">
+              <div class="question-console-top">
+                <span class="question-kicker">문제 ${progress.current + 1}</span>
+                <span class="arena-mode-meta">푼 문제 ${progress.current} · ${questionCount}문항 · ${teamMode ? "팀전" : "개인전"}</span>
+              </div>
+              ${imageUrl ? `<img class="question-image" src="${imageUrl}" alt="문제 참고 이미지">` : ""}
+              <p class="question-kor">${escapeHtml(question.kor || question.promptKor || "알맞은 답을 고르세요.")}</p>
+              <h1 id="question-title" class="question-eng${longQuestionClass}" tabindex="-1" role="status" aria-live="polite" aria-atomic="true">${escapeHtml(questionText)}</h1>
+            </div>
+            <div class="answers arena-answers" data-option-count="${options.length}" aria-label="답 선택지">${options.map((option, index) => answerButtonHtml(option, answered, qKey, index)).join("")}</div>
+            <div class="arena-answer-status">${pendingAnswerHtml(qKey)}${feedbackHtml(qKey)}</div>
           </div>
         ` : `
-          <div class="empty-state" id="question-title">다음 문제를 준비하고 있어요…</div>
+          <div class="arena-projection arena-loading" id="question-title">다음 문제를 준비하고 있어요…</div>
         `}
         ${maze ? mazeView(maze) : ""}
+        <details class="arena-ranking">
+          <summary>${teamMode ? `우리 팀 ${rank}위` : `현재 ${rank}위`} · 내 주변 순위 보기</summary>
+          <div class="arena-ranking-panel">
+            ${teamMode ? `<div class="section-title"><h2>팀 순위</h2><span class="tag live">LIVE</span></div>${teamLeaderboardHtml()}<div class="leaderboard-divider" aria-hidden="true"></div>` : ""}
+            <div class="section-title"><h2>개인 순위 · 내 주변</h2><span class="tag live">LIVE</span></div>
+            <p class="muted">개인 점수만 보여요. 다른 친구의 정답률은 공개하지 않아요.</p>
+            ${leaderboardHtml(sortedPlayers(), { studentView: true })}
+          </div>
+        </details>
       </article>
-      <aside class="panel">
-        ${teamMode ? `<div class="section-title"><h2>팀 순위</h2><span class="tag live">LIVE</span></div>
-        <p class="muted">팀 점수는 팀원 모두의 점수를 합산해요.</p>
-        ${teamLeaderboardHtml()}
-        <div class="leaderboard-divider" aria-hidden="true"></div>` : ""}
-        <div class="section-title"><h2>개인 순위 · 내 주변</h2><span class="tag live">LIVE</span></div>
-        <p class="muted">개인 점수만 보여요. 다른 친구의 정답률은 공개하지 않아요.</p>
-        <div style="height:12px"></div>
-        ${leaderboardHtml(sortedPlayers(), { studentView: true })}
-      </aside>
     </section>`;
 }
 
@@ -1256,6 +1433,11 @@ function feedbackHtml(currentKey) {
   return `<div class="feedback wrong" role="status">${previous}아쉬워요.${answer}</div>`;
 }
 
+function pendingAnswerHtml(currentKey) {
+  if (state.pendingQuestionKey !== currentKey || state.feedback?.occurrenceKey === currentKey) return "";
+  return `<p class="answer-pending" role="status" aria-live="polite">채점 중…</p>`;
+}
+
 function teacherLiveView() {
   if (roomMode() === "grammar_escape") return teacherEscapeLiveView();
   const players = sortedPlayers();
@@ -1267,6 +1449,7 @@ function teacherLiveView() {
     <section class="screen game-layout" aria-labelledby="live-title">
       <article class="panel">
         ${roomHeader(`${modeLabel()} 진행 중`)}
+        ${teacherAccountHtml()}
         <div class="game-status" style="margin-top:22px">
           <div class="mini-stat"><span>참가</span><strong>${players.length}명</strong></div>
           <div class="mini-stat"><span>반 평균</span><strong>${average}%</strong></div>
@@ -1300,6 +1483,7 @@ function teacherEscapeLiveView() {
   return `<section class="screen game-layout" aria-labelledby="live-title">
     <article class="panel escape-teacher-panel">
       ${roomHeader("야간학교 탈출 진행 중")}
+      ${teacherAccountHtml()}
       <div class="game-status" style="margin-top:22px">
         <div class="mini-stat"><span>탈출</span><strong>${escaped}명</strong></div>
         <div class="mini-stat"><span>${teamMode ? "팀 평균 방" : "평균 방 진행"}</span><strong>${roomProgress}/3</strong></div>
@@ -1398,6 +1582,7 @@ function teacherReportView() {
             <p class="eyebrow">PRIVATE TEACHER REPORT</p>
             <h1 id="report-title">게임 결과</h1>
             <p class="muted">방 ${escapeHtml(state.roomCode)} · ${escapeHtml(selectedUnitLabel())}</p>
+            ${teacherAccountHtml()}
           </div>
           <button class="back-button" type="button" data-action="leave-room">끝내기</button>
         </div>
@@ -1437,7 +1622,7 @@ function teacherEscapeReportView() {
   const teams = sortedEscapeTeams(state.report?.teamLeaderboard || state.report?.team_leaderboard || state.room?.teamLeaderboard || []);
   const escaped = players.filter((player) => Boolean(escapeRecord(player).escapedAt)).length;
   return `<section class="screen room-shell" aria-labelledby="report-title">
-    <article class="panel"><div class="panel-header"><div><p class="eyebrow">PRIVATE TEACHER REPORT</p><h1 id="report-title">야간학교 탈출 결과</h1><p class="muted">방 ${escapeHtml(state.roomCode)} · ${escapeHtml(selectedUnitLabel())}</p></div><button class="back-button" type="button" data-action="leave-room">끝내기</button></div>
+    <article class="panel"><div class="panel-header"><div><p class="eyebrow">PRIVATE TEACHER REPORT</p><h1 id="report-title">야간학교 탈출 결과</h1><p class="muted">방 ${escapeHtml(state.roomCode)} · ${escapeHtml(selectedUnitLabel())}</p>${teacherAccountHtml()}</div><button class="back-button" type="button" data-action="leave-room">끝내기</button></div>
       <div class="stat-grid"><div class="stat-card"><strong>${players.length}명</strong><span>참가 학생</span></div><div class="stat-card"><strong>${escaped}명</strong><span>탈출 성공</span></div><div class="stat-card"><strong>${players.length ? Math.round((escaped / players.length) * 100) : 0}%</strong><span>탈출률</span></div></div></article>
     ${isTeamMode() && Array.isArray(teams) && teams.length ? `<article class="panel"><div class="section-title"><h2>팀별 탈출 진행</h2><span class="tag team-badge">🛡️ 공유 진행</span></div>${escapeProgressHtml(teams, { team: true })}</article>` : ""}
     <article class="panel"><div class="section-title"><h2>개인별 탈출 기록</h2><span class="tag">방 진행 · 탈출 시간 우선</span></div><div class="table-wrap"><table class="report-table escape-report-table"><thead><tr><th scope="col">순위</th><th scope="col">닉네임</th><th scope="col">방 진행</th><th scope="col">현재 방 단서</th><th scope="col">탈출 시간</th><th scope="col">정답률</th></tr></thead><tbody>${players.map((player, index) => { const record = escapeRecord(player); return `<tr><td>${Number(player.rank) || index + 1}위</td><td><strong>${escapeHtml(playerName(player))}</strong></td><td>${Number(record.roomsCleared || 0)}/3</td><td>${Number(record.discoveredCount || 0)}/3</td><td>${escapeTimeLabel(record)}</td><td>${playerAccuracy(player)}%</td></tr>`; }).join("") || `<tr><td colspan="6">집계된 학생 기록이 없어요.</td></tr>`}</tbody></table></div><div class="button-row"><button class="primary-button" type="button" data-action="new-room">새 게임방 만들기</button><a class="button secondary-button" style="display:grid;place-items:center;text-decoration:none" href="${soloGameUrl()}">혼자 하기 화면</a></div></article>
@@ -1524,7 +1709,22 @@ function bindEvents() {
     if (action === "new-room") element.addEventListener("click", newRoom);
     if (action === "retry-connection") element.addEventListener("click", retryConnection);
     if (action === "teacher-login") element.addEventListener("click", teacherLogin);
+    if (action === "teacher-logout") element.addEventListener("click", logoutTeacher);
     if (action === "reopen-teacher") element.addEventListener("click", reopenTeacherRoom);
+    if (action === "select-game") element.addEventListener("click", () => {
+      state.selectedGameMode = element.dataset.gameMode || "";
+      if (state.teacherSetupDraft) {
+        state.teacherSetupDraft = { ...state.teacherSetupDraft, mode: state.selectedGameMode };
+        sessionStorage.setItem(TEACHER_SETUP_KEY, JSON.stringify(state.teacherSetupDraft));
+      }
+      state.teacherSetupStep = 2;
+      render();
+    });
+    if (action === "change-game") element.addEventListener("click", () => {
+      saveTeacherDraft();
+      state.teacherSetupStep = 1;
+      render();
+    });
   });
 
   document.querySelector("#join-form")?.addEventListener("submit", joinRoom);
@@ -1546,13 +1746,29 @@ function bindEvents() {
   });
   app.querySelectorAll('input[name="grade"]').forEach((input) => input.addEventListener("change", (event) => {
     const grade = event.target.value;
+    state.unitSearch = "";
+    const search = document.querySelector("#unit-search");
+    if (search) search.value = "";
     const board = document.querySelector("#unit-board");
-    if (board) board.innerHTML = unitBoardHtml(grade);
+    if (board) board.innerHTML = unitBoardHtml(grade, "", state.unitSearch);
     refreshMissionSummary();
   }));
-  app.querySelectorAll('input[name="unitKey"], input[name="questionCount"], input[name="durationSeconds"]').forEach((input) => input.addEventListener("change", refreshMissionSummary));
+  document.querySelector("#unit-search")?.addEventListener("input", (event) => {
+    state.unitSearch = event.target.value;
+    const grade = document.querySelector('input[name="grade"]:checked')?.value || "g1";
+    const selected = document.querySelector('input[name="unitKey"]:checked')?.value || "";
+    const board = document.querySelector("#unit-board");
+    if (board) board.innerHTML = unitBoardHtml(grade, selected, state.unitSearch);
+    refreshMissionSummary();
+  });
+  document.querySelector("#unit-board")?.addEventListener("change", (event) => {
+    if (event.target?.matches('input[name="unitKey"]')) refreshMissionSummary();
+  });
+  app.querySelectorAll('input[name="questionCount"], input[name="durationSeconds"]').forEach((input) => input.addEventListener("change", refreshMissionSummary));
   app.querySelectorAll('input[name="playStyle"]').forEach((input) => input.addEventListener("change", toggleTeamSettings));
   toggleTeamSettings();
+  applyTeacherDraft();
+  refreshMissionSummary();
 }
 
 function toggleTeamSettings() {
@@ -1564,14 +1780,17 @@ function toggleTeamSettings() {
 function refreshMissionSummary() {
   const form = document.querySelector("#create-form");
   const summary = document.querySelector("#mission-summary");
-  if (!form || !summary) return;
+  if (!form) return;
   const data = new FormData(form);
-  summary.innerHTML = missionSummaryHtml({
-    grade: String(data.get("grade") || "g1"),
-    unitKey: String(data.get("unitKey") || ""),
-    questionCount: Number(data.get("questionCount") || 0),
-    durationSeconds: Number(data.get("durationSeconds") || 0),
-  });
+  const grade = String(data.get("grade") || "g1");
+  const unitKey = String(data.get("unitKey") || "");
+  const questionCount = Number(data.get("questionCount") || 0);
+  const durationSeconds = Number(data.get("durationSeconds") || 0);
+  const custom = grade === "custom";
+  const title = custom ? state.localSet?.title || "내 문제 세트" : "";
+  if (summary) summary.innerHTML = missionSummaryHtml({ grade, unitKey, questionCount, durationSeconds, custom, title });
+  const sticky = document.querySelector("#setup-summary");
+  if (sticky) sticky.textContent = `${custom ? title : unitLabel(grade, unitKey)} · ${questionCount}문항 · ${formatTime(durationSeconds)}`;
 }
 
 function moveMaze(eventOrDirection) {
@@ -1623,7 +1842,11 @@ function chooseTreasure(event) {
 }
 
 function toggleEscapeQuestion() {
-  state.escapeQuestionOpen = !state.escapeQuestionOpen;
+  if (!state.escapeQuestionOpen) {
+    openEscapeQuestion();
+    return;
+  }
+  state.escapeQuestionOpen = false;
   render();
 }
 
@@ -1639,6 +1862,7 @@ function openEscapeQuestion() {
       behavior: window.matchMedia("(prefers-reduced-motion: reduce)").matches ? "auto" : "smooth",
       block: "start",
     });
+    document.querySelector("#question-title")?.focus({ preventScroll: true });
   }, 0);
 }
 
@@ -1695,11 +1919,12 @@ function chooseStudent() {
   window.setTimeout(() => document.querySelector(state.roomCode ? "#nickname" : "#room-code")?.focus(), 0);
 }
 
-function chooseTeacher() {
+async function chooseTeacher() {
   state.role = "teacher";
   state.view = "setup";
   setStatus();
   render();
+  await loadTeacherSession();
 }
 
 function retryConnection() {
@@ -1709,8 +1934,41 @@ function retryConnection() {
 }
 
 function teacherLogin() {
-  const redirectUrl = encodeURIComponent(location.href);
-  location.assign(`/cdn-cgi/access/login?redirect_url=${redirectUrl}`);
+  saveTeacherDraft();
+  location.assign(roomApi.loginUrl(teacherReturnTo()));
+}
+
+async function logoutTeacher() {
+  state.busy = true;
+  render();
+  let confirmed = false;
+  try {
+    await roomApi.logoutTeacher();
+    confirmed = true;
+  } catch (error) {
+    confirmed = error instanceof ApiError && error.status === 401;
+    resetConnection();
+    stopClock();
+    state.busy = false;
+    if (!confirmed) {
+      setStatus("서버에서 로그아웃을 확인하지 못했어요. 다시 시도해 주세요.", "error");
+      render();
+      return;
+    }
+  }
+  resetConnection();
+  stopClock();
+  state.role = null;
+  state.room = null;
+  state.report = null;
+  state.roomConfig = null;
+  state.roomCode = "";
+  state.teacherSession = null;
+  state.teacherLoginRequired = false;
+  state.busy = false;
+  updateUrl("");
+  setStatus("교사 로그아웃을 완료했어요.", "success");
+  render();
 }
 
 async function reopenTeacherRoom() {
@@ -1720,6 +1978,13 @@ async function reopenTeacherRoom() {
   render();
   setStatus(`방 ${state.roomCode} 교사 화면을 확인하고 있어요…`);
   try {
+    const session = await loadTeacherSession({ quiet: true });
+    if (!session?.authenticated && !isLoopback()) {
+      state.busy = false;
+      setStatus("교사 로그인이 필요해요.", "error");
+      render();
+      return;
+    }
     const payload = await roomApi.getTeacherRoomState(state.roomCode);
     state.room = applyRoom(payload);
     state.busy = false;
@@ -1730,7 +1995,7 @@ async function reopenTeacherRoom() {
     render();
   } catch (error) {
     state.busy = false;
-    if (error instanceof ApiError && error.status === 401) state.teacherLoginRequired = true;
+    if (handleTeacherAuthError(error)) return;
     setStatus(friendlyError(error), "error");
     render();
   }
@@ -1761,6 +2026,9 @@ function newRoom() {
   state.escapeCode = "";
   state.escapeQuestionOpen = true;
   state.teacherLoginRequired = false;
+  state.teacherSetupStep = 1;
+  state.selectedGameMode = "";
+  state.unitSearch = "";
   updateUrl("");
   setStatus();
   render();
@@ -1796,7 +2064,9 @@ async function joinRoom(event) {
     updateUrl(code);
     state.busy = false;
     state.teacherLoginRequired = false;
-    setStatus("참가 완료! 선생님이 시작할 때까지 기다려 주세요.", "success");
+    if (roomStatus(state.room) === "playing") setStatus();
+    else if (roomStatus(state.room) === "finished") setStatus("게임 종료", "success");
+    else setStatus("참가 완료! 선생님이 시작할 때까지 기다려 주세요.", "success");
     connectLiveRoom();
     render();
   } catch (error) {
@@ -1836,13 +2106,14 @@ async function createRoom(event) {
     if (!state.roomCode || !state.room) throw new ApiError("방 정보를 받지 못했어요.", 500);
     state.busy = false;
     state.teacherLoginRequired = false;
+    clearTeacherDraft();
     updateUrl(state.roomCode);
     setStatus("게임방을 만들었어요. 번호나 QR을 학생들에게 보여 주세요.", "success");
     connectLiveRoom();
     render();
   } catch (error) {
     state.busy = false;
-    if (error instanceof ApiError && error.status === 401) state.teacherLoginRequired = true;
+    if (handleTeacherAuthError(error)) return;
     setStatus(friendlyError(error), "error");
     render();
   }
@@ -1860,7 +2131,7 @@ async function startRoom() {
     render();
   } catch (error) {
     state.busy = false;
-    if (error instanceof ApiError && error.status === 401) state.teacherLoginRequired = true;
+    if (handleTeacherAuthError(error)) return;
     setStatus(friendlyError(error), "error");
     render();
   }
@@ -1879,7 +2150,7 @@ async function finishRoom() {
     render();
   } catch (error) {
     state.busy = false;
-    if (error instanceof ApiError && error.status === 401) state.teacherLoginRequired = true;
+    if (handleTeacherAuthError(error)) return;
     setStatus(friendlyError(error), "error");
     render();
   }
@@ -1932,6 +2203,7 @@ async function loadTeacherReport() {
       teamCount: Number(reportRoom.teamCount ?? reportRoom.team_count ?? state.roomConfig?.teamCount ?? 0),
     };
   } catch (error) {
+    if (handleTeacherAuthError(error)) return;
     setStatus(`게임은 종료됐지만 리포트를 불러오지 못했어요. ${friendlyError(error)}`, "error");
   }
 }
@@ -1955,7 +2227,9 @@ async function restoreStudentSession() {
       resumeToken: storedToken,
     });
     state.room = applyRoom(payload);
-    setStatus("게임방에 다시 연결했어요.", "success");
+    if (roomStatus(state.room) === "playing") setStatus();
+    else if (roomStatus(state.room) === "finished") setStatus("게임 종료", "success");
+    else setStatus("게임방에 다시 연결했어요.", "success");
     connectLiveRoom();
     render();
     return true;
@@ -1969,7 +2243,26 @@ async function restoreStudentSession() {
   }
 }
 
+async function restoreTeacherIntent() {
+  if (!initialTeacherIntent && !initialAuthError) return false;
+  state.role = "teacher";
+  state.view = "setup";
+  state.teacherAuthLoading = true;
+  render();
+  const session = await loadTeacherSession({ quiet: true });
+  removeAuthQuery();
+  if (initialAuthError) setStatus(oauthErrorMessage(initialAuthError), "error");
+  else if (session?.authenticated) setStatus("Google 교사 로그인 확인이 완료됐어요.", "success");
+  render();
+  return true;
+}
+
+async function bootstrap() {
+  if (await restoreTeacherIntent()) return;
+  await restoreStudentSession();
+}
+
 window.addEventListener("beforeunload", () => state.socket?.close());
 window.addEventListener("keydown", handleMazeKeydown);
 render();
-restoreStudentSession();
+bootstrap();

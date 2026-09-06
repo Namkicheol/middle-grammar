@@ -2433,6 +2433,42 @@ h3 {
 .escape-learning-metrics span { color: #527176; font-weight: 850; }
 .escape-learning-metrics strong { font-size: 13px; }
 
+.teacher-auth-gate {
+  max-width: 620px;
+  margin: 40px auto;
+}
+
+.teacher-auth-gate .primary-button,
+.teacher-auth-gate .secondary-button {
+  margin-top: 12px;
+}
+
+.teacher-auth-gate .back-button {
+  margin: 12px 0 0 10px;
+}
+
+.teacher-account {
+  display: inline-flex;
+  min-height: 40px;
+  margin-top: 10px;
+  padding: 5px 6px 5px 10px;
+  align-items: center;
+  gap: 10px;
+  border: 1px solid #b9d9d4;
+  border-radius: 999px;
+  color: #245257;
+  background: #eefaf7;
+  font-size: 11px;
+}
+
+.teacher-account strong,
+.teacher-account small { display: block; }
+.teacher-account small { color: #527176; font-size: 10px; font-weight: 800; }
+.teacher-account .teacher-role { display: inline-flex; margin-top: 3px; padding: 2px 6px; border-radius: 999px; color: #26525a; background: #cdeee8; }
+.teacher-account.local { padding: 8px 10px; color: #527176; }
+.text-button { min-height: 30px; padding: 5px 8px; border-radius: 999px; color: #245257; background: transparent; font-size: 11px; font-weight: 850; }
+.text-button:hover { background: rgba(45, 132, 121, .12); }
+
 @media (max-width: 860px) {
   .escape-layout { grid-template-columns: 1fr; }
   .escape-sidebar { grid-template-columns: repeat(2, minmax(0, 1fr)); }
@@ -2465,4 +2501,169 @@ h3 {
   .escape-code-row { flex-wrap: wrap; }
   .escape-code-row input { flex-basis: 100%; min-height: 48px; }
   .escape-unlock { width: 100%; min-height: 48px; }
+}
+
+/* Teacher setup: a compact, neutral configuration workspace. */
+.teacher-game-picker,
+.teacher-setup {
+  max-width: 1180px;
+  margin: 22px auto 56px;
+  padding: 0 22px 24px;
+  color: #18202b;
+  background: #f7f8fa;
+}
+html:has(.teacher-game-picker),
+html:has(.teacher-setup),
+html:has(.teacher-auth-neutral),
+body:has(.teacher-game-picker),
+body:has(.teacher-setup),
+body:has(.teacher-auth-neutral) { background: #f7f8fa; }
+body:has(.teacher-game-picker),
+body:has(.teacher-setup),
+body:has(.teacher-auth-neutral) { background-image: none; }
+body:has(.teacher-game-picker) #app,
+body:has(.teacher-setup) #app,
+body:has(.teacher-auth-neutral) #app { width: min(1224px, calc(100% - 20px)); padding-top: 12px; }
+body:has(.teacher-game-picker) .status-message,
+body:has(.teacher-setup) .status-message { width: min(1180px, calc(100% - 44px)); margin-top: 8px; padding: 7px 0; border: 0; border-bottom: 1px solid #dfe3e8; border-radius: 0; color: #536071; background: transparent; font-size: 12px; font-weight: 650; text-align: left; }
+body:has(.teacher-game-picker) .status-message[data-tone="success"],
+body:has(.teacher-setup) .status-message[data-tone="success"] { color: #536071; border-color: #dfe3e8; background: transparent; }
+
+.teacher-game-picker .teacher-setup-header,
+.teacher-setup .teacher-setup-header {
+  display: flex;
+  min-height: 0;
+  padding: 0 0 18px;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 20px;
+  border-bottom: 1px solid #dfe3e8;
+  background: transparent;
+}
+
+.teacher-game-picker h1,
+.teacher-setup h1 { margin: 0; color: #18202b; font-size: clamp(26px, 3vw, 38px); letter-spacing: -.045em; }
+.teacher-game-picker .teacher-setup-header > div > p:not(.setup-step-label),
+.teacher-setup .teacher-setup-header > div > p:not(.setup-step-label) { margin: 7px 0 0; color: #5d6877; font-size: 14px; }
+.setup-step-label { margin: 0 0 8px; color: #f26b38; font-size: 12px; font-weight: 800; letter-spacing: .02em; }
+.teacher-game-picker .back-button,
+.teacher-setup .back-button { min-height: 44px; border: 1px solid #cfd5dc; border-radius: 6px; color: #344050; background: #fff; }
+.teacher-game-picker .teacher-account,
+.teacher-setup .teacher-account { min-height: 26px; margin-top: 9px; padding: 0; gap: 6px; border: 0; border-radius: 0; color: #5b6572; background: transparent; font-size: 11px; }
+.teacher-game-picker .teacher-account span,
+.teacher-setup .teacher-account span { display: flex; align-items: center; gap: 5px; }
+.teacher-game-picker .teacher-account strong,
+.teacher-setup .teacher-account strong { font-weight: 650; }
+.teacher-game-picker .teacher-account .teacher-role,
+.teacher-setup .teacher-account .teacher-role { margin: 0; padding: 0; border-radius: 0; color: #637084; background: transparent; }
+.teacher-game-picker .teacher-account .text-button,
+.teacher-setup .teacher-account .text-button { min-height: 30px; padding: 3px 5px; border-radius: 0; color: #225ce7; background: transparent; }
+
+.game-cover-grid { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 16px; margin-top: 24px; }
+.game-cover { display: grid; min-width: 0; padding: 0 0 14px; gap: 6px; border: 1px solid #dde2e8; border-radius: 8px; color: #18202b; background: #fff; text-align: left; overflow: hidden; transition: border-color .16s ease, box-shadow .16s ease, transform .16s ease; }
+.game-cover:hover { border-color: #225ce7; box-shadow: 0 8px 20px rgba(24, 32, 43, .10); transform: translateY(-2px); }
+.game-cover:focus-visible { outline: 3px solid #225ce7; outline-offset: 2px; }
+.game-cover img { width: 100%; height: auto; aspect-ratio: 16 / 10; object-fit: cover; background: #e8ebef; }
+.game-cover strong,
+.game-cover small,
+.game-cover-tag { margin-inline: 13px; }
+.game-cover strong { font-size: 17px; letter-spacing: -.02em; }
+.game-cover small { color: #616c7b; font-size: 12px; line-height: 1.45; }
+.game-cover-tag { width: max-content; margin-top: 8px; color: #225ce7; font-size: 11px; font-weight: 800; }
+
+.selected-game-summary { display: grid; grid-template-columns: 150px minmax(0, 1fr) auto; margin-top: 18px; padding: 0 0 18px; align-items: center; gap: 14px; border-bottom: 1px solid #dfe3e8; }
+.selected-game-summary img { width: 150px; height: 94px; object-fit: cover; border-radius: 6px; background: #e8ebef; }
+.selected-game-summary span,
+.selected-game-summary strong,
+.selected-game-summary small { display: block; }
+.selected-game-summary span { color: #225ce7; font-size: 11px; font-weight: 800; }
+.selected-game-summary strong { margin-top: 3px; font-size: 17px; }
+.selected-game-summary small { margin-top: 3px; color: #647080; font-size: 12px; }
+.selected-game-summary button { min-height: 44px; padding: 8px 10px; border: 1px solid #cdd4dc; border-radius: 6px; color: #225ce7; background: #fff; font-size: 13px; font-weight: 800; }
+
+.teacher-config-form { margin-top: 16px; }
+.teacher-config-grid { display: grid; grid-template-columns: minmax(0, 1fr) 330px; align-items: start; gap: 30px; }
+.teacher-config-main { min-width: 0; }
+.teacher-config-controls { display: grid; gap: 16px; padding-left: 24px; border-left: 1px solid #dfe3e8; }
+.teacher-setup .setup-field { min-width: 0; margin: 0; padding: 0 0 17px; border: 0; border-bottom: 1px solid #e1e5ea; }
+.teacher-setup .setup-field + .setup-field { padding-top: 16px; }
+.teacher-setup .setup-field legend { margin-bottom: 10px; padding: 0; color: #293443; font-size: 14px; font-weight: 800; }
+.teacher-setup .grade-tabs { display: inline-grid; grid-template-columns: repeat(2, 1fr); gap: 4px; padding: 3px; border: 1px solid #d6dce4; border-radius: 6px; background: #fff; }
+.teacher-setup .grade-tab { min-width: 74px; min-height: 42px; margin: 0; border-radius: 4px; color: #596575; background: transparent; }
+.teacher-setup .grade-tab span { display: grid; min-height: 42px; padding: 0 15px; place-items: center; border: 0; border-radius: 4px; color: #596575; background: transparent; box-shadow: none; font-size: 13px; font-weight: 800; transform: none; }
+.teacher-setup .grade-tab input:checked + span { border: 0; color: #fff; background: #225ce7; box-shadow: none; transform: none; }
+.teacher-setup .grade-tab span::before,
+.teacher-setup .grade-tab input:checked + span::before,
+.teacher-setup .unit-field legend::after { content: none; }
+.sr-only { position: absolute; width: 1px; height: 1px; padding: 0; overflow: hidden; clip: rect(0, 0, 0, 0); white-space: nowrap; border: 0; }
+.unit-search { display: block; margin-bottom: 10px; }
+.unit-search input { width: 100%; min-height: 44px; padding: 10px 12px; border: 1px solid #cfd6df; border-radius: 6px; color: #18202b; background: #fff; font: inherit; font-size: 13px; }
+.teacher-setup .unit-board { display: grid; grid-template-columns: 1fr; gap: 0; max-height: none; padding: 0; overflow: visible; border-top: 1px solid #dfe4ea; }
+.lesson-group { display: grid; grid-template-columns: 44px minmax(0, 1fr); align-items: stretch; border-bottom: 1px solid #dfe4ea; }
+.teacher-setup .lesson-group[hidden] { display: none; }
+.lesson-group h3 { display: grid; margin: 0; align-items: center; color: #667282; font-size: 12px; font-weight: 800; }
+.lesson-group > div { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); }
+.unit-topic { position: relative; min-width: 0; min-height: 44px; margin: 0; border-left: 1px solid #edf0f3; color: #3d4857; cursor: pointer; }
+.unit-topic input { position: absolute; width: 1px; height: 1px; margin: -1px; padding: 0; overflow: hidden; clip: rect(0, 0, 0, 0); white-space: nowrap; border: 0; }
+.unit-topic span { display: grid; min-height: 44px; padding: 7px 9px; align-items: center; font-size: 12px; line-height: 1.3; }
+.unit-topic input:checked + span { color: #173e9c; background: #eaf0ff; font-weight: 800; }
+.unit-empty { margin: 0; padding: 20px 0; color: #677282; font-size: 13px; }
+.teacher-setup .mission-summary { display: flex; margin: 14px 0 0; padding: 0; align-items: center; gap: 18px; border: 0; border-radius: 0; color: #344050; background: transparent; }
+.teacher-setup .mission-summary-copy span { color: #667282; font-size: 11px; }
+.teacher-setup .mission-summary-copy strong { color: #18202b; font-size: 14px; }
+.teacher-setup .mission-summary-stats { margin-left: auto; gap: 10px; color: #687483; font-size: 11px; }
+.teacher-setup .mission-summary-stats b { color: #344050; }
+.teacher-setup .build-set-link { display: flex; margin-top: 15px; padding: 12px 0; justify-content: space-between; gap: 12px; border-top: 1px solid #e1e5ea; border-bottom: 1px solid #e1e5ea; color: #225ce7; background: transparent; }
+.teacher-setup .build-set-link strong { color: #344050; font-size: 13px; }
+.teacher-setup .build-set-link span { font-size: 12px; font-weight: 700; }
+.teacher-setup .choice-grid { gap: 6px; }
+.teacher-setup .choice-pill { min-height: 42px; margin: 0; border: 0; border-radius: 0; color: #536071; background: transparent; }
+.teacher-setup .choice-pill span { display: grid; min-height: 42px; padding: 6px 9px; place-items: center; border: 1px solid #d4dae2; border-radius: 5px; color: #536071; background: #fff; box-shadow: none; font-size: 12px; }
+.teacher-setup .choice-pill input:checked + span { border-color: #225ce7; color: #fff; background: #225ce7; box-shadow: none; }
+.teacher-setup .choice-help { margin: 7px 0 0; color: #6c7786; font-size: 11px; }
+.teacher-setup .team-count-field { margin-top: 13px; }
+.teacher-setup .field-label { color: #526071; font-size: 12px; font-weight: 800; }
+.teacher-setup .setup-more { border-top: 1px solid #e1e5ea; }
+.teacher-setup .setup-more summary { min-height: 44px; display: flex; align-items: center; cursor: pointer; color: #344050; font-size: 13px; font-weight: 800; }
+.teacher-setup .toggle-list { margin: 0; padding: 0 0 10px; border: 0; }
+.teacher-setup .toggle-row { min-height: 52px; padding: 8px 0; border-bottom: 1px solid #edf0f3; background: transparent; }
+.teacher-setup .toggle-row strong { color: #3d4857; font-size: 12px; }
+.teacher-setup .toggle-row small { color: #6c7786; font-size: 10px; }
+.teacher-setup-sticky { position: sticky; bottom: 0; z-index: 2; display: flex; min-height: 68px; margin-top: 20px; padding: 12px 0; align-items: center; justify-content: space-between; gap: 16px; border-top: 1px solid #cfd6df; color: #566273; background: #f7f8fa; font-size: 12px; font-weight: 700; }
+.teacher-setup-sticky .primary-button { width: auto; min-height: 46px; margin: 0; padding-inline: 18px; border-radius: 6px; color: #fff; background: #225ce7; box-shadow: none; }
+.teacher-setup .custom-set-card { margin: 0; border: 1px solid #dce2e8; border-radius: 6px; box-shadow: none; }
+.teacher-auth-neutral { max-width: 520px; margin: 84px auto; padding: 0 0 22px; border-bottom: 1px solid #dfe3e8; border-radius: 0; color: #18202b; background: transparent; box-shadow: none; }
+.teacher-auth-neutral h1 { margin: 0; color: #18202b; font-size: 28px; letter-spacing: -.04em; }
+.teacher-auth-neutral p { margin: 8px 0 0; color: #5f6a79; font-size: 14px; line-height: 1.55; }
+.teacher-auth-neutral .primary-button { min-height: 46px; margin-top: 20px; border-radius: 6px; background: #225ce7; box-shadow: none; }
+.teacher-auth-neutral .secondary-button,
+.teacher-auth-neutral .back-button { min-height: 44px; margin: 10px 0 0; border: 1px solid #cfd6df; border-radius: 6px; color: #344050; background: #fff; }
+body:has(.teacher-game-picker, .teacher-setup, .teacher-auth-neutral) .site-header { width: min(1224px, calc(100% - 20px)); padding-top: calc(10px + env(safe-area-inset-top)); padding-bottom: 6px; }
+body:has(.teacher-game-picker, .teacher-setup, .teacher-auth-neutral) .brand-mark { border-radius: 7px; background: #225ce7; box-shadow: none; transform: none; }
+body:has(.teacher-game-picker, .teacher-setup, .teacher-auth-neutral) .brand small { color: #667282; }
+body:has(.teacher-game-picker, .teacher-setup, .teacher-auth-neutral) .solo-link { padding-inline: 6px; border-radius: 0; color: #526071; background: transparent; }
+
+@media (max-width: 1050px) { .game-cover-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+@media (max-width: 720px) {
+  .teacher-game-picker, .teacher-setup { margin-top: 10px; padding-inline: 14px; }
+  .teacher-game-picker .teacher-setup-header, .teacher-setup .teacher-setup-header { gap: 12px; }
+  .teacher-config-grid { grid-template-columns: 1fr; gap: 18px; }
+  .teacher-config-controls { padding: 16px 0 0; border-top: 1px solid #dfe3e8; border-left: 0; }
+  .selected-game-summary { grid-template-columns: 108px minmax(0, 1fr); }
+  .selected-game-summary img { width: 108px; height: 68px; }
+  .selected-game-summary button { grid-column: 1 / -1; }
+}
+@media (max-width: 460px) {
+  .game-cover-grid { gap: 10px; margin-top: 16px; }
+  .game-cover strong, .game-cover small, .game-cover-tag { margin-inline: 10px; }
+  .game-cover strong { font-size: 14px; }
+  .game-cover small { font-size: 11px; }
+  .teacher-game-picker h1, .teacher-setup h1 { font-size: 25px; }
+  .lesson-group { grid-template-columns: 34px minmax(0, 1fr); }
+  .lesson-group > div { grid-template-columns: 1fr; }
+  .unit-topic:nth-child(n + 2) { border-top: 1px solid #edf0f3; }
+  .teacher-setup .mission-summary { display: block; }
+  .teacher-setup .mission-summary-stats { margin-top: 7px; }
+  .teacher-setup-sticky { align-items: stretch; flex-direction: column; }
+  .teacher-setup-sticky .primary-button { width: 100%; }
 }

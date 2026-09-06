@@ -1,5 +1,18 @@
-import { createRemoteJWKSet, jwtVerify } from "jose";
 import { renderSVG } from "uqr";
+import {
+  AuthError,
+  beginLogout,
+  callbackErrorResponse,
+  cleanupAuth,
+  finishGoogleAuth,
+  finishLogout,
+  getTeacherSessionByHash,
+  logoutResponse,
+  registerTeacherRoomSession,
+  requireTeacherSession,
+  sessionResponse,
+  startGoogleAuth,
+} from "./auth";
 import bundledQuestionBank from "./generated/questions.json";
 import { GameRoom } from "./room";
 import type { Env, QuestionBank } from "./types";
@@ -8,12 +21,38 @@ import type { PlayStyle, Question, RoomMode } from "./room-engine";
 export { GameRoom };
 
 const ROOM_CODE = "(?<code>\\d{6})";
-const jwksCache = new Map<string, ReturnType<typeof createRemoteJWKSet>>();
 
 export default {
   async fetch(request: Request, env: Env): Promise<Response> {
     try {
       const url = new URL(request.url);
+      if (request.method === "GET" && url.pathname === "/api/auth/session") {
+        return await sessionResponse(request, env);
+      }
+      if (request.method === "GET" && url.pathname === "/api/auth/google/start") {
+        return await startGoogleAuth(request, env);
+      }
+      if (request.method === "GET" && url.pathname === "/api/auth/google/callback") {
+        try {
+          return await finishGoogleAuth(request, env);
+        } catch (error) {
+          return callbackErrorResponse(request, env, error instanceof AuthError
+            ? error
+            : new AuthError(502, "OAUTH_CALLBACK_FAILED", "Google login could not be completed."));
+        }
+      }
+      if (request.method === "POST" && url.pathname === "/api/auth/logout") {
+        const revoked = await beginLogout(request, env);
+        for (const code of revoked.roomCodes) {
+          const response = await env.ROOMS.getByName(code).fetch("https://room/internal/revoke-teacher-session", {
+            method: "POST",
+            headers: { "x-room-teacher-session-hash": revoked.sessionHash },
+          });
+          if (!response.ok) throw new AuthError(503, "LOGOUT_REVOCATION_FAILED", "Logout could not be completed. Please try again.");
+        }
+        await finishLogout(env, revoked.sessionHash);
+        return logoutResponse(env);
+      }
       if (request.method === "POST" && url.pathname === "/api/teacher/rooms") {
         return await createRoom(request, env, url.origin);
       }
@@ -25,7 +64,7 @@ export default {
           teacherState.groups.code,
           "/internal/state",
           request,
-          { "x-room-teacher-email": await requireTeacher(request, env) },
+          { "x-room-teacher-email": (await requireTeacherSession(request, env)).email },
         );
       }
 
@@ -33,25 +72,44 @@ export default {
         new RegExp(`^/api/teacher/rooms/${ROOM_CODE}/(?<action>start|finish)$`),
       );
       if (request.method === "POST" && teacherControl?.groups?.code) {
+        const teacher = await requireTeacherSession(request, env, "mutation");
         return await forward(
           env,
           teacherControl.groups.code,
           `/internal/${teacherControl.groups.action}`,
           request,
-          { "x-room-teacher-email": await requireTeacher(request, env) },
+          { "x-room-teacher-email": teacher.email },
           false,
         );
       }
 
       const teacherSocket = url.pathname.match(new RegExp(`^/api/teacher/rooms/${ROOM_CODE}/ws$`));
       if (request.method === "GET" && teacherSocket?.groups?.code) {
+        const teacher = await requireTeacherSession(request, env, "websocket");
+        if (!teacher.developmentBypass) {
+          await registerTeacherRoomSession(env, teacher.sessionHash, teacherSocket.groups.code);
+          if (!await getTeacherSessionByHash(env, teacher.sessionHash)) {
+            await env.ROOMS.getByName(teacherSocket.groups.code).fetch("https://room/internal/revoke-teacher-session", {
+              method: "POST",
+              headers: { "x-room-teacher-session-hash": teacher.sessionHash },
+            });
+            throw new AuthError(401, "TEACHER_LOGIN_REQUIRED", "Teacher login required.");
+          }
+        }
         const internal = new URL("https://room/internal/ws");
         const headers = new Headers(request.headers);
-        const loopbackDevEmail = env.ENVIRONMENT !== "production" && isLoopbackHost(url.hostname)
-          ? url.searchParams.get("devTeacherEmail") ?? undefined
-          : undefined;
-        headers.set("x-room-teacher-email", await requireTeacher(request, env, loopbackDevEmail));
-        return env.ROOMS.getByName(teacherSocket.groups.code).fetch(new Request(internal, { headers }));
+        headers.set("x-room-teacher-email", teacher.email);
+        headers.set("x-room-teacher-session-hash", teacher.sessionHash);
+        headers.set("x-room-teacher-session-expires", String(teacher.expiresAt));
+        const response = await env.ROOMS.getByName(teacherSocket.groups.code).fetch(new Request(internal, { headers }));
+        if (!teacher.developmentBypass && !await getTeacherSessionByHash(env, teacher.sessionHash)) {
+          await env.ROOMS.getByName(teacherSocket.groups.code).fetch("https://room/internal/revoke-teacher-session", {
+            method: "POST",
+            headers: { "x-room-teacher-session-hash": teacher.sessionHash },
+          });
+          throw new AuthError(401, "TEACHER_LOGIN_REQUIRED", "Teacher login required.");
+        }
+        return response;
       }
 
       const joinMatch = url.pathname.match(new RegExp(`^/api/rooms/${ROOM_CODE}/join$`));
@@ -112,7 +170,7 @@ export default {
 
       const reportMatch = url.pathname.match(new RegExp(`^/api/teacher/reports/${ROOM_CODE}$`));
       if (request.method === "GET" && reportMatch?.groups?.code) {
-        return await teacherReport(env, reportMatch.groups.code, await requireTeacher(request, env));
+        return await teacherReport(env, reportMatch.groups.code, (await requireTeacherSession(request, env)).email);
       }
 
       if (url.pathname === "/multiplayer") {
@@ -126,6 +184,7 @@ export default {
       }
       return json({ error: "NOT_FOUND" }, 404);
     } catch (error) {
+      if (error instanceof AuthError) return json({ error: error.code, message: error.message }, error.status);
       if (error instanceof HttpError) return json({ error: error.code, message: error.message }, error.status);
       if (error instanceof SyntaxError) return json({ error: "INVALID_JSON" }, 400);
       console.error(error);
@@ -141,11 +200,12 @@ export default {
       ).bind(cutoff),
       env.REPORTS.prepare("DELETE FROM room_reports WHERE finished_at < ?").bind(cutoff),
     ]);
+    await cleanupAuth(env);
   },
 } satisfies ExportedHandler<Env>;
 
 async function createRoom(request: Request, env: Env, origin: string): Promise<Response> {
-  const teacherEmail = await requireTeacher(request, env);
+  const teacherEmail = (await requireTeacherSession(request, env, "mutation")).email;
   assertContentLength(request, 3_000_000);
   const rawBody = await request.json<unknown>();
   if (!isPlainObject(rawBody)) {
@@ -345,49 +405,6 @@ async function teacherReport(env: Env, code: string, email: string): Promise<Res
     room: camelRoom(room),
     players: players.results.map((row) => camelPlayer(row, code)),
   });
-}
-
-async function requireTeacher(
-  request: Request,
-  env: Env,
-  loopbackDevEmail?: string,
-): Promise<string> {
-  if (env.ENVIRONMENT !== "production" && isLoopbackHost(new URL(request.url).hostname)) {
-    const devEmail = (request.headers.get("x-dev-teacher-email") || loopbackDevEmail)
-      ?.trim()
-      .toLowerCase();
-    if (devEmail) return devEmail;
-  }
-  const assertion = request.headers.get("cf-access-jwt-assertion");
-  if (!assertion) throw new HttpError(401, "TEACHER_LOGIN_REQUIRED", "Teacher login required.");
-  if (!env.ACCESS_TEAM_DOMAIN || !env.ACCESS_AUD) {
-    throw new HttpError(503, "ACCESS_CONFIG_MISSING", "Cloudflare Access is not configured.");
-  }
-  const issuer = normalizeTeamDomain(env.ACCESS_TEAM_DOMAIN);
-  let jwks = jwksCache.get(issuer);
-  if (!jwks) {
-    jwks = createRemoteJWKSet(new URL(`${issuer}/cdn-cgi/access/certs`));
-    jwksCache.set(issuer, jwks);
-  }
-  try {
-    const { payload } = await jwtVerify(assertion, jwks, {
-      issuer,
-      audience: env.ACCESS_AUD,
-    });
-    if (typeof payload.email !== "string" || !payload.email.trim()) throw new Error("Missing email claim");
-    return payload.email.trim().toLowerCase();
-  } catch {
-    throw new HttpError(401, "INVALID_ACCESS_TOKEN", "Cloudflare Access token is invalid.");
-  }
-}
-
-function isLoopbackHost(hostname: string): boolean {
-  return hostname === "localhost" || hostname === "127.0.0.1" || hostname === "[::1]";
-}
-
-function normalizeTeamDomain(value: string): string {
-  const withScheme = value.startsWith("https://") ? value : `https://${value}`;
-  return withScheme.replace(/\/+$/, "");
 }
 
 function camelRoom(row: Record<string, unknown>) {

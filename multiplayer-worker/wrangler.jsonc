@@ -28,5 +28,9 @@
   "migrations": [
     { "tag": "v1", "new_sqlite_classes": ["GameRoom"] }
   ],
-  "observability": { "enabled": true }
+  "observability": {
+    "enabled": true,
+    // OAuth callback query strings contain short-lived credentials.
+    "logs": { "invocation_logs": false }
+  }
 }

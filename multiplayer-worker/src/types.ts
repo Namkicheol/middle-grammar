@@ -12,8 +12,11 @@ export interface Env {
   ASSETS?: Fetcher;
   ENVIRONMENT: "production" | "development" | "test";
   QUESTION_BANK_JSON?: string;
-  ACCESS_TEAM_DOMAIN?: string;
-  ACCESS_AUD?: string;
+  GOOGLE_CLIENT_ID?: string;
+  GOOGLE_CLIENT_SECRET?: string;
+  AUTH_ORIGIN?: string;
+  TEACHER_EMAILS?: string;
+  ADMIN_EMAILS?: string;
 }
 
 export interface RoomRecord {
@@ -48,6 +51,8 @@ export interface SocketAttachment {
   role: "teacher" | "student";
   playerId?: string;
   resumeTokenHash?: string;
+  teacherSessionHash?: string;
+  teacherSessionExpiresAt?: number;
 }
 
 export interface FinalizedReport {
@@ -66,8 +71,11 @@ declare global {
       ASSETS?: Fetcher;
       ENVIRONMENT: "production" | "development" | "test";
       QUESTION_BANK_JSON?: string;
-      ACCESS_TEAM_DOMAIN?: string;
-      ACCESS_AUD?: string;
+      GOOGLE_CLIENT_ID?: string;
+      GOOGLE_CLIENT_SECRET?: string;
+      AUTH_ORIGIN?: string;
+      TEACHER_EMAILS?: string;
+      ADMIN_EMAILS?: string;
       TEST_MIGRATIONS: Array<{ name: string; queries: string[] }>;
     }
   }

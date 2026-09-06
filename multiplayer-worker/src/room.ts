@@ -13,6 +13,7 @@ import {
   type RoomState,
 } from "./room-engine";
 import type { Env, RoomInitBody, RoomRecord, SocketAttachment } from "./types";
+import { getTeacherSessionByHash } from "./auth";
 
 const RECORD_KEY = "room";
 const MAX_PLAYERS = 60;
@@ -61,6 +62,15 @@ export class GameRoom implements DurableObject {
       if (request.method === "GET" && url.pathname === "/internal/ws") {
         return await this.openSocket(request, url);
       }
+      if (request.method === "POST" && url.pathname === "/internal/revoke-teacher-session") {
+        const hash = request.headers.get("x-room-teacher-session-hash");
+        if (!hash) return json({ error: "INVALID_SESSION" }, 400);
+        for (const socket of this.ctx.getWebSockets()) {
+          const attachment = socket.deserializeAttachment() as SocketAttachment | null;
+          if (attachment?.teacherSessionHash === hash) socket.close(1008, "Teacher session ended");
+        }
+        return json({ ok: true });
+      }
       return json({ error: "NOT_FOUND" }, 404);
     } catch (error) {
       return errorResponse(error);
@@ -68,18 +78,19 @@ export class GameRoom implements DurableObject {
   }
 
   async alarm(): Promise<void> {
+    await this.closeInvalidTeacherSockets();
     const record = await this.getRecord();
     if (!record) return;
     const now = Date.now();
     if (record.state.status === "lobby") {
       if (now >= record.state.createdAt + LOBBY_TTL_MS) await this.cleanup();
-      else await this.ctx.storage.setAlarm(record.state.createdAt + LOBBY_TTL_MS);
+      else await this.ctx.storage.setAlarm(this.nextAlarmAt(record.state.createdAt + LOBBY_TTL_MS));
       return;
     }
     if (record.state.status === "playing") {
       const deadline = record.state.startedAt! + record.state.durationSeconds * 1_000;
       if (now >= deadline) await this.finishRoom(record, now);
-      else await this.ctx.storage.setAlarm(deadline);
+      else await this.ctx.storage.setAlarm(this.nextAlarmAt(deadline));
       return;
     }
     if (!record.reportStored) {
@@ -88,11 +99,15 @@ export class GameRoom implements DurableObject {
     }
     const cleanupAt = (record.state.finishedAt ?? now) + FINISHED_ROOM_TTL_MS;
     if (now >= cleanupAt) await this.cleanup();
-    else await this.ctx.storage.setAlarm(cleanupAt);
+    else await this.ctx.storage.setAlarm(this.nextAlarmAt(cleanupAt));
   }
 
   async webSocketMessage(socket: WebSocket, message: string | ArrayBuffer): Promise<void> {
     const attachment = socket.deserializeAttachment() as SocketAttachment | null;
+    if (attachment?.role === "teacher" && !(await this.teacherSocketValid(attachment))) {
+      socket.close(1008, "Teacher session ended");
+      return;
+    }
     let record: RoomRecord | undefined;
     let payload: { type?: string; questionId?: string; occurrenceIndex?: number; answer?: string; choiceId?: string; seq?: number; direction?: string; action?: string; hotspotId?: string; code?: string } = {};
     try {
@@ -120,7 +135,7 @@ export class GameRoom implements DurableObject {
           result: chosen.result,
           state: studentView(record, attachment.playerId),
         }));
-        this.broadcastState(record);
+        await this.broadcastState(record);
         return;
       }
       if (payload.type === "maze_move") {
@@ -140,7 +155,7 @@ export class GameRoom implements DurableObject {
           result: moved.result,
           state: studentView(record, attachment.playerId),
         }));
-        this.broadcastState(record);
+        await this.broadcastState(record);
         return;
       }
       if (payload.type === "escape_action") {
@@ -163,7 +178,7 @@ export class GameRoom implements DurableObject {
           result: escaped.result,
           room: studentView(record, attachment.playerId),
         }));
-        this.broadcastState(record);
+        await this.broadcastState(record);
         return;
       }
       if (
@@ -188,7 +203,7 @@ export class GameRoom implements DurableObject {
         result: submitted.result,
         state: studentView(record, attachment.playerId),
       }));
-      this.broadcastState(record);
+      await this.broadcastState(record);
     } catch (error) {
       const response = errorPayload(error);
       if (payload?.type === "escape_action" && record && attachment?.playerId) {
@@ -267,7 +282,7 @@ export class GameRoom implements DurableObject {
     });
     record.state = joined.state;
     await this.putRecord(record);
-    this.broadcastState(record);
+    await this.broadcastState(record);
     return json({ playerId, resumeToken, state: studentView(record, playerId) }, 201);
   }
 
@@ -322,9 +337,9 @@ export class GameRoom implements DurableObject {
     record.state = startRoom(record.state, startedAt);
     await this.ctx.storage.transaction(async (transaction) => {
       await transaction.put(RECORD_KEY, record);
-      await transaction.setAlarm(startedAt + record.state.durationSeconds * 1_000);
+      await transaction.setAlarm(this.nextAlarmAt(startedAt + record.state.durationSeconds * 1_000));
     });
-    this.broadcast("start", record);
+    await this.broadcast("start", record);
     return json({ state: teacherView(record) });
   }
 
@@ -345,7 +360,7 @@ export class GameRoom implements DurableObject {
     });
     record.state = chosen.state;
     await this.putRecord(record);
-    this.broadcastState(record);
+    await this.broadcastState(record);
     return json({ result: chosen.result, state: studentView(record, body.playerId) });
   }
 
@@ -371,7 +386,7 @@ export class GameRoom implements DurableObject {
     });
     record.state = moved.state;
     await this.putRecord(record);
-    this.broadcastState(record);
+    await this.broadcastState(record);
     return json({ result: moved.result, state: studentView(record, body.playerId) });
   }
 
@@ -391,7 +406,12 @@ export class GameRoom implements DurableObject {
     const teacherEmail = request.headers.get("x-room-teacher-email");
     if (teacherEmail) {
       this.assertTeacher(record, teacherEmail);
-      attachment = { role: "teacher" };
+      const sessionHash = request.headers.get("x-room-teacher-session-hash") ?? "";
+      const expiresAt = Number(request.headers.get("x-room-teacher-session-expires"));
+      attachment = { role: "teacher", teacherSessionHash: sessionHash, teacherSessionExpiresAt: expiresAt };
+      if (!(await this.teacherSocketValid(attachment, teacherEmail))) {
+        throw new ResponseError(401, "TEACHER_LOGIN_REQUIRED", "Teacher login required.");
+      }
     } else {
       const ticket = url.searchParams.get("ticket") ?? "";
       const issued = record.socketTickets[ticket];
@@ -422,6 +442,10 @@ export class GameRoom implements DurableObject {
     const [client, server] = Object.values(pair);
     this.ctx.acceptWebSocket(server);
     server.serializeAttachment(attachment);
+    if (attachment.role === "teacher" && attachment.teacherSessionExpiresAt) {
+      const scheduled = await this.ctx.storage.getAlarm();
+      await this.ctx.storage.setAlarm(this.nextAlarmAt(scheduled ?? record.state.createdAt + LOBBY_TTL_MS));
+    }
     server.send(JSON.stringify({ type: "hello", state: this.viewFor(record, attachment) }));
     return new Response(null, { status: 101, webSocket: client });
   }
@@ -432,20 +456,20 @@ export class GameRoom implements DurableObject {
     if (record.reportStored) return;
     await this.ctx.storage.transaction(async (transaction) => {
       await transaction.put(RECORD_KEY, record);
-      await transaction.setAlarm(Date.now() + REPORT_RETRY_MS);
+      await transaction.setAlarm(this.nextAlarmAt(Date.now() + REPORT_RETRY_MS));
     });
-    if (firstFinish) this.broadcast("finish", record);
+    if (firstFinish) await this.broadcast("finish", record);
     try {
       await this.storeReport(record);
       record.reportStored = true;
       const cleanupAt = (record.state.finishedAt ?? finishedAt) + FINISHED_ROOM_TTL_MS;
       await this.ctx.storage.transaction(async (transaction) => {
         await transaction.put(RECORD_KEY, record);
-        await transaction.setAlarm(cleanupAt);
+        await transaction.setAlarm(this.nextAlarmAt(cleanupAt));
       });
-      if (!firstFinish) this.broadcast("finish", record);
+      if (!firstFinish) await this.broadcast("finish", record);
     } catch (error) {
-      await this.ctx.storage.setAlarm(Date.now() + REPORT_RETRY_MS);
+      await this.ctx.storage.setAlarm(this.nextAlarmAt(Date.now() + REPORT_RETRY_MS));
       throw error;
     }
   }
@@ -527,23 +551,62 @@ export class GameRoom implements DurableObject {
     await this.env.REPORTS.batch(statements);
   }
 
-  private broadcast(type: "start" | "finish", record: RoomRecord): void {
-    this.sendEach(record, (attachment) => ({ type, state: this.viewFor(record, attachment) }));
+  private async broadcast(type: "start" | "finish", record: RoomRecord): Promise<void> {
+    await this.sendEach(record, (attachment) => ({ type, state: this.viewFor(record, attachment) }));
   }
 
-  private broadcastState(record: RoomRecord): void {
-    this.sendEach(record, (attachment) => ({ type: "room_state", state: this.viewFor(record, attachment) }));
+  private async broadcastState(record: RoomRecord): Promise<void> {
+    await this.sendEach(record, (attachment) => ({ type: "room_state", state: this.viewFor(record, attachment) }));
   }
 
-  private sendEach(record: RoomRecord, payload: (attachment: SocketAttachment) => unknown): void {
+  private async sendEach(record: RoomRecord, payload: (attachment: SocketAttachment) => unknown): Promise<void> {
     for (const socket of this.ctx.getWebSockets()) {
       const attachment = socket.deserializeAttachment() as SocketAttachment;
       try {
+        if (attachment.role === "teacher" && !(await this.teacherSocketValid(attachment, record.state.teacherEmail))) {
+          socket.close(1008, "Teacher session ended");
+          continue;
+        }
         socket.send(JSON.stringify(payload(attachment)));
       } catch {
         socket.close(1011, "Unable to update room");
       }
     }
+  }
+
+  private async teacherSocketValid(attachment: SocketAttachment, expectedEmail?: string): Promise<boolean> {
+    const hash = attachment.teacherSessionHash;
+    if (!hash) return false;
+    if (this.env.ENVIRONMENT !== "production" && hash.startsWith("dev:")) return true;
+    if (!attachment.teacherSessionExpiresAt || attachment.teacherSessionExpiresAt <= Date.now()) return false;
+    try {
+      const session = await getTeacherSessionByHash(this.env, hash);
+      return Boolean(session && (!expectedEmail || session.email === expectedEmail));
+    } catch {
+      // Authentication storage failure must not stop student play or leak teacher updates.
+      return false;
+    }
+  }
+
+  private async closeInvalidTeacherSockets(): Promise<void> {
+    for (const socket of this.ctx.getWebSockets()) {
+      const attachment = socket.deserializeAttachment() as SocketAttachment | null;
+      if (attachment?.role === "teacher" && !(await this.teacherSocketValid(attachment))) {
+        socket.close(1008, "Teacher session ended");
+      }
+    }
+  }
+
+  private nextAlarmAt(roomAlarm: number): number {
+    let next = roomAlarm;
+    for (const socket of this.ctx.getWebSockets()) {
+      const attachment = socket.deserializeAttachment() as SocketAttachment | null;
+      const expiresAt = attachment?.teacherSessionExpiresAt;
+      if (attachment?.role === "teacher" && expiresAt && expiresAt > Date.now() && socket.readyState === WebSocket.OPEN) {
+        next = Math.min(next, expiresAt);
+      }
+    }
+    return next;
   }
 
   private viewFor(record: RoomRecord, attachment: SocketAttachment) {

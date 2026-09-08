@@ -157,6 +157,7 @@ button:focus-visible,a:focus-visible,.unit-card:focus-visible,.grade-random:focu
 #speed-screen{display:none;min-height:100vh;background:linear-gradient(180deg,#082f49 0%,#0f172a 100%);color:#fff;padding-bottom:30px;}
 .speed-hud{display:flex;align-items:center;justify-content:space-between;gap:8px;width:100%;max-width:520px;margin:0 auto;padding:12px;background:rgba(255,255,255,.08);}
 .speed-hud button{background:rgba(255,255,255,.14);border:none;color:#fff;font-family:inherit;font-size:.75rem;font-weight:800;padding:6px 12px;border-radius:20px;cursor:pointer;}
+.speed-hud .speed-power{min-height:44px;padding:7px 12px;border:2px solid rgba(186,230,253,.4);line-height:1.15;white-space:nowrap}.speed-power.charged{background:linear-gradient(135deg,#fbbf24,#f97316);border-color:#fde68a;color:#422006;box-shadow:0 0 18px rgba(251,191,36,.38)}.speed-power.armed{background:linear-gradient(135deg,#a7f3d0,#22d3ee);border-color:#ecfeff;color:#064e3b;animation:pulse .8s infinite}.speed-power:disabled{opacity:.48;cursor:default}
 .speed-pill{font-size:.82rem;font-weight:900;color:#bae6fd;}
 .speed-time{font-size:1.12rem;font-weight:900;color:#fde68a;font-variant-numeric:tabular-nums;}
 .speed-time.crit{color:#fca5a5;animation:pulse .8s infinite;}
@@ -176,7 +177,7 @@ button:focus-visible,a:focus-visible,.unit-card:focus-visible,.grade-random:focu
 .speed-stat{background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.14);border-radius:16px;padding:11px 8px;text-align:center;}
 .speed-stat b{display:block;font-size:1.25rem;font-weight:900;color:#fde68a;}
 .speed-stat span{display:block;font-size:.7rem;font-weight:800;color:#bae6fd;margin-top:2px;}
-@media(max-width:420px){.speed-options{grid-template-columns:1fr;}.speed-hud{flex-wrap:wrap}.speed-pill{order:2;width:100%;text-align:center;}}
+@media(max-width:420px){.speed-options{grid-template-columns:1fr;}.speed-hud{display:grid;grid-template-columns:auto 1fr auto;padding:8px}.speed-hud>button:first-child{grid-area:1/1}.speed-time{grid-area:1/2;text-align:center}#speed-unit{display:none}#speed-score{grid-area:1/3;text-align:right}.speed-hud .speed-power{grid-area:2/1/3/4;width:100%}}
 
 /* ── BOSS BATTLE SCREEN ── */
 #boss-screen{display:none;min-height:100vh;background:linear-gradient(180deg,#111827 0%,#312e81 54%,#0f172a 100%);color:#fff;padding-bottom:28px;}
@@ -694,6 +695,7 @@ button:focus-visible,a:focus-visible,.unit-card:focus-visible,.grade-random:focu
 @media (orientation:landscape) and (max-height:500px){#landscape-warn{display:flex;}}
 </style>
 <link rel="stylesheet" href="./arena.css">
+<link rel="stylesheet" href="./arcade-lobby.css">
 </head>
 <body>
 <div id="toast"></div>
@@ -706,7 +708,7 @@ button:focus-visible,a:focus-visible,.unit-card:focus-visible,.grade-random:focu
     <div class="brand-lockup">
       <div>
         <h1>문법 아케이드</h1>
-        <p>학년, 게임, 문법 주제를 고르면 바로 시작해요.</p>
+        <p>오늘은 어떤 게임에 도전할까요?</p>
       </div>
     </div>
     <div class="bubble-deco" id="deco" aria-hidden="true"></div>
@@ -731,8 +733,8 @@ button:focus-visible,a:focus-visible,.unit-card:focus-visible,.grade-random:focu
         <div class="panel-title">
           <div><h2 id="mode-heading">게임 모드</h2></div>
         </div>
-        <button class="mode-summary" id="mode-summary" type="button" aria-expanded="false" aria-controls="mode-picker">문법 보스전 · 바꾸기</button>
-        <div class="mode-picker" id="mode-picker" hidden>
+        <button class="mode-summary" id="mode-summary" type="button" aria-expanded="true" aria-controls="mode-picker">문법 보스전 · 바꾸기</button>
+        <div class="mode-picker" id="mode-picker">
           <p class="helper">플레이할 게임을 선택하세요.</p>
           <div class="set-row mode-row">
             <div class="mode-opts" id="mode-opts">
@@ -762,7 +764,7 @@ button:focus-visible,a:focus-visible,.unit-card:focus-visible,.grade-random:focu
               </button>
               <button class="mode-btn" type="button" data-mode="sentence">
                 <i class="mode-thumb">💥</i>
-                <span class="mode-copy"><strong>Sentence Blast</strong><span>블록 15초 뒤 문법 챌린지</span></span>
+                <span class="mode-copy"><strong>블록 블라스트</strong><span>블록 15초 뒤 문법 챌린지</span></span>
               </button>
             </div>
           </div>
@@ -991,6 +993,7 @@ button:focus-visible,a:focus-visible,.unit-card:focus-visible,.grade-random:focu
     <span class="speed-time" id="speed-time">5:00</span>
     <span class="speed-pill" id="speed-unit">스피드 퀴즈</span>
     <span class="speed-pill" id="speed-score">0점</span>
+    <button class="speed-power" id="speed-power" type="button" onclick="armSpeedDouble()" aria-pressed="false">더블 찬스 · 비어 있음</button>
   </div>
   <div class="speed-wrap">
     <div class="speed-card">
@@ -1050,6 +1053,7 @@ button:focus-visible,a:focus-visible,.unit-card:focus-visible,.grade-random:focu
 <script src="./questions.js?v=questions-20260901-all-split"></script>
 <script src="../score-popup.js"></script>
 <script src="../sounds.js"></script>
+<script src="./classroom-bridge.js"></script>
 <!-- Phaser는 보스전에서만 쓰여 첫 페인트를 막을 필요가 없다. 아래 인라인 스크립트에서 지연 로드한다. -->
 <script>
 // Phaser 지연 로드 — 목록↔보스전 왕복 시 매번 허브가 새로 뜨는데,
@@ -1084,6 +1088,7 @@ const STAGE_CONFIG = [
   { label: '3단계', initRows: 6, colors: 6, descent: 35, scoreBonus: 1.25 }
 ];
 let selectedMode = 'boss';
+const classroomMode = !!window.ClassroomMatch?.enabled;
 let activeGrade = 'g1';
 const TIMED_MODES = new Set(['bubble', 'speed', 'sentence']);
 const GRADE_LABELS = { g1: '중1', g2: '중2' };
@@ -1361,10 +1366,12 @@ cleanupZeroScoreRecords();
       btn.setAttribute('aria-pressed', 'true');
       selectedMode = btn.dataset.mode || 'bubble';
       modeSummary.textContent = `✓ ${btn.querySelector('strong').textContent} · 변경`;
-      modePicker.hidden = true;
-      modeSummary.setAttribute('aria-expanded', 'false');
+      modePicker.hidden = false;
+      modeSummary.setAttribute('aria-expanded', 'true');
       syncTimeOptionsVisibility();
       renderUnitBestBadges();
+      document.getElementById('unit-helper').textContent = `${btn.querySelector('strong').textContent} · 문법 주제를 누르면 시작해요.`;
+      document.querySelector('.unit-section').scrollIntoView({behavior:matchMedia('(prefers-reduced-motion: reduce)').matches ? 'instant' : 'smooth',block:'start'});
     });
   });
   selectGrade(activeGrade);
@@ -1445,9 +1452,14 @@ let speedBestStreak = 0;
 let speedStartTs = 0;
 let speedLocked = false;
 let speedFinished = false;
+let speedNextTimer = null;
 let speedWrongItems = [];
+let speedDoubleCharged = false;
+let speedDoubleArmed = false;
 
 function clearSpeedTimer() {
+  clearTimeout(speedNextTimer);
+  speedNextTimer = null;
   if (speedTimerId) clearInterval(speedTimerId);
   speedTimerId = null;
 }
@@ -1468,6 +1480,7 @@ function startSpeedQuiz(unitKey) {
   speedStreak = 0;
   speedBestStreak = 0;
   speedWrongItems = [];
+  resetSpeedDouble();
   speedStartTs = Date.now();
   speedLocked = false;
   speedFinished = false;
@@ -1546,6 +1559,7 @@ function answerSpeedQuiz(chosen, q, optsEl) {
   speedLocked = true;
   speedTotal++;
   const isCorrect = chosen === q.ans;
+  const power = consumeSpeedDouble(isCorrect, 0);
 
   optsEl.querySelectorAll('.speed-opt').forEach(btn => {
     btn.disabled = true;
@@ -1557,9 +1571,11 @@ function answerSpeedQuiz(chosen, q, optsEl) {
     speedCorrect++;
     speedStreak++;
     speedBestStreak = Math.max(speedBestStreak, speedStreak);
-    const earnScore = 100 + Math.min(speedStreak - 1, 8) * 15;
+    const baseScore = 100 + Math.min(speedStreak - 1, 8) * 15;
+    const earnScore = power.used ? baseScore * 2 : baseScore;
     speedScore += earnScore;
-    document.getElementById('speed-review').textContent = speedStreak > 1 ? `${speedStreak}콤보! +${earnScore}점` : `정답! +${earnScore}점`;
+    awardSpeedDouble();
+    document.getElementById('speed-review').textContent = power.used ? `⚡ 더블 찬스! +${earnScore}점` : speedStreak > 1 ? `${speedStreak}콤보! +${earnScore}점` : `정답! +${earnScore}점`;
     document.getElementById('speed-review').style.color = '#16a34a';
     showScoreFx(speedStreak > 1 ? `${speedStreak}콤보 +${earnScore}` : `+${earnScore}`, speedStreak > 1 ? 'combo' : 'pop');
     playEarn();
@@ -1573,7 +1589,26 @@ function answerSpeedQuiz(chosen, q, optsEl) {
   }
 
   updateSpeedHUD();
-  setTimeout(nextSpeedQuestion, isCorrect ? 420 : 1150);
+  speedNextTimer = setTimeout(nextSpeedQuestion, isCorrect ? 420 : 1150);
+}
+
+function armSpeedDouble() {
+  if (classroomMode || speedFinished || speedLocked || !speedDoubleCharged || speedDoubleArmed) return false;
+  speedDoubleCharged = false;speedDoubleArmed = true;updateSpeedHUD();return true;
+}
+
+function resetSpeedDouble() {
+  speedDoubleCharged = false;speedDoubleArmed = false;
+}
+
+function consumeSpeedDouble(isCorrect, baseScore) {
+  const used = !classroomMode && speedDoubleArmed;
+  speedDoubleArmed = false;
+  return { used, score: isCorrect && used ? baseScore * 2 : baseScore };
+}
+
+function awardSpeedDouble() {
+  if (!classroomMode && speedStreak > 0 && speedStreak % 5 === 0 && !speedDoubleCharged && !speedDoubleArmed) speedDoubleCharged = true;
 }
 
 function updateSpeedHUD() {
@@ -1582,6 +1617,11 @@ function updateSpeedHUD() {
   document.getElementById('speed-correct').textContent = speedCorrect;
   document.getElementById('speed-total').textContent = speedTotal;
   document.getElementById('speed-best-combo').textContent = speedBestStreak;
+  const power = document.getElementById('speed-power');
+  power.textContent = classroomMode ? '더블 찬스 · 교실 모드 OFF' : speedDoubleArmed ? '⚡ 더블 찬스 · 다음 답에 사용' : speedDoubleCharged ? '더블 찬스 · 사용하기' : `더블 찬스 · ${Math.min(speedStreak,5)}/5`;
+  power.className = 'speed-power' + (speedDoubleArmed ? ' armed' : speedDoubleCharged ? ' charged' : '');
+  power.disabled = classroomMode || speedFinished || speedLocked || !speedDoubleCharged || speedDoubleArmed;
+  power.setAttribute('aria-pressed', speedDoubleArmed ? 'true' : 'false');
 }
 
 function endSpeedQuiz(reason) {
@@ -3469,6 +3509,12 @@ let pauseStartedTs = 0;
 let pausedTotalMs = 0;
 let quizPauseStartedTs = 0;
 let quizPausedTotalMs = 0;
+let classroomQuestion = null;
+let classroomFinished = false;
+let classroomDeadlineAt = 0;
+let stopClassroomFinish = null;
+let bubbleAnswerPending = false;
+let bubbleQuestionPending = false;
 
 // Special game elements
 let bubbleWrongItems = [];
@@ -3594,7 +3640,14 @@ function stageQuestions(unitKey, stage) {
 }
 
 // ── Setup on start ──
-function startGame(unitKey, stage) {
+async function startGame(unitKey, stage) {
+  if (classroomMode) {
+    let settings;
+    try { settings = await ClassroomMatch.ready; } catch (e) { return; }
+    if (!ClassroomMatch.isActive()) return;
+    classroomDeadlineAt = settings.deadlineAt;
+    if (!stopClassroomFinish) stopClassroomFinish = ClassroomMatch.onFinish(() => triggerGameOver(false, 'time', true));
+  }
   clearBossTimer();
   clearSpeedTimer();
   closeScorePopupOverlay();
@@ -3887,7 +3940,10 @@ function loop(ts) {
 
   // Timer update — wall-clock based (real-time pressure)
   const el = elapsedSec();
-  if (timeLimitSec > 0) {
+  if (classroomMode) {
+    timeLeftSec = Math.max(0, Math.ceil(ClassroomMatch.remainingMs() / 1000));
+    if (timeLeftSec <= 0) { gamePaused = true; canShoot = false; return; }
+  } else if (timeLimitSec > 0) {
     timeLeftSec = Math.max(0, timeLimitSec - el);
     if (timeLeftSec === 30 && lastWarnedSec !== 30) { playWarn(); lastWarnedSec = 30; }
     if (timeLeftSec === 10 && lastWarnedSec !== 10) { playWarn(); lastWarnedSec = 10; }
@@ -4269,8 +4325,23 @@ function checkGameOver() {
   }
 }
 
-function triggerGameOver(clear, reason) {
+function triggerGameOver(clear, reason, classroomEnded = false) {
   if (gameOver) return;
+  if (classroomMode && !classroomEnded && ClassroomMatch.isActive()) {
+    gamePaused = true;
+    canShoot = false;
+    setTimeout(() => {
+      if (!ClassroomMatch.isActive()) return;
+      initGrid();
+      shooterBubble = newShooterBubble();
+      gamePaused = false;
+      canShoot = true;
+      showToast('새 보드로 계속해요!', 'ok');
+    }, 700);
+    return;
+  }
+  classroomFinished = classroomMode;
+  stopClassroomFinish?.();
   gameOver = true;
   gamePaused = true;
   manualPause = false;
@@ -4283,7 +4354,7 @@ function triggerGameOver(clear, reason) {
 
   setTimeout(() => {
     const hasNextStage = currentStage < MAX_STAGE;
-    const best = saveGameBest(currentUnit, gameScore, quizCorrect, quizTotal, bestAnswerStreak, clear, currentStage);
+    const best = classroomMode ? { isNew: false } : saveGameBest(currentUnit, gameScore, quizCorrect, quizTotal, bestAnswerStreak, clear, currentStage);
     const ov = document.getElementById('gameover-overlay');
     document.getElementById('go-emoji').textContent = clear ? '🏆' : (reason==='time' ? '⏰' : '😊');
     document.getElementById('go-title').textContent = clear ? `${currentStage}단계 클리어!` : `${currentStage}단계 종료`;
@@ -4415,17 +4486,28 @@ canvas.addEventListener('touchend', e => {
 }, { passive: false });
 
 // ── Quiz ──
-function triggerQuizModal() {
+async function triggerQuizModal() {
   if (gameOver) return;
   if (!grammarQuizPending || isQuizOpen()) return;
+  if (bubbleQuestionPending) return;
   if (manualPause) {
     setTimeout(() => triggerQuizModal(), 250);
     return;
   }
-  const available = questionPool.filter(q => !usedQIds.has(q.id));
-  if (available.length === 0) usedQIds.clear();
-  const pool = available.length > 0 ? available : questionPool;
-  if (pool.length === 0) {
+  let q;
+  if (classroomMode) {
+    bubbleQuestionPending = true;
+    try { q = await ClassroomMatch.getQuestion(); }
+    catch (e) { bubbleQuestionPending = false;if (ClassroomMatch.isActive()) setTimeout(triggerQuizModal, 250);return; }
+    if (classroomFinished || !ClassroomMatch.isActive()) return;
+    classroomQuestion = q;
+  } else {
+    const available = questionPool.filter(q => !usedQIds.has(q.id));
+    if (available.length === 0) usedQIds.clear();
+    const pool = available.length > 0 ? available : questionPool;
+    q = pool[Math.floor(Math.random() * pool.length)];
+  }
+  if (!q) {
     grammarQuizPending = false;
     shotsTowardQuiz = 0;
     canShoot = true;
@@ -4433,8 +4515,7 @@ function triggerQuizModal() {
     updateHUD();
     return;
   }
-  const q = pool[Math.floor(Math.random() * pool.length)];
-  usedQIds.add(q.id);
+  if (!classroomMode) usedQIds.add(q.id);
   quizTotal++;
   updateHUD();
 
@@ -4461,17 +4542,26 @@ function triggerQuizModal() {
   });
 
   document.getElementById('quiz-overlay').classList.add('show');
+  bubbleQuestionPending = false;
 }
 
-function makeReviewText(q) {
+function makeReviewText(q, answer = q.ans) {
   const solved = q.eng.indexOf('___') >= 0
-    ? q.eng.replace('___', '[' + q.ans + ']')
-    : q.eng + ' → ' + q.ans;
-  return '정답: ' + q.ans + ' · ' + solved;
+    ? q.eng.replace('___', '[' + answer + ']')
+    : q.eng + ' → ' + answer;
+  return '정답: ' + answer + ' · ' + solved;
 }
 
-function answerQuiz(chosen, q, optsEl) {
-  const correct = q.ans;
+async function answerQuiz(chosen, q, optsEl) {
+  if (bubbleAnswerPending) return;
+  bubbleAnswerPending = true;
+  optsEl.querySelectorAll('.quiz-opt').forEach(b => { b.disabled = true; });
+  let serverResult = null;
+  if (classroomMode) {
+    try { serverResult = await ClassroomMatch.answer(classroomQuestion, chosen); }
+    catch (e) { bubbleAnswerPending = false;if (!ClassroomMatch.isActive()) return;optsEl.querySelectorAll('.quiz-opt').forEach(b => { b.disabled = false; });showToast('연결을 확인하고 다시 시도해요', 'ng');return; }
+  }
+  const correct = classroomMode ? serverResult.correctAnswer : q.ans;
   optsEl.querySelectorAll('.quiz-opt').forEach(b => {
     b.disabled = true;
     if (b.textContent === correct) b.classList.add(chosen === correct ? 'ok' : 'reveal');
@@ -4479,7 +4569,7 @@ function answerQuiz(chosen, q, optsEl) {
   });
 
   const bonusEl = document.getElementById('quiz-bonus');
-  const isCorrect = chosen === correct;
+  const isCorrect = classroomMode ? !!serverResult.correct : chosen === correct;
   if (isCorrect) {
     quizCorrect++;
     answerStreak++;
@@ -4500,10 +4590,10 @@ function answerQuiz(chosen, q, optsEl) {
     playEarn();
   } else {
     answerStreak = 0;
-    bonusEl.textContent = `❌ ${makeReviewText(q)} · 보상 없이 계속!`;
+    bonusEl.textContent = `❌ ${makeReviewText(q, correct)} · 보상 없이 계속!`;
     bonusEl.style.color = '#ef4444';
     showToast('틀렸어요! 정답을 확인하세요', 'ng');
-    bubbleWrongItems.push({ question: (q.kor ? q.kor + ' / ' : '') + q.eng, my: chosen, right: q.ans });
+    bubbleWrongItems.push({ question: (q.kor ? q.kor + ' / ' : '') + q.eng, my: chosen, right: correct });
   }
   updateHUD();
 
@@ -4514,6 +4604,7 @@ function answerQuiz(chosen, q, optsEl) {
       quizPauseStartedTs = 0;
     }
     if (gameOver) return;
+    bubbleAnswerPending = false;
     grammarQuizPending = false;
     shotsTowardQuiz = 0;
     gamePaused = manualPause;
@@ -4837,6 +4928,10 @@ window.addEventListener('resize', () => {
     resizeCanvas();
   }
 });
+if (classroomMode) {
+  const classroomUnit = new URLSearchParams(location.search).get('unit') || 'all';
+  ClassroomMatch.ready.then(() => startGame(classroomUnit, 1)).catch(() => {});
+}
 </script>
 </body>
 </html>

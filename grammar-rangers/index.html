@@ -44,6 +44,7 @@ button{font-family:inherit;}
 #game{position:fixed;inset:0;display:none;flex-direction:column;align-items:center;}
 #hud{width:100%;max-width:900px;display:flex;align-items:center;gap:8px;padding:8px 12px 4px;}
 .hud-chip{font-size:.95rem;font-weight:900;background:rgba(255,255,255,.06);border:1.5px solid rgba(255,255,255,.16);border-radius:11px;padding:6px 10px;line-height:1;white-space:nowrap;}
+.hud-exit{min-width:64px;min-height:44px;border:1.5px solid rgba(255,255,255,.28);border-radius:11px;padding:6px 9px;color:#fff;background:rgba(15,23,42,.82);font-size:.76rem;font-weight:900;cursor:pointer;white-space:nowrap}.hud-exit:focus-visible{outline:3px solid #fde68a;outline-offset:2px}
 #stage-chip{color:#7dd3fc;border-color:rgba(56,189,248,.45);}
 #best-chip2{color:#ddd6fe;font-size:.74rem;}
 #energy-wrap{flex:1;min-width:80px;}
@@ -115,7 +116,7 @@ button{font-family:inherit;}
 @media (max-width:560px){
   #game{overflow-y:auto;justify-content:flex-start;padding-bottom:6px;}#game> *{flex-shrink:0}#game>#hud{order:1}#game>#stage-wrap{order:2}#game>#qcard{order:3}#game>#tower-bar{order:4}#game>#summon-bar{order:5}
   #q-eng{font-size:.92rem;} .gate-title{font-size:1.8rem;} .mode-card{width:100%;max-width:320px;}
-  #hud{gap:4px;padding:5px 6px 3px}.hud-chip{padding:6px;font-size:.76rem}#best-chip2{display:none}
+  #hud{gap:4px;padding:5px 6px 3px}.hud-chip{padding:6px;font-size:.76rem}#best-chip2{display:none}.hud-exit{min-width:58px;padding-inline:6px}
   #spd-btn,#bgm-btn,#sfx-btn{min-width:44px;min-height:44px;padding:5px;}
   #stage-wrap{width:calc(100% - 8px);}
   #field{width:100%;height:clamp(170px,23vh,205px);border-radius:13px;}
@@ -167,6 +168,7 @@ button{font-family:inherit;}
 
 <div id="game">
   <div id="hud">
+    <button class="hud-exit" id="hud-exit" type="button" aria-label="게임을 멈추고 목록으로 돌아가기">← 목록</button>
     <div class="hud-chip" id="stage-chip">🏰 1</div>
     <div id="energy-wrap"><div id="energy-track"><div id="energy-fill"></div><div id="energy-txt">⚡0</div></div></div>
     <div class="hud-chip" id="best-chip2">최고 -</div>
@@ -205,6 +207,7 @@ button{font-family:inherit;}
 
 <audio id="bgm" src="assets/rangers-theme.mp3" loop preload="none"></audio>
 <script src="../game/questions.js?v=questions-20260901-all-split"></script>
+<script src="../game/classroom-bridge.js"></script>
 <script>
 'use strict';
 // ═══════════════════════════════════════════════════════════
@@ -356,6 +359,23 @@ function bestKey(s){return 'egmGR.best.'+(s||'all');}
 
 // ── 게임 상태 ──
 let GS=null, raf=0, lastT=0, runSeq=0, starting=false;
+const classroom=window.ClassroomMatch;
+classroom?.ready.catch(()=>{});
+let classroomScore=0, classroomFinished=false;
+function classroomOn(){return Boolean(classroom&&classroom.enabled);}
+function leaveActiveRun(){
+  if(classroomOn()||!GS||GS.over)return;
+  stopLoop();bgm.pause();
+  const message='진행 중인 진격을 멈추고 게임 목록으로 돌아갈까요?';
+  if(!window.confirm(message)){resumeActiveRun();return;}
+  location.href='../game/index.html';
+}
+function stopForClassroomFinish(){
+  classroomFinished=true;stopLoop();clearRunTimers();bgmStop();
+  if(GS){GS.over=true;GS.locked=true;}
+  document.querySelectorAll('.opt').forEach(b=>b.disabled=true);
+  banner('교실 경기가 종료됐어요');
+}
 const runTimers=new Set();
 function runLater(fn,delay,runId=GS&&GS.runId){
   const id=setTimeout(()=>{runTimers.delete(id);if(!GS||GS.runId!==runId)return;fn();},delay);
@@ -400,6 +420,7 @@ async function startRun(scope,runId){
   $('gate').style.display='none';$('result').style.display='none';$('game').style.display='flex';
   starting=false;setStartingUI(false);
   $('spd-btn').textContent='▶ 1x';
+  if(classroomOn()){$('spd-btn').disabled=true;$('spd-btn').hidden=true;}
   const best=loadRec(bestKey(scope));$('best-chip2').textContent='최고 '+(best?best.stage+'스테이지':'-');
   activeUnitTier='basic';buildTowerBar();buildSummonBar();updateHud();nextQuestion();
   startStage(1);
@@ -702,28 +723,46 @@ function drawUnit(u){
 }
 
 // ── 문제 ──
-function nextQuestion(){
-  const g=GS;if(g.qi>=g.qseq.length){g.qseq=shuffled(g.pool);g.qi=0;}
-  const q=g.qseq[g.qi++];g.cur=q;g.locked=false;
-  $('q-unit').textContent=q.unitLabel.split('·')[0].trim();
+async function nextQuestion(){
+  const g=GS;if(!g||g.over||classroomFinished)return;
+  let q;
+  if(classroomOn()){
+    g.locked=true;$('q-eng').textContent='다음 문제를 불러오는 중…';$('opts').innerHTML='';
+    try{q=await classroom.getQuestion();}catch(e){if(GS===g&&!g.over){$('q-reward').textContent='연결을 확인한 뒤 다시 시도해요.';g.locked=false;setTimeout(()=>nextQuestion(),900);}return;}
+    if(GS!==g||g.over||classroomFinished)return;
+    q={...q,unitLabel:'교실 경기',unitColor:'#38bdf8'};
+  }else{if(g.qi>=g.qseq.length){g.qseq=shuffled(g.pool);g.qi=0;}q=g.qseq[g.qi++];}
+  g.cur=q;g.locked=false;
+  $('q-unit').textContent=(q.unitLabel||'교실 경기').split('·')[0].trim();
   $('q-unit').style.background=q.unitColor?q.unitColor+'33':'';
   $('q-eng').innerHTML=q.eng.replace(/_{2,}/g,'<b>____</b>');
   $('q-kor').textContent=q.kor;$('q-reward').textContent='';
   const box=$('opts');box.innerHTML='';
   shuffled(q.opts).forEach(o=>{const b=document.createElement('button');b.className='opt';b.textContent=o;b.onclick=()=>answer(b,o);box.appendChild(b);});
 }
-function answer(btn,val){
+async function answer(btn,val){
   const g=GS;if(!g||g.over||g.locked)return;g.locked=true;
-  const correct=val===g.cur.ans;g.total++;
-  [...document.querySelectorAll('.opt')].forEach(b=>{b.disabled=true;if(b.textContent===g.cur.ans)b.classList.add('ok');else if(b===btn)b.classList.add('ng');});
+  [...document.querySelectorAll('.opt')].forEach(b=>b.disabled=true);
+  let result=null;
+  if(classroomOn()){
+    try{result=await classroom.answer(g.cur,val);}catch(e){if(GS===g&&!g.over){g.locked=false;[...document.querySelectorAll('.opt')].forEach(b=>b.disabled=false);$('q-reward').textContent='전송되지 않았어요. 답을 다시 눌러 주세요.';}return;}
+    if(GS!==g||g.over||classroomFinished)return;
+  }
+  const correct=result?Boolean(result.correct):val===g.cur.ans;
+  const correctAnswer=result?.correctAnswer??g.cur.ans;
+  if(result)classroomScore=Number(result.score??classroomScore+(result.scoreGain||0));
+  g.total++;
+  [...document.querySelectorAll('.opt')].forEach(b=>{if(b.textContent===correctAnswer)b.classList.add('ok');else if(b===btn)b.classList.add('ng');});
   if(correct){
     g.combo++;g.correct++;g.maxCombo=Math.max(g.maxCombo,g.combo);
     const gain=14+Math.min(6,Math.floor(g.combo/3)*2);
     g.energy=Math.min(g.energyMax,g.energy+gain);sfx.ok();
     $('q-reward').innerHTML='⚡+'+gain+(g.combo>=3?' <span style="color:#fde68a">'+g.combo+'콤보!</span>':'');
-  }else{g.combo=0;g.energy=Math.min(g.energyMax,g.energy+4);sfx.ng();$('q-reward').innerHTML='<span style="color:#fca5a5">정답: '+g.cur.ans+'</span> <span style="color:#fde68a">⚡+4</span>';}
+  }else{g.combo=0;g.energy=Math.min(g.energyMax,g.energy+4);sfx.ng();$('q-reward').innerHTML='<span style="color:#fca5a5">정답: '+correctAnswer+'</span> <span style="color:#fde68a">⚡+4</span>';}
+  if(result)$('q-reward').innerHTML+=' <span style="color:#67e8f9">경기 '+classroomScore+'점</span>';
   updateHud();
-  runLater(()=>{if(!GS.over)nextQuestion();},Math.round((correct?550:1250)/g.speed),g.runId);
+  const questionCadence=correct?550:1250;
+  runLater(()=>{if(!GS.over)nextQuestion();},Math.round(questionCadence/(classroomOn()?1:g.speed)),g.runId);
 }
 
 function updateHud(){
@@ -748,10 +787,12 @@ function gameOver(){
   $('res-new-wrap').innerHTML=isNew?'<div class="res-new">🎉 최고 기록!</div>':'';
   const best=loadRec(bKey);const acc=g.total?Math.round(g.correct/g.total*100):0;
   $('res-best').innerHTML='📊 정답률 '+acc+'% ('+g.correct+'/'+g.total+') · 🔥최다 '+g.maxCombo+'콤보<br>🏆 내 최고: '+(best?best.stage+' 스테이지':'-');
-  sfx.over();bgmStop();runLater(()=>$('result').style.display='flex',500,g.runId);
+  sfx.over();bgmStop();
+  if(classroomOn()&&classroom.isActive()&&!classroomFinished){runLater(()=>requestRun(g.scope),1500,g.runId);return;}
+  runLater(()=>$('result').style.display='flex',500,g.runId);
 }
 $('btn-retry').onclick=()=>requestRun(GS.scope);
-$('spd-btn').onclick=()=>{if(!GS||GS.over)return;GS.speed=GS.speed===1?2:1;$('spd-btn').textContent=GS.speed===2?'▶▶ 2x':'▶ 1x';};
+$('spd-btn').onclick=()=>{if(classroomOn()||!GS||GS.over)return;GS.speed=GS.speed===1?2:1;$('spd-btn').textContent=GS.speed===2?'▶▶ 2x':'▶ 1x';};
 $('bgm-btn').onclick=()=>{if(bgmOn&&bgmNeedsGesture){bgmPlay();return;}bgmOn=!bgmOn;localStorage.setItem('egmGR.bgm',bgmOn?'on':'off');bgmNeedsGesture=false;syncAudioButtons();if(bgmOn&&GS&&!GS.over)bgmPlay();else bgm.pause();};
 $('sfx-btn').onclick=()=>{sfxOn=!sfxOn;localStorage.setItem('egmGR.sfx',sfxOn?'on':'off');syncAudioButtons();if(sfxOn)sfx.coin();};
 syncAudioButtons();
@@ -761,7 +802,7 @@ window.addEventListener('pointerdown',e=>{if(e.target.closest&&e.target.closest(
 function resumeActiveRun(){if(!GS||GS.over||$('game').style.display!=='flex')return;startLoop();if(bgmOn)bgmPlay();}
 document.addEventListener('visibilitychange',()=>{if(document.hidden){stopLoop();bgm.pause();}else resumeActiveRun();});
 window.addEventListener('pagehide',()=>{stopLoop();bgm.pause();});
-window.addEventListener('pageshow',()=>{if(!document.hidden)resumeActiveRun();});
+window.addEventListener('pageshow',()=>{if(!document.hidden&&(!classroomOn()||classroom.isActive()))resumeActiveRun();});
 
 // ── 게이트 ──
 let gateScope='all';
@@ -779,7 +820,13 @@ function refreshGate(){
 $('card-all').onclick=()=>{gateScope='all';refreshGate();};
 $('card-unit').onclick=()=>{if(gateScope==='all')gateScope=UNIT_KEYS[0];refreshGate();};
 $('gate-go').onclick=()=>requestRun(gateScope);
+$('hud-exit').hidden=classroomOn();
+$('hud-exit').onclick=leaveActiveRun;
 buildUnitChips();refreshGate();
+if(classroomOn()){
+  classroom.onFinish(stopForClassroomFinish);
+  classroom.ready.then(()=>{if(!classroomFinished)requestRun(gateScope);}).catch(()=>{$('gate-go').textContent='연결을 확인한 뒤 다시 시도';});
+}
 </script>
 </body>
 </html>

@@ -30,6 +30,7 @@ interface AuthConfig {
   clientId: string;
   clientSecret: string;
   origin: string;
+  teacherSignupMode: "allowlist" | "open";
   teachers: Set<string>;
   admins: Set<string>;
 }
@@ -137,6 +138,7 @@ export async function finishGoogleAuth(request: Request, env: Env): Promise<Resp
   const email = normalizeEmail(claims.email);
   const role = roleFor(settings, email);
   if (!role) throw new AuthError(403, "TEACHER_NOT_ALLOWED", "This Google account is not approved for teacher access.");
+  if (await isBanned(env, claims.sub)) throw new AuthError(403, "TEACHER_BANNED", "This teacher account has been disabled.");
   await bindIdentity(env, claims.sub, email, now);
   const rawToken = randomToken();
   const csrfToken = await csrfFor(rawToken);
@@ -165,7 +167,7 @@ export async function requireTeacherSession(
   env: Env,
   purpose: "read" | "mutation" | "websocket" = "read",
 ): Promise<TeacherSession> {
-  const development = developmentSession(request, env);
+  const development = developmentSession(request, env, purpose === "websocket");
   if (development) return development;
   const rawToken = readCookie(request, sessionCookieName(env));
   if (!rawToken) throw new AuthError(401, "TEACHER_LOGIN_REQUIRED", "Teacher login required.");
@@ -185,8 +187,9 @@ export async function requireTeacherSession(
 export async function getTeacherSessionByHash(env: Env, sessionHash: string): Promise<TeacherSession | null> {
   if (sessionHash.startsWith("dev:")) return null;
   const row = await env.REPORTS.prepare(
-    `SELECT email, expires_at FROM teacher_sessions
-     WHERE session_hash = ? AND expires_at > ? AND revoked_at IS NULL`,
+    `SELECT s.email, s.expires_at FROM teacher_sessions s
+     LEFT JOIN teacher_moderation m ON m.google_sub=s.google_sub
+     WHERE s.session_hash = ? AND s.expires_at > ? AND s.revoked_at IS NULL AND COALESCE(m.banned,0)=0`,
   ).bind(sessionHash, Date.now()).first<{ email: string; expires_at: number }>();
   if (!row) return null;
   const email = normalizeEmail(row.email);
@@ -263,8 +266,9 @@ function config(env: Env): AuthConfig | null {
   if (parsed.pathname !== "/" || parsed.search || parsed.hash) return null;
   const teachers = emails(env.TEACHER_EMAILS);
   const admins = emails(env.ADMIN_EMAILS);
-  if (teachers.size + admins.size === 0) return null;
-  return { clientId, clientSecret, origin: parsed.origin, teachers, admins };
+  const teacherSignupMode = env.TEACHER_SIGNUP_MODE === "open" ? "open" : "allowlist";
+  if (teacherSignupMode === "allowlist" && teachers.size + admins.size === 0) return null;
+  return { clientId, clientSecret, origin: parsed.origin, teacherSignupMode, teachers, admins };
 }
 
 function requireConfig(env: Env): AuthConfig {
@@ -280,7 +284,7 @@ function roleForConfig(env: Env, email: string): TeacherRole | null {
 
 function roleFor(settings: AuthConfig, email: string): TeacherRole | null {
   if (settings.admins.has(email)) return "admin";
-  return settings.teachers.has(email) ? "teacher" : null;
+  return settings.teacherSignupMode === "open" || settings.teachers.has(email) ? "teacher" : null;
 }
 
 function emails(value?: string): Set<string> {
@@ -339,8 +343,9 @@ async function bindIdentity(env: Env, sub: string, email: string, now: number): 
 async function getSessionByToken(env: Env, rawToken: string): Promise<TeacherSession | null> {
   const sessionHash = await sha256(rawToken);
   const row = await env.REPORTS.prepare(
-    `SELECT email, csrf_hash, expires_at FROM teacher_sessions
-     WHERE session_hash = ? AND expires_at > ? AND revoked_at IS NULL`,
+    `SELECT s.email, s.csrf_hash, s.expires_at FROM teacher_sessions s
+     LEFT JOIN teacher_moderation m ON m.google_sub=s.google_sub
+     WHERE s.session_hash = ? AND s.expires_at > ? AND s.revoked_at IS NULL AND COALESCE(m.banned,0)=0`,
   ).bind(sessionHash, Date.now()).first<{ email: string; csrf_hash: string; expires_at: number }>();
   if (!row) return null;
   const email = normalizeEmail(row.email);
@@ -351,13 +356,30 @@ async function getSessionByToken(env: Env, rawToken: string): Promise<TeacherSes
   return { email, role, sessionHash, expiresAt: row.expires_at, csrfToken };
 }
 
-function developmentSession(request: Request, env: Env): TeacherSession | null {
-  if (env.ENVIRONMENT === "production" || !isLoopbackHost(new URL(request.url).hostname)) return null;
-  const email = normalizeEmail(request.headers.get("x-dev-teacher-email") ?? "");
+async function isBanned(env: Env, sub: string): Promise<boolean> {
+  const row = await env.REPORTS.prepare("SELECT banned FROM teacher_moderation WHERE google_sub = ?").bind(sub).first<{ banned: number }>();
+  return row?.banned === 1;
+}
+
+function developmentSession(request: Request, env: Env, allowWebsocketQuery = false): TeacherSession | null {
+  const url = new URL(request.url);
+  if (env.ENVIRONMENT === "production" || !isLoopbackHost(url.hostname)) return null;
+  let email = normalizeEmail(request.headers.get("x-dev-teacher-email") ?? "");
+  if (!email && allowWebsocketQuery && request.headers.get("upgrade")?.toLowerCase() === "websocket") {
+    const origin = request.headers.get("origin");
+    if (origin) {
+      try {
+        if (new URL(origin).origin !== url.origin) return null;
+      } catch {
+        return null;
+      }
+    }
+    email = normalizeEmail(url.searchParams.get("devTeacherEmail") ?? "");
+  }
   if (!email) return null;
   return {
     email,
-    role: roleForConfig(env, email) ?? "teacher",
+    role: emails(env.ADMIN_EMAILS).has(email) ? "admin" : roleForConfig(env, email) ?? "teacher",
     sessionHash: `dev:${encodeURIComponent(email)}`,
     expiresAt: Date.now() + SESSION_TTL_MS,
     developmentBypass: true,

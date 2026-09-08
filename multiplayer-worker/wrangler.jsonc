@@ -23,7 +23,7 @@
       "migrations_dir": "migrations"
     }
   ],
-  "vars": { "ENVIRONMENT": "production" },
+  "vars": { "ENVIRONMENT": "production", "TEACHER_SIGNUP_MODE": "open", "STUDENT_RECORD_RETENTION": "session" },
   "triggers": { "crons": ["0 3 * * *"] },
   "migrations": [
     { "tag": "v1", "new_sqlite_classes": ["GameRoom"] }

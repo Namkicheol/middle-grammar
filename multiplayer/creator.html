@@ -4,8 +4,10 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
   <meta name="theme-color" content="#5b46e8">
+  <link rel="icon" href="data:,">
   <title>퀴즈 세트 만들기 | 문법 아케이드</title>
   <link rel="stylesheet" href="./creator.css">
+  <style>[hidden]{display:none!important}</style>
 </head>
 <body>
   <a class="skip-link" href="#main">본문으로 바로가기</a>
@@ -15,23 +17,23 @@
   </header>
   <main id="main" class="creator-shell">
     <section class="hero" aria-labelledby="page-title">
-      <p class="eyebrow">TEACHER TOOL</p>
       <h1 id="page-title">내 퀴즈 세트 만들기</h1>
-      <p>문항을 5개 이상 만들면 학생들과 바로 게임을 시작할 수 있어요.</p>
+      <p>문제를 쓰고 정답을 고른 뒤, 바로 다음 문항을 추가하세요.</p>
     </section>
     <div id="notice" class="notice" role="status" aria-live="polite" hidden></div>
     <section class="toolbar panel" aria-label="세트 관리">
-      <div class="field grow"><label for="set-title">세트 이름</label><input id="set-title" maxlength="80" placeholder="예: 중1 be동사 복습"></div>
+      <div class="field grow"><label for="set-title">세트 이름</label><input id="set-title" maxlength="80" placeholder="예: 중1 be동사 복습"></div><span id="save-status" class="save-status" role="status">이 기기에만 저장돼요 · 계정 동기화 안 됨</span>
     </section>
     <section class="panel input-panel" aria-labelledby="input-title">
       <div class="section-heading"><div><p class="eyebrow">ADD QUESTIONS</p><h2 id="input-title">문항 추가</h2></div><span id="question-count" class="count">0문항</span></div>
       <form id="question-form">
-        <div class="field"><label for="question-text">문제 <span class="required">필수</span></label><textarea id="question-text" rows="3" maxlength="500" placeholder="문제나 문장을 입력하세요." required></textarea></div>
-        <div class="field"><label for="answer-text">정답 <span class="required">필수</span></label><input id="answer-text" maxlength="200" placeholder="정답을 입력하세요." required></div>
-        <div class="field"><label for="choices-text">선택지 <span class="optional">선택 · 쉼표로 구분</span></label><input id="choices-text" maxlength="600" placeholder="예: is, am, are (비우면 다른 정답으로 자동 생성)"></div>
-        <button class="button primary" type="submit">문항 추가하기</button>
+        <div class="field question-field"><label for="question-text"><span class="step">1</span> 문제 <span class="required">필수</span></label><textarea id="question-text" rows="3" maxlength="500" placeholder="예: She ___ my best friend." required></textarea></div>
+        <fieldset class="answer-type"><legend><span class="step">2</span> 답 방식</legend><div class="segmented"><label><input type="radio" name="answer-type" value="choice" checked><span>선택형</span></label><label><input type="radio" name="answer-type" value="text"><span>정답 입력형</span></label></div></fieldset>
+        <fieldset id="choice-builder" class="choice-builder"><legend><span class="step">3</span> 선택지와 정답 <span class="optional">최대 4개</span></legend><p class="field-help">정답인 선택지의 <b>정답</b> 버튼을 누르세요.</p><div id="choice-fields" class="choice-fields"></div><button class="button add-option" id="add-choice" type="button"><span aria-hidden="true">＋</span> 선택지 추가</button></fieldset>
+        <div id="text-answer-field" class="field text-answer-field" hidden><label for="answer-text"><span class="step">3</span> 정답 <span class="required">필수</span></label><input id="answer-text" maxlength="200" placeholder="학생이 입력해야 할 정답"></div>
+        <button class="button primary add-question" type="submit"><span aria-hidden="true">＋</span> 저장하고 다음 문제</button>
       </form>
-      <details class="paste-help" open><summary>Quizlet처럼 한 번에 붙여넣기 <span class="method-badge">빠른 시작</span></summary><p>문제와 정답을 탭 또는 줄바꿈으로 구분해 붙여넣으세요. 한 줄에 <code>문제[TAB]정답</code> 형식이면 가장 정확해요.</p><textarea id="bulk-text" rows="5" placeholder="I am happy.&#9;나는 행복하다.&#10;She is kind.&#9;그녀는 친절하다."></textarea><button class="button secondary" id="bulk-add" type="button">붙여넣은 문항 추가</button></details>
+      <details class="paste-help"><summary>여러 문항 한 번에 붙여넣기 <span class="method-badge">빠른 입력</span></summary><p>문제와 정답을 탭 또는 줄바꿈으로 구분해 붙여넣으세요. 한 줄에 <code>문제[TAB]정답</code> 형식이면 가장 정확해요.</p><textarea id="bulk-text" rows="5" placeholder="I am happy.&#9;나는 행복하다.&#10;She is kind.&#9;그녀는 친절하다."></textarea><button class="button secondary" id="bulk-add" type="button"><span aria-hidden="true">＋</span> 붙여넣은 문항 추가</button></details>
       <details class="more-import"><summary>더 많은 가져오기 방법 <span class="method-badge">파일·이미지</span></summary>
         <div class="import-grid">
           <div class="import-option"><strong>저장한 세트</strong><span>이 기기에서 JSON 세트를 불러오거나 백업하세요.</span><div class="toolbar-actions"><button class="button secondary" id="import-json" type="button">JSON 가져오기</button><input id="json-file" type="file" accept="application/json,.json" hidden><button class="button secondary" id="export-json" type="button">JSON 내보내기</button></div></div>
@@ -41,7 +43,7 @@
       </details>
     </section>
     <section class="panel" aria-labelledby="preview-title">
-      <div class="section-heading"><div><p class="eyebrow">PREVIEW</p><h2 id="preview-title">문항 미리보기</h2></div><span class="muted">정답은 교사 화면에서만 확인</span></div>
+      <div class="section-heading"><div><p class="eyebrow">QUESTION LIST</p><h2 id="preview-title">만든 문항</h2></div><span class="muted">수정 버튼으로 바로 고칠 수 있어요</span></div>
       <div id="question-list" class="question-list"><div class="empty">아직 문항이 없어요. 위에서 첫 문항을 추가해 보세요.</div></div>
     </section>
     <section class="action-bar panel"><p id="validation-message" class="validation" role="alert">게임을 만들려면 문항을 5개 이상 추가하세요.</p><button id="create-room" class="button primary large" type="button" disabled>이 세트로 게임방 만들기</button></section>

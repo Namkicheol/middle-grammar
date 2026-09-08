@@ -3,20 +3,25 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-  <meta name="theme-color" content="#5b46e8">
+  <meta name="theme-color" content="#073d3b">
   <meta name="description" content="교사가 방을 만들고 학생이 번호로 참여하는 문법 아케이드 교실 점수전">
   <title>같이 하기 | 문법 아케이드</title>
   <link rel="stylesheet" href="./styles.css">
   <link rel="stylesheet" href="./student-gameplay.css">
+  <link rel="stylesheet" href="./entry.css">
+  <link rel="stylesheet" href="./classroom.css">
+  <link rel="stylesheet" href="./results.css">
+  <link rel="stylesheet" href="./maze-game.css">
+  <link rel="stylesheet" href="./escape-game.css">
 </head>
 <body>
   <a class="skip-link" href="#app">본문으로 바로가기</a>
   <header class="site-header">
     <a class="brand" href="./" aria-label="문법 아케이드 같이 하기 처음으로">
-      <span class="brand-mark" aria-hidden="true">M</span>
       <span><strong>문법 아케이드</strong><small>같이 하기</small></span>
     </a>
     <nav class="header-actions" aria-label="주요 메뉴">
+      <button class="game-sound-toggle" type="button" data-game-sound-toggle aria-pressed="false" aria-label="경기 효과음 끄기">🔊 소리</button>
       <a class="solo-link" href="https://middle-grammar.vercel.app/game/">혼자 하기</a>
       <span id="connection-badge" class="connection-badge" data-state="idle">준비</span>
     </nav>
@@ -32,8 +37,10 @@
   <footer class="site-footer">
     <span>학생은 로그인 없이 참여해요.</span>
     <a href="https://middle-grammar.vercel.app/">학습지 홈</a>
+    <details class="privacy-notice"><summary>로그인과 수업 기록 안내</summary><p>Google 로그인은 교사의 게임방 운영을 위한 기능입니다. 로그인 확인·유지에는 Google 계정 식별자와 이메일 등 최소 정보가 사용됩니다. 학생은 계정을 만들지 않으며 이름·이메일·연락처를 요청하지 않습니다.</p><p>새 게임방의 별명·응답·점수는 재접속과 결과 표시를 위해 일시 보관하고, 게임 종료 30분 후 서버에서 삭제합니다. 시작하지 않은 방은 생성 2시간 후 삭제합니다. 이전 보존 정책으로 저장된 기록에는 기존 90일 정리 기준이 적용됩니다.</p></details>
   </footer>
 
+  <script src="./maze-game.js"></script>
   <script type="module" src="./app.js"></script>
 </body>
 </html>

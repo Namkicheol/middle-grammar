@@ -12,9 +12,11 @@ export interface Env {
   ASSETS?: Fetcher;
   ENVIRONMENT: "production" | "development" | "test";
   QUESTION_BANK_JSON?: string;
+  STUDENT_RECORD_RETENTION?: "session";
   GOOGLE_CLIENT_ID?: string;
   GOOGLE_CLIENT_SECRET?: string;
   AUTH_ORIGIN?: string;
+  TEACHER_SIGNUP_MODE?: "allowlist" | "open";
   TEACHER_EMAILS?: string;
   ADMIN_EMAILS?: string;
 }
@@ -26,6 +28,7 @@ export interface RoomRecord {
   setTitle?: string;
   state: RoomState;
   reportStored: boolean;
+  studentRecordRetention?: "legacy" | "session";
   socketTickets: Record<string, { playerId: string; expiresAt: number }>;
   disconnectedAt: Record<string, number>;
 }
@@ -45,6 +48,7 @@ export interface RoomInitBody {
   teamCount?: number;
   questions: Question[];
   createdAt: number;
+  studentRecordRetention?: "legacy" | "session";
 }
 
 export interface SocketAttachment {
@@ -71,9 +75,11 @@ declare global {
       ASSETS?: Fetcher;
       ENVIRONMENT: "production" | "development" | "test";
       QUESTION_BANK_JSON?: string;
+      STUDENT_RECORD_RETENTION?: "session";
       GOOGLE_CLIENT_ID?: string;
       GOOGLE_CLIENT_SECRET?: string;
       AUTH_ORIGIN?: string;
+      TEACHER_SIGNUP_MODE?: "allowlist" | "open";
       TEACHER_EMAILS?: string;
       ADMIN_EMAILS?: string;
       TEST_MIGRATIONS: Array<{ name: string; queries: string[] }>;

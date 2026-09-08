@@ -465,6 +465,7 @@ canvas#c{position:absolute;inset:0;width:100%;height:100%;}
 </div>
 
 <script src="../game/questions.js?v=questions-20260901-all-split"></script>
+<script src="../game/classroom-bridge.js"></script>
 <script src="../sounds.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
 <script>
@@ -787,6 +788,18 @@ const DROP_TYPES = {
 // ═══════════════════════════════════════════════════════════
 let GS = null;
 let wrongLog = [];
+const classroom=window.ClassroomMatch;
+classroom?.ready.catch(()=>{});
+let classroomScore=0,classroomFinished=false;
+function classroomOn(){return Boolean(classroom&&classroom.enabled);}
+function stopForClassroomFinish(){
+  classroomFinished=true;cancelTimers();
+  if(rafId){cancelAnimationFrame(rafId);rafId=null;}
+  if(GS)GS.phase=10;
+  BGM.stop();
+  document.querySelectorAll('.qopt,.stance-btn,#skill-btn').forEach(b=>b.disabled=true);
+  showFloating('교실 경기가 종료됐어요','#fde68a');
+}
 // 틀린 문제 목록 HTML(정답 + 간단 해설). 결과 화면 2곳(패배/승리)에서 공용.
 function wrongLogHTML() {
   return wrongLog.map(w => {
@@ -1439,10 +1452,11 @@ const BOSS_SIGNATURE = {
   king:       { status:'ANY',    bias:'special', tag:'👹 폭주 — 모든 기믹' },
 };
 function bossSig() { return BOSS_SIGNATURE[_bossKey] || { status:'ANY', bias:null }; }
+function classroomFairStatus(key){return !classroomOn()||!['FREEZE','SHOCK'].includes(key);}
 let _lastSigKey = '';
 function announceBossSignature() {
   const sig = bossSig();
-  if (_bossKey === _lastSigKey || !sig.tag) return;
+  if (_bossKey === _lastSigKey || !sig.tag || !classroomFairStatus(sig.status)) return;
   _lastSigKey = _bossKey;
   setTimeout(() => { if (GS && GS.phase !== 10) showFloating(sig.tag, '#fca5a5'); }, 500);
 }
@@ -1470,10 +1484,10 @@ function startAttack() {
   const sChance = (0.16 + GS.bossPhase * 0.08) * (isElite() ? 1.6 : 1);
   if (sig.status === 'ANY') {
     if (Math.random() < sChance) {
-      const keys = Object.keys(STATUS_FX);
+      const keys = Object.keys(STATUS_FX).filter(classroomFairStatus);
       applyStatusFx(keys[Math.floor(Math.random() * keys.length)]);
     }
-  } else if (sig.status) {
+  } else if (sig.status && classroomFairStatus(sig.status)) {
     if (Math.random() < sChance + 0.12) applyStatusFx(sig.status);
   }
   // status:null 인 보스(고블린·해골)는 상태이상 없음 — 초반/강타형은 깔끔하게
@@ -1556,16 +1570,26 @@ function practiceResult() {
 // ═══════════════════════════════════════════════════════════
 //  QUESTION SYSTEM
 // ═══════════════════════════════════════════════════════════
-function showQuestion() {
+async function showQuestion() {
   if (!GS) return;
   GS.phase = 2;
-  if (GS.qIdx >= GS.questions.length) { GS.questions = shuffle([...GS.questions]); GS.qIdx = 0; }
-  const q = GS.questions[GS.qIdx++];
+  let q;
+  if(classroomOn()){
+    document.getElementById('qpop-eng').textContent='다음 문제를 불러오는 중…';
+    document.getElementById('qpop-kor').textContent='';document.getElementById('qpop-opts').innerHTML='';
+    document.getElementById('qpop').classList.add('show');
+    try{q=await classroom.getQuestion();}catch(e){if(GS&&GS.phase===2&&!classroomFinished){document.getElementById('qpop-fb').textContent='연결을 확인하고 다시 불러올게요.';setTimeout(showQuestion,900);}return;}
+    if(!GS||GS.phase!==2||classroomFinished)return;
+  }else{
+    if (GS.qIdx >= GS.questions.length) { GS.questions = shuffle([...GS.questions]); GS.qIdx = 0; }
+    q = GS.questions[GS.qIdx++];
+  }
   GS.currentQ = q;
 
   if (!GS.attackType) GS.attackType = ATTACK_TYPES[0];   // 연습 모드 등 보스공격 없이 문제 띄울 때 기본값
   let timeLimit = GS.attackType.time * (PHASE_TIME_SCALE[GS.bossPhase] || 1) * stageTimeMul() * nodeTimeMul() * (1 + (GS.upgrades.time || 0)) * (GS.difficulty === 'beginner' ? 1.5 : 1);
   if (GS.statusFx.FREEZE) timeLimit *= 0.5;
+  if(classroomOn())timeLimit=Math.max(.1,Math.min(timeLimit,classroom.remainingMs()/1000));
   GS._qT0 = performance.now(); GS._qLimit = timeLimit;   // 크리티컬(빠른 정답) 판정용
 
   let opts = [...q.opts];
@@ -1632,12 +1656,20 @@ function showQuestion() {
   liftArenaForQpop();   // 캐릭터를 팝업 위로 — 문제 푸는 동안에도 전투가 보인다
 }
 
-function handleAnswer(chosen, correct, clickedBtn) {
+async function handleAnswer(chosen, correct, clickedBtn) {
   if (GS.phase !== 2) return;
   cancelAnimationFrame(qTimer); qTimer = null;
   GS._ansFrac = Math.max(0, 1 - (performance.now() - GS._qT0) / 1000 / (GS._qLimit || 1));
   GS.phase = 3;
-  const isCorrect = chosen === correct;
+  document.querySelectorAll('.qopt').forEach(b=>b.disabled=true);
+  let result=null;
+  if(classroomOn()){
+    try{result=await classroom.answer(GS.currentQ,chosen);}catch(e){if(GS&&GS.phase===3&&!classroomFinished){GS.phase=2;document.querySelectorAll('.qopt').forEach(b=>b.disabled=false);const fb=document.getElementById('qpop-fb');fb.textContent='전송되지 않았어요. 답을 다시 눌러 주세요.';fb.className='qpop-fb ng';}return;}
+    if(!GS||classroomFinished)return;
+    correct=result.correctAnswer;
+    classroomScore=Number(result.score??classroomScore+(result.scoreGain||0));
+  }
+  const isCorrect = result?Boolean(result.correct):chosen === correct;
   document.querySelectorAll('.qopt').forEach(b => {
     b.disabled = true;
     if (b.textContent === correct) b.classList.add(isCorrect ? 'ok' : 'reveal');
@@ -1655,16 +1687,22 @@ function handleAnswer(chosen, correct, clickedBtn) {
     setTimeout(() => practiceFinish(isCorrect), isCorrect ? 800 : 1500);
     return;
   }
-  fb.textContent = isCorrect ? (GS._ansFrac >= 0.55 ? '⚡ 빠른 정답! 크리티컬!' : '✅ 정답! 공격!') : '❌ 오답! 피격!';
+  fb.textContent = (isCorrect ? (GS._ansFrac >= 0.55 ? '⚡ 빠른 정답! 크리티컬!' : '✅ 정답! 공격!') : '❌ 오답! 피격!')+(result?' · 경기 '+classroomScore+'점':'');
   fb.className = 'qpop-fb ' + (isCorrect ? 'ok' : 'ng');
   setTimeout(() => finishQuestion(isCorrect), isCorrect ? 650 : 950);
 }
 
-function timeExpired(correct) {
+async function timeExpired(correct) {
   if (GS.phase !== 2) return;
   cancelAnimationFrame(qTimer); qTimer = null;
   GS._ansFrac = 0;
   GS.phase = 3;
+  let result=null;
+  if(classroomOn()){
+    try{result=await classroom.answer(GS.currentQ,null);}catch(e){if(GS&&GS.phase===3&&!classroomFinished){GS.phase=2;document.querySelectorAll('.qopt').forEach(b=>b.disabled=false);const retry=document.getElementById('qpop-fb');retry.textContent='시간 초과 전송에 실패했어요. 답을 다시 눌러 주세요.';retry.className='qpop-fb ng';}return;}
+    if(!GS||classroomFinished)return;
+    correct=result.correctAnswer;classroomScore=Number(result.score??classroomScore+(result.scoreGain||0));
+  }
   document.querySelectorAll('.qopt').forEach(b => { b.disabled = true; if (b.textContent === correct) b.classList.add('reveal'); });
   const fb = document.getElementById('qpop-fb');
   fb.textContent = '⏰ 시간 초과! 피격!';
@@ -1971,6 +2009,7 @@ function gameWin() {
   cancelTimers();
   BGM.stop();
   bossFighter.play('death'); heroFighter.play('idle');
+  if(classroomOn()&&classroom.isActive()&&!classroomFinished){showFloating('보스 격파! 새 전투 준비','#fde68a');setTimeout(()=>{if(!classroomFinished&&classroom.isActive())G.retry();},1500);return;}
   // Victory flash
   const fl = document.getElementById('phase-flash');
   fl.className = ''; void fl.offsetWidth; fl.className = 'go';
@@ -1979,10 +2018,12 @@ function gameWin() {
   document.getElementById('vc-hero-img').src = h.idle;
   document.getElementById('vc-sub').textContent = (G._label || '') + ' 보스를 완전히 물리쳤다!';
   setTimeout(() => {
+    if(classroomFinished)return;
     document.getElementById('victory-cut').classList.add('show');
     playSfx('win');
   }, 250);
   setTimeout(() => {
+    if(classroomFinished)return;
     document.getElementById('victory-cut').classList.remove('show');
     showResult(true);
   }, 3500);
@@ -1998,6 +2039,7 @@ function gameOver() {
   GS.phase = 10; cancelTimers(); heroFighter.play('death');
   const hasUp = GS.upgrades && Object.values(GS.upgrades).some(v => v > 0);
   _carryUpgrades = (GS.stage >= 2 && hasUp) ? halfUpgrades(GS.upgrades) : null;
+  if(classroomOn()&&classroom.isActive()&&!classroomFinished){setTimeout(()=>{if(!classroomFinished&&classroom.isActive())G.retry();},1500);return;}
   setTimeout(() => showResult(false), 700);
 }
 
@@ -2244,7 +2286,9 @@ let _pendingBattle = null, _unitKey = '';
 function initFromParam() {
   if (typeof GAME_QUESTIONS === 'undefined') { showInvalidBattleStart(); return; }
   const unit = new URLSearchParams(location.search).get('unit');
-  if (unit === 'all') {
+  if(classroomOn()){
+    _pendingBattle={qs:Object.values(GAME_QUESTIONS).filter(u=>!u.hidden).flatMap(u=>u.questions),label:'교실 보스전'};
+  } else if (unit === 'all') {
     _pendingBattle = { qs: Object.values(GAME_QUESTIONS).filter(u => !u.hidden).flatMap(u => u.questions), label: '전체 단원' };
   } else if (unit && GAME_QUESTIONS[unit]) {
     _pendingBattle = { qs: GAME_QUESTIONS[unit].questions, label: GAME_QUESTIONS[unit].label };
@@ -2290,6 +2334,10 @@ document.getElementById('boss-start-btn').addEventListener('click', () => {
   G.start(_pendingBattle.qs, _pendingBattle.label);   // 버튼 제스처 안에서 시작 → BGM 즉시 재생
 });
 initFromParam();
+if(classroomOn()){
+  classroom.onFinish(stopForClassroomFinish);
+  classroom.ready.then(()=>{if(!classroomFinished&&_pendingBattle){document.getElementById('boss-start').style.display='none';G.start(_pendingBattle.qs,_pendingBattle.label);}}).catch(()=>{document.getElementById('boss-start-unit').textContent='연결을 확인한 뒤 다시 시도해 주세요';});
+}
 </script>
 </body>
 </html>

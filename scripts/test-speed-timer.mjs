@@ -1,0 +1,16 @@
+import assert from 'node:assert/strict';
+import {readFileSync} from 'node:fs';
+import vm from 'node:vm';
+const html=readFileSync(new URL('../game/index.html',import.meta.url),'utf8');
+const fn=html.match(/function clearSpeedTimer\(\) \{[\s\S]*?\n\}/)?.[0];
+assert.ok(fn);
+let staleQuestions=0,ticks=0;
+const ctx=vm.createContext({clearTimeout,clearInterval,speedNextTimer:setTimeout(()=>staleQuestions++,15),speedTimerId:setInterval(()=>ticks++,15)});
+vm.runInContext(fn+';clearSpeedTimer();',ctx);
+await new Promise(resolve=>setTimeout(resolve,35));
+assert.equal(staleQuestions,0,'leaving/restarting must cancel old next-question callback');
+assert.equal(ticks,0,'leaving/restarting must stop old clock');
+assert.equal(ctx.speedNextTimer,null);
+assert.equal(ctx.speedTimerId,null);
+assert.match(html,/speedNextTimer = setTimeout\(nextSpeedQuestion/);
+console.log('PASS: speed quiz exit/restart cancels pending question and clock');

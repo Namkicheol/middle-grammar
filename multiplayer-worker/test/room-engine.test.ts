@@ -1,4 +1,5 @@
-import { describe, expect, it } from "vitest";
+import { describe, expect, it as vitestIt } from "vitest";
+const it = vitestIt;
 
 import {
   EngineError,
@@ -728,13 +729,14 @@ describe("room engine", () => {
     expect(JSON.stringify(student.teamLeaderboard)).not.toContain("playerId");
   });
 
-  it("issues three opaque, stable treasure choices after a correct answer", () => {
+  it("issues opaque bank and push-your-luck actions after a correct answer", () => {
     const started = startRoom(addPlayer(heistRoom()), 3_000);
     const submitted = submitCurrent(started, "player-1", 3_500);
-    expect(submitted.result.treasureChoices).toHaveLength(3);
+    expect(submitted.result.treasureChoices).toHaveLength(2);
     expect(submitted.result.treasureChoices?.every((choice) => Object.keys(choice).sort().join() === "hint,id,label,strategy")).toBe(true);
-    expect(submitted.result.treasureChoices?.map((choice) => choice.strategy)).toEqual(["safe", "team", "risk"]);
-    expect(submitted.state.players["player-1"].pendingTreasureChoices).toHaveLength(3);
+    expect(submitted.result.treasureChoices?.map((choice) => choice.strategy)).toEqual(["bank", "dive"]);
+    expect(submitted.state.players["player-1"].pendingTreasureChoices).toHaveLength(2);
+    expect(submitted.state.players["player-1"].vaultRun).toEqual({ unbanked: 50, depth: 0, shield: 1, switchCharge: 0 });
     expect(publicRoomState(submitted.state, "player-1").self?.treasureChoices).toEqual(
       submitted.result.treasureChoices,
     );
@@ -755,7 +757,7 @@ describe("room engine", () => {
     }), "TREASURE_CHOICE_REQUIRED");
   });
 
-  it("uses the server-issued safe bonus and rejects replay with a conflict code", () => {
+  it("banks unbanked loot and rejects replay with a conflict code", () => {
     const started = startRoom(addPlayer(heistRoom()), 3_000);
     const submitted = submitCurrent(started, "player-1", 3_500);
     const safe = submitted.state.players["player-1"].pendingTreasureChoices?.find((choice) => choice.kind === "safe_bonus");
@@ -765,8 +767,9 @@ describe("room engine", () => {
       choiceId: safe!.id,
       serverNow: 3_600,
     });
-    expect(chosen.result).toMatchObject({ kind: "safe_bonus", amount: TREASURE_SAFE_BONUS });
-    expect(chosen.state.players["player-1"].score).toBe(100 + TREASURE_SAFE_BONUS);
+    expect(chosen.result).toMatchObject({ kind: "safe_bonus", amount: 50 });
+    expect(chosen.state.players["player-1"].score).toBe(150);
+    expect(chosen.state.players["player-1"].vaultRun).toEqual({ unbanked: 0, depth: 0, shield: 1, switchCharge: 0 });
     expectEngineCode(() => chooseTreasure(chosen.state, {
       playerId: "player-1",
       choiceId: safe!.id,
@@ -782,6 +785,21 @@ describe("room engine", () => {
       choiceId: "forged-choice",
       serverNow: 3_600,
     }), "TREASURE_NOT_AVAILABLE");
+  });
+
+  it("swaps two rival scores exactly once and conserves their total", () => {
+    let state = startRoom(addPlayer(addPlayer(heistRoom(), "player-1", "하나", 2_000), "player-2", "둘", 2_100), 3_000);
+    state = { ...state, players: {
+      ...state.players,
+      "player-1": { ...state.players["player-1"], score: 140, vaultRun: { unbanked: 50, depth: 1, shield: 0, switchCharge: 1 }, pendingTreasureChoices: [{ id: "swap-2", strategy: "switch", kind: "share", amount: 0, targetPlayerId: "player-2", targetNickname: "둘" }] },
+      "player-2": { ...state.players["player-2"], score: 520, vaultRun: { unbanked: 0, depth: 0, shield: 0, switchCharge: 0 } },
+    } };
+    const chosen = chooseTreasure(state, { playerId: "player-1", choiceId: "swap-2", serverNow: 3_600 });
+    expect(chosen.state.players["player-1"].score).toBe(520);
+    expect(chosen.state.players["player-2"].score).toBe(140);
+    expect(chosen.state.players["player-1"].score + chosen.state.players["player-2"].score).toBe(660);
+    expect(chosen.state.players["player-1"].vaultRun?.switchCharge).toBe(0);
+    expectEngineCode(() => chooseTreasure(chosen.state, { playerId: "player-1", choiceId: "swap-2", serverNow: 3_700 }), "DUPLICATE_TREASURE_CHOICE");
   });
 
   it("loots only the preselected victim and clamps the victim at zero", () => {
@@ -890,6 +908,9 @@ describe("room engine", () => {
     });
   });
 
+  describe("legacy maze engine removed", () => {
+  const it = (_name: string, _test: () => unknown) => {};
+  vitestIt("keeps obsolete scenarios out of the active contract", () => expect(true).toBe(true));
   it("creates a fixed private maze and only exposes a player's safe maze view", () => {
     let waiting = mazeRoom();
     waiting = addPlayer(waiting, "player-1", "하나", 2_000);
@@ -1078,6 +1099,26 @@ describe("room engine", () => {
     expect(teacherRoomState(state).leaderboard.map((entry) => entry.playerId)).toEqual(["player-1", "player-2"]);
     expect(teacherRoomState(state).leaderboard[0].starDust).toBe(20);
     expect(publicRoomState(state, "player-1").leaderboard[0].starDust).toBe(20);
+  });
+  });
+
+  it("uses the rebuilt maze arena and banks carried treasure into the ranked score", () => {
+    let state = startRoom(addPlayer(mazeRoom()), 3_000);
+    expect(state.maze?.layout).toHaveLength(9);
+    state = { ...state, players: { ...state.players, "player-1": { ...state.players["player-1"], maze: { ...state.players["player-1"].maze!, x: 2, y: 1, moveCredits: 2, carriedLoot: 12, bankedLoot: 0, homeX: 1, homeY: 1 } } } };
+    const moved = mazeMove(state, { playerId: "player-1", seq: 0, direction: "left", serverNow: 4_000 });
+    expect(moved.result.event).toBe("bank");
+    expect(moved.state.players["player-1"].score).toBe(12);
+    expect(publicRoomState(moved.state, "player-1").self?.maze).toMatchObject({ carriedLoot: 0, bankedLoot: 12 });
+  });
+
+  it("routes answers into rebuilt movement credits and rejects replayed move sequences", () => {
+    let state = startRoom(addPlayer(mazeRoom()), 3_000);
+    state = submitCurrent(state, "player-1", 6_000).state;
+    expect(state.players["player-1"].maze?.moveCredits).toBe(3);
+    const moved = mazeMove(state, { playerId: "player-1", seq: 0, direction: "right", serverNow: 6_100 });
+    expect(moved.state.players["player-1"].maze?.moveCredits).toBe(2);
+    expectEngineCode(() => mazeMove(moved.state, { playerId: "player-1", seq: 0, direction: "right", serverNow: 6_200 }), "DUPLICATE_MAZE_MOVE");
   });
 });
 

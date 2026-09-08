@@ -11,6 +11,7 @@ export default defineConfig(async () => {
         miniflare: {
           bindings: {
             ENVIRONMENT: "test",
+            STUDENT_RECORD_RETENTION: "legacy",
             GOOGLE_CLIENT_ID: "test-client-id",
             GOOGLE_CLIENT_SECRET: "test-client-secret",
             AUTH_ORIGIN: "https://test.local",
@@ -22,7 +23,7 @@ export default defineConfig(async () => {
     ],
     test: {
       setupFiles: ["./test/setup.ts"],
-      include: ["test/room-engine.test.ts", "test/worker.test.ts", "test/auth.test.ts", "test/teacher-socket.test.ts"],
+      include: ["test/room-engine.test.ts", "test/worker.test.ts", "test/auth.test.ts", "test/admin.test.ts", "test/teacher-socket.test.ts", "test/classroom-modes.test.ts", "test/session-retention.test.ts"],
     },
   };
 });

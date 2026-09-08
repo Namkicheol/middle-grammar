@@ -25,6 +25,8 @@ const TICKET_TTL_MS = 60_000;
 const REPORT_RETRY_MS = 60_000;
 const LOBBY_TTL_MS = 24 * 60 * 60_000;
 const FINISHED_ROOM_TTL_MS = 24 * 60 * 60_000;
+const SESSION_LOBBY_TTL_MS = 2 * 60 * 60_000;
+const SESSION_FINISHED_TTL_MS = 30 * 60_000;
 
 export class GameRoom implements DurableObject {
   constructor(
@@ -46,6 +48,14 @@ export class GameRoom implements DurableObject {
       }
       if (request.method === "GET" && url.pathname === "/internal/state") {
         return await this.state(request, url);
+      }
+      if (request.method === "GET" && url.pathname === "/internal/report") {
+        const record = await this.requireRecord();
+        this.assertTeacher(record, request.headers.get("x-room-teacher-email") ?? "");
+        if (record.studentRecordRetention !== "session" || record.state.status !== "finished") {
+          return json({ error: "REPORT_NOT_FOUND" }, 404);
+        }
+        return json(sessionReport(record));
       }
       if (request.method === "POST" && url.pathname === "/internal/start") {
         return await this.start(request);
@@ -83,8 +93,9 @@ export class GameRoom implements DurableObject {
     if (!record) return;
     const now = Date.now();
     if (record.state.status === "lobby") {
-      if (now >= record.state.createdAt + LOBBY_TTL_MS) await this.cleanup();
-      else await this.ctx.storage.setAlarm(this.nextAlarmAt(record.state.createdAt + LOBBY_TTL_MS));
+      const lobbyTtl = record.studentRecordRetention === "session" ? SESSION_LOBBY_TTL_MS : LOBBY_TTL_MS;
+      if (now >= record.state.createdAt + lobbyTtl) await this.cleanup();
+      else await this.ctx.storage.setAlarm(this.nextAlarmAt(record.state.createdAt + lobbyTtl));
       return;
     }
     if (record.state.status === "playing") {
@@ -97,7 +108,8 @@ export class GameRoom implements DurableObject {
       await this.finishRoom(record, record.state.finishedAt ?? now);
       return;
     }
-    const cleanupAt = (record.state.finishedAt ?? now) + FINISHED_ROOM_TTL_MS;
+    const finishedTtl = record.studentRecordRetention === "session" ? SESSION_FINISHED_TTL_MS : FINISHED_ROOM_TTL_MS;
+    const cleanupAt = (record.state.finishedAt ?? now) + finishedTtl;
     if (now >= cleanupAt) await this.cleanup();
     else await this.ctx.storage.setAlarm(this.nextAlarmAt(cleanupAt));
   }
@@ -249,12 +261,14 @@ export class GameRoom implements DurableObject {
       setTitle: body.setTitle,
       state,
       reportStored: false,
+      studentRecordRetention: body.studentRecordRetention ?? "legacy",
       socketTickets: {},
       disconnectedAt: {},
     };
     await this.ctx.storage.transaction(async (transaction) => {
       await transaction.put(RECORD_KEY, record);
-      await transaction.setAlarm(state.createdAt + LOBBY_TTL_MS);
+      const lobbyTtl = record.studentRecordRetention === "session" ? SESSION_LOBBY_TTL_MS : LOBBY_TTL_MS;
+      await transaction.setAlarm(state.createdAt + lobbyTtl);
     });
     return json({ state: teacherView(record) }, 201);
   }
@@ -454,6 +468,15 @@ export class GameRoom implements DurableObject {
     const firstFinish = record.state.status !== "finished";
     if (firstFinish) record.state = { ...record.state, status: "finished", finishedAt };
     if (record.reportStored) return;
+    if (record.studentRecordRetention === "session") {
+      record.reportStored = true;
+      await this.ctx.storage.transaction(async (transaction) => {
+        await transaction.put(RECORD_KEY, record);
+        await transaction.setAlarm(this.nextAlarmAt((record.state.finishedAt ?? finishedAt) + SESSION_FINISHED_TTL_MS));
+      });
+      if (firstFinish) await this.broadcast("finish", record);
+      return;
+    }
     await this.ctx.storage.transaction(async (transaction) => {
       await transaction.put(RECORD_KEY, record);
       await transaction.setAlarm(this.nextAlarmAt(Date.now() + REPORT_RETRY_MS));
@@ -633,7 +656,19 @@ export class GameRoom implements DurableObject {
 
   private async getRecord(): Promise<RoomRecord | undefined> {
     const record = await this.ctx.storage.get<RoomRecord>(RECORD_KEY);
-    return record ? normalizeLegacyRecord(record) : undefined;
+    if (!record) return undefined;
+    const normalized = normalizeLegacyRecord(record);
+    if (normalized.studentRecordRetention === "session") {
+      const now = Date.now();
+      const expiredLobby = normalized.state.status === "lobby" && now >= normalized.state.createdAt + SESSION_LOBBY_TTL_MS;
+      const expiredResult = normalized.state.status === "finished" &&
+        now >= (normalized.state.finishedAt ?? now) + SESSION_FINISHED_TTL_MS;
+      if (expiredLobby || expiredResult) {
+        await this.cleanup();
+        return undefined;
+      }
+    }
+    return normalized;
   }
 
   private async requireRecord(): Promise<RoomRecord> {
@@ -656,6 +691,8 @@ function teacherView(record: RoomRecord) {
     grade: normalized.grade,
     unitKey: normalized.unitKey,
     setTitle: normalized.setTitle,
+    studentRecordRetention: normalized.studentRecordRetention,
+    resultExpiresAt: sessionResultExpiresAt(normalized),
   };
 }
 
@@ -666,7 +703,15 @@ function studentView(record: RoomRecord, playerId?: string) {
     grade: normalized.grade,
     unitKey: normalized.unitKey,
     setTitle: normalized.setTitle,
+    studentRecordRetention: normalized.studentRecordRetention,
+    resultExpiresAt: sessionResultExpiresAt(normalized),
   };
+}
+
+function sessionResultExpiresAt(record: RoomRecord): number | undefined {
+  return record.studentRecordRetention === "session" && record.state.finishedAt !== undefined
+    ? record.state.finishedAt + SESSION_FINISHED_TTL_MS
+    : undefined;
 }
 
 function normalizeLegacyRecord(record: RoomRecord): RoomRecord {
@@ -675,7 +720,46 @@ function normalizeLegacyRecord(record: RoomRecord): RoomRecord {
   legacyState.playStyle ??= "individual";
   if (legacyState.mode === "grammar_escape") legacyState.escapeRuns ??= {};
   record.setTitle ??= "";
+  record.studentRecordRetention ??= "legacy";
   return record;
+}
+
+function sessionReport(record: RoomRecord) {
+  const normalized = normalizeLegacyRecord(record);
+  const view = teacherRoomState(normalized.state);
+  return {
+    room: {
+      code: normalized.state.code,
+      teacherEmail: normalized.state.teacherEmail,
+      grade: normalized.grade,
+      unitKey: normalized.unitKey,
+      mode: normalized.state.mode,
+      playStyle: normalized.state.playStyle,
+      teamCount: normalized.state.teamCount,
+      setTitle: normalized.setTitle ?? "",
+      durationSeconds: normalized.state.durationSeconds,
+      questionCount: normalized.state.questions.length,
+      participantCount: view.participantCount,
+      startedAt: normalized.state.startedAt,
+      finishedAt: normalized.state.finishedAt,
+      createdAt: normalized.state.createdAt,
+      studentRecordRetention: normalized.studentRecordRetention,
+      resultExpiresAt: sessionResultExpiresAt(normalized),
+      ...(normalized.state.mode === "grammar_escape" ? {
+        escapeSummary: {
+          escapedCount: view.leaderboard.filter((player) => player.escape?.escapedAt !== undefined).length,
+          participantCount: view.participantCount,
+          teams: view.teamLeaderboard?.map((team) => ({
+            teamId: team.teamId,
+            roomsCleared: team.escape?.roomsCleared ?? 0,
+            discoveredCount: team.escape?.discoveredCount ?? 0,
+            ...(team.escape?.escapedAt !== undefined ? { escapedAt: team.escape.escapedAt } : {}),
+          })),
+        },
+      } : {}),
+    },
+    players: view.leaderboard.map((player) => ({ ...player, roomCode: normalized.state.code })),
+  };
 }
 
 function pruneTickets(record: RoomRecord, now: number): void {

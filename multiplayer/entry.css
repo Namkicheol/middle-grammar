@@ -1,0 +1,93 @@
+/* Arcade arrival and library share a bright, tactile visual language. */
+body.entry-mode{min-height:100svh;color:#24365c;background:radial-gradient(ellipse at 0 0,#cef9eb,transparent 50%),radial-gradient(ellipse at 100% 20%,#ddd4ff,transparent 50%),#edf5ff}
+body.entry-mode::before{content:none}
+body.entry-mode .site-header,body.entry-mode #app,body.entry-mode .site-footer{position:relative;z-index:1;width:min(1100px,calc(100% - 40px));margin:auto}
+body.entry-mode .site-header{padding-top:calc(20px + env(safe-area-inset-top));padding-bottom:18px;border-bottom:2px solid #cedcf0}
+body.entry-mode .brand{color:#24365c}
+body.entry-mode .brand strong{font-size:21px;letter-spacing:-.7px}
+body.entry-mode .brand small{color:#7064ad}
+body.entry-mode .solo-link{color:#5846ba;background:#fff;border:1px solid #d5cfec;border-radius:12px;min-height:44px}
+body.entry-mode .connection-badge{display:none}
+body.entry-mode #app{display:grid;align-items:center;min-height:calc(100svh - 170px);padding:36px 0}
+.entry-screen{display:grid;grid-template-columns:minmax(0,1.2fr) minmax(280px,.8fr);gap:clamp(24px,5vw,64px);align-items:center}
+.entry-kicker{color:#7260c9;font-size:12px;font-weight:900;letter-spacing:.1em;margin:0 0 15px}
+.entry-copy h1{font-size:clamp(42px,5vw,68px);color:#27375e;line-height:1.1;letter-spacing:-.055em;margin:0}
+.entry-copy h1 span{color:#6b52d9}
+.entry-copy .lead{font-size:16px;line-height:1.7;color:#566a8c;max-width:480px;margin:20px 0}
+.entry-copy:after{content:'';display:block;width:min(430px,100%);aspect-ratio:2.1;background:url('./assets/arcade-20260908/boss.webp') center 44%/cover;border:6px solid #fff;border-radius:26px;box-shadow:0 7px 0 #c5c6ec;transform:rotate(-2deg);margin:26px 0 10px}
+.entry-actions{display:grid;gap:15px;padding:28px;background:#ffffffb8;border:2px solid #fff;border-radius:28px;box-shadow:0 7px 0 #d3dcec,0 18px 40px #6762a212}
+.entry-primary,.entry-secondary{display:flex;align-items:center;justify-content:space-between;text-align:left;padding:19px 20px;min-height:88px;border:0;border-radius:17px;transition:transform .15s,box-shadow .15s}
+.entry-primary{background:#7057dc;color:#fff;box-shadow:0 5px 0 #49359a}
+.entry-secondary{background:#dff7eb;color:#226b58;box-shadow:0 5px 0 #b9dfce}
+.entry-primary small,.entry-secondary small{display:block;font-size:12px;margin-bottom:5px;opacity:.8;font-weight:800}
+.entry-primary strong,.entry-secondary strong{font-size:20px}
+.entry-primary b,.entry-secondary b{font-size:28px}
+.entry-primary:hover,.entry-secondary:hover{transform:translateY(-2px)}
+.entry-primary:active,.entry-secondary:active{transform:translateY(4px);box-shadow:none}
+.entry-secondary:disabled{opacity:.55;cursor:wait}
+.entry-actions .teacher-access-note{font-size:11px;color:#697a91;margin:1px 0;line-height:1.5}
+.entry-creator-link{grid-column:2;justify-self:center;color:#5c4db1;font-size:14px;font-weight:800;line-height:1.5}
+.entry-creator-link span{color:#7359c9}
+body.entry-mode .site-footer{padding:15px 0;color:#6b7d96;font-size:12px}
+body.entry-mode .site-footer a{color:#5f56a4}
+body.entry-mode .teacher-auth-gate{width:min(460px,100%);margin:auto;padding:32px;background:#fff;border:1px solid #d8dff0;border-radius:24px;box-shadow:0 7px 0 #cdd7eb}
+body.entry-mode .teacher-auth-gate h1{color:#25365d;font-size:29px}
+body.entry-mode .teacher-auth-gate p{color:#61708a;line-height:1.6}
+body.entry-mode .teacher-auth-gate .primary-button{width:100%;background:#7057dc;color:#fff}
+body.entry-mode .teacher-auth-gate .back-button{color:#6853bd}
+body:has(.teacher-game-picker),body:has(.teacher-setup){background:radial-gradient(ellipse at 0 0,#d9f9ef,transparent 48%),radial-gradient(ellipse at 100% 0,#e3dbff,transparent 45%),#edf5ff}
+.teacher-game-picker{background:transparent!important;border:0!important;box-shadow:none!important}
+.teacher-game-picker .game-cover-grid{gap:20px}
+.teacher-game-picker .game-cover{border:3px solid #fff;border-radius:22px;box-shadow:0 6px 0 #cdd8eb;gap:8px;padding-bottom:18px;position:relative}
+.teacher-game-picker .game-cover:hover{border-color:#8a73e4;box-shadow:0 8px 0 #d1c7ee;transform:translateY(-4px)}
+.teacher-game-picker .game-cover img{aspect-ratio:1.6;border-radius:17px 17px 8px 8px}
+.teacher-game-picker .game-cover strong{font-size:17px;color:#2a3b5c}
+.teacher-game-picker .game-cover small{font-size:12px;color:#64738c;line-height:1.5}
+.teacher-game-picker .game-cover-tag{color:#6a51bf;background:#eee8ff;border-radius:7px;font-size:10px;width:fit-content;padding:4px 7px}
+@media(max-width:680px){body.entry-mode .site-header,body.entry-mode #app,body.entry-mode .site-footer{width:calc(100% - 28px)}body.entry-mode #app{padding:28px 0;min-height:0}.entry-screen{grid-template-columns:1fr;gap:24px}.entry-copy h1{font-size:42px}.entry-copy .lead{font-size:14px;margin:13px 0}.entry-copy:after{width:100%;aspect-ratio:2.7;transform:none;margin:18px 0 0}.entry-actions{padding:20px;gap:13px}.entry-primary,.entry-secondary{min-height:76px;padding:15px 17px}.entry-creator-link{grid-column:1}.teacher-game-picker .game-cover-grid{gap:12px}.teacher-game-picker .game-cover{border-radius:17px}.teacher-game-picker .game-cover strong{font-size:14px}.teacher-game-picker .game-cover small{font-size:11px}}
+@media(max-width:390px){.entry-copy h1{font-size:37px}.entry-actions{padding:17px}.entry-primary strong,.entry-secondary strong{font-size:18px}}
+@media(prefers-reduced-motion:reduce){.entry-primary,.entry-secondary,.teacher-game-picker .game-cover{transition:none}.entry-primary:hover,.entry-secondary:hover,.teacher-game-picker .game-cover:hover{transform:none}}
+/* Targeted powers stay compact even in a full classroom. */
+.vault-target-action{min-width:0;display:grid;gap:8px;align-content:end}
+.vault-target-action label{font-size:12px;font-weight:800;color:#4b4a76}
+.vault-target-action select{min-width:0;width:100%;min-height:44px;border:1px solid #c9c5df;border-radius:10px;background:#fff;color:#30345d;padding:8px;font:inherit;font-size:13px}
+.vault-target-action .vault-action{width:100%}
+/* Each rebuilt arena has a game-specific world, including its question phase. */
+#app .arena-game[data-mode="treasure_heist"]{--world-ink:#4a331d;--world-base:#fff4d6}
+#app .arena-game[data-mode="maze_heist"]{--world-ink:#214e48;--world-base:#e4f8ed}
+#app .arena-game[data-mode="treasure_heist"] .arena-floor,#app .arena-game[data-mode="maze_heist"] .arena-floor{background:radial-gradient(ellipse at 50% 0%,#ffffffb0,transparent 60%),var(--world-base);padding-top:28px}
+#app .arena-game[data-mode="treasure_heist"] .arena-scoreboard,#app .arena-game[data-mode="maze_heist"] .arena-scoreboard{background:#fff;color:var(--world-ink);border-bottom:2px solid #e7ddc7;box-shadow:0 4px 0 #00000008}
+#app .arena-game[data-mode="treasure_heist"] .arena-scoreboard strong,#app .arena-game[data-mode="maze_heist"] .arena-scoreboard strong{color:var(--world-ink)}
+#app .arena-game[data-mode="treasure_heist"] .arena-score-item>span,#app .arena-game[data-mode="maze_heist"] .arena-score-item>span{color:#786d63}
+#app .arena-game[data-mode="treasure_heist"] .treasure-stage{width:min(1080px,100%);margin:auto}
+#app .arena-game[data-mode="treasure_heist"] .treasure-stage-copy h1{font-size:clamp(24px,3.5vw,42px);color:#4c3420;line-height:1.2}
+#app .arena-game[data-mode="treasure_heist"] .treasure-stage-copy p{color:#806746;font-size:14px}
+#app .arena-game[data-mode="treasure_heist"] .vault-run-scene{position:relative;min-height:220px;overflow:hidden;border:3px solid #fff;border-radius:24px;background:linear-gradient(90deg,#402b16ee,#402b16aa),url('./assets/arcade-20260908/vault.webp') center/cover;box-shadow:0 6px 0 #decdb0;padding:25px}
+#app .arena-game[data-mode="treasure_heist"] .vault-run-scene strong{color:#ffe69b;font-size:32px}
+#app .arena-game[data-mode="treasure_heist"] .vault-run-scene small{color:#fff1d9;font-size:12px}
+#app .arena-game[data-mode="treasure_heist"] .treasure-grid{grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:16px}
+#app .arena-game[data-mode="treasure_heist"] .vault-action{min-height:154px;border-radius:20px;box-shadow:0 5px 0 #d7c6a1}
+#app .arena-game[data-mode="treasure_heist"] .vault-action>span{font-size:12px;line-height:1.45}
+#app .arena-game[data-mode="treasure_heist"] .vault-action .vault-action-icon{color:#fff;font-size:25px;line-height:46px}
+#app .arena-game[data-mode="treasure_heist"] .arena-ranking,#app .arena-game[data-mode="maze_heist"] .arena-ranking{color:var(--world-ink)}
+@media(max-width:600px){#app .arena-game[data-mode="treasure_heist"] .treasure-grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}#app .arena-game[data-mode="treasure_heist"] .vault-run-scene{min-height:160px;padding:17px}#app .arena-game[data-mode="treasure_heist"] .vault-action{min-height:134px;padding:13px 8px}#app .arena-game[data-mode="treasure_heist"] .treasure-stage-copy h1{font-size:25px}#app .arena-game[data-mode="treasure_heist"] .treasure-stage-copy p{font-size:12px}}
+@media(max-width:480px){
+  #app .arena-game[data-mode="treasure_heist"] .treasure-grid{grid-template-columns:1fr;gap:12px}
+  #app .arena-game[data-mode="treasure_heist"] .vault-action{
+    display:grid;grid-template-columns:48px minmax(0,1fr);grid-template-rows:auto auto;
+    grid-template-areas:"icon title" "icon description";column-gap:12px;row-gap:3px;
+    min-width:0;min-height:94px;padding:13px 14px;text-align:left;place-items:initial;align-items:center;
+  }
+  #app .arena-game[data-mode="treasure_heist"] .vault-action .vault-action-icon{grid-area:icon;width:44px;height:44px;margin:0;place-self:center}
+  #app .arena-game[data-mode="treasure_heist"] .vault-action>strong{grid-area:title;min-width:0;align-self:end;font-size:16px;line-height:1.3;word-break:keep-all;overflow-wrap:normal}
+  #app .arena-game[data-mode="treasure_heist"] .vault-action>span:last-child{grid-area:description;min-width:0;align-self:start;font-size:12px;line-height:1.45;word-break:keep-all;overflow-wrap:break-word}
+  #app .arena-game[data-mode="treasure_heist"] .vault-target-action{width:100%;min-width:0}
+}
+
+/* Match live question controls to the rebuilt arcade artwork. */
+#app .arena-game .arena-projection{background:#fffdf5;border:3px solid #e5d8b5;border-radius:24px;box-shadow:0 7px 0 #dacda7,0 16px 32px #654c1612}
+#app .arena-game .arena-answers .answer-button,#app .escape-question .answer-button{background-image:none;border:2px solid #ffffffa6;border-radius:18px;text-shadow:none;box-shadow:0 6px 0 #152a4540,0 10px 20px #152a4514}
+#app .arena-game .arena-answers .answer-button:not(.correct):not(.wrong),#app .escape-question .answer-button:not(.correct):not(.wrong){background-color:var(--answer-color,#bd3e30)}
+#app .answer-button:nth-child(2){--answer-color:#2363ab}
+#app .answer-button:nth-child(3){--answer-color:#865215}
+#app .answer-button:nth-child(4){--answer-color:#16735b}

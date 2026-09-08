@@ -1,7 +1,7 @@
 import { env } from "cloudflare:workers";
 import { exportJWK, generateKeyPair, SignJWT } from "jose";
 import { afterEach, beforeAll, beforeEach, describe, expect, it, vi } from "vitest";
-import { finishGoogleAuth } from "../src/auth";
+import { finishGoogleAuth, requireTeacherSession } from "../src/auth";
 import worker from "../src/index";
 import type { Env } from "../src/types";
 
@@ -15,8 +15,15 @@ const config = () => ({
   GOOGLE_CLIENT_ID: "client-id",
   GOOGLE_CLIENT_SECRET: "client-secret",
   AUTH_ORIGIN: origin,
+  TEACHER_SIGNUP_MODE: undefined,
   TEACHER_EMAILS: email,
   ADMIN_EMAILS: "admin@example.com",
+}) as Env;
+
+const openConfig = () => ({
+  ...config(),
+  TEACHER_SIGNUP_MODE: "open",
+  TEACHER_EMAILS: "",
 }) as Env;
 
 beforeAll(async () => {
@@ -26,7 +33,7 @@ beforeAll(async () => {
 });
 
 beforeEach(async () => {
-  await env.REPORTS.exec("DELETE FROM teacher_session_rooms; DELETE FROM teacher_sessions; DELETE FROM teacher_identities; DELETE FROM oauth_states; DELETE FROM auth_rate_limits;");
+  await env.REPORTS.exec("DELETE FROM teacher_moderation_audit; DELETE FROM teacher_moderation; DELETE FROM teacher_session_rooms; DELETE FROM teacher_sessions; DELETE FROM teacher_identities; DELETE FROM oauth_states; DELETE FROM auth_rate_limits;");
 });
 
 afterEach(() => vi.unstubAllGlobals());
@@ -41,13 +48,13 @@ async function begin(settings = config()) {
 
 async function token(
   claims: Record<string, unknown>,
-  options: { audience?: string; expiresAt?: string | number | undefined; key?: CryptoKey } = {},
+  options: { audience?: string; expiresAt?: string | number | undefined; key?: CryptoKey; subject?: string } = {},
 ) {
   const jwt = new SignJWT(claims)
     .setProtectedHeader({ alg: "RS256", kid: "test-key" })
     .setIssuer("https://accounts.google.com")
     .setAudience(options.audience ?? "client-id")
-    .setSubject("google-subject")
+    .setSubject(options.subject ?? "google-subject")
     .setIssuedAt();
   if (options.expiresAt !== undefined) jwt.setExpirationTime(options.expiresAt);
   return jwt.sign(options.key ?? signingKey);
@@ -73,6 +80,47 @@ async function authenticatedTeacher() {
 }
 
 describe("Google teacher authentication", () => {
+  it("allows the development email query only for a loopback same-origin teacher websocket", async () => {
+    const settings = { ...config(), ENVIRONMENT: "development" } as Env;
+    for (const headers of [
+      { upgrade: "websocket" },
+      { upgrade: "websocket", origin: "http://127.0.0.1" },
+    ]) {
+      const session = await requireTeacherSession(
+        new Request("http://127.0.0.1/api/teacher/rooms/123456/socket?devTeacherEmail=teacher%40local.test", { headers: headers as Record<string, string> }),
+        settings,
+        "websocket",
+      );
+      expect(session).toMatchObject({
+        email: "teacher@local.test",
+        role: "teacher",
+        sessionHash: "dev:teacher%40local.test",
+        developmentBypass: true,
+      });
+    }
+  });
+
+  it.each([
+    { name: "ordinary reads", url: "http://127.0.0.1/api/auth/session?devTeacherEmail=teacher%40local.test", purpose: "read" as const, headers: {} },
+    { name: "mutations", url: "http://127.0.0.1/api/teacher/rooms?devTeacherEmail=teacher%40local.test", purpose: "mutation" as const, headers: { upgrade: "websocket" } },
+    { name: "non-websocket requests", url: "http://127.0.0.1/api/teacher/rooms/123456/socket?devTeacherEmail=teacher%40local.test", purpose: "websocket" as const, headers: {} },
+    { name: "cross-origin websocket requests", url: "http://127.0.0.1/api/teacher/rooms/123456/socket?devTeacherEmail=teacher%40local.test", purpose: "websocket" as const, headers: { upgrade: "websocket", origin: "http://localhost:8787" } },
+    { name: "public development hosts", url: "https://preview.example/api/teacher/rooms/123456/socket?devTeacherEmail=teacher%40local.test", purpose: "websocket" as const, headers: { upgrade: "websocket", origin: "https://preview.example" } },
+  ])("rejects a development email query on $name", async ({ url, purpose, headers }) => {
+    const settings = { ...config(), ENVIRONMENT: "development" } as Env;
+    await expect(requireTeacherSession(new Request(url, { headers: headers as Record<string, string> }), settings, purpose)).rejects.toMatchObject({
+      status: 401,
+      code: "TEACHER_LOGIN_REQUIRED",
+    });
+  });
+
+  it("rejects the loopback websocket query bypass in production", async () => {
+    await expect(requireTeacherSession(new Request(
+      "http://127.0.0.1/api/teacher/rooms/123456/socket?devTeacherEmail=teacher%40local.test",
+      { headers: { upgrade: "websocket", origin: "http://127.0.0.1" } },
+    ), config(), "websocket")).rejects.toMatchObject({ status: 401, code: "TEACHER_LOGIN_REQUIRED" });
+  });
+
   it("fails closed while configuration is absent", async () => {
     const missing = { ...env, GOOGLE_CLIENT_ID: undefined, GOOGLE_CLIENT_SECRET: undefined, AUTH_ORIGIN: undefined, TEACHER_EMAILS: undefined, ADMIN_EMAILS: undefined } as Env;
     const session = await worker.fetch(new Request(`${origin}/api/auth/session`), missing);
@@ -144,6 +192,65 @@ describe("Google teacher authentication", () => {
     const cookie = callback.headers.getSetCookie().find((value) => value.startsWith("__Host-mg_teacher="))!.split(";")[0];
     const session = await worker.fetch(new Request(`${origin}/api/auth/session`, { headers: { cookie } }), flow.settings);
     expect((await session.json<any>()).teacher).toEqual({ email: "admin@example.com", role: "admin" });
+  });
+
+  it("enrolls an unknown verified Google account as a teacher in open mode", async () => {
+    const flow = await begin(openConfig());
+    mockGoogle(await token({ email: "new-teacher@example.net", email_verified: true, nonce: flow.nonce }, { expiresAt: "5m" }));
+    const callback = await finishGoogleAuth(new Request(`${origin}/api/auth/google/callback?state=${flow.state}&code=one-time`, { headers: { cookie: flow.cookie } }), flow.settings);
+    const cookie = callback.headers.getSetCookie().find((value) => value.startsWith("__Host-mg_teacher="))!.split(";")[0];
+    const session = await worker.fetch(new Request(`${origin}/api/auth/session`, { headers: { cookie } }), flow.settings);
+    expect((await session.json<any>()).teacher).toEqual({ email: "new-teacher@example.net", role: "teacher" });
+  });
+
+  it("rejects a banned Google subject before creating a new session", async () => {
+    const settings=openConfig(); const flow=await begin(settings); const now=Date.now();
+    await env.REPORTS.prepare("INSERT INTO teacher_identities (google_sub,email,created_at,updated_at) VALUES (?,?,?,?)").bind("banned-sub","banned@example.net",now,now).run();
+    await env.REPORTS.prepare("INSERT INTO teacher_moderation (google_sub,banned,ban_reason,banned_at,banned_by,updated_at) VALUES (?,1,NULL,?,?,?)").bind("banned-sub",now,"admin@example.com",now).run();
+    mockGoogle(await token({email:"banned@example.net",email_verified:true,nonce:flow.nonce},{expiresAt:"5m",subject:"banned-sub"}));
+    const response=await worker.fetch(new Request(`${origin}/api/auth/google/callback?state=${flow.state}&code=one-time`,{headers:{cookie:flow.cookie}}),settings);
+    expect(response.headers.get("location")).toContain("auth_error=TEACHER_BANNED");
+    expect((await env.REPORTS.prepare("SELECT count(*) AS count FROM teacher_sessions WHERE google_sub=?").bind("banned-sub").first<{count:number}>())?.count).toBe(0);
+  });
+
+  it("keeps ADMIN_EMAILS accounts as admins in open mode", async () => {
+    const flow = await begin(openConfig());
+    mockGoogle(await token({ email: "admin@example.com", email_verified: true, nonce: flow.nonce }, { expiresAt: "5m" }));
+    const callback = await finishGoogleAuth(new Request(`${origin}/api/auth/google/callback?state=${flow.state}&code=one-time`, { headers: { cookie: flow.cookie } }), flow.settings);
+    const cookie = callback.headers.getSetCookie().find((value) => value.startsWith("__Host-mg_teacher="))!.split(";")[0];
+    const session = await worker.fetch(new Request(`${origin}/api/auth/session`, { headers: { cookie } }), flow.settings);
+    expect((await session.json<any>()).teacher).toEqual({ email: "admin@example.com", role: "admin" });
+  });
+
+  it("never enrolls an unverified Google email in open mode", async () => {
+    const flow = await begin(openConfig());
+    mockGoogle(await token({ email: "unverified@example.net", email_verified: false, nonce: flow.nonce }, { expiresAt: "5m" }));
+    const callback = await worker.fetch(new Request(`${origin}/api/auth/google/callback?state=${flow.state}&code=one-time`, { headers: { cookie: flow.cookie } }), flow.settings);
+    expect(callback.headers.get("location")).toContain("auth_error=OAUTH_CLAIMS_INVALID");
+  });
+
+  it("keeps allowlist mode as the fail-closed default", async () => {
+    const flow = await begin(config());
+    mockGoogle(await token({ email: "unknown@example.net", email_verified: true, nonce: flow.nonce }, { expiresAt: "5m" }));
+    const callback = await worker.fetch(new Request(`${origin}/api/auth/google/callback?state=${flow.state}&code=one-time`, { headers: { cookie: flow.cookie } }), flow.settings);
+    expect(callback.headers.get("location")).toContain("auth_error=TEACHER_NOT_ALLOWED");
+  });
+
+  it("keeps identity subject and email bindings in open mode", async () => {
+    const settings = openConfig();
+    const first = await begin(settings);
+    mockGoogle(await token({ email: "bound@example.net", email_verified: true, nonce: first.nonce }, { expiresAt: "5m", subject: "bound-subject" }));
+    await finishGoogleAuth(new Request(`${origin}/api/auth/google/callback?state=${first.state}&code=one-time`, { headers: { cookie: first.cookie } }), settings);
+
+    const changedEmail = await begin(settings);
+    mockGoogle(await token({ email: "changed@example.net", email_verified: true, nonce: changedEmail.nonce }, { expiresAt: "5m", subject: "bound-subject" }));
+    const changedEmailResponse = await worker.fetch(new Request(`${origin}/api/auth/google/callback?state=${changedEmail.state}&code=one-time`, { headers: { cookie: changedEmail.cookie } }), settings);
+    expect(changedEmailResponse.headers.get("location")).toContain("auth_error=IDENTITY_EMAIL_MISMATCH");
+
+    const changedSubject = await begin(settings);
+    mockGoogle(await token({ email: "bound@example.net", email_verified: true, nonce: changedSubject.nonce }, { expiresAt: "5m", subject: "other-subject" }));
+    const changedSubjectResponse = await worker.fetch(new Request(`${origin}/api/auth/google/callback?state=${changedSubject.state}&code=one-time`, { headers: { cookie: changedSubject.cookie } }), settings);
+    expect(changedSubjectResponse.headers.get("location")).toContain("auth_error=IDENTITY_SUB_MISMATCH");
   });
 
   it("rejects protected POST origin and CSRF failures, then invalidates a logged-out session", async () => {

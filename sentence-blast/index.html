@@ -126,8 +126,10 @@ body{background:#0c2f5c;color:#fff;font-family:ui-rounded,'SF Pro Rounded','Aria
 <audio id="bgm" src="../game/assets/bgm/bubble-theme.mp3" loop preload="auto"></audio>
 <script src="../game/questions.js?v=questions-20260901-all-split"></script>
 <script src="../sounds.js"></script>
+<script src="../game/classroom-bridge.js"></script>
 <script>
 'use strict';
+const classroomMode=!!window.ClassroomMatch?.enabled;
 const SIZE=8, PLAY_PHASE_SECONDS=15, CHALLENGE_SECONDS=10, FREE_RESCUES=2, EMERGENCY_RESCUE_PENALTY=300;
 const COLORS=[['#0891b2','#67e8f9'],['#2563eb','#93c5fd'],['#7c3aed','#c4b5fd'],['#db2777','#f9a8d4'],['#ea580c','#fdba74'],['#059669','#6ee7b7'],['#ca8a04','#fde047']];
 const SHAPES=[
@@ -146,6 +148,8 @@ let board=Array(SIZE*SIZE).fill(null), tray=[], selected=-1;
 let score=0, lines=0, combo=0, bestCombo=0, grammarCorrect=0, grammarTotal=0, grammarStreak=0;
 let rescuesRemaining=FREE_RESCUES, rescueUses=0, emergencyRescues=0;
 let challengeLeft=CHALLENGE_SECONDS, currentQuestion=null, currentSentence='', challengeKind='arrange', chosen=[], locked=false, timerId=null, dragState=null;
+let classroomFinished=false, stopClassroomFinish=null;
+let challengeRunId=0;
 let lastHUDState='', lastChallengeTime=-1;
 const usedSentenceIds=new Set();
 
@@ -230,7 +234,7 @@ function canPlace(index,shape){const targets=cellsFor(index,shape);return target
 function previewAt(index){clearPreview();if(phase!=='play'||selected<0||!tray[selected]||tray[selected].used)return;const item=tray[selected],targets=cellsFor(index,item.shape);targets.forEach(i=>{const c=$('board').children[i];if(c){c.classList.add(canPlace(index,item.shape)?'preview':'bad');c.style.setProperty('--preview',COLORS[item.color][0])}})}
 function clearPreview(){document.querySelectorAll('.cell.preview,.cell.bad').forEach(c=>c.classList.remove('preview','bad'))}
 function startDrag(e,index){
-  if(phase!=='play'||!tray[index]||tray[index].used)return;
+  if(phase!=='play'||dragState||!tray[index]||tray[index].used)return;
   e.preventDefault();selected=index;
   const item=tray[index],box=shapeBox(item.shape),filled=new Set(item.shape.c.map(x=>x.join(','))),ghost=document.createElement('div');
   ghost.className='drag-ghost';ghost.style.gridTemplateColumns=`repeat(${box.cols},34px)`;ghost.style.setProperty('--piece',COLORS[item.color][0]);ghost.style.setProperty('--piece-hi',COLORS[item.color][1]);
@@ -243,8 +247,14 @@ function moveDrag(e){
   const rect=$('board').getBoundingClientRect(),cell=rect.width/SIZE,originX=e.clientX-d.box.cols*cell/2,originY=e.clientY-lift-d.box.rows*cell/2,col=Math.round((originX-rect.left)/cell),row=Math.round((originY-rect.top)/cell),index=row*SIZE+col;
   clearPreview();d.target=row>=0&&col>=0&&row<SIZE&&col<SIZE&&canPlace(index,d.item.shape)?index:-1;if(d.target>=0)previewAt(d.target);
 }
+function cancelDrag(){
+  document.removeEventListener('pointermove',moveDrag);document.removeEventListener('pointerup',endDrag);document.removeEventListener('pointercancel',endDrag);
+  if(dragState)dragState.ghost.remove();dragState=null;clearPreview();
+}
 function endDrag(e){
-  if(!dragState)return;document.removeEventListener('pointermove',moveDrag);document.removeEventListener('pointercancel',endDrag);const d=dragState;dragState=null;d.ghost.remove();clearPreview();if(d.target>=0)placeAt(d.target);else{selected=d.index;renderTray()}
+  if(!dragState)return;const d=dragState;cancelDrag();
+  if(e.type==='pointercancel'||phase!=='play')return;
+  if(d.target>=0)placeAt(d.target);else{selected=d.index;renderTray()}
 }
 function placeAt(index){
   if(phase!=='play'||selected<0||!tray[selected]||tray[selected].used)return;
@@ -270,6 +280,7 @@ function checkMoves(){
 }
 
 function reconcilePlayClock(now=performance.now()){
+  if(classroomMode){remainingMs=Math.max(0,ClassroomMatch.remainingMs());remaining=Math.ceil(remainingMs/1000);return}
   remainingMs=Math.max(0,playDeadline-now);phaseRemainingMs=Math.max(0,phaseDeadline-now);
   remaining=Math.ceil(remainingMs/1000);phaseRemaining=Math.ceil(phaseRemainingMs/1000);
 }
@@ -296,17 +307,30 @@ function tick(){
     if(challengeLeft<=0)resolveChallenge(false,true)
   }
 }
-function openChallenge(){
+function clearChallengeState(){
+  chosen=[];currentQuestion=null;currentSentence='';
+  $('chips').replaceChildren();$('answer-zone').replaceChildren();
+  $('feedback').textContent='';$('feedback').className='feedback';
+}
+async function openChallenge(){
   reconcilePlayClock();if(remainingMs<=0){finish();return}
-  if(!sentenceQuestions.length&&!choiceQuestions.length){phaseRemaining=PLAY_PHASE_SECONDS;phaseRemainingMs=PLAY_PHASE_SECONDS*1000;phaseDeadline=performance.now()+phaseRemainingMs;return}
-  phase='challenge';locked=false;chosen=[];
-  const picked=pickChallenge();challengeKind=picked.kind;currentQuestion=picked.question;usedSentenceIds.add(currentQuestion.id);grammarTotal++;
+  const runId=++challengeRunId;cancelDrag();phase='challenge';locked=false;clearChallengeState();
+  if(classroomMode){
+    locked=true;
+    try{currentQuestion=await ClassroomMatch.getQuestion()}catch(e){if(runId!==challengeRunId)return;if(ClassroomMatch.isActive())setTimeout(()=>{if(runId===challengeRunId)openChallenge()},250);return}
+    if(runId!==challengeRunId||classroomFinished||!ClassroomMatch.isActive())return;
+    challengeKind='choice';locked=false;
+  }else{
+    if(!sentenceQuestions.length&&!choiceQuestions.length){phase='play';phaseRemaining=PLAY_PHASE_SECONDS;phaseRemainingMs=PLAY_PHASE_SECONDS*1000;phaseDeadline=performance.now()+phaseRemainingMs;return}
+    const picked=pickChallenge();challengeKind=picked.kind;currentQuestion=picked.question;usedSentenceIds.add(currentQuestion.id);
+  }
+  grammarTotal++;
   const isChoice=challengeKind==='choice';currentSentence=isChoice?'':sentenceFor(currentQuestion).replace(/\s+/g,' ').trim();
   const wordCount=currentSentence.split(' ').length;challengeLeft=isChoice?9:(wordCount<=7?12:wordCount<=10?18:24)+(Number(currentQuestion.level||1)>=2?2:0);challengeDeadline=performance.now()+challengeLeft*1000;
   lastChallengeTime=challengeLeft;$('challenge-time').textContent=challengeLeft;$('challenge-kor').textContent=currentQuestion.kor||'알맞은 답을 고르세요.';$('challenge-eng').textContent=isChoice?String(currentQuestion.eng||''):'';$('challenge-eng').hidden=!isChoice;$('feedback').textContent='';$('feedback').className='feedback';$('challenge').classList.toggle('choice-mode',isChoice);$('challenge').querySelector('h2').textContent=(isChoice?'문법 선택':'Sentence Challenge')+(grammarStreak?` · 🔥 ${grammarStreak}연속`:'' );$('challenge').querySelector('.guide').textContent=isChoice?'알맞은 답을 하나 고르세요.':'단어를 차례로 눌러 문장을 완성하세요.';$('answer-zone').hidden=isChoice;$('check-btn').style.display=isChoice?'none':'';$('check-btn').disabled=false;$('check-btn').textContent='BLAST';$('check-btn').onclick=checkSentence;$('reset-btn').style.display=isChoice?'none':'';$('reset-btn').disabled=false;
   const chips=$('chips');chips.innerHTML='';
   if(isChoice){
-    shuffle(currentQuestion.opts.slice()).forEach(option=>{const b=document.createElement('button');b.className='word';b.textContent=option;b.onclick=()=>resolveChallenge(option===currentQuestion.ans,false,option);chips.appendChild(b)});
+    shuffle(currentQuestion.opts.slice()).forEach(option=>{const b=document.createElement('button');b.className='word';b.textContent=option;b.onclick=()=>resolveChallenge(classroomMode?false:option===currentQuestion.ans,false,option);chips.appendChild(b)});
   }else{
     const words=currentSentence.split(' ');let shuffled=shuffle(words.map((w,i)=>({w,i})));if(shuffled.map(x=>x.w).join(' ')===currentSentence)shuffled.reverse();
     shuffled.forEach(item=>{const b=document.createElement('button');b.className='word';b.textContent=item.w;b.dataset.token=item.i;b.onclick=()=>chooseWord(b,item);chips.appendChild(b)});renderChosen();
@@ -318,17 +342,22 @@ function renderChosen(){const z=$('answer-zone');z.innerHTML='';chosen.forEach((
 function resetWords(){if(locked)return;chosen.forEach(x=>x.btn.disabled=false);chosen=[];renderChosen()}
 function normalize(s){return s.trim().toLowerCase().replace(/\s+([,.!?])/g,'$1').replace(/\s+/g,' ')}
 function checkSentence(){if(locked||challengeKind!=='arrange')return;const total=currentSentence.split(' ').length;if(chosen.length!==total){toast(`단어를 모두 사용하세요 (${chosen.length}/${total})`,'ng');return}resolveChallenge(normalize(chosen.map(x=>x.item.w).join(' '))===normalize(currentSentence),false)}
-function resolveChallenge(correct,timedOut,selectedAnswer=''){
-  if(locked)return;locked=true;$('check-btn').disabled=true;$('reset-btn').disabled=true;const f=$('feedback');
+async function resolveChallenge(correct,timedOut,selectedAnswer=''){
+  if(locked)return;const runId=challengeRunId;locked=true;$('check-btn').disabled=true;$('reset-btn').disabled=true;const f=$('feedback');
+  let serverResult=null;
+  if(classroomMode){
+    try{serverResult=await ClassroomMatch.answer(currentQuestion,timedOut?null:selectedAnswer);if(runId!==challengeRunId||classroomFinished||phase==='over')return;correct=!!serverResult.correct}
+    catch(e){if(runId!==challengeRunId||classroomFinished||!ClassroomMatch.isActive())return;locked=false;$('check-btn').disabled=false;$('reset-btn').disabled=false;toast('연결을 확인하고 다시 시도해요','ng');return}
+  }
   if(correct){
     grammarCorrect++;grammarStreak++;const superBlast=grammarStreak%3===0,bonus=superBlast?800:500;score+=bonus;gameSfx.grammar(true);
-    f.textContent=superBlast?'🔥 SUPER BLAST! 3연속 정답 · 두 줄을 폭파합니다. +800':'정답! 가장 막힌 가로·세로줄을 폭파합니다. +500';f.className='feedback ok';setTimeout(()=>{applyGrammarBlast(superBlast);closeChallenge()},900)
+    f.textContent=superBlast?'🔥 SUPER BLAST! 3연속 정답 · 두 줄을 폭파합니다. +800':'정답! 가장 막힌 가로·세로줄을 폭파합니다. +500';f.className='feedback ok';setTimeout(()=>{if(runId!==challengeRunId||classroomFinished||phase==='over')return;applyGrammarBlast(superBlast);closeChallenge()},900)
   }
   else{
     grammarStreak=0;
     gameSfx.grammar(false);
     const mine=challengeKind==='choice'?(selectedAnswer||'(선택하지 못함)'):(chosen.length?chosen.map(x=>x.item.w).join(' '):'(완성하지 못함)');
-    const answer=challengeKind==='choice'?currentQuestion.ans:currentSentence;
+    const answer=classroomMode?serverResult.correctAnswer:(challengeKind==='choice'?currentQuestion.ans:currentSentence);
     f.innerHTML=`${timedOut?'시간 종료':'다시 확인해요'}<br>내 답: ${esc(mine)}<br>정답: ${esc(answer)}`;f.className='feedback ng';
     $('check-btn').style.display='';$('check-btn').disabled=false;$('check-btn').textContent='계속';$('check-btn').onclick=closeChallenge;
   }
@@ -341,12 +370,13 @@ function applyGrammarBlast(superBlast=false){
   let removed=0;cleared.forEach(i=>{if(board[i]!==null){board[i]=null;removed++}});
   const flash=$('blast-flash');gameSfx.blast();navigator.vibrate?.(superBlast?[25,25,45,25,70]:[25,25,45]);flash.classList.remove('on','super');void flash.offsetWidth;flash.classList.add('on');if(superBlast)flash.classList.add('super');renderBoard();toast(removed?(superBlast?`🔥 SUPER BLAST! ${removed}칸 제거`:`💥 문법 폭발! ${removed}칸 제거`):(superBlast?'🔥 SUPER BLAST! 완벽한 보드 +800':'💥 완벽한 보드! 보너스 +500'),'ok');
 }
-function closeChallenge(){$('challenge').classList.remove('show');phase='play';phaseRemaining=PLAY_PHASE_SECONDS;phaseRemainingMs=PLAY_PHASE_SECONDS*1000;locked=false;resumePlayClocks();renderTray();checkMoves();updateHUD()}
-function finish(){phase='over';clearInterval(timerId);gameSfx.finish();setTimeout(stopMusic,700);const key=`mg_sentence_blast_best_v1_${unitKey}_${duration}`;let best=0;try{const old=JSON.parse(localStorage.getItem(key)||'null');best=old&&old.score||0;if(score>best)localStorage.setItem(key,JSON.stringify({score,lines,correct:grammarCorrect,total:grammarTotal,combo:bestCombo,rescues:rescueUses,emergencyRescues,date:new Date().toLocaleDateString('ko-KR')}))}catch(e){}$('final-score').textContent=score.toLocaleString()+'점';$('end-sub').innerHTML=`완성한 줄 ${lines}개 · 문법 ${grammarCorrect}/${grammarTotal}<br>최고 콤보 ${bestCombo} · 구조대 ${rescueUses}회${emergencyRescues?` (긴급 ${emergencyRescues}회)`:''}`+(score>best?' · <strong>신기록!</strong>':'');$('gameover').classList.add('show')}
+function closeChallenge(){if(classroomFinished||phase==='over')return;challengeRunId++;$('challenge').classList.remove('show');clearChallengeState();phase='play';phaseRemaining=classroomMode?8:PLAY_PHASE_SECONDS;phaseRemainingMs=phaseRemaining*1000;locked=false;resumePlayClocks();renderTray();checkMoves();updateHUD()}
+function finish(){if(phase==='over')return;challengeRunId++;cancelDrag();$('challenge').classList.remove('show');phase='over';classroomFinished=true;stopClassroomFinish?.();clearInterval(timerId);locked=true;clearChallengeState();gameSfx.finish();setTimeout(stopMusic,700);const key=`mg_sentence_blast_best_v1_${unitKey}_${duration}`;let best=0;try{const old=JSON.parse(localStorage.getItem(key)||'null');best=old&&old.score||0;if(!classroomMode&&score>best)localStorage.setItem(key,JSON.stringify({score,lines,correct:grammarCorrect,total:grammarTotal,combo:bestCombo,rescues:rescueUses,emergencyRescues,date:new Date().toLocaleDateString('ko-KR')}))}catch(e){}$('final-score').textContent=score.toLocaleString()+'점';$('end-sub').innerHTML=`완성한 줄 ${lines}개 · 문법 ${grammarCorrect}/${grammarTotal}<br>최고 콤보 ${bestCombo} · 구조대 ${rescueUses}회${emergencyRescues?` (긴급 ${emergencyRescues}회)`:''}`+(!classroomMode&&score>best?' · <strong>신기록!</strong>':'');$('gameover').classList.add('show')}
 
 $('check-btn').onclick=checkSentence;$('reset-btn').onclick=resetWords;
 $('unit-label').textContent=(unit&&unit.label?unit.label:'전체 랜덤')+' · 줄을 완성해요';
-renderBoard();newTray();resumePlayClocks();updateHUD();timerId=setInterval(tick,250);
+async function boot(){if(classroomMode){stopClassroomFinish=ClassroomMatch.onFinish(finish);const cfg=await ClassroomMatch.ready;if(!ClassroomMatch.isActive()){finish();return}remainingMs=Math.max(0,cfg.deadlineAt-Date.now());remaining=Math.ceil(remainingMs/1000);phaseRemaining=0;phaseRemainingMs=0}renderBoard();newTray();resumePlayClocks();updateHUD();timerId=setInterval(tick,250)}
+boot().catch(()=>finish());
 </script>
 </body>
 </html>

@@ -1,0 +1,31 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="theme-color" content="#ece9ff"><link rel="icon" href="data:,">
+  <title>교사 계정 관리 · 문법 아케이드</title>
+  <link rel="stylesheet" href="./admin.css">
+</head>
+<body>
+  <header class="admin-header"><a href="./">✦ 문법 아케이드</a><span>관리자</span></header>
+  <main>
+    <section class="intro"><p class="eyebrow">ACCOUNT MANAGEMENT</p><h1>교사 계정 관리</h1><p>가입한 교사를 확인하고 이용을 차단하거나 해제하세요.</p></section>
+    <div id="notice" role="status" aria-live="polite" hidden></div>
+    <section id="gate" class="panel"><h2>관리자 권한 확인 중</h2><p>잠시만 기다려 주세요.</p></section>
+    <section id="management" hidden>
+      <div class="account-bar"><span id="admin-email"></span><a href="./?teacher=1">교사 화면으로</a></div>
+      <form id="filters" class="panel filters">
+        <label class="search-field">교사 검색<input id="search" type="search" placeholder="이메일로 검색" maxlength="120"></label>
+        <label>이용 상태<select id="status"><option value="all">전체</option><option value="active">이용 중</option><option value="banned">차단됨</option></select></label>
+        <button type="submit" class="primary">검색</button>
+      </form>
+      <section class="panel list-panel" aria-labelledby="list-title"><div class="list-heading"><h2 id="list-title">가입 교사</h2><span id="page-info"></span></div><div id="teacher-list" aria-live="polite"></div><nav class="pagination" aria-label="교사 목록 페이지"><button id="previous" type="button">← 이전</button><button id="next" type="button">다음 →</button></nav></section>
+      <p class="footnote">관리자 계정은 차단할 수 없습니다. 차단을 해제한 교사는 다시 로그인해야 합니다.</p>
+    </section>
+  </main>
+  <dialog id="moderation-dialog" aria-labelledby="dialog-title">
+    <form id="moderation-form"><h2 id="dialog-title"></h2><p id="target-email"></p><p id="dialog-description"></p><label id="reason-field">차단 사유 <span>선택</span><textarea id="reason" maxlength="300" rows="3" placeholder="관리할 때 참고할 내용을 적으세요."></textarea></label><p id="dialog-error" role="alert" hidden></p><div class="dialog-actions"><button id="cancel-action" type="button">취소</button><button id="confirm-action" type="submit" class="danger">차단하기</button></div></form>
+  </dialog>
+  <script type="module" src="./admin.js"></script>
+</body>
+</html>

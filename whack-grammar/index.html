@@ -546,7 +546,9 @@ header{display:flex;align-items:center;gap:8px;padding:12px 14px 6px;position:re
 <script src="../sounds.js"></script>
 <script src="../score-popup.js"></script>
 <script src="../game/questions.js?v=questions-20260901-all-split"></script>
+<script src="../game/classroom-bridge.js"></script>
 <script>
+const classroomMode = !!window.ClassroomMatch?.enabled;
 const SLOT_COUNT = 9;
 const ROUND_QUESTIONS = 10;
 // 난이도 변수 — 라운드가 올라갈수록 applyRoundDifficulty()가 조정 (기본값=라운드1)
@@ -593,6 +595,9 @@ let liveMoles = new Map(); // slotIdx → mole DOM
 let pendingOpts = [];      // options yet to spawn for current question
 let currentAns = '';
 let gameRunning = false;
+let classroomQuestion = null;
+let classroomFinished = false;
+let stopClassroomFinish = null;
 
 const grid = document.getElementById('grid');
 const field = document.getElementById('field');
@@ -725,11 +730,16 @@ function pickQuestionPool(key) {
   return shuffle(playable.slice()).slice(0, ROUND_QUESTIONS);
 }
 
-function startGame() {
+async function startGame() {
+  if (classroomMode) {
+    try { await ClassroomMatch.ready; } catch (e) { return; }
+    if (!ClassroomMatch.isActive()) return;
+    if (!stopClassroomFinish) stopClassroomFinish = ClassroomMatch.onFinish(finishClassroomGame);
+  }
   round = 1;
   applyRoundDifficulty();
   questionPool = pickQuestionPool(unitKey);
-  if (!questionPool.length) { alert('문제를 불러올 수 없어요.'); return; }
+  if (!classroomMode && !questionPool.length) { alert('문제를 불러올 수 없어요.'); return; }
   qIdx = 0; score = 0; combo = 0; bestCombo = 0; hp = MAX_HP; correctCount = 0; whackWrongItems = [];
   endHammerFx();
   updateRoundBadge();
@@ -792,6 +802,13 @@ function endGame() {
   }
 }
 
+function finishClassroomGame() {
+  if (classroomFinished) return;
+  classroomFinished = true;
+  stopClassroomFinish?.();
+  endGame();
+}
+
 // 다음 라운드: 점수·기록 누적 유지, 난이도 상승, 새 문제
 function nextRound() {
   round++;
@@ -835,7 +852,10 @@ function renderQuestion() {
   // q.eng has '___' — substitute a wrong option in red strike-through so the
   // sentence reads as an error to fix, then student picks the right answer mole
   const hintEl = document.getElementById('q-hint');
-  if (q.type === 'ox') {
+  if (classroomMode) {
+    qEng.textContent = q.eng;
+    if (hintEl) hintEl.textContent = '알맞은 답 두더지를 두드려요';
+  } else if (q.type === 'ox') {
     // OX: 문장을 그대로 보여주고 O/X 두더지를 고르게 한다(빈칸 치환 없음)
     qEng.textContent = q.eng;
     if (hintEl) hintEl.textContent = '맞으면 O · 틀리면 X 두더지를 두드려요';
@@ -847,12 +867,17 @@ function renderQuestion() {
     qEng.innerHTML = cleaned.replace(/_{3,}/g, `<span class="qwrong">${safe}</span>`);
     if (hintEl) hintEl.textContent = '⚠ 틀린 부분을 고쳐 두드리세요';
   }
-  qProg.textContent = `${qIdx + 1} / ${questionPool.length}`;
+  qProg.textContent = classroomMode ? `푼 문제 ${qIdx}` : `${qIdx + 1} / ${questionPool.length}`;
 }
 
-function nextQuestion() {
+async function nextQuestion() {
   if (!gameRunning) return;
-  if (qIdx >= questionPool.length || hp <= 0) { endGame(); return; }
+  if (classroomMode) {
+    if (classroomFinished || !ClassroomMatch.isActive()) { finishClassroomGame(); return; }
+    try { classroomQuestion = await ClassroomMatch.getQuestion(); }
+    catch (e) { if (ClassroomMatch.isActive()) setTimeout(nextQuestion, 250); else finishClassroomGame(); return; }
+    questionPool[qIdx] = classroomQuestion;
+  } else if (qIdx >= questionPool.length || hp <= 0) { endGame(); return; }
   answered = false;
   const q = questionPool[qIdx];
   currentAns = q.ans;
@@ -862,7 +887,8 @@ function nextQuestion() {
   cancelAnimationFrame(qTimerRaf);
   qTimerRaf = requestAnimationFrame(tickQTimer);
   clearTimeout(qTimeoutTimer);
-  qTimeoutTimer = setTimeout(onQTimeout, Q_TIME);
+  const timeoutMs = classroomMode ? Math.max(1, Math.min(Q_TIME, ClassroomMatch.remainingMs())) : Q_TIME;
+  qTimeoutTimer = setTimeout(onQTimeout, timeoutMs);
   scheduleSpawn(120);
 }
 
@@ -874,15 +900,21 @@ function tickQTimer() {
   if (left > 0) qTimerRaf = requestAnimationFrame(tickQTimer);
 }
 
-function onQTimeout() {
+async function onQTimeout() {
   if (answered) return;
   answered = true;
+  let serverResult = null;
+  if (classroomMode) {
+    try { serverResult = await ClassroomMatch.answer(classroomQuestion, null); }
+    catch (e) { if (ClassroomMatch.isActive()) { answered = false; setTimeout(nextQuestion, 250); } else finishClassroomGame(); return; }
+    currentAns = serverResult.correctAnswer;
+  }
   loseHp();
-  spawnStrike('시간초과', 'ng');
+  spawnStrike(classroomMode ? `시간초과 · 정답 ${currentAns}` : '시간초과', 'ng');
   playWhackMiss();
   const curQ = questionPool[qIdx];
   if (curQ) whackWrongItems.push({ question: (curQ.kor ? curQ.kor + ' / ' : '') + curQ.eng, my: '(시간초과)', right: currentAns, hintHtml: makeHint(curQ, currentAns) });
-  if (hp <= 0) { triggerGameOver(); return; }
+  if (hp <= 0) { if (classroomMode) hp = MAX_HP; else { triggerGameOver(); return; } }
   setTimeout(advance, 700);
 }
 
@@ -919,7 +951,7 @@ function spawnMole() {
   }
   // ensure the correct answer is alive or queued: if not, promote it
   const aliveWords = new Set([...liveMoles.values()].map(v => v.word));
-  if (!aliveWords.has(currentAns) && !pendingOpts.includes(currentAns)) {
+  if (!classroomMode && !aliveWords.has(currentAns) && !pendingOpts.includes(currentAns)) {
     pendingOpts.unshift(currentAns);
   }
   const word = pendingOpts.shift();
@@ -1036,7 +1068,7 @@ function submergeMole(mole) {
   setTimeout(() => mole.remove(), 380);
 }
 
-function handleHit(e, mole, slotIdx, word) {
+async function handleHit(e, mole, slotIdx, word) {
   if (!gameRunning || answered) return;
   // 특수 모래 처리
   const rec = liveMoles.get(slotIdx);
@@ -1048,7 +1080,14 @@ function handleHit(e, mole, slotIdx, word) {
   if (kind === 'heart') { onHeartHit(mole); return; }
   if (kind === 'grow' || kind === 'shrink') { onHammerHit(mole, kind); return; }
   // 일반 정답/오답
-  const correct = word === currentAns;
+  if (classroomMode) answered = true;
+  let serverResult = null;
+  if (classroomMode) {
+    try { serverResult = await ClassroomMatch.answer(classroomQuestion, word); }
+    catch (e) { if (!ClassroomMatch.isActive()) finishClassroomGame(); else { answered = false; scheduleSpawn(180); } return; }
+  }
+  const correct = classroomMode ? !!serverResult.correct : word === currentAns;
+  if (classroomMode) currentAns = serverResult.correctAnswer;
   spawnSmash(mole, correct ? 'ok' : 'ng');
   shakeField();
   playWhackHit();
@@ -1081,13 +1120,14 @@ function handleHit(e, mole, slotIdx, word) {
     loseHp();
     mole.classList.remove('up', 'popping');
     mole.classList.add('miss');
-    spawnStrike('빗나감!', 'ng');
+    spawnStrike(classroomMode ? `정답 ${currentAns}` : '빗나감!', 'ng');
     playWhackMiss();
     const curQ = questionPool[qIdx];
     if (curQ) whackWrongItems.push({ question: (curQ.kor ? curQ.kor + ' / ' : '') + curQ.eng, my: word || '(없음)', right: currentAns, hintHtml: makeHint(curQ, currentAns) });
     setTimeout(() => submergeMole(mole), 380);
     updateHud();
-    if (hp <= 0) { answered = true; triggerGameOver(); }
+    if (classroomMode) { answered = true; if (hp <= 0) hp = MAX_HP; setTimeout(advance, 700); }
+    else if (hp <= 0) { answered = true; triggerGameOver(); }
   }
 }
 
@@ -1457,7 +1497,9 @@ buildUnitList();
 buildGrid();
 // 허브에서 ?unit=로 들어오면 시작 화면 없이 바로 게임 시작(시작 버튼이 모바일에서 화면 밖으로
 // 밀리는 문제 제거). 자동 시작은 제스처가 없어 BGM이 막히므로 첫 입력에 BGM을 시작한다.
-if (_unitParam && GAME_QUESTIONS[_unitParam]) {
+if (classroomMode) {
+  setTimeout(startGame, 0);
+} else if (_unitParam && GAME_QUESTIONS[_unitParam]) {
   setTimeout(startGame, 60);
   (function () {
     function kick() {

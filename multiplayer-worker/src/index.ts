@@ -17,6 +17,8 @@ import bundledQuestionBank from "./generated/questions.json";
 import { GameRoom } from "./room";
 import type { Env, QuestionBank } from "./types";
 import type { PlayStyle, Question, RoomMode } from "./room-engine";
+import { ROOM_MODES } from "./room-engine";
+import { adminTeachers, banTeacher, unbanTeacher } from "./admin";
 
 export { GameRoom };
 
@@ -53,6 +55,9 @@ export default {
         await finishLogout(env, revoked.sessionHash);
         return logoutResponse(env);
       }
+      if (request.method === "GET" && url.pathname === "/api/admin/teachers") return await adminTeachers(request, env);
+      if (request.method === "POST" && url.pathname === "/api/admin/teachers/ban") return await banTeacher(request, env);
+      if (request.method === "POST" && url.pathname === "/api/admin/teachers/unban") return await unbanTeacher(request, env);
       if (request.method === "POST" && url.pathname === "/api/teacher/rooms") {
         return await createRoom(request, env, url.origin);
       }
@@ -173,13 +178,17 @@ export default {
         return await teacherReport(env, reportMatch.groups.code, (await requireTeacherSession(request, env)).email);
       }
 
-      if (url.pathname === "/multiplayer") {
+      if (url.pathname === "/" || url.pathname === "/multiplayer") {
         return Response.redirect(`${url.origin}/multiplayer/${url.search}`, 308);
       }
       if (env.ASSETS && request.method === "GET" && url.pathname.startsWith("/multiplayer/")) {
         const assetUrl = new URL(request.url);
+        if (url.pathname === "/multiplayer/") {
+          assetUrl.pathname = "/index.html";
+          return env.ASSETS.fetch(new Request(assetUrl, request));
+        }
         const assetPath = assetUrl.pathname.slice("/multiplayer".length) || "/";
-        assetUrl.pathname = assetPath === "/" ? "/index.html" : assetPath;
+        assetUrl.pathname = assetPath;
         return env.ASSETS.fetch(new Request(assetUrl, request));
       }
       return json({ error: "NOT_FOUND" }, 404);
@@ -229,9 +238,11 @@ async function createRoom(request: Request, env: Env, origin: string): Promise<R
     questionCount?: number;
     allowLateJoin?: boolean;
     shuffleQuestions?: boolean;
+    allowSteal?: boolean;
+    allowScoreSwap?: boolean;
   };
   const mode = body.mode ?? "score_race";
-  if (!["score_race", "treasure_heist", "maze_heist", "grammar_escape"].includes(mode)) {
+  if (!(ROOM_MODES as readonly string[]).includes(mode)) {
     throw new HttpError(400, "INVALID_MODE", "Choose a valid game mode.");
   }
   const playStyle = body.playStyle ?? "individual";
@@ -256,6 +267,8 @@ async function createRoom(request: Request, env: Env, origin: string): Promise<R
   if (body.shuffleQuestions !== undefined && typeof body.shuffleQuestions !== "boolean") {
     throw new HttpError(400, "INVALID_SHUFFLE", "Shuffle setting must be true or false.");
   }
+  if (body.allowSteal !== undefined && typeof body.allowSteal !== "boolean") throw new HttpError(400, "INVALID_ROOM", "allowSteal must be boolean.");
+  if (body.allowScoreSwap !== undefined && typeof body.allowScoreSwap !== "boolean") throw new HttpError(400, "INVALID_ROOM", "allowScoreSwap must be boolean.");
   const allowLateJoin = body.allowLateJoin ?? true;
   const shuffleQuestions = body.shuffleQuestions ?? true;
   if (body.customQuestions !== undefined && !Array.isArray(body.customQuestions)) {
@@ -303,11 +316,14 @@ async function createRoom(request: Request, env: Env, origin: string): Promise<R
         durationSeconds: body.durationSeconds,
         allowLateJoin,
         shuffleQuestions,
+        allowSteal: body.allowSteal ?? true,
+        allowScoreSwap: body.allowScoreSwap ?? true,
         mode,
         playStyle,
         teamCount: playStyle === "team" ? body.teamCount : undefined,
         questions,
         createdAt: Date.now(),
+        studentRecordRetention: env.STUDENT_RECORD_RETENTION === "session" ? "session" : "legacy",
       }),
     });
     if (response.status === 409) continue;
@@ -391,6 +407,11 @@ function assertContentLength(request: Request, maxBytes: number): void {
 }
 
 async function teacherReport(env: Env, code: string, email: string): Promise<Response> {
+  const sessionReport = await env.ROOMS.getByName(code).fetch("https://room/internal/report", {
+    headers: { "x-room-teacher-email": email },
+  });
+  if (sessionReport.ok || sessionReport.status === 403) return sessionReport;
+  if (sessionReport.status !== 404) return json({ error: "REPORT_UNAVAILABLE" }, 503);
   const room = await env.REPORTS.prepare(
     `SELECT * FROM room_reports
      WHERE code = ? AND teacher_email = ?

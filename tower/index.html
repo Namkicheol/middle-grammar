@@ -68,6 +68,9 @@ button{font-family:inherit;}
 #best-chip{font-size:.74rem;font-weight:800;color:#ddd6fe;background:rgba(124,58,237,.25);border:1.5px solid rgba(167,139,250,.5);border-radius:10px;padding:5px 11px;text-align:center;}
 #bgm-btn{font-size:1.05rem;background:rgba(255,255,255,.08);border:1.5px solid rgba(255,255,255,.22);border-radius:10px;padding:6px 10px;cursor:pointer;}
 #streak-chip{font-size:.78rem;font-weight:900;color:#fde68a;background:rgba(251,191,36,.16);border:1.5px solid rgba(251,191,36,.5);border-radius:10px;padding:5px 11px;display:none;}
+.hud-exit{min-width:64px;min-height:44px;border:1.5px solid rgba(255,255,255,.32);border-radius:11px;padding:7px 10px;color:#fff;background:rgba(15,23,42,.82);font-size:.78rem;font-weight:900;cursor:pointer;white-space:nowrap;}
+.hud-exit:focus-visible{outline:3px solid #fde68a;outline-offset:2px;}
+@media(max-width:480px){#hud{gap:6px;padding:8px 8px 4px}#floor-chip{min-width:66px;font-size:1.55rem}#best-chip{display:none}#hearts{font-size:1rem}#bgm-btn{min-width:44px;min-height:44px;padding:5px}.hud-exit{min-width:60px;padding-inline:7px}}
 
 /* 탑 뷰포트 (영웅) */
 #arena{position:relative;flex:1;z-index:3;min-height:120px;}
@@ -285,6 +288,7 @@ button{font-family:inherit;}
   <canvas id="bg"></canvas>
   <div id="wall"></div>
   <div id="hud">
+    <button class="hud-exit" id="hud-exit" type="button" aria-label="게임을 멈추고 목록으로 돌아가기">← 목록</button>
     <div id="floor-chip"><small id="floor-tag">FLOOR</small><span id="floor-num">0</span>층</div>
     <div id="streak-chip">🔥 <span id="streak-num">0</span> 연속</div>
     <div id="hearts">❤️❤️❤️</div>
@@ -334,6 +338,7 @@ button{font-family:inherit;}
 
 <audio id="bgm" src="assets/bgm/climb-epic.mp3" loop preload="none"></audio>
 <script src="../game/questions.js?v=questions-20260901-all-split"></script>
+<script src="../game/classroom-bridge.js"></script>
 <script>
 'use strict';
 // ═════════════════════════════════════════════════════════
@@ -527,6 +532,7 @@ function useItem(i){
     g.items.splice(i,1);clearDisturb();sfx.ok();banner('🏮 등불! 방해를 걷어냈다');
   }
   else if(k==='fifty'){
+    if(classroomOn()){banner('🔍 교실 경기에서는 서버 채점 뒤 정답이 공개돼요');return;}
     const live=[...document.querySelectorAll('.opt')].filter(b=>!b.disabled&&!b.classList.contains('dimmed'));
     const wrongs=live.filter(b=>b.dataset.answer!==g.cur.ans);
     if(wrongs.length<2){banner('🔍 선택지가 2개라 반반을 쓸 수 없어요');return;}
@@ -542,6 +548,23 @@ let GS=null;
 const $=id=>document.getElementById(id);
 const hero=$('hero'),wall=$('wall'),mon=$('mon');
 let wallY=0,heroT=null;
+const classroom=window.ClassroomMatch;
+classroom?.ready.catch(()=>{});
+let classroomScore=0,classroomFinished=false;
+function classroomOn(){return Boolean(classroom&&classroom.enabled);}
+function leaveActiveRun(){
+  if(classroomOn()||!GS||GS.over)return;
+  pauseActiveQuestion();bgm.pause();
+  const message='진행 중인 등반을 멈추고 게임 목록으로 돌아갈까요?';
+  if(!window.confirm(message)){resumeActiveQuestion();if(bgmOn)bgmPlay();return;}
+  location.href='../game/index.html';
+}
+function stopForClassroomFinish(){
+  classroomFinished=true;
+  if(GS){GS.over=true;GS.locked=true;clearTimeout(GS.timerT);clearTimeout(GS.critT);clearInterval(GS.windIv);}
+  document.querySelectorAll('.opt,.item-btn').forEach(b=>b.disabled=true);
+  bgmStop();banner('교실 경기가 종료됐어요');
+}
 
 function setHero(state,backToIdleMs){
   hero.className=state;
@@ -654,13 +677,20 @@ function skipClimb(){ // 🪽 날개: 문제를 건너뛰고 한 층 등반 (연
   updateHud();
   setTimeout(nextQuestion,620);
 }
-function nextQuestion(){
+async function nextQuestion(){
   const g=GS;if(!g||g.over)return;
-  g.locked=false;g.betStake=null;
+  g.locked=true;g.betStake=null;
   $('fb').classList.remove('show');
   syncEvent();
-  const q=pickQuestion();
+  let q;
+  if(classroomOn()){
+    $('q-eng').textContent='다음 문제를 불러오는 중…';$('q-kor').textContent='';$('opts').innerHTML='';
+    try{q=await classroom.getQuestion();}catch(e){if(GS===g&&!g.over&&!classroomFinished){$('q-kor').textContent='연결을 확인하고 다시 불러올게요.';setTimeout(()=>nextQuestion(),900);}return;}
+    if(GS!==g||g.over||classroomFinished)return;
+    q={...q,unitLabel:'교실 경기',unitColor:'#38bdf8'};
+  }else q=pickQuestion();
   g.cur=q;
+  g.locked=false;
   $('q-unit').textContent=q.unitLabel.split('·')[0].trim();
   $('q-unit').style.background=q.unitColor?q.unitColor+'33':'';
   $('q-eng').innerHTML=q.eng.replace(/_{2,}/g,'<b>____</b>');
@@ -740,6 +770,7 @@ function armTimer(rem){
 }
 function startTimer(sec){
   const g=GS;
+  if(classroomOn())sec=Math.max(.1,Math.min(sec,classroom.remainingMs()/1000));
   g.timerTotal=sec*1000;
   armTimer(g.timerTotal);
 }
@@ -764,22 +795,30 @@ function resumeActiveQuestion(){
   if(g.event==='wind')startWindShuffle();
 }
 
-function answer(btn,val){
+async function answer(btn,val){
   const g=GS;if(!g||g.locked||g.over)return;
   g.locked=true;
   clearTimeout(g.timerT);clearTimeout(g.critT);clearInterval(g.windIv);
   g.windIv=null;g.timerEnd=0;g.timerPaused=false;
   $('disturb').className='';   // 유령·새 정지
   $('timer-fill').style.transition='none';
-  const correct=val!==null&&val===g.cur.ans;
+  let result=null;
   if(btn)btn.classList.add('selected');
+  [...document.querySelectorAll('.opt')].forEach(b=>b.disabled=true);
+  if(classroomOn()){
+    try{result=await classroom.answer(g.cur,val);}catch(e){if(GS===g&&!g.over&&!classroomFinished){g.locked=false;[...document.querySelectorAll('.opt')].forEach(b=>b.disabled=false);$('fb-txt').textContent='전송되지 않았어요. 답을 다시 눌러 주세요.';$('fb').classList.add('show');armTimer(5000);}return;}
+    if(GS!==g||g.over||classroomFinished)return;
+  }
+  const correct=result?Boolean(result.correct):val!==null&&val===g.cur.ans;
+  const correctAnswer=result?.correctAnswer??g.cur.ans;
+  if(result)classroomScore=Number(result.score??classroomScore+(result.scoreGain||0));
   // 정답 표시
   [...document.querySelectorAll('.opt')].forEach(b=>{
-    b.disabled=true;
-    if(b.dataset.answer===g.cur.ans)b.classList.add('ok');
+    if(b.dataset.answer===correctAnswer)b.classList.add('ok');
     else if(b===btn)b.classList.add('ng');
   });
-  if(correct)onCorrect();else onWrong(val);
+  if(result)banner('경기 '+classroomScore+'점');
+  if(correct)onCorrect();else{g.cur.ans=correctAnswer;onWrong(val);}
 }
 
 function banner(txt){
@@ -930,6 +969,7 @@ function updateHud(){
 // ── 결과 ──
 function showResult(){
   const g=GS;
+  if(classroomOn()&&classroom.isActive()&&!classroomFinished){bgmStop();setTimeout(()=>{if(classroom.isActive())startRun(g.mode);},1500);return;}
   const bKey=bestKeyFor(g.mode,g.unit);
   const prev=loadRec(bKey);
   const isNew=!prev||g.floor>prev.floor;
@@ -976,7 +1016,7 @@ function resumeForPage(){
 }
 document.addEventListener('visibilitychange',()=>{if(document.hidden)pauseForPage();else resumeForPage();});
 window.addEventListener('pagehide',pauseForPage);
-window.addEventListener('pageshow',resumeForPage);
+window.addEventListener('pageshow',()=>{if(!classroomOn()||classroom.isActive())resumeForPage();});
 
 // ── 게이트 ──
 let gateMode='daily';
@@ -1020,10 +1060,16 @@ $('card-daily').onclick=()=>{gateMode='daily';refreshGate();};
 $('card-free').onclick=()=>{gateMode='free';refreshGate();};
 $('unit-toggle').onclick=()=>{unitPickerOpen=!unitPickerOpen;refreshGate();};
 $('gate-go').onclick=()=>startRun(gateMode);
+$('hud-exit').hidden=classroomOn();
+$('hud-exit').onclick=leaveActiveRun;
 // 허브에서 ?unit=으로 들어오면 자유 등반을 기본 선택
 if(unitParam)gateMode='free';
 buildUnitChips();
 refreshGate();
+if(classroomOn()){
+  classroom.onFinish(stopForClassroomFinish);
+  classroom.ready.then(()=>{if(!classroomFinished)startRun(gateMode);}).catch(()=>{$('gate-go').textContent='연결을 확인한 뒤 다시 시도';});
+}
 </script>
 </body>
 </html>

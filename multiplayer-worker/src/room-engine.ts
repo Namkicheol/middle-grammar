@@ -1,3 +1,15 @@
+import {
+  createMazeArena as createMazeArenaV2,
+  createMazePlayer as createMazePlayerV2,
+  updateMazeAfterAnswer as updateMazeAfterAnswerV2,
+  moveMazePlayer as moveMazePlayerV2,
+  mazePublicView as mazePublicViewV2,
+  type MazeArena as MazeArenaV2,
+  type MazePlayer as MazePlayerV2,
+  type MazeRival as MazeRivalV2,
+} from "./maze-game";
+import { createEscapeRooms, expectedEscapeCode, revealEscapeHotspot, publicEscapeRoom } from "./escape-game";
+
 export interface Question {
   id: string;
   kor: string;
@@ -19,10 +31,22 @@ export interface AnswerRecord {
   submittedAt: number;
 }
 
-export type RoomMode = "score_race" | "treasure_heist" | "maze_heist" | "grammar_escape";
+export const CLASSROOM_MODES = ["boss_battle", "bubble_battle", "tower_race", "rangers_siege", "whack_race", "sentence_blast"] as const;
+export const ROOM_MODES = ["score_race", "treasure_heist", "maze_heist", "grammar_escape", ...CLASSROOM_MODES] as const;
+export type RoomMode = typeof ROOM_MODES[number];
+export function isClassroomMode(mode: RoomMode): boolean {
+  return (CLASSROOM_MODES as readonly string[]).includes(mode);
+}
 export type PlayStyle = "individual" | "team";
 export type TreasureOutcomeKind = "safe_bonus" | "loot" | "share" | "trap";
-export type TreasureStrategy = "safe" | "team" | "risk";
+export type TreasureStrategy = "bank" | "dive" | "raid" | "switch" | "safe" | "team" | "risk";
+
+export interface VaultRunState {
+  unbanked: number;
+  depth: number;
+  shield: number;
+  switchCharge: number;
+}
 
 export type MazeTileKind =
   | "floor"
@@ -63,6 +87,7 @@ export interface TreasureChoice {
   kind: TreasureOutcomeKind;
   amount: number;
   targetPlayerId?: string;
+  targetNickname?: string;
 }
 
 export interface TreasureChoiceView {
@@ -70,6 +95,8 @@ export interface TreasureChoiceView {
   strategy: TreasureStrategy;
   label: string;
   hint: string;
+  targetPlayerId?: string;
+  targetNickname?: string;
 }
 
 export interface MazePlayerState {
@@ -81,12 +108,14 @@ export interface MazePlayerState {
   shieldUntil: number;
   spawnProtectedUntil: number;
   lastFastAnswerAt?: number;
+  homeX?: number; homeY?: number; carriedLoot?: number; bankedLoot?: number;
 }
 
 export interface MazeState {
   layout: string[];
   pairCooldowns: Record<string, number>;
   collectedTreasures: Record<string, boolean>;
+  treasures?: Record<string, number>; respawns?: Record<string, number>;
 }
 
 export type EscapeSymbol = "moon" | "star" | "sun";
@@ -181,6 +210,7 @@ export interface PlayerState {
   starDust: number;
   teamId?: string;
   maze?: MazePlayerState;
+  vaultRun?: VaultRunState;
 }
 
 export type RoomStatus = "lobby" | "playing" | "finished";
@@ -192,6 +222,8 @@ export interface RoomState {
   durationSeconds: number;
   allowLateJoin: boolean;
   shuffleQuestions: boolean;
+  allowSteal: boolean;
+  allowScoreSwap: boolean;
   mode: RoomMode;
   playStyle: PlayStyle;
   teamCount?: number;
@@ -248,6 +280,8 @@ export interface CreateRoomInput {
   durationSeconds: number;
   allowLateJoin?: boolean;
   shuffleQuestions?: boolean;
+  allowSteal?: boolean;
+  allowScoreSwap?: boolean;
   mode?: RoomMode;
   playStyle?: PlayStyle;
   teamCount?: number;
@@ -300,6 +334,7 @@ export interface AnswerResult {
   questionId: string;
   occurrenceIndex: number;
   correct: boolean;
+  correctAnswer?: string;
   scoreGain: number;
   score: number;
   streak: number;
@@ -314,6 +349,7 @@ export interface TreasureResult {
   amount: number;
   score: number;
   targetNickname?: string;
+  strategy?: TreasureStrategy;
 }
 
 export interface MazeMoveResult {
@@ -394,8 +430,10 @@ export interface PublicRoomView {
   self?: TeacherLeaderboardEntry & {
     streak: number;
     currentQuestion?: SafeQuestion;
+    lastAnswer?: AnswerRecord & { correctAnswer: string };
     answeredQuestionIds: string[];
     treasureChoices?: TreasureChoiceView[];
+    vaultRun?: VaultRunState;
     maze?: MazePlayerView;
     escape?: EscapePlayerView;
   };
@@ -427,7 +465,9 @@ export function createRoomState(input: CreateRoomInput): RoomState {
     ![60, 180, 300, 420, 600].includes(input.durationSeconds) ||
     (input.allowLateJoin !== undefined && typeof input.allowLateJoin !== "boolean") ||
     (input.shuffleQuestions !== undefined && typeof input.shuffleQuestions !== "boolean") ||
-    (input.mode !== undefined && input.mode !== "score_race" && input.mode !== "treasure_heist" && input.mode !== "maze_heist" && input.mode !== "grammar_escape") ||
+    (input.allowSteal !== undefined && typeof input.allowSteal !== "boolean") ||
+    (input.allowScoreSwap !== undefined && typeof input.allowScoreSwap !== "boolean") ||
+    (input.mode !== undefined && !(ROOM_MODES as readonly string[]).includes(input.mode)) ||
     (input.playStyle !== undefined && input.playStyle !== "individual" && input.playStyle !== "team") ||
     (input.playStyle === "team" && (!Number.isInteger(input.teamCount) || input.teamCount! < 2 || input.teamCount! > 4)) ||
     (input.playStyle !== "team" && input.teamCount !== undefined) ||
@@ -462,6 +502,8 @@ export function createRoomState(input: CreateRoomInput): RoomState {
     durationSeconds: input.durationSeconds,
     allowLateJoin: input.allowLateJoin ?? true,
     shuffleQuestions: input.shuffleQuestions ?? true,
+    allowSteal: input.allowSteal ?? true,
+    allowScoreSwap: input.allowScoreSwap ?? true,
     mode: input.mode ?? "score_race",
     playStyle: input.playStyle ?? "individual",
     teamCount: input.playStyle === "team" ? input.teamCount : undefined,
@@ -517,9 +559,10 @@ export function joinPlayer(
     questionIndex: 0,
     questionStartedAt: state.status === "playing" ? input.joinedAt : undefined,
     starDust: 0,
+    vaultRun: state.mode === "treasure_heist" ? { unbanked: 0, depth: 0, shield: 1, switchCharge: 0 } : undefined,
     teamId: state.playStyle === "team" ? chooseTeamId(state) : undefined,
     maze: state.mode === "maze_heist"
-      ? createMazePlayer(input.joinedAt + MAZE_SPAWN_PROTECTION_MS)
+      ? createMazePlayer(Object.keys(state.players).length)
       : undefined,
   };
 
@@ -554,9 +597,7 @@ export function startRoom(state: RoomState, startedAt: number): RoomState {
         ...player,
         questionIndex: 0,
         questionStartedAt: startedAt,
-        maze: player.maze
-          ? { ...player.maze, x: 0, y: 0, spawnProtectedUntil: startedAt + MAZE_SPAWN_PROTECTION_MS }
-          : undefined,
+        maze: player.maze ? { ...player.maze } : undefined,
       },
     ]),
   );
@@ -611,7 +652,8 @@ export function submitAnswer(
   if (!question) {
     throw new EngineError("UNKNOWN_QUESTION", "The question is not in this room.");
   }
-  if (typeof input.answer !== "string" || !question.opts.includes(input.answer)) {
+  const classroomTimeout = isClassroomMode(state.mode) && input.answer === "";
+  if (typeof input.answer !== "string" || (!classroomTimeout && !question.opts.includes(input.answer))) {
     throw new EngineError("INVALID_ANSWER", "The answer is not a valid option.");
   }
 
@@ -640,11 +682,15 @@ export function submitAnswer(
     submittedAt: input.serverNow,
   };
   const nextMaze = state.mode === "maze_heist"
-    ? updateMazeAfterAnswer(player.maze ?? createMazePlayer(input.serverNow + MAZE_SPAWN_PROTECTION_MS), correct, responseTimeMs, streak, input.serverNow)
+    ? updateMazeAfterAnswer(player.maze ?? createMazePlayer(0), correct, responseTimeMs, streak, input.serverNow)
     : undefined;
+  const nextVaultRun = state.mode === "treasure_heist" && correct
+    ? { ...(player.vaultRun ?? { unbanked: 0, depth: 0, shield: 1, switchCharge: 0 }), unbanked: (player.vaultRun?.unbanked ?? 0) + 50,
+      switchCharge: (player.correct + 1) % 3 === 0 ? 1 : (player.vaultRun?.switchCharge ?? 0) }
+    : player.vaultRun;
   const nextPlayer: PlayerState = {
     ...player,
-    score: player.score + scoreGain,
+    score: state.mode === "maze_heist" ? Number((nextMaze as unknown as MazePlayerV2)?.bankedLoot || 0) : player.score + scoreGain,
     streak,
     correct: player.correct + (correct ? 1 : 0),
     answered: player.answered + 1,
@@ -655,8 +701,9 @@ export function submitAnswer(
     questionStartedAt: input.serverNow,
     starDust: player.starDust ?? 0,
     maze: nextMaze,
+    vaultRun: nextVaultRun,
     pendingTreasureChoices: state.mode === "treasure_heist" && correct
-      ? createTreasureChoices(state, player.id, input.occurrenceIndex)
+      ? createTreasureChoices(state, player.id, input.occurrenceIndex, nextVaultRun)
       : undefined,
   };
   const stateWithAnswer: RoomState = {
@@ -673,6 +720,7 @@ export function submitAnswer(
       questionId: input.questionId,
       occurrenceIndex: input.occurrenceIndex,
       correct,
+      ...(isClassroomMode(state.mode) ? { correctAnswer: question.ans } : {}),
       scoreGain,
       score: nextPlayer.score,
       streak,
@@ -683,7 +731,7 @@ export function submitAnswer(
   };
 }
 
-export function mazeMove(
+function mazeMoveLegacy(
   state: RoomState,
   input: MazeMoveInput,
 ): { state: RoomState; result: MazeMoveResult } {
@@ -779,6 +827,34 @@ export function mazeMove(
   };
 }
 
+export function mazeMove(
+  state: RoomState,
+  input: MazeMoveInput,
+): { state: RoomState; result: MazeMoveResult } {
+  if (state.status !== "playing" || state.mode !== "maze_heist" || !state.maze) throw new EngineError("INVALID_MAZE_MOVE", "Maze moves are unavailable.");
+  if (!Number.isFinite(input.serverNow) || state.startedAt === undefined || input.serverNow >= state.startedAt + state.durationSeconds * 1_000) throw new EngineError("ROOM_EXPIRED", "The room time has expired.");
+  const player = state.players[input.playerId];
+  if (!player?.maze) throw new EngineError("UNKNOWN_PLAYER", "The player is not in this room.");
+  const rivals: MazeRivalV2[] = Object.values(state.players).filter((candidate) => candidate.id !== player.id && candidate.maze).map((candidate) => ({
+    ...(candidate.maze as unknown as MazePlayerV2), id: candidate.id, nickname: candidate.nickname, teamId: candidate.teamId,
+  }));
+  let moved;
+  try {
+    moved = moveMazePlayerV2(state.maze as unknown as MazeArenaV2, player.maze as unknown as MazePlayerV2, rivals, input.direction, input.seq, {
+      serverNow: input.serverNow, playerId: player.id, teamId: player.teamId, allowSteal: state.allowSteal !== false,
+    });
+  } catch (error) {
+    const code = String((error as Error).message) as EngineErrorCode;
+    throw new EngineError(code, code);
+  }
+  const players = { ...state.players, [player.id]: { ...player, maze: moved.player as unknown as MazePlayerState, score: moved.player.bankedLoot } };
+  for (const rival of moved.rivals) if (players[rival.id]) players[rival.id] = { ...players[rival.id], maze: rival as unknown as MazePlayerState, score: rival.bankedLoot };
+  return { state: { ...state, maze: moved.arena as unknown as MazeState, players }, result: {
+    seq: input.seq, x: moved.player.x, y: moved.player.y, moveCredits: moved.player.moveCredits,
+    event: moved.event as MazeMoveResult["event"], starDust: moved.player.bankedLoot, starDustTransferred: moved.amount || undefined, targetNickname: moved.targetNickname,
+  } };
+}
+
 export function chooseTreasure(
   state: RoomState,
   input: ChooseTreasureInput,
@@ -809,6 +885,44 @@ export function chooseTreasure(
     Object.entries(state.players).map(([id, candidate]) => [id, { ...candidate }]),
   );
   const chooser = { ...players[player.id] };
+  if (chooser.vaultRun && choice.strategy && ["bank", "dive", "raid", "switch"].includes(choice.strategy)) {
+    const run = { ...chooser.vaultRun };
+    let kind: TreasureOutcomeKind = choice.kind;
+    let amount = 0;
+    let targetNickname: string | undefined;
+    if (choice.strategy === "bank") {
+      amount = run.unbanked; chooser.score += amount; run.unbanked = 0; run.depth = 0;
+    } else if (choice.strategy === "dive") {
+      if (choice.kind === "trap") {
+        const saved = run.shield > 0 ? Math.ceil(run.unbanked / 2) : 0;
+        amount = run.unbanked - saved; run.unbanked = saved;
+        if (run.shield > 0) run.shield -= 1;
+      } else {
+        amount = choice.amount; run.unbanked += amount; run.depth = Math.min(4, run.depth + 1);
+      }
+    } else if (choice.strategy === "raid") {
+      const target = choice.targetPlayerId ? players[choice.targetPlayerId] : undefined;
+      if (target?.vaultRun) {
+        const targetRun = { ...target.vaultRun }; targetNickname = target.nickname;
+        if (targetRun.shield > 0) { targetRun.shield -= 1; kind = "trap"; }
+        else { amount = Math.min(choice.amount, targetRun.unbanked, 60); targetRun.unbanked -= amount; run.unbanked += amount; }
+        players[target.id] = { ...target, vaultRun: targetRun };
+      }
+    } else {
+      const target = choice.targetPlayerId ? players[choice.targetPlayerId] : undefined;
+      if (!target || target.id === chooser.id || (chooser.teamId && chooser.teamId === target.teamId) || input.serverNow - target.lastSeenAt > 30_000) {
+        throw new EngineError("TREASURE_NOT_AVAILABLE", "This score switch target is unavailable.");
+      }
+      targetNickname = target.nickname;
+      const targetRun = target.vaultRun ? { ...target.vaultRun } : undefined;
+      if (targetRun?.shield) { targetRun.shield -= 1; kind = "trap"; players[target.id] = { ...target, vaultRun: targetRun }; }
+      else { const targetScore = target.score; players[target.id] = { ...target, score: chooser.score }; chooser.score = targetScore; }
+      run.switchCharge = 0;
+    }
+    players[player.id] = { ...chooser, vaultRun: run, lastSeenAt: input.serverNow, pendingTreasureChoices: undefined,
+      consumedTreasureChoiceIds: [...(player.consumedTreasureChoiceIds ?? []), ...pending.map((item) => item.id)].slice(-6) };
+    return { state: { ...state, players }, result: { choiceId: choice.id, kind, amount, score: chooser.score, targetNickname, strategy: choice.strategy } };
+  }
   let score = chooser.score;
   let targetNickname: string | undefined;
   if (choice.kind === "safe_bonus") {
@@ -901,7 +1015,7 @@ export function escapeAction(
       throw new EngineError("ESCAPE_NO_FOCUS", "Solve a question correctly to earn focus.");
     }
     const rooms = run.rooms.map((room, index) => index === run.roomIndex
-      ? { ...room, hotspots: room.hotspots.map((candidate) => candidate.id === hotspot.id ? { ...candidate, discovered: true } : candidate) }
+      ? revealEscapeHotspot(room, hotspot.id).room
       : room);
     return {
       state: replaceEscapeRun(state, key, { ...run, rooms, focus: run.focus - 1, seq: run.seq + 1 }),
@@ -918,9 +1032,7 @@ export function escapeAction(
   if (currentRoom.hotspots.some((hotspot) => !hotspot.discovered)) {
     throw new EngineError("ESCAPE_LOCKED", "Find all three clues before opening the lock.");
   }
-  const expectedCode = currentRoom.lockOrder
-    .map((symbol) => currentRoom.hotspots.find((hotspot) => hotspot.symbol === symbol)?.digit)
-    .join("");
+  const expectedCode = expectedEscapeCode(currentRoom);
   if (input.code !== expectedCode) {
     return {
       state: replaceEscapeRun(state, key, { ...run, retryAt: input.serverNow + 3_000 }),
@@ -980,12 +1092,7 @@ function createEscapeRun(): EscapeRunState {
     roomsCleared: 0,
     focus: 0,
     seq: 0,
-    rooms: templates.map((room) => ({
-      title: room.title,
-      story: room.story,
-      lockOrder: [...room.lockOrder],
-      hotspots: room.hotspots.map((hotspot) => ({ ...hotspot, digit: randomEscapeDigit(), discovered: false })),
-    })),
+    rooms: createEscapeRooms(randomEscapeDigit),
   };
 }
 
@@ -1027,18 +1134,10 @@ function escapePlayerView(run: EscapeRunState): EscapePlayerView {
     ...escapeSummary(run),
     roomIndex: run.roomIndex,
     totalRooms: 3,
-    title: room.title,
-    story: room.story,
     focus: run.focus,
     seq: run.seq,
     ...(run.retryAt !== undefined ? { retryAt: run.retryAt } : {}),
-    lockOrder: [...room.lockOrder],
-    hotspots: room.hotspots.map((hotspot) => ({
-      id: hotspot.id,
-      label: hotspot.label,
-      symbol: hotspot.symbol,
-      ...(hotspot.discovered ? { clue: hotspot.digit } : {}),
-    })),
+    ...publicEscapeRoom(room),
   };
 }
 
@@ -1094,8 +1193,12 @@ export function publicRoomState(
           ...toTeacherEntry(viewer, viewerRankIndex + 1, state.mode === "maze_heist", state),
           streak: viewer.streak,
           currentQuestion: currentSafeQuestion(state, viewer),
+          ...(isClassroomMode(state.mode) && viewer.lastAnswer ? {
+            lastAnswer: { ...viewer.lastAnswer, correctAnswer: state.questions.find((q) => q.id === viewer.lastAnswer!.questionId)!.ans },
+          } : {}),
           answeredQuestionIds: answeredQuestionIdsInCurrentCycle(state, viewer),
           treasureChoices: viewer.pendingTreasureChoices?.map(toTreasureChoiceView),
+          vaultRun: viewer.vaultRun ? { ...viewer.vaultRun } : undefined,
           maze: state.mode === "maze_heist" ? mazePlayerView(state, viewer, Date.now()) : undefined,
           escape: state.mode === "grammar_escape" && escapeRunForPlayer(state, viewer)
             ? escapePlayerView(escapeRunForPlayer(state, viewer)!)
@@ -1161,39 +1264,11 @@ function toTeacherEntry(
 
 function mazePlayerView(state: RoomState, player: PlayerState, now: number): MazePlayerView | undefined {
   if (!player.maze) return undefined;
-  const visibleTiles: MazeVisibleTile[] = [];
-  for (let y = player.maze.y - 1; y <= player.maze.y + 1; y += 1) {
-    for (let x = player.maze.x - 1; x <= player.maze.x + 1; x += 1) {
-      const kind = mazeTile(state.maze!, x, y);
-      if (!kind) continue;
-      visibleTiles.push({ x, y, kind: kind === "treasure" ? "floor" : kind });
-    }
-  }
-  const nearbyPlayers = Object.values(state.players)
-    .filter((candidate) => candidate.id !== player.id && candidate.maze)
-    .map((candidate) => ({
-      candidate,
-      distance: Math.abs(candidate.maze!.x - player.maze!.x) + Math.abs(candidate.maze!.y - player.maze!.y),
-    }))
-    .filter(({ distance }) => distance <= 2)
-    .sort((left, right) => left.distance - right.distance || left.candidate.id.localeCompare(right.candidate.id))
-    .map(({ candidate, distance }) => ({
-      nickname: candidate.nickname,
-      x: candidate.maze!.x,
-      y: candidate.maze!.y,
-      distance,
-    }));
-  return {
-    x: player.maze.x,
-    y: player.maze.y,
-    moveCredits: player.maze.moveCredits,
-    keys: player.maze.keys,
-    starDust: player.starDust ?? 0,
-    shieldActive: player.maze.shieldUntil > now,
-    nextMoveSeq: player.maze.nextMoveSeq,
-    visibleTiles,
-    nearbyPlayers,
-  };
+  const rivals = Object.values(state.players).filter((candidate) => candidate.id !== player.id && candidate.maze).map((candidate) => ({
+    ...(candidate.maze as unknown as MazePlayerV2), id: candidate.id, nickname: candidate.nickname, teamId: candidate.teamId,
+  }));
+  const arena = state.maze?.treasures ? state.maze as unknown as MazeArenaV2 : createMazeArenaV2();
+  return mazePublicViewV2(arena, player.maze as unknown as MazePlayerV2, rivals, now) as unknown as MazePlayerView;
 }
 
 function currentSafeQuestion(state: RoomState, player: PlayerState): SafeQuestion | undefined {
@@ -1414,25 +1489,18 @@ function toTreasureChoiceView(choice: TreasureChoice): TreasureChoiceView {
   return {
     id: choice.id,
     strategy,
-    label: strategy === "safe" ? "안전 상자" : strategy === "team" ? "팀 상자" : "위험 상자",
-    hint: strategy === "safe" ? "확정 보너스" : strategy === "team" ? "모두에게 나눔" : "큰 보상 또는 함정",
+    label: strategy === "bank" ? "지금 확보" : strategy === "dive" ? "더 깊이" : strategy === "raid" ? "라이벌 습격" : strategy === "switch" ? `${choice.targetNickname || "라이벌"}와 점수 바꾸기` : strategy === "safe" ? "안전 상자" : strategy === "team" ? "팀 상자" : "위험 상자",
+    hint: strategy === "bank" ? "모은 보물을 점수로 확정" : strategy === "dive" ? "깊을수록 보상과 함정 위험 증가" : strategy === "raid" ? "상대의 미확정 보물 최대 60 약탈" : strategy === "switch" ? "충전 1개 사용 · 두 사람의 전체 점수 교환" : strategy === "safe" ? "확정 보너스" : strategy === "team" ? "모두에게 나눔" : "큰 보상 또는 함정",
+    ...(["raid", "switch"].includes(strategy) && choice.targetPlayerId ? { targetPlayerId: choice.targetPlayerId, targetNickname: choice.targetNickname || "라이벌" } : {}),
   };
 }
 
 function createMazeState(): MazeState {
-  return { layout: [...MAZE_LAYOUT], pairCooldowns: {}, collectedTreasures: {} };
+  return createMazeArenaV2() as unknown as MazeState;
 }
 
-function createMazePlayer(spawnProtectedUntil: number): MazePlayerState {
-  return {
-    x: 0,
-    y: 0,
-    moveCredits: 0,
-    nextMoveSeq: 0,
-    keys: 0,
-    shieldUntil: 0,
-    spawnProtectedUntil,
-  };
+function createMazePlayer(slot: number): MazePlayerState {
+  return createMazePlayerV2(slot) as unknown as MazePlayerState;
 }
 
 function updateMazeAfterAnswer(
@@ -1442,15 +1510,7 @@ function updateMazeAfterAnswer(
   streak: number,
   now: number,
 ): MazePlayerState {
-  if (!correct) return { ...maze };
-  const credits = 1 + (responseTimeMs <= MAZE_MOVE_FAST_THRESHOLD_MS ? 1 : 0) + (streak >= 3 ? 1 : 0);
-  return {
-    ...maze,
-    moveCredits: Math.min(9, maze.moveCredits + credits),
-    lastFastAnswerAt: responseTimeMs <= MAZE_MOVE_FAST_THRESHOLD_MS
-      ? now
-      : undefined,
-  };
+  return updateMazeAfterAnswerV2(maze as unknown as MazePlayerV2, correct, responseTimeMs, streak) as unknown as MazePlayerState;
 }
 
 function mazeTile(maze: MazeState, x: number, y: number): MazeTileKind | undefined {
@@ -1599,11 +1659,23 @@ function createTreasureChoices(
   state: RoomState,
   playerId: string,
   occurrenceIndex: number,
+  vaultRun?: VaultRunState,
 ): TreasureChoice[] {
   const targetIds = shuffled(
-    Object.keys(state.players).filter((candidate) => candidate !== playerId),
+    Object.keys(state.players).filter((candidate) => candidate !== playerId &&
+      (!state.players[playerId]?.teamId || state.players[candidate]?.teamId !== state.players[playerId]?.teamId)),
     `${state.code}:${playerId}:${occurrenceIndex}:treasure-target`,
   );
+  if (vaultRun) {
+    const riskPercent = [15, 25, 40, 55, 70][Math.min(4, vaultRun.depth)];
+    const trapped = hashString(`${state.code}:${playerId}:${occurrenceIndex}:vault-dive`) % 100 < riskPercent;
+    return [
+      { id: `vault-${occurrenceIndex}-bank`, strategy: "bank", kind: "safe_bonus", amount: vaultRun.unbanked },
+      { id: `vault-${occurrenceIndex}-dive`, strategy: "dive", kind: trapped ? "trap" : "safe_bonus", amount: 90 + vaultRun.depth * 45 },
+      ...(state.allowSteal !== false ? targetIds.map((targetId, index) => ({ id: `vault-${occurrenceIndex}-raid-${index}`, strategy: "raid" as const, kind: "loot" as const, amount: 60, targetPlayerId: targetId, targetNickname: state.players[targetId].nickname })) : []),
+      ...(state.allowScoreSwap !== false && vaultRun.switchCharge > 0 ? targetIds.map((targetId, index) => ({ id: `vault-${occurrenceIndex}-switch-${index}`, strategy: "switch" as const, kind: "share" as const, amount: 0, targetPlayerId: targetId, targetNickname: state.players[targetId].nickname })) : []),
+    ];
+  }
   const riskIsLoot = targetIds.length > 0 &&
     hashString(`${state.code}:${playerId}:${occurrenceIndex}:treasure-risk`) % 2 === 0;
   return ([

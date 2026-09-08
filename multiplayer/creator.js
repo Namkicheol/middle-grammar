@@ -9,11 +9,12 @@ const MAX_XLSX_ENTRIES = 200;
 const MAX_XLSX_UNCOMPRESSED = 20 * 1024 * 1024;
 const $ = (selector) => document.querySelector(selector);
 const state = { questions: [], image: "" };
+let editingId = "";
 
 function clean(value) { return String(value ?? "").trim(); }
 function announce(message, tone = "") { const el = $("#notice"); el.textContent = message; el.dataset.tone = tone; el.hidden = !message; }
 function id() { return `local-${Date.now()}-${Math.random().toString(36).slice(2, 8)}`; }
-function saveDraft() { try { localStorage.setItem(STORAGE_KEY, JSON.stringify({ title: $("#set-title").value, questions: state.questions })); } catch { announce("자동저장 공간이 부족해요. 이미지를 줄이거나 JSON으로 내보내 보관하세요.", "error"); } }
+function saveDraft() { try { localStorage.setItem(STORAGE_KEY, JSON.stringify({ title: $("#set-title").value, questions: state.questions })); const status = $("#save-status"); if (status) status.textContent = `이 기기에 저장됨 · ${new Date().toLocaleTimeString("ko-KR", { hour: "2-digit", minute: "2-digit" })}`; return true; } catch { announce("이 기기에 저장하지 못했어요. 입력 내용은 그대로 두었어요. 공간을 비우거나 JSON으로 내보내세요.", "error"); return false; } }
 function isSafeImageData(value) {
   if (typeof value !== "string" || value.length === 0 || value.length > MAX_IMAGE_DATA_LENGTH) return false;
   if (!/^data:image\/(?:png|jpe?g|webp);base64,[a-z0-9+/]+={0,2}$/i.test(value)) return false;
@@ -42,7 +43,7 @@ function importRows(rows, source = "문항") {
     else if (imageTotal(state.questions) + imageLength(normalized.question.image) > 2_500_000) result.skipped.push(`${index + 1}번 행: 이미지 전체 용량이 2.5MB를 넘어요.`);
     else { state.questions.push(normalized.question); result.added += 1; if (normalized.truncatedChoices) result.truncated += 1; }
   });
-  update();
+  if (!update()) return result;
   const detail = [result.added ? `${result.added}개 문항을 가져왔어요.` : `${source}에서 추가할 문항이 없어요.`];
   if (result.truncated) detail.push(`${result.truncated}개 행의 선택지는 4개로 줄였어요.`);
   if (result.skipped.length) detail.push(`${result.skipped.length}개 행은 건너뛰었어요. ${result.skipped.slice(0, 2).join(" ")}`);
@@ -51,6 +52,21 @@ function importRows(rows, source = "문항") {
 }
 function imageLength(image) { return isSafeImageData(image) ? image.length : 0; }
 function imageTotal(questions) { return questions.reduce((total, question) => total + imageLength(question.image), 0); }
+function choiceValues(container = $("#choice-fields")) { return [...container.querySelectorAll('input[type="text"]')].map((input) => clean(input.value)); }
+function choiceRow(value = "", index = 0, selected = false, group = "correct-choice") {
+  const row = document.createElement("div"); row.className = "choice-row";
+  const correct = document.createElement("label"); correct.className = "correct-choice"; const radio = document.createElement("input"); radio.type = "radio"; radio.name = group; radio.checked = selected; radio.setAttribute("aria-label", `선택지 ${index + 1}을 정답으로 선택`); const correctText = document.createElement("span"); correctText.textContent = "정답"; correct.append(radio, correctText);
+  const input = document.createElement("input"); input.type = "text"; input.maxLength = 200; input.value = value; input.placeholder = `선택지 ${index + 1}`; input.setAttribute("aria-label", `선택지 ${index + 1}`);
+  const remove = document.createElement("button"); remove.type = "button"; remove.className = "remove-choice"; remove.textContent = "삭제"; remove.setAttribute("aria-label", `선택지 ${index + 1} 삭제`);
+  radio.addEventListener("change", () => { [...row.parentElement.children].forEach((item) => item.classList.toggle("is-correct", item.querySelector('input[type="radio"]')?.checked)); });
+  remove.addEventListener("click", () => { const container = row.parentElement; const wasCorrect = radio.checked; row.remove(); if (wasCorrect) container.querySelector('input[type="radio"]')?.click(); renumberChoices(container); });
+  row.classList.toggle("is-correct", selected); row.append(correct, input, remove); return row;
+}
+function renumberChoices(container) { [...container.querySelectorAll(".choice-row")].forEach((row, index) => { const input = row.querySelector('input[type="text"]'); input.placeholder = `선택지 ${index + 1}`; input.setAttribute("aria-label", `선택지 ${index + 1}`); row.querySelector('input[type="radio"]').setAttribute("aria-label", `선택지 ${index + 1}을 정답으로 선택`); row.querySelector("button").setAttribute("aria-label", `선택지 ${index + 1} 삭제`); }); }
+function addChoiceField(container = $("#choice-fields"), value = "", selected = false) { if (container.children.length >= 4) { announce("선택지는 최대 4개까지 추가할 수 있어요.", "error"); return; } container.append(choiceRow(value, container.children.length, selected, container.classList.contains("edit-choices") ? `edit-correct-${editingId}` : "correct-choice")); renumberChoices(container); container.lastElementChild.querySelector('input[type="text"]').focus(); }
+function resetQuestionForm() { $("#question-form").reset(); $("#choice-fields").replaceChildren(); addChoiceField($("#choice-fields"), "", true); addChoiceField($("#choice-fields")); setAnswerType("choice"); state.image = ""; $("#image-preview").hidden = true; }
+function setAnswerType(type) { const isChoice = type === "choice"; $("#choice-builder").hidden = !isChoice; $("#text-answer-field").hidden = isChoice; const toggle = $(`input[name="answer-type"][value="${type}"]`); if (toggle) toggle.checked = true; if (!isChoice && !clean($("#answer-text").value)) { const selected = $("#choice-fields input[type=radio]:checked")?.closest(".choice-row")?.querySelector('input[type="text"]'); if (selected) $("#answer-text").value = selected.value; } }
+function validateChoiceDraft(container) { const values = choiceValues(container); if (values.some((value) => !value)) return { error: "빈 선택지가 있어요. 내용을 입력하거나 삭제해 주세요." }; if (values.length < 2) return { error: "선택형은 서로 다른 선택지가 2개 이상 필요해요." }; if (new Set(values).size !== values.length) return { error: "같은 선택지가 두 번 있어요. 서로 다르게 입력해 주세요." }; const selected = container.querySelector('input[type="radio"]:checked')?.closest(".choice-row"); const answer = clean(selected?.querySelector('input[type="text"]')?.value); if (!answer) return { error: "정답인 선택지를 골라 주세요." }; return { answer, choices: values }; }
 function renderQuestionList() {
   const list = $("#question-list");
   list.replaceChildren();
@@ -60,28 +76,45 @@ function renderQuestionList() {
     const number = document.createElement("div"); number.className = "question-number"; number.textContent = i + 1;
     card.append(number);
     if (isSafeImageData(q.image)) { const image = document.createElement("img"); image.src = q.image; image.alt = "문항 이미지"; card.append(image); }
+    if (editingId === q.id) {
+      card.classList.add("is-editing");
+      const editor = document.createElement("div"); editor.className = "card-editor"; editor.dataset.editor = q.id;
+      const promptLabel = document.createElement("label"); promptLabel.textContent = "문제"; const promptInput = document.createElement("textarea"); promptInput.rows = 2; promptInput.maxLength = 500; promptInput.value = q.prompt; promptInput.dataset.editPrompt = ""; promptLabel.append(promptInput);
+      const hasChoices = Array.isArray(q.choices) && q.choices.length >= 2;
+      const answerLabel = document.createElement("label"); answerLabel.textContent = "정답 입력"; const answerInput = document.createElement("input"); answerInput.maxLength = 200; answerInput.value = q.answer; answerInput.dataset.editAnswer = ""; answerLabel.append(answerInput); answerLabel.hidden = hasChoices;
+      const choiceLabel = document.createElement("span"); choiceLabel.className = "edit-label"; choiceLabel.textContent = "선택지 · 정답을 다시 고를 수 있어요"; choiceLabel.hidden = !hasChoices;
+      const choices = document.createElement("div"); choices.className = "choice-fields edit-choices"; choices.hidden = !hasChoices; const editValues = [...new Set([q.answer, ...(q.choices || [])])].slice(0, 4); if (hasChoices) editValues.forEach((value, index) => choices.append(choiceRow(value, index, value === q.answer, `edit-correct-${q.id}`)));
+      const addChoice = document.createElement("button"); addChoice.type = "button"; addChoice.className = "button add-option compact"; addChoice.dataset.editAddChoice = q.id; addChoice.innerHTML = '<span aria-hidden="true">＋</span> 선택지 추가';
+      addChoice.hidden = !hasChoices;
+      const actions = document.createElement("div"); actions.className = "edit-actions"; actions.innerHTML = `<button class="button primary" type="button" data-save="${q.id}">저장</button><button class="button secondary" type="button" data-cancel>취소</button>`;
+      editor.append(promptLabel, answerLabel, choiceLabel, choices, addChoice, actions); card.append(editor); list.append(card); return;
+    }
     const copy = document.createElement("div"); copy.className = "question-copy";
     const prompt = document.createElement("strong"); prompt.textContent = q.prompt; copy.append(prompt);
     const answer = document.createElement("span"); answer.textContent = `정답: ${q.answer}`; copy.append(answer);
     if (q.choices?.length) { const choices = document.createElement("small"); choices.textContent = `선택지: ${q.choices.join(", ")}`; copy.append(choices); }
     card.append(copy);
-    const remove = document.createElement("button"); remove.className = "icon-button"; remove.type = "button"; remove.dataset.remove = q.id; remove.setAttribute("aria-label", `${i + 1}번 문항 삭제`); remove.textContent = "삭제"; card.append(remove);
+    const actions = document.createElement("div"); actions.className = "card-actions";
+    const edit = document.createElement("button"); edit.className = "icon-button edit-button"; edit.type = "button"; edit.dataset.edit = q.id; edit.setAttribute("aria-label", `${i + 1}번 문항 수정`); edit.textContent = "수정";
+    const remove = document.createElement("button"); remove.className = "icon-button"; remove.type = "button"; remove.dataset.remove = q.id; remove.setAttribute("aria-label", `${i + 1}번 문항 삭제`); remove.textContent = "삭제"; actions.append(edit, remove); card.append(actions);
     list.append(card);
   });
 }
-function update() {
+function update(shouldSave = true) {
   $("#question-count").textContent = `${state.questions.length}문항`;
   $("#validation-message").textContent = state.questions.length >= MIN_QUESTIONS ? "게임을 시작할 준비가 됐어요." : `게임을 만들려면 문항을 ${MIN_QUESTIONS - state.questions.length}개 더 추가하세요.`;
   $("#create-room").disabled = state.questions.length < MIN_QUESTIONS;
   renderQuestionList();
-  saveDraft();
+  return shouldSave ? saveDraft() : true;
 }
 function addQuestion(prompt, answer, choices = [], image = "") {
   if (state.questions.length >= MAX_QUESTIONS) { announce(`최대 ${MAX_QUESTIONS}문항까지 만들 수 있어요.`, "error"); return false; }
   const normalized = normalizeQuestion({ prompt, answer, choices, image }, state.questions.length);
   if (normalized.error) { announce(normalized.error, "error"); return false; }
   if (imageTotal(state.questions) + imageLength(normalized.question.image) > 2_500_000) { announce("문항 이미지 전체 용량은 2.5MB 이하로 맞춰 주세요.", "error"); return false; }
-  state.questions.push(normalized.question); update(); return true;
+  state.questions.push(normalized.question);
+  if (!update()) { state.questions.pop(); update(false); return false; }
+  return true;
 }
 function parseDelimited(text, delimiter) {
   const source = text.replace(/^\uFEFF/, "");
@@ -182,14 +215,35 @@ function readImage(file) {
 }
 function download(filename, content) { const link = document.createElement("a"); link.href = URL.createObjectURL(new Blob([content], { type: "application/json" })); link.download = filename; link.click(); setTimeout(() => URL.revokeObjectURL(link.href), 1000); }
 
-$("#question-form").addEventListener("submit", async (event) => { event.preventDefault(); const ok = addQuestion($("#question-text").value, $("#answer-text").value, clean($("#choices-text").value).split(","), state.image); if (!ok) return; event.target.reset(); state.image = ""; $("#image-preview").hidden = true; announce("문항을 추가했어요.", "success"); $("#question-text").focus(); });
+$("#add-choice").addEventListener("click", () => addChoiceField());
+document.querySelectorAll('input[name="answer-type"]').forEach((input) => input.addEventListener("change", () => setAnswerType(input.value)));
+$("#question-form").addEventListener("submit", async (event) => { event.preventDefault(); const mode = $('input[name="answer-type"]:checked').value; const draft = mode === "choice" ? validateChoiceDraft($("#choice-fields")) : { answer: clean($("#answer-text").value), choices: [] }; if (draft.error) { announce(draft.error, "error"); return; } if (!draft.answer) { announce("정답을 입력해 주세요.", "error"); $("#answer-text").focus(); return; } const ok = addQuestion($("#question-text").value, draft.answer, draft.choices, state.image); if (!ok) return; resetQuestionForm(); announce("문항을 저장했어요. 다음 문제를 입력하세요.", "success"); $("#question-text").focus(); });
 $("#image-file").addEventListener("change", async (event) => { try { state.image = await readImage(event.target.files[0]); const preview = $("#image-preview"); preview.replaceChildren(); if (state.image) { const image = document.createElement("img"); image.src = state.image; image.alt = "첨부한 문항 이미지 미리보기"; const clear = document.createElement("button"); clear.type = "button"; clear.id = "clear-image"; clear.textContent = "이미지 제거"; preview.append(image, clear); } preview.hidden = !state.image; $("#clear-image")?.addEventListener("click", () => { state.image = ""; event.target.value = ""; preview.replaceChildren(); preview.hidden = true; }); } catch (error) { event.target.value = ""; announce(error.message, "error"); } });
 $("#bulk-add").addEventListener("click", () => { const rows = parseBulkRows($("#bulk-text").value); if (!rows.length) { announce("문제와 정답을 탭, 쉼표 또는 두 줄씩 구분해 주세요.", "error"); return; } importRows(rows, "붙여넣은 내용"); $("#bulk-text").value = ""; });
 $("#csv-file").addEventListener("change", async (event) => { const file = event.target.files[0]; if (!file) return; try { const rows = /\.xlsx$/i.test(file.name) ? await parseXlsx(file) : parseDelimited(await file.text()); if (!rows.length) throw new Error("파일에서 문제와 정답을 찾지 못했어요."); importRows(rows, file.name); } catch (error) { announce(`파일을 읽지 못했어요: ${error.message}`, "error"); } event.target.value = ""; });
-$("#question-list").addEventListener("click", (event) => { const button = event.target.closest("[data-remove]"); if (!button) return; state.questions = state.questions.filter((q) => q.id !== button.dataset.remove); update(); announce("문항을 삭제했어요."); });
+$("#question-list").addEventListener("click", (event) => {
+  const remove = event.target.closest("[data-remove]");
+  if (remove) { const previous = state.questions; const previousEditingId = editingId; state.questions = state.questions.filter((q) => q.id !== remove.dataset.remove); if (editingId === remove.dataset.remove) editingId = ""; if (!update()) { state.questions = previous; editingId = previousEditingId; update(false); return; } announce("문항을 삭제했어요."); return; }
+  const edit = event.target.closest("[data-edit]");
+  if (edit) { editingId = edit.dataset.edit; renderQuestionList(); $("[data-edit-prompt]")?.focus(); return; }
+  if (event.target.closest("[data-cancel]")) { editingId = ""; renderQuestionList(); return; }
+  const addChoice = event.target.closest("[data-edit-add-choice]");
+  if (addChoice) { addChoiceField(addChoice.parentElement.querySelector(".edit-choices")); return; }
+  const save = event.target.closest("[data-save]");
+  if (!save) return;
+  const editor = save.closest("[data-editor]"); const current = state.questions.find((q) => q.id === save.dataset.save);
+  const editChoices = editor.querySelector(".edit-choices"); const choiceDraft = editChoices.hidden ? null : validateChoiceDraft(editChoices);
+  if (choiceDraft?.error) { announce(choiceDraft.error, "error"); return; }
+  const normalized = normalizeQuestion({ prompt: editor.querySelector("[data-edit-prompt]").value, answer: choiceDraft?.answer || editor.querySelector("[data-edit-answer]").value, choices: choiceDraft?.choices || [], image: current.image }, state.questions.indexOf(current));
+  if (normalized.error) { announce(normalized.error, "error"); return; }
+  Object.assign(current, normalized.question, { id: current.id }); editingId = "";
+  if (!update()) { editingId = current.id; renderQuestionList(); return; }
+  announce("문항을 수정했어요.", "success");
+});
 $("#export-json").addEventListener("click", () => download(`${clean($("#set-title").value) || "quiz-set"}.json`, JSON.stringify({ version: 1, title: clean($("#set-title").value) || "내 퀴즈 세트", questions: state.questions }, null, 2)));
 $("#import-json").addEventListener("click", () => $("#json-file").click());
-$("#json-file").addEventListener("change", async (event) => { try { const data = JSON.parse(await event.target.files[0].text()); if (!Array.isArray(data.questions)) throw new Error("가져올 문항이 없어요."); const room = MAX_QUESTIONS - state.questions.length; const result = { added: 0, skipped: [], truncated: 0 }; if (data.questions.length > room) result.skipped.push(`${data.questions.length - room}개 행: 최대 ${MAX_QUESTIONS}문항까지만 가져올 수 있어요.`); data.questions.slice(0, room).forEach((q, index) => { const normalized = normalizeQuestion(q, index); if (normalized.error) result.skipped.push(normalized.error); else if (imageTotal(state.questions) + imageLength(normalized.question.image) > 2_500_000) result.skipped.push(`${index + 1}번 행: 이미지 전체 용량이 2.5MB를 넘어요.`); else { state.questions.push(normalized.question); result.added += 1; if (normalized.truncatedChoices) result.truncated += 1; } }); if (!result.added) throw new Error(result.skipped[0] || "가져올 문항이 없어요."); $("#set-title").value = clean(data.title) || $("#set-title").value; update(); const details = [`${result.added}개 문항을 가져왔어요.`]; if (result.truncated) details.push(`${result.truncated}개 행의 선택지는 4개로 줄였어요.`); if (result.skipped.length) details.push(`${result.skipped.length}개 행은 건너뛰었어요. ${result.skipped.slice(0, 2).join(" ")}`); announce(details.join(" "), "success"); } catch (error) { announce(`JSON을 가져오지 못했어요: ${error.message}`, "error"); } event.target.value = ""; });
+$("#json-file").addEventListener("change", async (event) => { const file = event.target.files[0]; if (!file) return; try { const data = JSON.parse(await file.text()); if (!Array.isArray(data.questions)) throw new Error("가져올 문항이 없어요."); const room = MAX_QUESTIONS - state.questions.length; const result = { added: 0, skipped: [], truncated: 0 }; if (data.questions.length > room) result.skipped.push(`${data.questions.length - room}개 행: 최대 ${MAX_QUESTIONS}문항까지만 가져올 수 있어요.`); data.questions.slice(0, room).forEach((q, index) => { const normalized = normalizeQuestion(q, index); if (normalized.error) result.skipped.push(normalized.error); else if (imageTotal(state.questions) + imageLength(normalized.question.image) > 2_500_000) result.skipped.push(`${index + 1}번 행: 이미지 전체 용량이 2.5MB를 넘어요.`); else { state.questions.push(normalized.question); result.added += 1; if (normalized.truncatedChoices) result.truncated += 1; } }); if (!result.added) throw new Error(result.skipped[0] || "가져올 문항이 없어요."); $("#set-title").value = clean(data.title) || $("#set-title").value; if (!update()) return; const details = [`${result.added}개 문항을 가져왔어요.`]; if (result.truncated) details.push(`${result.truncated}개 행의 선택지는 4개로 줄였어요.`); if (result.skipped.length) details.push(`${result.skipped.length}개 행은 건너뛰었어요. ${result.skipped.slice(0, 2).join(" ")}`); announce(details.join(" "), "success"); } catch (error) { announce(`JSON을 가져오지 못했어요: ${error.message}`, "error"); } finally { event.target.value = ""; } });
 $("#create-room").addEventListener("click", () => { if (state.questions.length < MIN_QUESTIONS) return; const set = { version: 1, id: "local", title: clean($("#set-title").value) || "내 퀴즈 세트", questions: state.questions, createdAt: new Date().toISOString() }; try { localStorage.setItem(SET_KEY, JSON.stringify(set)); localStorage.removeItem(STORAGE_KEY); location.href = "./?set=local"; } catch { announce("세트를 저장할 공간이 부족해요. 이미지 수를 줄이거나 JSON으로 내보내 보관하세요.", "error"); } });
 $("#set-title").addEventListener("input", saveDraft);
-try { const draft = JSON.parse(localStorage.getItem(STORAGE_KEY) || "null"); if (draft) { $("#set-title").value = clean(draft.title); const loaded = Array.isArray(draft.questions) ? draft.questions : []; let imageBytes = 0; state.questions = loaded.slice(0, MAX_QUESTIONS).map((question, index) => { const normalized = normalizeQuestion(question, index); if (normalized.error || imageBytes + imageLength(normalized.question.image) > 2_500_000) return null; imageBytes += imageLength(normalized.question.image); return normalized.question; }).filter(Boolean); update(); } } catch { localStorage.removeItem(STORAGE_KEY); }
+try { const draft = JSON.parse(localStorage.getItem(STORAGE_KEY) || "null"); if (draft) { $("#set-title").value = clean(draft.title); const loaded = Array.isArray(draft.questions) ? draft.questions : []; let imageBytes = 0; state.questions = loaded.slice(0, MAX_QUESTIONS).map((question, index) => { const normalized = normalizeQuestion(question, index); if (normalized.error || imageBytes + imageLength(normalized.question.image) > 2_500_000) return null; imageBytes += imageLength(normalized.question.image); return normalized.question; }).filter(Boolean); update(false); } } catch { localStorage.removeItem(STORAGE_KEY); }
+resetQuestionForm();

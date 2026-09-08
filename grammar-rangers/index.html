@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
 <title>문법 레인저스</title>
 <link rel="icon" href="data:,">
-<link href="https://fonts.googleapis.com/css2?family=Black+Han+Sans&family=Noto+Sans+KR:wght@500;700;800;900&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;600;700;800&display=swap" rel="stylesheet">
 <!-- Vercel Web Analytics -->
 <script>
   window.va = window.va || function () { (window.vaq = window.vaq || []).push(arguments); };
@@ -18,7 +18,7 @@ button{font-family:inherit;}
 
 /* ── 게이트 ── */
 #gate{position:fixed;inset:0;z-index:50;background:radial-gradient(120% 90% at 50% 0%,#1b2b4d,#0c1322 70%);overflow-y:auto;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:24px 16px;}
-.gate-title{font-family:'Black Han Sans',sans-serif;font-size:2.25rem;font-weight:400;letter-spacing:.02em;text-shadow:0 4px 0 #082f49,0 0 24px rgba(56,189,248,.7);}
+.gate-title{font-size:2.25rem;font-weight:800;letter-spacing:.02em;}
 .gate-sub{font-size:.86rem;color:#7dd3fc;margin:8px 0 18px;text-align:center;line-height:1.7;max-width:460px;}
 .mode-cards{display:flex;gap:12px;flex-wrap:wrap;justify-content:center;max-width:520px;}
 .mode-card{width:230px;background:rgba(255,255,255,.05);border:2px solid rgba(56,189,248,.35);border-radius:18px;padding:16px;cursor:pointer;color:#fff;text-align:left;transition:transform .14s,border-color .14s,box-shadow .14s;}
@@ -103,7 +103,7 @@ button{font-family:inherit;}
 .res-card{text-align:center;padding:28px 30px 24px;background:linear-gradient(180deg,rgba(20,35,60,.97),rgba(9,16,30,.98));border:2px solid rgba(56,189,248,.5);border-radius:22px;max-width:380px;width:90%;box-shadow:0 0 46px rgba(56,189,248,.22);animation:pop .5s cubic-bezier(.34,1.56,.64,1);}
 @keyframes pop{from{transform:scale(.7) translateY(28px);opacity:0}to{transform:scale(1) translateY(0);opacity:1}}
 .res-icon{font-size:3.4rem;}
-.res-stage{font-size:2.5rem;font-weight:900;color:#7dd3fc;text-shadow:0 0 20px rgba(56,189,248,.6);margin:2px 0;}
+.res-stage{font-size:2.5rem;font-weight:800;color:#7dd3fc;margin:2px 0;}
 .res-sub{font-size:.85rem;color:#bae6fd;margin-bottom:6px;}
 .res-new{display:inline-block;font-size:.8rem;font-weight:900;color:#04210f;background:linear-gradient(135deg,#fde68a,#fbbf24);border-radius:10px;padding:4px 14px;margin-bottom:12px;animation:pulse2 .9s infinite;}
 @keyframes pulse2{0%,100%{transform:scale(1)}50%{transform:scale(1.06)}}
@@ -135,8 +135,21 @@ button{font-family:inherit;}
   #summon-bar{padding-top:3px;gap:4px}.unit-tab{padding:3px 8px}.unit-card{grid-template-columns:34px 1fr;padding:2px;gap:2px 4px}.unit-card canvas{width:34px;height:34px}.unit-role{font-size:.5rem}.summon-btn{min-height:24px;padding:2px 3px}.upgrade-btn{min-height:22px;padding:2px 3px}#army-count{font-size:.61rem}
   #qcard{padding:7px 12px 8px;margin-top:3px;margin-bottom:4px}#q-top{margin-bottom:3px}#q-kor{margin:2px 0 5px}#opts{gap:5px}.opt{padding:5px 7px}#q-reward{font-size:.72rem;margin-top:3px}
 }
+/* 2026 woodland campaign visual refresh */
+body{background:#18251d;font-family:'Noto Sans KR',system-ui,sans-serif;color:#f8f4e8}
+#gate{background:linear-gradient(150deg,#183426 0%,#2c4932 52%,#725735 100%)}
+.gate-title{font-family:inherit;font-size:clamp(1.9rem,5vw,2.45rem);font-weight:800;letter-spacing:-.04em;text-shadow:none;color:#fff8df}
+.gate-sub{color:#d7e4cf;font-weight:400}.mode-card{background:#213b2c;border:1px solid #5b765d;border-radius:15px;color:#fffaf0;box-shadow:0 9px 20px rgba(15,27,18,.22)}.mode-card.on{border-color:#d6a956;background:#35563c;box-shadow:0 0 0 3px rgba(214,169,86,.17);transform:translateY(-2px)}.mode-card .mc-name{font-weight:800}.mode-card .mc-desc{color:#d5e2d0;font-weight:400}.mode-card .mc-best{color:#f3c971}
+.uchip{background:#264332;border-color:#67806a;color:#e1eadc}.uchip.on{background:#b17632;border-color:#e0b260;box-shadow:none}#gate-go{background:#d99a3e;color:#2a2116;border-radius:13px;box-shadow:0 7px 0 #895b26;font-weight:800}.gate-tip{color:#f0e6cf;background:#294533;border-color:#607961;font-weight:500}.gate-back{color:#d6ddd2;text-decoration:underline;text-underline-offset:4px}
+#game{background:#18251d}#hud{background:#1d3125;border-bottom:1px solid #526b55;padding:6px 10px}.hud-chip{font-weight:700;background:#294334;border-color:#58705a}.hud-exit,#spd-btn,#bgm-btn,#sfx-btn{font-weight:650;background:#283b31;border-color:#617268;color:#f4f3e9}#stage-chip{color:#f2c871;border-color:#8e713c}#best-chip2{color:#d9e5d6}
+#field{border-color:#7b8d65;border-radius:13px;box-shadow:0 12px 28px rgba(18,27,18,.28)}#wave-banner{width:max-content;max-width:calc(100% - 32px);background:#3f7149;box-shadow:0 10px 24px rgba(0,0,0,.28);font-size:clamp(.86rem,4vw,1.08rem);line-height:1.35;word-break:keep-all;overflow-wrap:normal}#energy-txt{color:#fff;text-shadow:0 1px 3px #10160f,0 0 2px #10160f}
+.tower-btn{background:#294b35;border-color:#638069;border-radius:11px;box-shadow:none}.tower-name,.tower-cost,.tower-effect{font-weight:650}.tower-cost{color:#f0c66c}.tower-effect{color:#c7d9c3}.unit-tab{background:#2c4434;border-color:#687c6c;color:#d8e2d4;font-weight:650}.unit-tab.active{background:#a36d31;border-color:#d6a355;box-shadow:none}.unit-card{background:#23392b;border-color:#5c735f}.unit-role{color:#d2dfcd;font-weight:650}.summon-btn{background:#44754c;font-weight:700}.upgrade-btn{background:#9b672e;font-weight:650}.hud-exit{margin-left:0}
+#qcard{background:#fffaf0;border:1px solid #c9c3ad;border-radius:14px;box-shadow:0 8px 24px rgba(18,27,18,.26);color:#253229}#q-unit{color:#396248;background:#e1eee0}#q-eng{font-weight:700}#q-kor{color:#596b5d}.opt{font-weight:650}#q-reward{color:#39754a;font-weight:650}
+.res-card{background:#25372a;border:1px solid #78836c;border-radius:18px;box-shadow:0 24px 58px rgba(0,0,0,.4)}.res-stage{color:#f2c86f;text-shadow:none}.res-sub,.res-best{color:#d6e0d2}.b-retry{background:#477b50;box-shadow:none}.b-list{background:#34463a;border-color:#68776b}
+@media(max-width:480px){#hud{gap:4px;padding:5px}.gate-sub br{display:none}.tower-btn{gap:4px}.unit-card{border-radius:11px}}
 </style>
 <link rel="stylesheet" href="../game/question-surface.css">
+<link rel="stylesheet" href="../multiplayer/game-type.css">
 </head>
 <body>
 

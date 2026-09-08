@@ -74,27 +74,29 @@ body{background:#0c2f5c;color:#fff;font-family:ui-rounded,'SF Pro Rounded','Aria
 @media(max-height:650px){.top{padding-top:5px}.top-row{min-height:56px}.score-head b{font-size:2rem}.stats{margin-top:2px}.mission{margin-top:7px;margin-bottom:6px}.mission span{display:none}.board-wrap{width:min(calc(100% - 24px),calc(100vh - 310px));min-width:238px;margin:auto;padding:0}.blast-flash{inset:0}.tray-title{padding-top:10px}.tray{min-height:78px}.piece{min-height:72px}.tip{padding-bottom:6px}}
 </style>
 <link rel="stylesheet" href="../game/question-surface.css">
+<link rel="stylesheet" href="./play.css">
+<link rel="stylesheet" href="../multiplayer/game-type.css">
 </head>
 <body>
 <main class="app">
   <header class="top">
     <div class="top-row">
       <button class="back" onclick="location.href='../game/'">← 메뉴</button>
-      <div class="score-head"><small>SCORE</small><b id="score">0</b></div>
+      <div class="score-head"><small>점수</small><b id="score">0</b></div>
       <div class="audio-tools"><button class="audio-btn" id="music-btn" aria-label="배경음악 켜기 또는 끄기">🎵</button><button class="audio-btn" id="sfx-btn" aria-label="효과음 켜기 또는 끄기">💥</button><div class="time" id="time">5:00</div></div>
     </div>
     <div class="brand"><small>SENTENCE BLAST</small></div>
     <div class="stats">
-      <div class="stat"><b id="lines">0</b><span>LINES</span></div>
-      <div class="stat"><b id="combo">0</b><span>COMBO</span></div>
-      <div class="stat"><b id="grammar">0/0</b><span>GRAMMAR</span></div>
-      <div class="stat"><b id="rescue-left">2</b><span>RESCUE</span></div>
+      <div class="stat"><b id="lines">0</b><span>줄</span></div>
+      <div class="stat"><b id="combo">0</b><span>콤보</span></div>
+      <div class="stat"><b id="grammar">0/0</b><span>문법</span></div>
+      <div class="stat"><b id="rescue-left">2</b><span>구조</span></div>
     </div>
   </header>
   <div class="phase"><div class="phase-fill" id="phase-fill"></div><span class="phase-label" id="phase-label">문장 챌린지까지 15초</span></div>
   <section class="mission"><strong id="unit-label">블록을 채워 줄을 지워요</strong><span>15초 집중 플레이<br>문제 시간은 차감되지 않아요</span></section>
   <section class="board-wrap"><div class="board" id="board" aria-label="8×8 블록 보드"></div><div class="impact-layer" id="impact-layer"></div><div class="blast-flash" id="blast-flash"></div></section>
-  <div class="tray-title"><strong>BLOCKS</strong><span>블록을 끌어 보드에 놓으세요</span></div>
+  <div class="tray-title"><strong>블록 선택</strong><span>블록을 끌어 보드에 놓으세요</span></div>
   <section class="tray" id="tray"></section>
   <p class="tip">무료 구조 2회 · 이후 긴급 구조는 점수와 콤보가 줄어요.</p>
 </main>
@@ -103,7 +105,7 @@ body{background:#0c2f5c;color:#fff;font-family:ui-rounded,'SF Pro Rounded','Aria
 
 <div class="overlay" id="challenge">
   <section class="card">
-    <div class="challenge-head"><h2>Sentence Challenge</h2><div class="challenge-time" id="challenge-time">10</div></div>
+    <div class="challenge-head"><h2>문장 챌린지</h2><div class="challenge-time" id="challenge-time">10</div></div>
     <div class="kor" id="challenge-kor"></div>
     <div class="challenge-eng" id="challenge-eng" hidden></div>
     <div class="guide">단어를 차례로 눌러 문장을 완성하세요.</div>

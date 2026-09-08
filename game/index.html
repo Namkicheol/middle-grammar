@@ -696,6 +696,192 @@ button:focus-visible,a:focus-visible,.unit-card:focus-visible,.grade-random:focu
 </style>
 <link rel="stylesheet" href="./arena.css">
 <link rel="stylesheet" href="./arcade-lobby.css">
+<style>
+/* Bubble arcade: compact controls above the existing canvas. */
+#game-screen{
+  --bubble-navy:#082b55;
+  --bubble-cobalt:#1769aa;
+  --bubble-aqua:#5ee5e0;
+  --bubble-foam:#eefdff;
+  background:linear-gradient(180deg,#c8f4f3 0,#6dcfdf 18%,#1769aa 54%,#082b55 100%);
+  color:#efffff;
+}
+#game-screen #hud{
+  min-height:58px;
+  padding:8px 10px;
+  gap:7px;
+  background:#093c70;
+  border-bottom:1px solid #76e8e5;
+  box-shadow:0 5px 16px #03284f55;
+}
+#game-screen #hud :is(.hud-score,.hud-time,.hud-stage,.hud-combo,.hud-quiz){font-weight:650;text-shadow:none}
+#game-screen #hud .hud-score{color:#fff0a8}
+#game-screen #hud .hud-time{color:#c9ffef}
+#game-screen #hud .hud-stage,#game-screen #hud .hud-quiz{color:#d9fbff}
+#game-screen #hud .hud-combo{color:#ffe4a3}
+#game-screen #hud :is(.hud-back,.hud-pause){
+  min-width:44px;
+  min-height:44px;
+  padding:8px 11px;
+  border:1px solid #77cbdc;
+  border-radius:12px;
+  background:#14568c;
+  font-size:.74rem;
+  font-weight:650;
+  box-shadow:none;
+}
+#game-screen #drop-meter,#game-screen #grammar-meter{
+  height:22px;
+  color:#eaffff;
+  background:#072f5c;
+  border:0;
+  font-size:.67rem;
+  font-weight:600;
+  line-height:22px;
+}
+#game-screen #drop-meter{border-bottom:1px solid #1c6090}
+#game-screen #drop-meter span{background:#39bcae}
+#game-screen #grammar-meter span{background:#287fca}
+#game-screen :is(#drop-meter,#grammar-meter) em{text-shadow:none}
+#game-screen #game-wrap{box-shadow:0 18px 34px #03284f66}
+#game-screen #next-bubble-preview{
+  right:12px;
+  bottom:62px;
+  min-width:58px;
+  padding:7px 8px;
+  border:1px solid #79dbe2;
+  border-radius:14px;
+  background:#073b6dcc;
+  box-shadow:0 5px 14px #03284f55;
+}
+#game-screen #next-bubble-preview .nb-label{color:#dbfeff;font-size:.62rem;font-weight:650;letter-spacing:.08em;text-shadow:none}
+#quiz-overlay{background:#05294dcc;backdrop-filter:blur(4px)}
+#quiz-overlay #quiz-box{
+  max-width:410px;
+  padding:18px;
+  border:1px solid #9ce4e5;
+  border-radius:20px;
+  background:#f5ffff;
+  box-shadow:0 20px 45px #03284f66;
+}
+#quiz-overlay #quiz-box::before{display:none}
+#quiz-overlay .quiz-chain{color:#1769aa;font-weight:650}
+#quiz-overlay .quiz-q{color:#123b5d;font-weight:650}
+#quiz-overlay .quiz-kor{color:#315f6d;background:#def7f5;border-color:#b8e5e2;font-weight:500}
+#quiz-overlay .quiz-opt{min-height:48px;border-radius:12px;font-weight:600}
+#quiz-overlay .quiz-opt:nth-child(4n+1),#quiz-overlay .quiz-opt:nth-child(4n+2),#quiz-overlay .quiz-opt:nth-child(4n){color:#fffaf0;text-shadow:0 2px 3px #071c2c88}
+#quiz-overlay .quiz-opt:nth-child(4n+3){color:#17324b;text-shadow:0 1px 1px #fff8}
+#quiz-overlay .quiz-bonus{color:#16766c;font-weight:600}
+#gameover-overlay{background:#063863d9;backdrop-filter:blur(4px)}
+#gameover-overlay .go-box{border:1px solid #9ce4e5;border-radius:20px;background:#f5ffff;box-shadow:0 18px 44px #03284f66}
+#gameover-overlay .go-box :is(h2,.go-score){font-weight:700}
+#gameover-overlay .go-btn{min-height:46px;border-radius:12px;font-weight:650}
+#pause-overlay{background:#05294dcc;backdrop-filter:blur(4px)}
+#pause-overlay .pause-card{border:1px solid #8bdddf;border-radius:18px;background:#084b7c;box-shadow:0 18px 44px #03284f66}
+#pause-overlay .pause-card :is(h2,button){font-weight:650}
+@media(max-width:420px){
+  #game-screen #hud{display:grid;grid-template-columns:auto repeat(5,minmax(0,1fr)) auto;gap:4px;padding:6px}
+  #game-screen #hud :is(.hud-stage,.hud-combo,.hud-quiz){font-size:.66rem;min-width:0}
+  #game-screen #hud :is(.hud-score,.hud-time){font-size:.84rem;white-space:nowrap}
+  #game-screen #hud :is(.hud-back,.hud-pause){padding:7px 8px}
+  #quiz-overlay{padding:12px}
+  #quiz-overlay #quiz-box{padding:16px 14px}
+  #quiz-overlay .quiz-opts{gap:7px}
+}
+
+
+</style>
+<style id="solo-mode-polish">
+/* Native solo modes keep their game identity with calmer, legible interfaces. */
+#speed-screen{background:#0d47a1;color:#fff;font-family:Pretendard,"Apple SD Gothic Neo","Noto Sans KR",system-ui,sans-serif}
+#speed-screen .speed-hud{max-width:680px;padding:12px 16px;background:#08377f;border-bottom:1px solid #3f77c6;box-shadow:0 5px 16px #06275d42}
+#speed-screen .speed-hud button{min-height:44px;border:1px solid #73a0dc;border-radius:8px;background:#164f9d;font-weight:600}
+#speed-screen .speed-pill{color:#dceaff;font-weight:600}
+#speed-screen .speed-time{padding:7px 12px;border-radius:8px;color:#1f2937;background:#ffad32;font-weight:700}
+#speed-screen .speed-wrap{max-width:680px;padding:24px 18px}
+#speed-screen .speed-card{padding:24px;border:1px solid #d8e4f4;border-radius:14px;background:#fff;box-shadow:0 12px 28px #06275d38}
+#speed-screen .speed-projection{min-height:250px;padding:24px 18px;border:0;background:#fff;box-shadow:none}
+#speed-screen .speed-meta{color:#37699f;font-weight:600;letter-spacing:0}
+#speed-screen .speed-q{color:#17243b;font-size:clamp(1.1rem,3vw,1.35rem);font-weight:700;line-height:1.55}
+#speed-screen .speed-kor{padding:9px 11px;border:0;border-left:3px solid #4a83c5;border-radius:3px;color:#31597c;background:#eef5fc;font-weight:500}
+#speed-screen .speed-options{gap:10px}
+#speed-screen .speed-opt{min-height:58px;padding:12px;border:1px solid #c9d8e9;border-radius:9px;color:#17365e;background:#f8fbff;box-shadow:0 2px 5px #17365e12;text-shadow:none;font-weight:600}
+#speed-screen .speed-opt:nth-child(1),#speed-screen .speed-opt:nth-child(2),#speed-screen .speed-opt:nth-child(3),#speed-screen .speed-opt:nth-child(4){color:#17365e;background-color:#f8fbff;background-image:none;text-shadow:none}
+#speed-screen .speed-opt:hover:not(:disabled){border-color:#ff9d22;background:#fff7e8;transform:translateY(-1px)}
+#speed-screen .speed-opt.ok,#speed-screen .speed-opt.reveal{border-color:#249562;background:#eaf8f1;color:#17613f}
+#speed-screen .speed-opt.ng{border-color:#d95454;background:#fff0f0;color:#a32929}
+#speed-screen .speed-stat{border:1px solid #5d8bc8;border-radius:9px;background:#164f9d}
+#speed-screen .speed-stat b{color:#fff;font-weight:700}
+#speed-screen .speed-stat span{color:#cbdfff;font-weight:500}
+
+#boss-screen{background:linear-gradient(180deg,#07172f,#0d2647 58%,#07182d);font-family:Pretendard,"Apple SD Gothic Neo","Noto Sans KR",system-ui,sans-serif}
+#boss-screen .boss-hud{max-width:680px;padding:12px 16px;background:#07172f;border-bottom:1px solid #30496a;box-shadow:0 5px 16px #020b1880}
+#boss-screen .boss-hud button{min-height:44px;border:1px solid #52657d;border-radius:8px;background:#142b48;font-weight:600}
+#boss-screen .boss-pill{color:#d9e3ef;font-weight:600}
+#boss-screen .boss-time{padding:7px 12px;border-radius:8px;color:#33230a;background:#f2b84b;font-weight:700}
+#boss-screen .boss-wrap{max-width:680px;padding:18px}
+#boss-screen .boss-arena{padding:15px;border:1px solid #344b68;border-radius:14px;background:#102844;box-shadow:0 14px 30px #020b1866}
+#boss-screen .boss-title h2{font-size:1.05rem;font-weight:700;letter-spacing:-.02em}
+#boss-screen .boss-title span{border:1px solid #a9782d;border-radius:6px;color:#ffe4a8;background:#5a3b1266;font-weight:600}
+#boss-screen .boss-duel{border:1px solid #3b536f;border-radius:10px;box-shadow:inset 0 0 30px #020b1860}
+#boss-screen .boss-bars{padding:10px 0 2px}
+#boss-screen .boss-bar{height:12px;border-radius:3px;background:#061321}
+#boss-screen .boss-card{margin-top:14px;padding:20px;border:1px solid #d6e0eb;border-radius:12px;background:#fff;color:#17243b;box-shadow:0 8px 20px #020b184f}
+#boss-screen .boss-meta{color:#8a5b11;font-weight:600}
+#boss-screen .boss-q{color:#17243b;font-size:1.15rem;font-weight:700;line-height:1.55}
+#boss-screen .boss-kor{border:0;border-left:3px solid #d59b39;border-radius:3px;color:#5e4a2e;background:#fff7e8;font-weight:500}
+#boss-screen .boss-options{gap:9px}
+#boss-screen .boss-opt{min-height:55px;border:1px solid #cbd6e2;border-radius:8px;color:#19324e;background:#f8fafc;box-shadow:0 2px 5px #17243b12;text-shadow:none;font-weight:600}
+#boss-screen .boss-opt:hover:not(:disabled){border-color:#d99b35;background:#fff8eb;transform:translateY(-1px)}
+#boss-screen .boss-opt.ok,#boss-screen .boss-opt.reveal{border-color:#249562;background:#eaf8f1;color:#17613f}
+#boss-screen .boss-opt.ng{border-color:#d95454;background:#fff0f0;color:#a32929}
+@media(max-width:420px){#speed-screen .speed-wrap,#boss-screen .boss-wrap{padding:12px}#speed-screen .speed-card,#boss-screen .boss-card{padding:16px 14px}#speed-screen .speed-projection{min-height:230px;padding:20px 14px}#boss-screen .boss-duel{height:205px}}
+</style>
+<style id="speed-race-polish">
+/* Speed race: graphite track, amber timing and the existing arcade answer panels. */
+#speed-screen{min-height:100vh;background:#192b36;color:#f8f1df}
+#speed-screen .speed-hud{max-width:720px;min-height:60px;padding:8px 12px;background:#101e26;border-bottom:3px solid #ffad32;box-shadow:none}
+#speed-screen .speed-hud button{min-height:44px;border:1px solid #596973;border-radius:10px;background:#273b47;color:#f8f1df;font-size:.8rem;font-weight:600}
+#speed-screen .speed-time{min-width:78px;padding:6px 10px;border-radius:8px;background:#ffad32;color:#192b36;font-size:1.5rem;font-weight:750;text-align:center}
+#speed-screen .speed-pill{color:#f3ead6;font-size:.88rem;font-weight:600}
+#speed-screen #speed-score{font-size:1.1rem;color:#ffcb70}
+#speed-screen .speed-power{border-color:#657985;background:#243945;color:#e8f0f2}
+#speed-screen .speed-wrap{max-width:720px;padding:12px 14px 24px}
+#speed-screen .speed-race{position:relative;height:54px;margin:0 0 10px;border:1px solid #52636c;border-radius:10px;background:repeating-linear-gradient(90deg,#263b47 0 34px,#2d4552 34px 68px);overflow:hidden}
+#speed-screen .speed-race::after{content:'';position:absolute;left:0;right:0;top:26px;border-top:2px dashed #fff3}
+#speed-screen .speed-race-label{position:absolute;z-index:2;left:10px;top:7px;color:#ffcb70;font-size:.72rem;font-weight:600}
+#speed-screen .speed-car{position:absolute;z-index:3;left:calc(10px + (100% - 70px)*var(--race-progress,0));bottom:5px;font-size:1.8rem;line-height:1;transition:left .28s ease;filter:drop-shadow(0 2px 2px #0008)}
+#speed-screen .speed-card{padding:0;background:transparent;border:0;border-radius:0;box-shadow:none}
+#speed-screen .speed-projection{min-height:180px;padding:28px 30px;background:var(--arena-ivory) url('./assets/arena-v1/projection-frame.webp') center/100% 100% no-repeat;border:1px solid #0f3338;border-radius:10px;box-shadow:0 10px 24px #07141b88}
+#speed-screen .speed-meta{margin-bottom:10px;color:#8b5c25;font-size:.82rem;font-weight:600}
+#speed-screen .speed-q{font-size:clamp(1.45rem,4vw,2.3rem);font-weight:600}
+#speed-screen .speed-kor{font-size:.92rem;font-weight:500}
+#speed-screen .speed-options{margin-top:10px;grid-template-columns:repeat(2,minmax(0,1fr))!important;gap:9px}
+#speed-screen .speed-opt{min-height:72px;padding:20px 10px 12px;font-size:clamp(1.25rem,4vw,1.8rem);font-weight:600;border-radius:10px}
+#speed-screen .speed-opt:nth-child(4n+1),#speed-screen .speed-opt:nth-child(4n+2),#speed-screen .speed-opt:nth-child(4n+3),#speed-screen .speed-opt:nth-child(4n){background-image:url('./assets/arena-v1/answer-panels.webp');background-size:400% 100%;background-repeat:no-repeat;border:2px solid #fff4d67a;box-shadow:inset 0 -5px #0003,0 5px #0c1b23;color:#fffaf0;text-shadow:0 2px 3px #071c2c88}
+#speed-screen .speed-opt:nth-child(4n+1){background-color:#d95b35;background-position:0 50%}
+#speed-screen .speed-opt:nth-child(4n+2){background-color:#315f8f;background-position:33.333% 50%}
+#speed-screen .speed-opt:nth-child(4n+3){background-color:#e1a92a;background-position:66.667% 50%;color:#17324b;text-shadow:0 1px 1px #fff8}
+#speed-screen .speed-opt:nth-child(4n){background-color:#268b78;background-position:100% 50%}
+#speed-screen .speed-footer{gap:8px;margin-top:10px}
+#speed-screen .speed-stat{padding:8px;border:1px solid #53656e;border-radius:9px;background:#223641}
+#speed-screen .speed-stat b{font-size:1.5rem;color:#ffbd4c;font-weight:700}
+#speed-screen .speed-stat span{font-size:.78rem;color:#d9e1e4;font-weight:500}
+@media(max-width:540px){
+  #speed-screen .speed-hud{display:grid;grid-template-columns:auto 1fr auto;gap:5px;padding:6px 8px}
+  #speed-screen .speed-hud>button:first-child{grid-area:1/1}
+  #speed-screen .speed-time{grid-area:1/2;font-size:1.5rem}
+  #speed-screen #speed-unit{display:none}
+  #speed-screen #speed-score{grid-area:1/3;text-align:right}
+  #speed-screen .speed-power{grid-area:2/1/3/4;width:100%}
+  #speed-screen .speed-wrap{padding:9px}
+  #speed-screen .speed-projection{min-height:168px;padding:25px 22px}
+  #speed-screen .speed-options{gap:8px}
+  #speed-screen .speed-opt{min-height:68px;padding:19px 8px 10px;font-size:1.25rem}
+}
+body:has(#speed-screen[style*="display: block"]) #sp-badge{display:none!important}
+</style>
+<link rel="stylesheet" href="../multiplayer/game-type.css">
 </head>
 <body>
 <div id="toast"></div>

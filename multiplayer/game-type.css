@@ -1,0 +1,73 @@
+@font-face {
+  font-family: "ArcadePixel";
+  src: url("./assets/fonts/Galmuri11.woff2") format("woff2");
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
+:root { --arcade-display: "ArcadePixel", "Apple SD Gothic Neo", "Noto Sans KR", sans-serif; }
+
+/* Game identity only. Question and answer copy intentionally keeps its own typeface. */
+:is(
+  #start-screen h1,
+  #start-screen h2,
+  #start-screen .mode-copy strong,
+  #start-screen .lesson-label,
+  #start-screen .play-tab,
+  #start-screen .grade-btn,
+  #start-screen .topt,
+  #start-screen .mode-summary,
+  #start-screen .grade-random,
+  #hud > *,
+  .speed-hud > *,
+  .boss-hud > *,
+  .speed-stat,
+  .boss-title,
+  .bs-title,
+  .bs-record,
+  .bs-diff-btn,
+  .bs-btn,
+  .game-title,
+  .game-hud,
+  .hud-label,
+  .hud-value,
+  .stage-label,
+  .level-label,
+  .combo-label,
+  .menu-btn,
+  .pause-btn,
+  .retry-btn,
+  .exit-btn,
+  [data-game-title],
+  [data-hud-label]
+) {
+  font-family: var(--arcade-display);
+  font-weight: 400;
+  font-synthesis: none;
+}
+
+:is(#start-screen h1,#start-screen h2,.game-title,.boss-title,.bs-title,[data-game-title]) {
+  word-break: keep-all;
+  overflow-wrap: normal;
+}
+
+@media (max-width: 420px) {
+  :is(#hud > *,.speed-hud > *,.boss-hud > *,[data-hud-label]) {
+    letter-spacing: -.02em;
+  }
+}
+
+/* Different games keep their own sizing; only their display face changes. */
+body #hud, body .speed-hud, body .boss-hud,
+body .title, body .title small, body .hud-card, body .hud-card .val,
+body .top .score-head, body .top .score-head b, body .top .brand,
+body .top .stats, body .top .time, body .tray-title strong,
+body .gate-title, body .gate-go, body .mode-card .mc-name,
+body .entry-copy h1, body.entry-mode .brand,
+body .entry-primary strong, body .entry-secondary strong,
+body .teacher-game-picker .game-cover strong {
+  font-family: var(--arcade-display);
+  font-weight: 400;
+  font-synthesis: none;
+}

@@ -34,7 +34,7 @@ function normalizeQuestion(raw, index = 0) {
   return { question: { id: id(), prompt, answer, choices, image }, truncatedChoices: rawChoices.length > choices.length };
 }
 function importRows(rows, source = "문항") {
-  const result = { added: 0, skipped: [], truncated: 0 };
+  const result = { added: 0, skipped: [], truncated: 0, saved: false };
   const room = MAX_QUESTIONS - state.questions.length;
   rows.forEach((row, index) => {
     if (result.added >= room) { result.skipped.push(`${index + 1}번 행: 최대 ${MAX_QUESTIONS}문항까지만 가져올 수 있어요.`); return; }
@@ -44,6 +44,7 @@ function importRows(rows, source = "문항") {
     else { state.questions.push(normalized.question); result.added += 1; if (normalized.truncatedChoices) result.truncated += 1; }
   });
   if (!update()) return result;
+  result.saved = result.added > 0;
   const detail = [result.added ? `${result.added}개 문항을 가져왔어요.` : `${source}에서 추가할 문항이 없어요.`];
   if (result.truncated) detail.push(`${result.truncated}개 행의 선택지는 4개로 줄였어요.`);
   if (result.skipped.length) detail.push(`${result.skipped.length}개 행은 건너뛰었어요. ${result.skipped.slice(0, 2).join(" ")}`);
@@ -132,8 +133,8 @@ function parseDelimited(text, delimiter) {
   return stripHeader(rows);
 }
 function parseBulkRows(text) {
-  if (text.includes("\t") || text.includes(",")) return parseDelimited(text);
   const lines = text.split(/\r?\n/).map(clean).filter(Boolean);
+  if (text.includes("\t")) return lines.map((line) => { const divider = line.indexOf("\t"); return divider < 0 ? [line, ""] : [clean(line.slice(0, divider)), clean(line.slice(divider + 1))]; });
   const rows = [];
   for (let i = 0; i < lines.length; i += 2) rows.push([lines[i], lines[i + 1] || ""]);
   return rows;
@@ -219,7 +220,7 @@ $("#add-choice").addEventListener("click", () => addChoiceField());
 document.querySelectorAll('input[name="answer-type"]').forEach((input) => input.addEventListener("change", () => setAnswerType(input.value)));
 $("#question-form").addEventListener("submit", async (event) => { event.preventDefault(); const mode = $('input[name="answer-type"]:checked').value; const draft = mode === "choice" ? validateChoiceDraft($("#choice-fields")) : { answer: clean($("#answer-text").value), choices: [] }; if (draft.error) { announce(draft.error, "error"); return; } if (!draft.answer) { announce("정답을 입력해 주세요.", "error"); $("#answer-text").focus(); return; } const ok = addQuestion($("#question-text").value, draft.answer, draft.choices, state.image); if (!ok) return; resetQuestionForm(); announce("문항을 저장했어요. 다음 문제를 입력하세요.", "success"); $("#question-text").focus(); });
 $("#image-file").addEventListener("change", async (event) => { try { state.image = await readImage(event.target.files[0]); const preview = $("#image-preview"); preview.replaceChildren(); if (state.image) { const image = document.createElement("img"); image.src = state.image; image.alt = "첨부한 문항 이미지 미리보기"; const clear = document.createElement("button"); clear.type = "button"; clear.id = "clear-image"; clear.textContent = "이미지 제거"; preview.append(image, clear); } preview.hidden = !state.image; $("#clear-image")?.addEventListener("click", () => { state.image = ""; event.target.value = ""; preview.replaceChildren(); preview.hidden = true; }); } catch (error) { event.target.value = ""; announce(error.message, "error"); } });
-$("#bulk-add").addEventListener("click", () => { const rows = parseBulkRows($("#bulk-text").value); if (!rows.length) { announce("문제와 정답을 탭, 쉼표 또는 두 줄씩 구분해 주세요.", "error"); return; } importRows(rows, "붙여넣은 내용"); $("#bulk-text").value = ""; });
+$("#bulk-add").addEventListener("click", () => { const rows = parseBulkRows($("#bulk-text").value); if (!rows.length) { announce("Quizlet에서 복사한 문제와 정답을 붙여넣어 주세요. 용어와 정의 사이는 탭, 문항 사이는 새 줄로 구분해야 해요.", "error"); return; } if (importRows(rows, "Quizlet 내보내기").saved) $("#bulk-text").value = ""; });
 $("#csv-file").addEventListener("change", async (event) => { const file = event.target.files[0]; if (!file) return; try { const rows = /\.xlsx$/i.test(file.name) ? await parseXlsx(file) : parseDelimited(await file.text()); if (!rows.length) throw new Error("파일에서 문제와 정답을 찾지 못했어요."); importRows(rows, file.name); } catch (error) { announce(`파일을 읽지 못했어요: ${error.message}`, "error"); } event.target.value = ""; });
 $("#question-list").addEventListener("click", (event) => {
   const remove = event.target.closest("[data-remove]");
@@ -242,7 +243,7 @@ $("#question-list").addEventListener("click", (event) => {
 });
 $("#export-json").addEventListener("click", () => download(`${clean($("#set-title").value) || "quiz-set"}.json`, JSON.stringify({ version: 1, title: clean($("#set-title").value) || "내 퀴즈 세트", questions: state.questions }, null, 2)));
 $("#import-json").addEventListener("click", () => $("#json-file").click());
-$("#json-file").addEventListener("change", async (event) => { const file = event.target.files[0]; if (!file) return; try { const data = JSON.parse(await file.text()); if (!Array.isArray(data.questions)) throw new Error("가져올 문항이 없어요."); const room = MAX_QUESTIONS - state.questions.length; const result = { added: 0, skipped: [], truncated: 0 }; if (data.questions.length > room) result.skipped.push(`${data.questions.length - room}개 행: 최대 ${MAX_QUESTIONS}문항까지만 가져올 수 있어요.`); data.questions.slice(0, room).forEach((q, index) => { const normalized = normalizeQuestion(q, index); if (normalized.error) result.skipped.push(normalized.error); else if (imageTotal(state.questions) + imageLength(normalized.question.image) > 2_500_000) result.skipped.push(`${index + 1}번 행: 이미지 전체 용량이 2.5MB를 넘어요.`); else { state.questions.push(normalized.question); result.added += 1; if (normalized.truncatedChoices) result.truncated += 1; } }); if (!result.added) throw new Error(result.skipped[0] || "가져올 문항이 없어요."); $("#set-title").value = clean(data.title) || $("#set-title").value; if (!update()) return; const details = [`${result.added}개 문항을 가져왔어요.`]; if (result.truncated) details.push(`${result.truncated}개 행의 선택지는 4개로 줄였어요.`); if (result.skipped.length) details.push(`${result.skipped.length}개 행은 건너뛰었어요. ${result.skipped.slice(0, 2).join(" ")}`); announce(details.join(" "), "success"); } catch (error) { announce(`JSON을 가져오지 못했어요: ${error.message}`, "error"); } finally { event.target.value = ""; } });
+$("#json-file").addEventListener("change", async (event) => { const file = event.target.files[0]; if (!file) return; try { const data = JSON.parse(await file.text()); if (!Array.isArray(data.questions)) throw new Error("가져올 문항이 없어요."); const room = MAX_QUESTIONS - state.questions.length; const result = { added: 0, skipped: [], truncated: 0 }; if (data.questions.length > room) result.skipped.push(`${data.questions.length - room}개 행: 최대 ${MAX_QUESTIONS}문항까지만 가져올 수 있어요.`); data.questions.slice(0, room).forEach((q, index) => { const normalized = normalizeQuestion(q, index); if (normalized.error) result.skipped.push(normalized.error); else if (imageTotal(state.questions) + imageLength(normalized.question.image) > 2_500_000) result.skipped.push(`${index + 1}번 행: 이미지 전체 용량이 2.5MB를 넘어요.`); else { state.questions.push(normalized.question); result.added += 1; if (normalized.truncatedChoices) result.truncated += 1; } }); if (!result.added) throw new Error(result.skipped[0] || "가져올 문항이 없어요."); $("#set-title").value = clean(data.title) || $("#set-title").value; if (!update()) return; const details = [`${result.added}개 문항을 가져왔어요.`]; if (result.truncated) details.push(`${result.truncated}개 행의 선택지는 4개로 줄였어요.`); if (result.skipped.length) details.push(`${result.skipped.length}개 행은 건너뛰었어요. ${result.skipped.slice(0, 2).join(" ")}`); announce(details.join(" "), "success"); } catch (error) { announce(`세트 파일을 불러오지 못했어요: ${error.message}`, "error"); } finally { event.target.value = ""; } });
 $("#create-room").addEventListener("click", () => { if (state.questions.length < MIN_QUESTIONS) return; const set = { version: 1, id: "local", title: clean($("#set-title").value) || "내 퀴즈 세트", questions: state.questions, createdAt: new Date().toISOString() }; try { localStorage.setItem(SET_KEY, JSON.stringify(set)); localStorage.removeItem(STORAGE_KEY); location.href = "./?set=local"; } catch { announce("세트를 저장할 공간이 부족해요. 이미지 수를 줄이거나 JSON으로 내보내 보관하세요.", "error"); } });
 $("#set-title").addEventListener("input", saveDraft);
 try { const draft = JSON.parse(localStorage.getItem(STORAGE_KEY) || "null"); if (draft) { $("#set-title").value = clean(draft.title); const loaded = Array.isArray(draft.questions) ? draft.questions : []; let imageBytes = 0; state.questions = loaded.slice(0, MAX_QUESTIONS).map((question, index) => { const normalized = normalizeQuestion(question, index); if (normalized.error || imageBytes + imageLength(normalized.question.image) > 2_500_000) return null; imageBytes += imageLength(normalized.question.image); return normalized.question; }).filter(Boolean); update(false); } } catch { localStorage.removeItem(STORAGE_KEY); }

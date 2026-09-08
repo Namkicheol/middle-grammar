@@ -283,6 +283,8 @@ canvas#c{position:absolute;inset:0;width:100%;height:100%;}
 .vc-sub{font-size:.9rem;color:#a78bfa;margin-top:6px;}
 </style>
 <link rel="stylesheet" href="../game/question-surface.css">
+<link rel="stylesheet" href="./play.css">
+<link rel="stylesheet" href="../multiplayer/game-type.css">
 </head>
 <body>
 
@@ -903,6 +905,8 @@ function updateStanceUI() {
 const G = {
   _qs: null, _label: '',
   start(qs, label) {
+    // 재도전 때 직전 공격의 문제·게이지·예약 타이머가 새 전투에 남지 않게 먼저 정리한다.
+    cancelTimers();
     this._qs = qs; this._label = label;
     GS = initGS(qs);
     // 패배 후 재도전이면 직전 강화 절반 계승

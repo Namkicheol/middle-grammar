@@ -28,7 +28,7 @@
 
 ## 통합 확인
 
-- Worker `npm run test:all`: 서버 141개와 Node 18개, 총 159개 통과, skip 없음. `npm run typecheck` 및 `wrangler deploy --dry-run` 통과.
+- Worker 최종 `npm run test:all`: 서버 142개와 Node 18개, 총 160개 통과, skip 없음. `npm run typecheck` 및 `wrangler deploy --dry-run` 통과.
 - `scripts/test-rebuilt-multiplayer-e2e.mjs`: 로컬 HTTP/WebSocket으로 금고의 방패·점수 교환·중복 요청·재접속, 미궁 이동·수집·귀환 점수·오래된 요청, 탈출 팀 단서 공유·3개 방 해제·종료 후 행동 차단을 확인했다. 네이티브 스피드 점수전(`score_race`)도 학생 2명의 정답/오답 100/0점·순위·종료 방송을 확인했다.
 - `scripts/test-classroom-local-e2e.mjs`: 기존 솔로 어댑터 6개 모드, 학생 2명씩 정답·동기화·종료 점수를 확인했다. 스피드는 별도 `score_race`로 지원하므로 총 7종에 대응한다. UI에서 솔로 7종 실행 및 단원 전달을 별도로 확인했다.
 - 블록 상태 초기화, 스피드 지연 타이머·더블 찬스, 탑·레인저스 목록 버튼, 방별 세션, 결과 사운드·UI, 교실 연결부 회귀 스크립트 통과.
@@ -50,8 +50,17 @@
 
 - 1·2·3위 시상대를 밝은 챔피언 무대로 재구성했다. 390px에서 0/1/2/3명·공동 순위·긴 이름·9자리 점수·팀전·탈출 기록에 가로 넘침과 참가자 겹침이 없었다. 3→2→1 공개와 키보드 음소거 조작 확인. [모바일](results-new-390.png) · [데스크톱](results-new-desktop.png).
 - 교사 객관식 입력을 보기별 정답 선택 방식으로 단순화했다. 선택지 2개 시작·최대 4개·정답 라디오·정답 입력형 전환·작성 내용 유지·편집·가져오기·문자열 HTML 이스케이프·저장 후 복원을 실제 390px에서 확인했다. [문제 입력창](creator-easy-390.png).
+- 강제 저장 공간 초과 시 추가·수정·JSON/CSV 가져오기·삭제가 저장 실패를 성공으로 표시하지 않도록 수정했다. 문항 입력·가져온 내용·편집 상태를 보존하거나 실패한 삭제를 복원하는 실제 브라우저 회귀를 통과했다. 저장 범위는 이 기기이며 계정 동기화는 하지 않는다고 표시한다.
 - 교사 가입·로그인 문구를 명확히 하고 관리자 전용 계정 목록·검색·상태 필터·차단/해제를 추가했다. `google_sub` 기준 차단, 세션 폐기, 차단 후 새 로그인 거부, 해제 후 과거 세션 비복구, 본인/관리자 보호, 폐기 실패 재시도를 서버에서 검증했다.
 - 격리된 로컬 Worker에 더미 계정을 만들어 관리자 화면에서 차단/해제 후 API 재조회, 일반 교사 403, 50개 페이지네이션, 밑줄이 있는 이메일의 문자 그대로 검색, 390px dialog 비넘침을 확인했다. 이후 작은 링크 두 개의 터치 높이를 44px로 보완했다. 실제 계정은 차단하지 않았다.
 - `/`·`/multiplayer`는 `/multiplayer/`로 이동하고 `/multiplayer/`와 상대 JS/CSS가 연결되도록 고쳤다. 운영의 가입 복귀 경로 404를 해결하기 위한 변경이다.
+
+## 운영 배포 확인 · 2026-09-08
+
+- 원격 D1 `0006_teacher_moderation.sql` 적용 성공. Worker 최종 버전 `ae190be5-a112-4e45-9e08-f859426baf3d` 배포 성공. 관리자 Google 로그인 복귀 경로는 정확한 `/multiplayer/admin.html`만 추가 허용하며 외부 복귀 주소는 계속 400으로 거부한다.
+- Worker 공개 확인: 시작 주소 308→200, 제작기·관리자·게임 이미지 16개 해시 일치, 인증 설정 `configured:true`, 미인증 관리자 접근 401, 운영 개발 헤더 접근 401, 없는 방 404, 관리자 Google 시작 302와 올바른 callback 확인. 실제 Google 계정의 로그인 완료는 이번 공개 readback에서 실행하지 않았다.
+- Vercel `dpl_6YYGjbqUWk6uhTDLDisZUqg4d2UJ` Production READY, [공개 게임 허브](https://middle-grammar.vercel.app/game/). 핵심 게임 파일 8개 HTTP 200 및 로컬 바이트 일치.
+- 첫 CLI 배포에서 로컬 참고자료 포함을 발견했다. 해당 배포 `middle-grammar-fz8l9hmoi-namkicheols-projects.vercel.app`를 회수·삭제하고 Git 추적 파일만 `git archive`로 묶은 배포로 교체했다. 새 공개 주소의 해당 `refs` 경로와 삭제한 배포 주소 모두 404를 확인했다. 재발 방지를 위해 `.vercelignore`에 참고자료·인증 파일·로컬 개발 산출물 제외 규칙을 추가했다.
+- Git 커밋 `875bd36` 생성 후 푸시는 기존 GitHub 인증 만료로 새 기기 승인을 기다리는 상태였다. 푸시 완료는 별도 원격 커밋 readback으로 확인한다.
 
 디자인 참고: [Lazyweb 보고서](https://www.lazyweb.com/report/lazyweb/074a42e5-c8a6-41cf-b43c-29cf1b4d7c76/?source=create). 검색은 처음 429였으며 이후 보고서 생성은 성공했다.

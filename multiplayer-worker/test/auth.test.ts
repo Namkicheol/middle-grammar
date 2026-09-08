@@ -80,6 +80,18 @@ async function authenticatedTeacher() {
 }
 
 describe("Google teacher authentication", () => {
+  it("allows only the exact admin page as an additional login return path", async () => {
+    const allowed=await worker.fetch(new Request(`${origin}/api/auth/google/start?returnTo=${encodeURIComponent("/multiplayer/admin.html")}`),config());
+    expect(allowed.status).toBe(302);
+    expect(new URL(allowed.headers.get("location")!).hostname).toBe("accounts.google.com");
+    expect((await env.REPORTS.prepare("SELECT return_to FROM oauth_states").first<{return_to:string}>())?.return_to).toBe("/multiplayer/admin.html");
+    for (const value of ["/multiplayer/admin.html?next=/", "/other/admin.html", "https://evil.example/multiplayer/admin.html"]) {
+      const response=await worker.fetch(new Request(`${origin}/api/auth/google/start?returnTo=${encodeURIComponent(value)}`),config());
+      expect(response.status).toBe(400);
+      expect(await response.json()).toMatchObject({error:"RETURN_TO_INVALID"});
+    }
+  });
+
   it("allows the development email query only for a loopback same-origin teacher websocket", async () => {
     const settings = { ...config(), ENVIRONMENT: "development" } as Env;
     for (const headers of [

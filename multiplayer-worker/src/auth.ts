@@ -303,6 +303,9 @@ function assertAuthOrigin(request: Request, settings: AuthConfig): void {
 
 function normalizeReturnTo(value: string | null): string {
   const parsed = new URL(value || "/multiplayer/?teacher=1", "https://return.local");
+  if (parsed.origin === "https://return.local" && parsed.pathname === "/multiplayer/admin.html" && !parsed.search && !parsed.hash) {
+    return "/multiplayer/admin.html";
+  }
   if (parsed.origin !== "https://return.local" || parsed.pathname !== "/multiplayer/" ||
     parsed.searchParams.get("teacher") !== "1" || [...parsed.searchParams.keys()].some((key) => key !== "teacher" && key !== "room")) {
     throw new AuthError(400, "RETURN_TO_INVALID", "Choose a valid return location.");

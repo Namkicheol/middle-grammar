@@ -1,0 +1,27 @@
+# Local references and credentials must never be uploaded by the CLI.
+refs/
+**/.env
+**/.env.*
+**/.dev.vars
+**/.dev.vars.*
+**/node_modules/
+**/.wrangler/
+.git/
+.claude/
+.agents/
+.codex/
+.omc/
+.remember/
+.worktrees/
+.playwright-cli/
+.playwright-mcp/
+.code-review-graph/
+code-review-graph/
+handoff-*.md
+**/.DS_Store
+game2/assets/hd-v1/source/
+game2/assets/hd-v2/source/
+game2/assets/hd-v2/atlas/
+grammar-rangers/assets/hd-v1/source/
+grammar-rangers/assets/hd-v2/source/
+grammar-rangers/assets/hd-v2/atlas/

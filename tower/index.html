@@ -145,19 +145,19 @@ button{font-family:inherit;}
 #streak-chip.fever{background:linear-gradient(135deg,rgba(251,191,36,.35),rgba(239,68,68,.25));border-color:#fbbf24;color:#fff;animation:pulse2 .7s infinite;}
 .opt.dimmed{opacity:.25;pointer-events:none;}
 
-/* 👻 유령 / 🐦 새 — 문제 프롬프트 안에서만 슬라이드한다. 선택지는 가리지 않는다. */
+/* 👻 유령 / 🐦 새 — 문제 프롬프트의 텍스트 위로 슬라이드한다. 선택지는 가리지 않는다. */
 #prompt-area{position:relative;overflow:hidden;border-radius:12px;}
 #prompt-area > :not(#disturb){position:relative;z-index:3;}
-#disturb{position:absolute;inset:0;z-index:2;pointer-events:none;overflow:hidden;border-radius:12px;}
+#disturb{position:absolute;inset:0;z-index:4;pointer-events:none;overflow:hidden;border-radius:12px;}
 #disturb span{position:absolute;display:flex;align-items:center;justify-content:center;opacity:0;}
 #disturb span::after{font-size:2.7rem;line-height:1;}
 @keyframes passR{0%{left:-22%;opacity:0}9%{opacity:1}91%{opacity:1}100%{left:112%;opacity:0}}
 @keyframes passL{0%{left:112%;opacity:0}9%{opacity:1}91%{opacity:1}100%{left:-22%;opacity:0}}
 #disturb.ghost span{width:126px;height:92px;border-radius:50%;background:radial-gradient(circle,rgba(226,232,240,.95),rgba(203,213,225,.55) 58%,transparent);backdrop-filter:blur(5px);}
 #disturb.ghost span::after{content:'👻';}
-#disturb.ghost .d1{top:52%;animation:passR 3.4s linear infinite;}
-#disturb.ghost .d2{top:70%;animation:passR 4.3s linear infinite 1.4s;}
-#disturb.ghost .d3{top:86%;animation:passR 3.9s linear infinite .7s;}
+#disturb.ghost .d1{top:0;animation:passR 3.4s linear infinite;}
+#disturb.ghost .d2{top:calc(50% - 46px);animation:passR 4.3s linear infinite 1.4s;}
+#disturb.ghost .d3{top:auto;bottom:0;animation:passR 3.9s linear infinite .7s;}
 #disturb.bird span{width:96px;height:60px;border-radius:42%;background:radial-gradient(circle,rgba(20,12,38,.9),transparent 72%);backdrop-filter:blur(4px);}
 #disturb.bird span::after{content:'🐦';transform:scaleX(-1);}
 #disturb.bird .d1{top:26%;animation:passL 2.7s linear infinite;}
@@ -552,8 +552,9 @@ function useItem(i){
     g.items.splice(i,1);clearDisturb();sfx.ok();banner('🏮 등불! 방해를 걷어냈다');
   }
   else if(k==='fifty'){
+    if(g.event==='bet'&&!g.betStake){banner('🔍 베팅을 먼저 골라 주세요');return;}
     if(classroomOn()){banner('🔍 교실 경기에서는 서버 채점 뒤 정답이 공개돼요');return;}
-    const live=[...document.querySelectorAll('.opt')].filter(b=>!b.disabled&&!b.classList.contains('dimmed'));
+    const live=[...document.querySelectorAll('.opt:not(.stake)')].filter(b=>!b.disabled&&!b.classList.contains('dimmed'));
     const wrongs=live.filter(b=>b.dataset.answer!==g.cur.ans);
     if(wrongs.length<2){banner('🔍 선택지가 2개라 반반을 쓸 수 없어요');return;}
     g.items.splice(i,1);
@@ -678,10 +679,10 @@ function syncEvent(){
   else if(g.event==='boss')chip.textContent='👑 '+target+'층 보스! '+g.bossHP+'번 더 맞히면 ❤️회복 + 3층 점프 + 보물!';
   else if(g.event==='wind')chip.textContent='🌪️ 돌풍층! 선택지가 계속 뒤바뀐다!';
   else if(g.event==='fog')chip.textContent='🌫️ 안개층! 해석이 가려졌다 — 영어만 보고 풀어라!';
-  else if(g.event==='ghost')chip.textContent='👻 유령층! 유령이 선택지를 가리며 지나간다!';
+  else if(g.event==='ghost')chip.textContent='👻 유령층! 유령이 문제를 가리며 지나간다!';
   else if(g.event==='bird')chip.textContent='🐦 새떼층! 새가 문제를 가리며 날아간다!';
   else if(g.event==='rush')chip.textContent='⚡ 가속층! 시간이 평소보다 빠르게 흐른다!';
-  else if(g.event==='bet')chip.textContent='🪙 베팅층! 안전(+1층) 또는 베팅(+2층/❤️-2)을 골라라!';
+  else if(g.event==='bet')chip.textContent='🪙 베팅층! 5초 안에 안전(+1층) 또는 베팅(+2층/❤️-2)을 골라라!';
 }
 function skipClimb(){ // 🪽 날개: 문제를 건너뛰고 한 층 등반 (연속 기록은 유지만)
   const g=GS;if(!g||g.over||g.locked)return;
@@ -725,22 +726,28 @@ async function nextQuestion(){
   // 👻 유령 / 🐦 새: 슬라이드 애니메이션이 텍스트 위를 반복해 지나가며 가림
   if(g.event==='ghost')$('disturb').className='ghost';
   else if(g.event==='bird')$('disturb').className='bird';
-  // 🪙 베팅층: 문제 풀기 전에 안전/베팅 먼저 선택 (타이머는 선택 후 시작)
+  // 🪙 베팅층: 5초 안에 안전/베팅 선택, 미선택 시 안전으로 진행
   if(g.event==='bet'){showStake();return;}
   presentOptions();
 }
 function showStake(){
-  const box=$('opts');box.innerHTML='';
-  GS.timerEnd=0;GS.timerPaused=false;
+  const g=GS,box=$('opts');box.innerHTML='';
+  g.timerEnd=0;g.timerPaused=false;
   const fill=$('timer-fill');fill.style.transition='none';fill.style.width='100%';fill.classList.remove('crit');
+  const choose=stake=>{
+    if(GS!==g||g.over||g.locked||g.betStake)return;
+    clearTimeout(g.timerT);clearTimeout(g.critT);g.timerEnd=0;g.timerPaused=false;
+    g.betStake=stake;presentOptions();
+  };
   const mk=(html,stake,cls)=>{
     const b=document.createElement('button');
     b.className='opt stake '+cls;b.innerHTML=html;
-    b.onclick=()=>{GS.betStake=stake;presentOptions();};
+    b.onclick=()=>choose(stake);
     box.appendChild(b);
   };
   mk('🛡️ 안전<small>+1층</small>','safe','st-safe');
   mk('🪙 베팅<small>+2층 / ❤️ -2</small>','bet','st-bet');
+  startTimer(5,()=>{banner('⏱️ 안전 모드 자동 선택! 문제를 풀어 주세요');choose('safe');});
 }
 function presentOptions(){
   const g=GS,q=g.cur;
@@ -786,11 +793,12 @@ function armTimer(rem){
   void fill.offsetWidth;
   fill.style.transition='width '+(rem/1000)+'s linear';fill.style.width='0%';
   if(rem>3000)g.critT=setTimeout(()=>fill.classList.add('crit'),rem-3000);
-  g.timerT=setTimeout(()=>{if(!g.locked)answer(null,null);},rem);
+  g.timerT=setTimeout(()=>{if(g.locked)return;const expire=g.timerExpire;g.timerExpire=null;if(expire)expire();else answer(null,null);},rem);
 }
-function startTimer(sec){
+function startTimer(sec,onExpire){
   const g=GS;
   if(classroomOn())sec=Math.max(.1,Math.min(sec,classroom.remainingMs()/1000));
+  g.timerExpire=onExpire||null;
   g.timerTotal=sec*1000;
   armTimer(g.timerTotal);
 }

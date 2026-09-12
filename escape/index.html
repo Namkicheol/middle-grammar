@@ -1,0 +1,31 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>야간학교 탈출 · 혼자 하기</title>
+  <link rel="stylesheet" href="./game.css">
+</head>
+<body>
+  <div class="escape-app" id="escape-app">
+    <header class="escape-header">
+      <a class="escape-back" href="../game/" aria-label="게임 선택으로 돌아가기">‹ <span>게임 선택</span></a>
+      <div class="escape-title">
+        <span class="escape-kicker">SOLO MYSTERY · NIGHT SHIFT</span>
+        <h1>야간학교 탈출</h1>
+      </div>
+      <nav class="escape-progress" aria-label="진행 상황">
+        <span class="progress-step active" data-progress="classroom"><i>01</i>교실</span>
+        <span class="progress-line" aria-hidden="true"></span>
+        <span class="progress-step" data-progress="archive"><i>02</i>자료실</span>
+        <span class="progress-line" aria-hidden="true"></span>
+        <span class="progress-step" data-progress="maze"><i>03</i>복도</span>
+      </nav>
+      <button class="audio-toggle" id="audio-toggle" type="button" aria-pressed="false" aria-label="소리 켜기">♫ <span>소리 켜짐</span></button>
+    </header>
+    <main class="escape-main" id="escape-root" aria-live="polite"></main>
+  </div>
+  <script src="./audio.js"></script>
+  <script type="module" src="./game.js"></script>
+</body>
+</html>

@@ -9,16 +9,18 @@ body:has(#start-screen:not([style*="display: none"])){background:#eaf5ff}
 #start-screen .play-tab{min-height:46px;color:#596a89;font-size:14px;border-radius:12px}
 #start-screen .play-tab.on{color:#fff;background:#6557de;box-shadow:0 3px 0 #433a9f}
 #start-screen .play-tab.multi{color:#5042b5}
-#start-screen .arena-selector{display:block;max-width:1180px}
+#start-screen .arena-selector{display:flex;flex-direction:column;max-width:1180px}
+#start-screen .mode-library{order:1;margin-top:0;width:100%}
+#start-screen #lobby-config{order:2}
+#start-screen #unit-section{order:3}
+#start-screen #lobby-config[hidden],#start-screen #unit-section[hidden]{display:none}
 #start-screen .settings-box{position:static;padding:0;background:transparent;border:0;box-shadow:none}
 #start-screen .grade-select{display:flex;justify-content:flex-end;gap:16px}
 #start-screen .grade-opts{width:190px;background:#dce7f5;border-radius:14px}
 #start-screen .grade-btn{min-height:44px;color:#425579;border-radius:10px}
 #start-screen .grade-btn.on{background:#fff;border-color:#fff;color:#5042b5;box-shadow:0 3px 0 #bac9df}
-#start-screen .game-select{margin-top:14px;padding-top:0;border:0}
+#start-screen .game-select{margin-top:0;padding-top:0;border:0}
 #start-screen .panel-title h2,#start-screen .unit-head h2{font-size:20px;color:#233758}
-#start-screen .mode-summary{min-height:44px;width:auto;margin:8px 0 0;padding:8px 14px;background:#fff;color:#5042b5;border:1px solid #cbc5f1;border-radius:12px;box-shadow:none}
-#start-screen .mode-summary::after{margin-left:15px;color:#6557de}
 #start-screen .helper{font-size:13px;color:#576985;line-height:1.5}
 #start-screen .mode-picker .helper{margin:10px 0 14px}
 #start-screen .mode-opts{grid-template-columns:repeat(4,minmax(0,1fr));gap:18px}
@@ -26,10 +28,10 @@ body:has(#start-screen:not([style*="display: none"])){background:#eaf5ff}
 #start-screen .mode-btn:hover{transform:translateY(-5px);border-color:#b7acf4;box-shadow:0 9px 0 #c8c5ed,0 14px 24px #53649320}
 #start-screen .mode-btn.on{transform:translateY(-3px);border-color:#7360df;background:#fff;box-shadow:0 6px 0 #5244a5,0 14px 24px #6557de20}
 #start-screen .mode-btn.on:after{content:'✓';position:absolute;top:10px;right:10px;width:28px;height:28px;display:grid;place-items:center;background:#fff;border-radius:50%;color:#5543c0;opacity:1;font-size:18px;font-weight:900;filter:none}
-#start-screen .mode-thumb{width:100%;height:auto;aspect-ratio:1.65;margin:0;border-radius:17px 17px 8px 8px;background-size:cover;background-color:#dcecf6;box-shadow:none;color:transparent;text-shadow:none}
-#start-screen .mode-copy{padding:13px 13px 15px}
-#start-screen .mode-copy strong{font-size:16px;color:#243756;line-height:1.3}
-#start-screen .mode-copy>span{font-size:12px;color:#5b6d89;margin-top:6px;line-height:1.45}
+#start-screen .mode-thumb{position:absolute;inset:0;width:100%;height:100%;aspect-ratio:auto;margin:0;border-radius:inherit;background-size:cover;background-color:#dcecf6;box-shadow:none;color:transparent;text-shadow:none}
+#start-screen .mode-copy{position:absolute;inset:auto 0 0;z-index:1;padding:42px 14px 14px;background:linear-gradient(180deg,transparent,#071a36d9 78%);color:#fff}
+#start-screen .mode-copy strong{font-size:16px;color:#fff;line-height:1.3;text-shadow:0 2px 5px #071a36cc}
+#start-screen .mode-copy>span{display:none}
 #start-screen .mode-btn[data-mode="boss"] .mode-thumb{background-image:url('../multiplayer/assets/arcade-20260908/boss.webp')}
 #start-screen .mode-btn[data-mode="speed"] .mode-thumb{background-image:url('../multiplayer/assets/arcade-20260908/speed.webp')}
 #start-screen .mode-btn[data-mode="whack"] .mode-thumb{background-image:url('../multiplayer/assets/arcade-20260908/whack.webp')}
@@ -37,6 +39,8 @@ body:has(#start-screen:not([style*="display: none"])){background:#eaf5ff}
 #start-screen .mode-btn[data-mode="tower"] .mode-thumb{background-image:url('../multiplayer/assets/arcade-20260908/tower.webp');background-size:cover}
 #start-screen .mode-btn[data-mode="rangers"] .mode-thumb{background-image:url('../multiplayer/assets/arcade-20260908/rangers.webp')}
 #start-screen .mode-btn[data-mode="sentence"] .mode-thumb{background-image:url('../multiplayer/assets/arcade-20260908/blast.webp')}
+#start-screen .mode-btn[data-mode="escape"] .mode-thumb{background-image:url('../multiplayer/assets/arcade-20260908/escape.webp')}
+#start-screen .mode-btn[data-mode="escape"]{--mode-glow:#f6c453}
 #start-screen .time-row{border:0;margin-top:22px;padding:0}
 #start-screen .topt{min-height:44px;background:#fff;color:#526587;border-color:#cad8e9;font-size:13px}
 #start-screen .topt.on{background:#6557de;color:#fff;border-color:#6557de;box-shadow:0 3px 0 #433a9f}
@@ -60,7 +64,7 @@ body:has(#start-screen:not([style*="display: none"])){font-family:Pretendard,"Ap
 #start-screen .brand-lockup:before{width:50px;height:50px;border-radius:14px;box-shadow:0 5px 14px #443ca130;font-size:28px}
 #start-screen .start-header h1{font-size:clamp(22px,2.7vw,29px);font-weight:700;letter-spacing:-.7px}
 #start-screen .start-header p,#start-screen .helper,#start-screen .mode-copy>span,#start-screen .unit-card .cnt{font-weight:400}
-#start-screen .play-tab,#start-screen .grade-btn,#start-screen .topt,#start-screen .mode-summary,#start-screen .grade-random{font-weight:600}
+#start-screen .play-tab,#start-screen .grade-btn,#start-screen .topt,#start-screen .grade-random{font-weight:600}
 #start-screen .play-tab.on,#start-screen .topt.on{box-shadow:0 3px 9px #433a9f30}
 #start-screen .panel-title h2,#start-screen .unit-head h2{font-size:19px;font-weight:700;letter-spacing:-.35px}
 #start-screen .mode-btn{min-height:215px;border:1px solid #d9e2eb;border-radius:16px;box-shadow:0 8px 20px #53649314}

@@ -76,13 +76,14 @@ export function escapeRoomExperienceHtml({ escape = {}, draft, busy = false, ret
   const allKnown = known.length === 3;
   const disabled = busy || !connected || !allKnown || retrySeconds > 0;
   const apparatus = roomIndex === 0 ? clueButtons(escape, current, disabled) : roomIndex === 1 ? archiveTiles(escape, current, disabled) : exitDials(current, disabled);
-  const scene = ["night-school.webp", "night-archive.webp", "night-exit.webp"][roomIndex];
+  const scene = ["night-classroom.png", "night-archive.png", "night-corridor.png"][roomIndex];
+  const lockOrder = (Array.isArray(escape.lockOrder) ? escape.lockOrder : []).map((symbol) => SYMBOLS[symbol]?.icon || "?").join(" → ");
   const codeReady = /^\d{3}$/.test(escapePuzzleCode(escape, current));
-  return `<section class="escape-room-scene room-${roomIndex + 1}" style="--escape-art:url('./assets/${scene}')" aria-labelledby="apparatus-title">
+  return `<section class="escape-room-scene room-${roomIndex + 1}" style="--escape-art:url('./assets/escape-polish/${scene}')" aria-labelledby="apparatus-title">
     <div class="scene-shade" aria-hidden="true"></div>
     <header class="scene-mission"><span>ROOM ${roomIndex + 1} · ${copy.label}</span><h2 id="apparatus-title">${copy.objective}</h2></header>
-    <div class="scene-hotspots">${(escape.hotspots || []).map((spot) => { const found = spot.clue !== undefined && spot.clue !== null; const meta = SYMBOLS[spot.symbol] || { icon: "?", name: "기호" }; return `<button type="button" class="scene-hotspot ${found ? "found" : ""}" data-action="escape-inspect" data-hotspot-id="${esc(spot.id)}" ${(!found && (!Number(escape.focus) || busy || !connected)) ? "disabled" : ""}><span aria-hidden="true">${meta.icon}</span><strong>${esc(spot.label)}</strong><small>${found ? `${meta.name} ${esc(spot.clue)}` : "조사"}</small></button>`; }).join("")}</div>
-    <section class="room-apparatus">${apparatus}<button type="button" class="apparatus-confirm" data-action="escape-puzzle-confirm" ${disabled || !codeReady ? "disabled" : ""}>${retrySeconds ? `${retrySeconds}초 후 다시` : copy.action}</button></section>
+    <div class="scene-hotspots">${(escape.hotspots || []).map((spot) => { const found = spot.clue !== undefined && spot.clue !== null; const locked = !found && (!Number(escape.focus) || busy || !connected); const meta = SYMBOLS[spot.symbol] || { icon: "?", name: "기호" }; return `<button type="button" class="scene-hotspot ${found ? "found" : ""}" data-action="escape-inspect" data-hotspot-id="${esc(spot.id)}" ${locked ? "disabled" : ""} aria-label="${esc(spot.label)} ${locked && !busy && connected && !found ? "문제를 맞히면 조사 가능" : found ? "찾은 단서" : "조사"}"><span aria-hidden="true">${meta.icon}</span><strong>${esc(spot.label)}</strong><small>${found ? `${meta.name} ${esc(spot.clue)}` : locked && !busy && connected ? "문제 풀고 조사" : "조사"}</small></button>`; }).join("")}</div>
+    <section class="room-apparatus"><div class="apparatus-order" aria-label="자물쇠 기호 순서"><span>잠금 순서</span><strong>${lockOrder || "순서 확인 중"}</strong></div>${apparatus}<button type="button" class="apparatus-confirm" data-action="escape-puzzle-confirm" ${disabled || !codeReady ? "disabled" : ""}>${retrySeconds ? `${retrySeconds}초 후 다시` : copy.action}</button></section>
   </section>
   <section class="clue-strip" aria-label="찾은 단서">${(escape.hotspots || []).map((spot) => { const meta = SYMBOLS[spot.symbol] || { icon: "?", name: "기호" }; const found = spot.clue !== undefined && spot.clue !== null; return `<span class="clue-chip ${found ? "found" : ""}"><b aria-hidden="true">${meta.icon}</b>${meta.name}<strong>${found ? esc(spot.clue) : "?"}</strong></span>`; }).join("")}</section>`;
 }

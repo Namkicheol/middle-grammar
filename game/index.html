@@ -894,7 +894,6 @@ body:has(#speed-screen[style*="display: block"]) #sp-badge{display:none!importan
     <div class="brand-lockup">
       <div>
         <h1>문법 아케이드</h1>
-        <p>오늘은 어떤 게임에 도전할까요?</p>
       </div>
     </div>
     <div class="bubble-deco" id="deco" aria-hidden="true"></div>
@@ -904,7 +903,51 @@ body:has(#speed-screen[style*="display: block"]) #sp-badge{display:none!importan
     </nav>
   </header>
   <main class="arena-selector">
-    <div class="settings-box">
+    <section class="game-select mode-library" aria-labelledby="mode-heading">
+      <div class="panel-title">
+        <div><h2 id="mode-heading">게임 선택</h2></div>
+      </div>
+      <div class="mode-picker" id="mode-picker">
+        <p class="helper">게임을 고르면 학년과 문법 주제가 열려요.</p>
+        <div class="set-row mode-row">
+          <div class="mode-opts" id="mode-opts">
+            <button class="mode-btn on" type="button" data-mode="boss" aria-label="문법 보스전">
+              <i class="mode-thumb" aria-hidden="true">⚔️</i>
+              <span class="mode-copy"><strong>문법 보스전</strong></span>
+            </button>
+            <button class="mode-btn" type="button" data-mode="speed" aria-label="스피드 퀴즈">
+              <i class="mode-thumb" aria-hidden="true">⚡</i>
+              <span class="mode-copy"><strong>스피드 퀴즈</strong></span>
+            </button>
+            <button class="mode-btn" type="button" data-mode="whack" aria-label="두더지 잡기">
+              <i class="mode-thumb" aria-hidden="true">🔨</i>
+              <span class="mode-copy"><strong>두더지 잡기</strong></span>
+            </button>
+            <button class="mode-btn" type="button" data-mode="bubble" aria-label="보글보글">
+              <i class="mode-thumb" aria-hidden="true">🫧</i>
+              <span class="mode-copy"><strong>보글보글</strong></span>
+            </button>
+            <button class="mode-btn" type="button" data-mode="tower" aria-label="무한의 탑">
+              <i class="mode-thumb" aria-hidden="true">🏰</i>
+              <span class="mode-copy"><strong>무한의 탑</strong></span>
+            </button>
+            <button class="mode-btn" type="button" data-mode="rangers" aria-label="문법 레인저스">
+              <i class="mode-thumb" aria-hidden="true">🛡️</i>
+              <span class="mode-copy"><strong>문법 레인저스</strong></span>
+            </button>
+            <button class="mode-btn" type="button" data-mode="sentence" aria-label="블록 블라스트">
+              <i class="mode-thumb" aria-hidden="true">💥</i>
+              <span class="mode-copy"><strong>블록 블라스트</strong></span>
+            </button>
+            <button class="mode-btn" type="button" data-mode="escape" aria-label="야간학교 탈출">
+              <i class="mode-thumb" aria-hidden="true">🌙</i>
+              <span class="mode-copy"><strong>야간학교 탈출</strong></span>
+            </button>
+          </div>
+        </div>
+      </div>
+    </section>
+    <div class="settings-box" id="lobby-config" hidden>
       <section class="grade-select" aria-labelledby="grade-heading">
         <div class="panel-title">
           <div><h2 id="grade-heading">학년</h2></div>
@@ -912,48 +955,6 @@ body:has(#speed-screen[style*="display: block"]) #sp-badge{display:none!importan
         <div class="grade-opts" id="grade-opts">
           <button class="grade-btn on" type="button" data-grade="g1" aria-pressed="true">중1</button>
           <button class="grade-btn" type="button" data-grade="g2" aria-pressed="false">중2</button>
-        </div>
-      </section>
-
-      <section class="game-select" aria-labelledby="mode-heading">
-        <div class="panel-title">
-          <div><h2 id="mode-heading">게임 모드</h2></div>
-        </div>
-        <button class="mode-summary" id="mode-summary" type="button" aria-expanded="true" aria-controls="mode-picker">문법 보스전 · 바꾸기</button>
-        <div class="mode-picker" id="mode-picker">
-          <p class="helper">플레이할 게임을 선택하세요.</p>
-          <div class="set-row mode-row">
-            <div class="mode-opts" id="mode-opts">
-              <button class="mode-btn on" type="button" data-mode="boss">
-                <i class="mode-thumb">⚔️</i>
-                <span class="mode-copy"><strong>문법 보스전</strong><span>콤보와 필살기로 보스 격파</span></span>
-              </button>
-              <button class="mode-btn" type="button" data-mode="speed">
-                <i class="mode-thumb">⚡</i>
-                <span class="mode-copy"><strong>스피드 퀴즈</strong><span>네 개의 버튼으로 빠르게 정답 선택</span></span>
-              </button>
-              <button class="mode-btn" type="button" data-mode="whack">
-                <i class="mode-thumb">🔨</i>
-                <span class="mode-copy"><strong>두더지 잡기</strong><span>튀어나오는 정답을 빠르게 타격</span></span>
-              </button>
-              <button class="mode-btn" type="button" data-mode="bubble">
-                <i class="mode-thumb">🫧</i>
-                <span class="mode-copy"><strong>보글보글</strong><span>버블 8발마다 문법 찬스</span></span>
-              </button>
-              <button class="mode-btn" type="button" data-mode="tower">
-                <i class="mode-thumb">🏰</i>
-                <span class="mode-copy"><strong>무한의 탑</strong><span>목숨 3개로 최고층 도전</span></span>
-              </button>
-              <button class="mode-btn" type="button" data-mode="rangers">
-                <i class="mode-thumb">🛡️</i>
-                <span class="mode-copy"><strong>문법 레인저스</strong><span>정답으로 유닛을 소환해 본진 격파</span></span>
-              </button>
-              <button class="mode-btn" type="button" data-mode="sentence">
-                <i class="mode-thumb">💥</i>
-                <span class="mode-copy"><strong>블록 블라스트</strong><span>블록 15초 뒤 문법 챌린지</span></span>
-              </button>
-            </div>
-          </div>
         </div>
       </section>
       <div class="set-row time-row" id="time-row" hidden>
@@ -967,7 +968,7 @@ body:has(#speed-screen[style*="display: block"]) #sp-badge{display:none!importan
         </div>
       </div>
     </div>
-    <section class="unit-section" aria-labelledby="unit-heading">
+    <section class="unit-section" id="unit-section" aria-labelledby="unit-heading" hidden>
       <div class="unit-head">
         <div class="unit-head-copy">
           <h2 id="unit-heading">중1 문법 주제를 골라요</h2>
@@ -1524,13 +1525,9 @@ cleanupZeroScoreRecords();
     btn.addEventListener('click', () => selectGrade(btn.dataset.grade));
   });
 
-  const modeSummary = document.getElementById('mode-summary');
   const modePicker = document.getElementById('mode-picker');
-  modeSummary.addEventListener('click', () => {
-    const willOpen = modePicker.hidden;
-    modePicker.hidden = !willOpen;
-    modeSummary.setAttribute('aria-expanded', String(willOpen));
-  });
+  const lobbyConfig = document.getElementById('lobby-config');
+  const unitSection = document.getElementById('unit-section');
 
   // time option buttons
   document.querySelectorAll('.topt').forEach(btn => {
@@ -1551,9 +1548,9 @@ cleanupZeroScoreRecords();
       btn.classList.add('on');
       btn.setAttribute('aria-pressed', 'true');
       selectedMode = btn.dataset.mode || 'bubble';
-      modeSummary.textContent = `✓ ${btn.querySelector('strong').textContent} · 변경`;
       modePicker.hidden = false;
-      modeSummary.setAttribute('aria-expanded', 'true');
+      lobbyConfig.hidden = false;
+      unitSection.hidden = false;
       syncTimeOptionsVisibility();
       renderUnitBestBadges();
       document.getElementById('unit-helper').textContent = `${btn.querySelector('strong').textContent} · 문법 주제를 누르면 시작해요.`;
@@ -1591,7 +1588,7 @@ function startSelectedGame(unitKey) {
   else if (selectedMode === 'sentence') {
     const seconds = timeLimitSec > 0 ? timeLimitSec : 300;
     location.href = '../sentence-blast/?unit=' + encodeURIComponent(unitKey) + '&seconds=' + seconds;
-  }
+  } else if (selectedMode === 'escape') location.href = '../escape/';
   else startGame(unitKey);
 }
 

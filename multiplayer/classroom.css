@@ -1,22 +1,30 @@
-.classroom-host { min-height:calc(100svh - 180px); }
-.classroom-hud { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:8px; padding:8px; border:1px solid #b9d7d1; border-radius:8px; color:#f8faf9; background:#073d3b; }
+/* Classroom play owns the viewport. Keep the legacy page chrome out of the
+   height calculation so embedded games get the full tablet landscape frame. */
+body:has(.classroom-host) { overflow:hidden; }
+body:has(.classroom-host) > .site-header,
+body:has(.classroom-host) > .site-footer { display:none; }
+body:has(.classroom-host) #app { width:100%; min-height:100svh; margin:0; padding:0; }
+body:has(.classroom-host) > .status-message { position:fixed; z-index:20; top:10px; left:50%; transform:translateX(-50%); }
+.classroom-host { position:relative; display:flex; height:100svh; min-height:0; flex-direction:column; overflow:hidden; }
+.classroom-hud { display:grid; flex:0 0 auto; grid-template-columns:repeat(3,minmax(0,1fr)) auto; gap:8px; padding:8px; border:1px solid #b9d7d1; border-radius:8px; color:#f8faf9; background:#073d3b; }
 .classroom-hud > div { min-width:0; padding:7px 10px; border-right:1px solid rgba(255,255,255,.16); }
 .classroom-hud > div:last-child { border-right:0; }
 .classroom-hud small, .classroom-hud strong { display:block; }
 .classroom-hud small { color:#a9cbc5; font-size:11px; }
 .classroom-hud strong { overflow:hidden; margin-top:2px; font-size:17px; text-overflow:ellipsis; white-space:nowrap; }
-.classroom-score-note { margin:7px 2px; color:#667085; font-size:11px; }
-.classroom-frame-wrap { overflow:hidden; height:min(72svh,760px); min-height:460px; border:1px solid #c8d8d4; border-radius:8px; background:#061f1e; box-shadow:0 14px 36px rgba(7,61,59,.18); }
+.classroom-score-note { display:none; }
+.classroom-frame-wrap { flex:1 1 auto; min-height:0; overflow:hidden; height:auto; border:1px solid #c8d8d4; border-radius:8px; background:#061f1e; box-shadow:0 14px 36px rgba(7,61,59,.18); }
 .classroom-frame { display:block; width:100%; height:100%; border:0; }
-.classroom-ranks { margin-top:8px; padding:9px 12px; border:1px solid #d4dfdc; border-radius:8px; background:#fff; }
-.classroom-ranks summary { cursor:pointer; font-size:13px; font-weight:800; }
-.classroom-ranks ol { display:grid; gap:5px; margin:9px 0 0; padding:0; list-style:none; }
+.classroom-ranks { flex:0 0 auto; margin:6px 8px calc(8px + env(safe-area-inset-bottom)); padding:5px 12px; border:1px solid #d4dfdc; border-radius:8px; background:#fff; box-shadow:0 8px 20px rgba(7,61,59,.18); }
+.classroom-ranks summary { min-height:34px; display:flex; align-items:center; cursor:pointer; font-size:13px; font-weight:800; }
+.classroom-ranks[open] { max-height:110px; overflow:hidden; }
+.classroom-ranks ol { display:grid; max-height:54px; gap:5px; margin:9px 0 0; padding:0; overflow-y:auto; list-style:none; }
 .classroom-ranks li { display:flex; justify-content:space-between; gap:12px; color:#475467; font-size:12px; }
 @media(max-width:560px) {
-  .classroom-host { min-height:calc(100svh - 132px); }
+  .classroom-host { height:100svh; min-height:0; }
   .classroom-score-note { display:none; }
-  .classroom-hud { position:sticky; z-index:3; top:0; }
+  .classroom-hud { position:relative; z-index:3; flex:0 0 auto; top:0; }
   .classroom-hud > div { padding:5px 7px; }
   .classroom-hud strong { font-size:14px; }
-  .classroom-frame-wrap { margin-top:6px; height:calc(100svh - 164px - env(safe-area-inset-bottom)); min-height:390px; }
+  .classroom-frame-wrap { flex:1 1 auto; min-height:0; margin-top:6px; height:auto; }
 }

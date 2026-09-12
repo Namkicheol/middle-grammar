@@ -1,1 +1,763 @@
-.escape-room-scene{position:relative;min-height:440px;padding:20px;overflow:hidden;border:1px solid #48657a;border-radius:18px;color:#f8fafc;background:linear-gradient(180deg,rgba(3,9,18,.12),rgba(3,9,18,.88)),var(--escape-art) center/cover;box-shadow:inset 0 0 60px #020617,0 18px 42px #02061733}.scene-shade{position:absolute;inset:0;pointer-events:none;background:radial-gradient(circle at 50% 42%,transparent 0 26%,rgba(2,6,23,.62) 88%)}.scene-mission,.scene-hotspots,.room-apparatus{position:relative;z-index:1}.scene-mission{max-width:620px;padding:12px 15px;border-left:4px solid #67e8f9;background:#071522d9;backdrop-filter:blur(6px)}.scene-mission span{color:#67e8f9;font-size:11px;font-weight:900;letter-spacing:.12em}.scene-mission h2{margin:3px 0 0;color:#fff;font-size:clamp(16px,2.4vw,22px);line-height:1.35}.scene-hotspots{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px;max-width:660px;margin:42px auto 24px}.scene-hotspot{min-height:92px;padding:10px;border:1px solid #73a2b9;border-radius:14px;color:#fff;background:#071927d9;box-shadow:0 10px 20px #0007;cursor:pointer}.scene-hotspot:hover:not(:disabled),.scene-hotspot:focus-visible{border-color:#fde68a;transform:translateY(-2px)}.scene-hotspot>span,.scene-hotspot strong,.scene-hotspot small{display:block}.scene-hotspot>span{color:#67e8f9;font-size:26px}.scene-hotspot strong{margin-top:2px}.scene-hotspot small{color:#b9d5df}.scene-hotspot.found{border-color:#fcd34d;background:#3d2e16e8}.scene-hotspot.found>span,.scene-hotspot.found small{color:#fde68a}.room-apparatus{max-width:720px;margin:auto;padding:16px;border:1px solid #64869a;border-radius:16px;background:#06111ceb;box-shadow:0 14px 30px #0008}.power-sockets{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px}.power-socket{min-width:0;padding:10px;border:1px solid #456577;border-radius:12px}.power-socket legend{padding:0 5px;color:#d9f6fb;font-size:12px;font-weight:850}.fuse-bank{display:grid;grid-template-columns:repeat(3,1fr);gap:5px}.fuse{min-height:42px;border:1px solid #52788d;border-radius:8px;color:#caf3f8;background:#102737;font-size:17px;font-weight:900}.fuse.selected{border-color:#fcd34d;color:#2b1b04;background:#fde68a;box-shadow:0 0 18px #fbbf2466}.apparatus-wait{grid-column:1/-1;color:#91aab7;font-size:11px;text-align:center}.archive-sequence{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px}.archive-tile{position:relative;padding:12px 9px;border:1px solid #8c6f43;border-radius:10px;color:#38260e;background:linear-gradient(145deg,#fff6d7,#dec28e);text-align:center;box-shadow:4px 5px 0 #3f2b17}.tile-index{position:absolute;left:7px;top:5px;color:#7c5a2e;font-size:10px;font-weight:900}.archive-tile strong,.archive-tile .tile-clue{display:block}.archive-tile strong{font-size:13px}.tile-clue{margin:5px 0;font:900 25px ui-monospace,monospace}.tile-moves{display:flex;justify-content:center;gap:5px}.tile-moves button{min-width:40px;min-height:38px;border:1px solid #92703d;border-radius:7px;color:#fff;background:#5b4324;font-weight:900}.exit-dials{display:flex;justify-content:center;gap:12px}.exit-dial{display:grid;gap:4px}.exit-dial button{width:62px;min-height:38px;border:1px solid #658696;border-radius:8px;color:#d7fbff;background:#102a38;font-weight:900}.exit-dial output{display:grid;width:62px;height:66px;place-items:center;border:2px solid #fcd34d;border-radius:9px;color:#fff5c2;background:#050708;font:900 34px ui-monospace,monospace;box-shadow:inset 0 0 14px #f59e0b44}.apparatus-confirm{display:block;min-width:170px;min-height:48px;margin:16px auto 0;border:1px solid #fcd34d;border-radius:10px;color:#281b05;background:linear-gradient(#fef08a,#fbbf24);font-weight:950;cursor:pointer}.apparatus-confirm:disabled,.scene-hotspot:disabled,.room-apparatus button:disabled{opacity:.45;cursor:not-allowed}.clue-strip{display:flex;justify-content:center;gap:8px;margin:10px 0 0}.clue-chip{display:flex;min-width:86px;padding:8px 10px;align-items:center;justify-content:center;gap:5px;border:1px solid #496676;border-radius:999px;color:#b8ced7;background:#071522}.clue-chip b{color:#67e8f9}.clue-chip strong{color:#fff}.clue-chip.found{border-color:#b98b35;color:#ffe8a6;background:#332611}.clue-chip.found b,.clue-chip.found strong{color:#fde68a}@media(max-width:600px){.escape-room-scene{min-height:530px;padding:12px;border-radius:14px}.scene-hotspots{gap:6px;margin:26px auto 18px}.scene-hotspot{min-height:88px;padding:6px 3px}.scene-hotspot strong{overflow:hidden;font-size:11px;text-overflow:ellipsis;white-space:nowrap}.scene-hotspot small{font-size:10px}.room-apparatus{padding:11px}.power-sockets,.archive-sequence{gap:6px}.power-socket{padding:7px 4px}.fuse-bank{grid-template-columns:1fr}.fuse{min-height:38px}.archive-tile{padding:12px 3px 8px}.archive-tile strong{font-size:11px}.tile-moves{gap:2px}.tile-moves button{min-width:34px}.clue-strip{gap:4px}.clue-chip{min-width:0;flex:1;padding:7px 4px;font-size:11px}}
+/* Multiplayer grammar escape: one large investigation scene plus one puzzle panel. */
+body.escape-active {
+  color: #eaf8f5;
+  background:
+    radial-gradient(circle at 18% 7%, rgba(27, 100, 105, .26), transparent 29rem),
+    radial-gradient(circle at 84% 28%, rgba(19, 47, 74, .34), transparent 27rem),
+    linear-gradient(155deg, #020811 0%, #071827 58%, #02070d 100%);
+}
+
+body.escape-active .brand {
+  color: #ecfffb;
+}
+
+body.escape-active .brand small {
+  color: #77e8dc;
+}
+
+body.escape-active .site-footer {
+  color: #9ebfc3;
+}
+
+body.escape-active .site-footer a {
+  color: #8de9de;
+}
+
+body.escape-active .game-sound-toggle,
+body.escape-active .connection-badge {
+  color: #dffcf8;
+  border-color: rgba(119, 232, 220, .32);
+  background: rgba(5, 27, 39, .84);
+}
+
+body.escape-active .solo-link {
+  color: #c5b9ff;
+  background: rgba(67, 45, 133, .5);
+}
+
+.escape-layout {
+  grid-template-columns: minmax(0, 1fr);
+}
+
+.escape-console {
+  padding: clamp(14px, 2.2vw, 22px);
+}
+
+.escape-story {
+  margin: 8px 0 10px;
+}
+
+.escape-status-strip {
+  margin: 10px 0 12px;
+}
+
+.escape-focus-button {
+  min-height: 42px;
+  margin: 0 0 10px;
+  border-color: rgba(119, 232, 220, .58);
+  color: #dffcf8;
+  background: rgba(12, 58, 67, .76);
+}
+
+.escape-howto {
+  margin-bottom: 12px;
+}
+
+.escape-room-scene {
+  position: relative;
+  min-height: clamp(410px, 45vw, 520px);
+  padding: clamp(16px, 2.5vw, 28px);
+  overflow: hidden;
+  border: 1px solid rgba(119, 232, 220, .42);
+  border-radius: 22px;
+  color: #f7fffd;
+  background:
+    linear-gradient(180deg, rgba(3, 10, 20, .12) 0 24%, rgba(3, 10, 20, .58) 72%, rgba(2, 7, 14, .94)),
+    radial-gradient(circle at 78% 16%, rgba(63, 215, 199, .2), transparent 28%),
+    var(--escape-art) center / cover,
+    #071a2b;
+  box-shadow: inset 0 0 90px rgba(0, 0, 0, .58), 0 22px 50px rgba(1, 8, 18, .32);
+  isolation: isolate;
+}
+
+.escape-room-scene::before {
+  position: absolute;
+  z-index: -1;
+  inset: 0;
+  background: linear-gradient(90deg, rgba(2, 10, 18, .78), transparent 42%, rgba(2, 10, 18, .32));
+  content: "";
+  pointer-events: none;
+}
+
+.escape-room-scene::after {
+  position: absolute;
+  z-index: -1;
+  inset: 0;
+  background: repeating-linear-gradient(0deg, rgba(255, 255, 255, .025) 0 1px, transparent 1px 5px);
+  content: "";
+  opacity: .55;
+  pointer-events: none;
+}
+
+.scene-shade {
+  position: absolute;
+  z-index: -1;
+  inset: 0;
+  background: radial-gradient(ellipse at 56% 44%, transparent 0 25%, rgba(1, 6, 14, .65) 91%);
+  pointer-events: none;
+}
+
+.scene-mission {
+  position: relative;
+  z-index: 1;
+  max-width: min(680px, 100%);
+  padding: 12px 16px 13px;
+  border-left: 4px solid #77e8dc;
+  border-radius: 0 12px 12px 0;
+  background: rgba(4, 17, 29, .78);
+  box-shadow: 0 12px 24px rgba(0, 0, 0, .18);
+  backdrop-filter: blur(8px);
+}
+
+.scene-mission span {
+  color: #8df5e8;
+  font-size: 11px;
+  font-weight: 900;
+  letter-spacing: .15em;
+}
+
+.scene-mission h2 {
+  margin: 4px 0 0;
+  color: #fffef2;
+  font-size: clamp(18px, 2.4vw, 25px);
+  line-height: 1.3;
+  text-wrap: balance;
+}
+
+.scene-hotspots {
+  position: relative;
+  z-index: 1;
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 11px;
+  max-width: 760px;
+  margin: clamp(88px, 12vw, 150px) auto 28px;
+}
+
+.scene-hotspot {
+  display: grid;
+  min-width: 0;
+  min-height: 98px;
+  padding: 12px 9px;
+  align-content: center;
+  justify-items: center;
+  gap: 4px;
+  border: 1px solid rgba(152, 238, 230, .64);
+  border-radius: 14px;
+  color: #f7fffd;
+  background: rgba(4, 23, 36, .78);
+  box-shadow: 0 12px 22px rgba(0, 0, 0, .26), inset 0 0 20px rgba(47, 194, 178, .05);
+  cursor: pointer;
+  transition: border-color 150ms ease, background 150ms ease, transform 150ms ease;
+  backdrop-filter: blur(5px);
+}
+
+.scene-hotspot:hover:not(:disabled),
+.scene-hotspot:focus-visible {
+  border-color: #ffe49a;
+  background: rgba(15, 61, 73, .9);
+  outline: none;
+  transform: translateY(-3px);
+}
+
+.scene-hotspot.found {
+  border-color: rgba(255, 214, 106, .94);
+  background: rgba(81, 57, 22, .88);
+}
+
+.scene-hotspot > span {
+  color: #80ece0;
+  font-size: 30px;
+  line-height: 1;
+}
+
+.scene-hotspot.found > span,
+.scene-hotspot.found small {
+  color: #ffe39a;
+}
+
+.scene-hotspot strong {
+  max-width: 100%;
+  overflow: hidden;
+  font-size: 13px;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.scene-hotspot small {
+  color: #c2e0e2;
+  font-size: 11px;
+  font-weight: 750;
+}
+
+.room-apparatus {
+  position: relative;
+  z-index: 1;
+  max-width: 820px;
+  margin: 0 auto;
+  padding: 17px;
+  border: 1px solid rgba(164, 221, 216, .34);
+  border-radius: 16px;
+  background: rgba(3, 15, 26, .9);
+  box-shadow: 0 16px 32px rgba(0, 0, 0, .3), inset 0 1px rgba(255, 255, 255, .04);
+  backdrop-filter: blur(9px);
+}
+
+.apparatus-order {
+  display: flex;
+  min-height: 38px;
+  margin: -3px 0 13px;
+  padding: 7px 10px;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  border: 1px solid rgba(255, 214, 106, .34);
+  border-radius: 9px;
+  color: #f8e7b0;
+  background: rgba(80, 54, 20, .42);
+  font-size: 11px;
+  font-weight: 800;
+}
+
+.apparatus-order strong {
+  color: #ffe49a;
+  font-size: 19px;
+  letter-spacing: .08em;
+}
+
+.power-sockets,
+.archive-sequence {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 11px;
+}
+
+.power-socket {
+  min-width: 0;
+  padding: 10px 9px 11px;
+  border: 1px solid rgba(107, 180, 186, .42);
+  border-radius: 12px;
+  background: rgba(9, 34, 48, .7);
+}
+
+.power-socket legend {
+  padding: 0 6px;
+  color: #c9f5f0;
+  font-size: 12px;
+  font-weight: 850;
+}
+
+.fuse-bank {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 6px;
+}
+
+.fuse {
+  min-width: 0;
+  min-height: 44px;
+  padding: 7px 4px;
+  overflow: hidden;
+  border: 1px solid rgba(108, 193, 197, .54);
+  border-radius: 9px;
+  color: #d6faf7;
+  background: #102b3a;
+  font-size: 15px;
+  font-weight: 900;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.fuse:hover:not(:disabled),
+.fuse:focus-visible {
+  border-color: #ffe39a;
+  outline: none;
+}
+
+.fuse.selected {
+  border-color: #ffd76b;
+  color: #38220a;
+  background: linear-gradient(145deg, #fff2bd, #efb93c);
+  box-shadow: 0 0 18px rgba(245, 176, 49, .25);
+}
+
+.apparatus-wait {
+  grid-column: 1 / -1;
+  padding: 11px 4px;
+  color: #94b4bd;
+  font-size: 12px;
+  text-align: center;
+}
+
+.archive-tile {
+  position: relative;
+  min-width: 0;
+  padding: 14px 8px 10px;
+  border: 1px solid rgba(235, 197, 121, .72);
+  border-radius: 11px;
+  color: #3a2810;
+  background: linear-gradient(145deg, #fff8e0, #d6b878);
+  box-shadow: 4px 5px 0 rgba(27, 17, 8, .72), inset 0 0 18px rgba(255, 255, 255, .28);
+  text-align: center;
+}
+
+.tile-index {
+  position: absolute;
+  top: 6px;
+  left: 8px;
+  color: #87652e;
+  font-size: 10px;
+  font-weight: 900;
+}
+
+.archive-tile strong,
+.archive-tile .tile-clue {
+  display: block;
+}
+
+.archive-tile strong {
+  overflow: hidden;
+  font-size: 13px;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.tile-clue {
+  margin: 6px 0;
+  color: #32200b;
+  font: 900 26px ui-monospace, SFMono-Regular, Menlo, monospace;
+}
+
+.tile-moves {
+  display: flex;
+  justify-content: center;
+  gap: 6px;
+}
+
+.tile-moves button,
+.exit-dial button {
+  min-width: 42px;
+  min-height: 42px;
+  border: 1px solid rgba(239, 207, 139, .65);
+  border-radius: 8px;
+  color: #fff4cc;
+  background: #604622;
+  font-weight: 950;
+}
+
+.tile-moves button:hover:not(:disabled),
+.tile-moves button:focus-visible,
+.exit-dial button:hover:not(:disabled),
+.exit-dial button:focus-visible {
+  border-color: #fff0b0;
+  outline: none;
+}
+
+.exit-dials {
+  display: flex;
+  justify-content: center;
+  gap: 14px;
+}
+
+.exit-dial {
+  display: grid;
+  gap: 5px;
+  justify-items: center;
+}
+
+.exit-dial button {
+  color: #d6fbf5;
+  background: #123344;
+}
+
+.exit-dial output {
+  display: grid;
+  width: 66px;
+  height: 70px;
+  place-items: center;
+  border: 2px solid #ffd76b;
+  border-radius: 10px;
+  color: #fff1b6;
+  background: #05090b;
+  box-shadow: inset 0 0 18px rgba(245, 158, 11, .24);
+  font: 900 35px ui-monospace, SFMono-Regular, Menlo, monospace;
+}
+
+.apparatus-confirm {
+  display: block;
+  min-width: 190px;
+  min-height: 50px;
+  margin: 17px auto 0;
+  padding: 8px 18px;
+  border: 1px solid #ffe08a;
+  border-radius: 10px;
+  color: #321f06;
+  background: linear-gradient(145deg, #fff1b0, #efb738);
+  box-shadow: 0 8px 18px rgba(245, 158, 11, .18);
+  cursor: pointer;
+  font-size: 13px;
+  font-weight: 950;
+}
+
+.apparatus-confirm:hover:not(:disabled),
+.apparatus-confirm:focus-visible {
+  filter: brightness(1.06);
+  outline: none;
+  transform: translateY(-1px);
+}
+
+.apparatus-confirm:disabled,
+.scene-hotspot:disabled,
+.room-apparatus button:disabled {
+  cursor: not-allowed;
+  opacity: .42;
+}
+
+.clue-strip {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 8px;
+  max-width: 820px;
+  margin: 11px auto 0;
+}
+
+.clue-chip {
+  display: flex;
+  min-width: 0;
+  min-height: 42px;
+  padding: 7px 9px;
+  align-items: center;
+  justify-content: center;
+  gap: 5px;
+  border: 1px solid rgba(116, 188, 194, .42);
+  border-radius: 10px;
+  color: #a8c9d0;
+  background: rgba(3, 20, 32, .76);
+  font-size: 11px;
+  font-weight: 800;
+}
+
+.clue-chip b {
+  color: #77e8dc;
+  font-size: 18px;
+}
+
+.clue-chip strong {
+  color: #f7fffb;
+  font: 900 18px ui-monospace, SFMono-Regular, Menlo, monospace;
+}
+
+.clue-chip.found {
+  border-color: rgba(255, 215, 107, .74);
+  color: #ffe6a1;
+  background: rgba(74, 51, 20, .82);
+}
+
+.clue-chip.found b,
+.clue-chip.found strong {
+  color: #ffe18b;
+}
+
+.escape-question {
+  margin-top: 20px;
+  border-color: rgba(119, 232, 220, .3);
+  background: rgba(3, 17, 29, .72);
+}
+
+.escape-question .question-console-top {
+  margin-bottom: 14px;
+}
+
+.escape-question .escape-fold-button,
+.escape-question-fold .escape-fold-button {
+  min-height: 44px;
+}
+
+.escape-question .question-kicker {
+  color: #073b3a;
+  background: #82ebe0;
+}
+
+.escape-question-fold {
+  margin-top: 20px;
+  border-color: rgba(119, 232, 220, .36);
+  background: rgba(3, 17, 29, .68);
+}
+
+.escape-sidebar {
+  display: grid;
+  gap: 14px;
+}
+
+.escape-side-card {
+  padding: 18px;
+  border: 1px solid rgba(94, 176, 187, .42);
+  border-radius: 15px;
+  color: #e7f5f5;
+  background: linear-gradient(155deg, #0b283a, #081a2b);
+  box-shadow: 0 16px 32px rgba(2, 8, 23, .2);
+}
+
+.escape-side-card h2 {
+  margin: 0;
+  color: #fffef6;
+  font-size: 16px;
+}
+
+.escape-side-card p {
+  margin: 9px 0 12px;
+  color: #afd1d7;
+  font-size: 12px;
+  line-height: 1.55;
+}
+
+.escape-progress-list {
+  display: grid;
+  gap: 7px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.escape-progress-row {
+  display: grid;
+  grid-template-columns: 28px minmax(0, 1fr) auto;
+  min-height: 48px;
+  padding: 7px;
+  align-items: center;
+  gap: 8px;
+  border-radius: 9px;
+  background: rgba(2, 13, 24, .46);
+}
+
+.escape-progress-row.escaped {
+  background: rgba(77, 106, 53, .36);
+}
+
+.escape-progress-mark {
+  display: grid;
+  width: 27px;
+  height: 27px;
+  place-items: center;
+  border-radius: 50%;
+  color: #092532;
+  background: #82ebe0;
+  font-size: 13px;
+  font-weight: 950;
+}
+
+.escape-progress-row.escaped .escape-progress-mark {
+  color: #442d0b;
+  background: #ffe18b;
+}
+
+.escape-progress-name {
+  min-width: 0;
+}
+
+.escape-progress-name strong,
+.escape-progress-name small {
+  display: block;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.escape-progress-name strong {
+  color: #f5fbfd;
+  font-size: 12px;
+}
+
+.escape-progress-name small {
+  margin-top: 2px;
+  color: #abd0d8;
+  font-size: 10px;
+  font-weight: 700;
+}
+
+.escape-progress-state {
+  color: #82ebe0;
+  font-size: 10px;
+  font-weight: 900;
+}
+
+.escape-progress-row.escaped .escape-progress-state {
+  color: #ffe18b;
+}
+
+.escape-complete {
+  margin: 16px 0 20px;
+  padding: 20px;
+  border: 1px solid rgba(255, 225, 139, .66);
+  border-radius: 14px;
+  background: linear-gradient(115deg, rgba(102, 78, 30, .78), rgba(22, 71, 72, .78));
+  box-shadow: 0 16px 30px rgba(0, 0, 0, .16);
+}
+
+.escape-complete > span {
+  color: #ffe18b;
+  font-size: 34px;
+}
+
+.escape-complete strong {
+  color: #fff8db;
+  font-size: 18px;
+}
+
+.escape-complete p {
+  margin: 4px 0 0;
+  color: #d5eee8;
+  font-size: 12px;
+}
+
+@media (max-width: 860px) {
+  .escape-layout {
+    grid-template-columns: 1fr;
+  }
+
+  .escape-sidebar {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 560px) {
+  .escape-topline {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    gap: 8px;
+  }
+
+  .escape-topline > :first-child {
+    grid-row: span 2;
+    align-self: center;
+  }
+
+  .escape-topline .in-game {
+    min-height: 38px;
+    padding: 6px 8px;
+    font-size: 11px;
+  }
+
+  .escape-topline .escape-timer {
+    grid-column: 2;
+    grid-row: 2;
+  }
+
+  .escape-console {
+    margin-inline: -2px;
+    border-radius: 16px;
+  }
+
+  .escape-room-scene {
+    min-height: 520px;
+    padding: 13px;
+    border-radius: 16px;
+  }
+
+  .scene-hotspots {
+    gap: 7px;
+    margin-top: 72px;
+  }
+
+  .scene-hotspot {
+    min-height: 88px;
+    padding: 8px 4px;
+  }
+
+  .scene-hotspot > span {
+    font-size: 26px;
+  }
+
+  .scene-hotspot strong {
+    font-size: 11px;
+  }
+
+  .scene-hotspot small {
+    font-size: 10px;
+  }
+
+  .room-apparatus {
+    padding: 11px;
+  }
+
+  .power-sockets,
+  .archive-sequence {
+    gap: 6px;
+  }
+
+  .power-socket {
+    padding: 8px 4px 9px;
+  }
+
+  .power-socket legend {
+    padding-inline: 2px;
+    font-size: 10px;
+  }
+
+  .fuse-bank {
+    grid-template-columns: 1fr;
+    gap: 5px;
+  }
+
+  .fuse {
+    min-height: 42px;
+    font-size: 13px;
+  }
+
+  .archive-tile {
+    padding-inline: 4px;
+  }
+
+  .archive-tile strong {
+    font-size: 11px;
+  }
+
+  .tile-moves {
+    gap: 3px;
+  }
+
+  .tile-moves button,
+  .exit-dial button {
+    min-width: 40px;
+  }
+
+  .clue-strip {
+    gap: 5px;
+  }
+
+  .clue-chip {
+    min-width: 0;
+    padding-inline: 4px;
+    font-size: 10px;
+  }
+
+  .clue-chip strong {
+    font-size: 16px;
+  }
+
+  .escape-sidebar {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .scene-hotspot,
+  .apparatus-confirm {
+    transition: none;
+  }
+
+  .scene-hotspot:hover:not(:disabled),
+  .apparatus-confirm:hover:not(:disabled) {
+    transform: none;
+  }
+}

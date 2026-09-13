@@ -170,7 +170,7 @@
   if (typeof _osp === 'function') {
     window.showScorePopup = function (correct, total, opts) {
       _osp(correct, total, opts);
-      var sc = Math.round(correct / total * 100);
+      var sc = total > 0 ? Math.round(correct / total * 100) : 0;
       setTimeout(function () { playResult(sc); }, 200);
     };
   }

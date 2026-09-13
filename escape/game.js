@@ -162,11 +162,11 @@ function inspectHotspot(next, id) {
   const alreadyFound = discovered.includes(hotspot.id);
   if (!alreadyFound) {
     discovered.push(hotspot.id);
-    next.inventory.clues.push({ scene: next.scene, id: hotspot.id, label: hotspot.label, clue: hotspot.clue });
+    next.inventory.clues.push({ scene: next.scene, id: hotspot.id, label: hotspot.label, clue: hotspot.clue, detail: hotspot.detail });
     next.message = `${hotspot.label}: ${hotspot.detail}`;
     next.lastEvent = 'pickup';
   } else {
-    next.message = `${hotspot.label}: 이미 확인한 단서다.`;
+    next.message = `${hotspot.label}: ${hotspot.detail}`;
     next.lastEvent = 'click';
   }
   if (roomIsReady(next, next.scene)) next.puzzleReady[next.scene] = true;
@@ -175,9 +175,17 @@ function inspectHotspot(next, id) {
 
 function setClassroomDigit(next, index, value) {
   if (next.scene !== 'classroom' || !Number.isInteger(index) || index < 0 || index > 2) return next;
-  if (!/^[0-9]$/.test(String(value))) return next;
+  if (String(value) !== '' && !/^[0-9]$/.test(String(value))) return next;
   next.classroomCode[index] = String(value);
-  next.message = `교실 잠금 숫자 ${index + 1}번째 칸을 ${value}(으)로 맞췄다.`;
+  next.message = value === '' ? `교실 잠금 ${index + 1}번째 칸을 비웠다.` : `교실 잠금 숫자 ${index + 1}번째 칸을 ${value}(으)로 맞췄다.`;
+  next.lastEvent = 'click';
+  return next;
+}
+
+function revisitClue(next, scene, id) {
+  const clue = next.inventory.clues.find((item) => item.scene === scene && item.id === id);
+  if (!clue) return next;
+  next.message = `${clue.label}: ${clue.detail}`;
   next.lastEvent = 'click';
   return next;
 }
@@ -266,6 +274,8 @@ export function reduceState(state, action = {}) {
       return inspectHotspot(next, action.id);
     case 'set-room-digit':
       return setClassroomDigit(next, action.index, action.value);
+    case 'revisit-clue':
+      return revisitClue(next, action.scene, action.id);
     case 'solve-room':
       return solveClassroom(next);
     case 'move-archive':
@@ -318,6 +328,7 @@ let moveTimer = null;
 let suppressNextMazeClick = false;
 let audioUnlocked = false;
 let audioMuted = false;
+let activeDigitIndex = 0;
 
 const getAudio = () => (typeof window !== 'undefined' && window.EscapeAudio ? window.EscapeAudio : null);
 const audioIsMuted = (audio) => typeof audio?.isMuted === 'function' ? audio.isMuted() : Boolean(audio?.isMuted);
@@ -367,7 +378,7 @@ function renderInventory() {
   const keyLabels = { archive: '자료실 열쇠', corridor: '복도 열쇠' };
   const keys = state.inventory.keys.map((key) => `<span class="inventory-chip key-chip"><i>⌕</i>${escapeHtml(keyLabels[key] || key)}</span>`).join('');
   const clues = state.inventory.clues.length
-    ? state.inventory.clues.map((clue) => `<span class="inventory-chip clue-chip"><i>✦</i>${escapeHtml(clue.label)}</span>`).join('')
+    ? state.inventory.clues.map((clue) => `<button class="inventory-chip clue-chip" type="button" data-action="revisit-clue" data-scene="${escapeHtml(clue.scene)}" data-id="${escapeHtml(clue.id)}" aria-label="${escapeHtml(clue.label)} 단서 다시 읽기"><i>✦</i>${escapeHtml(clue.label)}</button>`).join('')
     : '<span class="empty-copy">아직 기록한 단서가 없다.</span>';
   return `<section class="inventory-section" aria-labelledby="inventory-title">
     <div class="section-heading"><h2 id="inventory-title">챙긴 것</h2><span>${state.inventory.keys.length} 열쇠 · ${state.inventory.clues.length} 단서</span></div>
@@ -379,7 +390,7 @@ function renderInventory() {
 function renderRoomClues(scene) {
   const clues = state.inventory.clues.filter((clue) => clue.scene === scene);
   if (!clues.length) return '<p class="empty-copy">표식을 눌러 주변을 살펴보면 기록이 남는다.</p>';
-  return `<ul class="clue-notes">${clues.map((clue) => `<li><span>${escapeHtml(clue.clue)}</span><strong>${escapeHtml(clue.label)}</strong></li>`).join('')}</ul>`;
+  return `<ul class="clue-notes">${clues.map((clue) => `<li><span>${escapeHtml(clue.clue)}</span><div><strong>${escapeHtml(clue.label)}</strong><p>${escapeHtml(clue.detail)}</p></div></li>`).join('')}</ul>`;
 }
 
 function renderClassroomPuzzle() {
@@ -394,7 +405,8 @@ function renderClassroomPuzzle() {
   return `<section class="puzzle-card" aria-labelledby="room-lock-title">
     <div class="puzzle-topline"><span class="lock-mark open">⌑</span><div><span class="puzzle-label">UNLOCK · 자료실 열쇠</span><h2 id="room-lock-title">숫자 잠금</h2></div></div>
     <p>단서가 가리킨 순서대로 세 칸을 맞춘다.</p>
-    <div class="code-dials">${state.classroomCode.map((value, index) => `<label><span>${index + 1}번째</span><select data-action="set-room-digit" data-index="${index}" aria-label="${index + 1}번째 숫자"><option value="">—</option>${Array.from({ length: 10 }, (_, digit) => `<option value="${digit}" ${String(digit) === value ? 'selected' : ''}>${digit}</option>`).join('')}</select></label>`).join('')}</div>
+    <div class="code-slots" role="group" aria-label="자료실 열쇠 숫자"><span class="code-help">${activeDigitIndex + 1}번째 숫자를 고르는 중</span>${state.classroomCode.map((value, index) => `<button class="code-slot${activeDigitIndex === index ? ' active' : ''}" type="button" data-action="focus-room-digit" data-index="${index}" aria-label="${index + 1}번째 숫자 ${value || '비어 있음'} 선택" aria-pressed="${activeDigitIndex === index}"><strong>${value || '·'}</strong><span>${index + 1}번째</span></button>`).join('')}</div>
+    <div class="number-pad" role="group" aria-label="${activeDigitIndex + 1}번째 숫자 선택">${[1, 2, 3, 4, 5, 6, 7, 8, 9, 0].map((digit) => `<button class="number-key" type="button" data-action="choose-room-digit" data-value="${digit}" aria-label="${digit} 선택">${digit}</button>`).join('')}<button class="number-key clear-key" type="button" data-action="clear-room-digit">지우기</button></div>
     <button class="primary-action" type="button" data-action="solve-room">잠금 해제 <span>→</span></button>
   </section>`;
 }
@@ -493,6 +505,7 @@ function dispatch(action, options = {}) {
   const previousScene = state.scene;
   const previousWon = state.won;
   state = reduceState(state, action);
+  if (action.type === 'restart' || previousScene !== state.scene) activeDigitIndex = 0;
   if (state.lastEvent === 'win') {
     try { getAudio()?.stopAmbient?.(); } catch { /* audio is an optional enhancement */ }
   }
@@ -513,6 +526,17 @@ function handleAction(element) {
   const action = element.dataset.action;
   if (action === 'inspect') dispatch({ type: 'inspect', id: element.dataset.id });
   else if (action === 'set-room-digit') dispatch({ type: 'set-room-digit', index: Number(element.dataset.index), value: element.value });
+  else if (action === 'focus-room-digit') {
+    activeDigitIndex = Math.max(0, Math.min(2, Number(element.dataset.index)));
+    render();
+  }
+  else if (action === 'choose-room-digit') {
+    const index = activeDigitIndex;
+    if (activeDigitIndex < 2) activeDigitIndex += 1;
+    dispatch({ type: 'set-room-digit', index, value: element.dataset.value });
+  }
+  else if (action === 'clear-room-digit') dispatch({ type: 'set-room-digit', index: activeDigitIndex, value: '' });
+  else if (action === 'revisit-clue') dispatch({ type: 'revisit-clue', scene: element.dataset.scene, id: element.dataset.id });
   else if (action === 'solve-room') dispatch({ type: 'solve-room' });
   else if (action === 'move-archive') dispatch({ type: 'move-archive', index: Number(element.dataset.index), delta: Number(element.dataset.delta) });
   else if (action === 'solve-archive') dispatch({ type: 'solve-archive' });
@@ -529,10 +553,6 @@ if (root) {
       return;
     }
     handleAction(element);
-  });
-  root.addEventListener('change', (event) => {
-    const element = event.target.closest('[data-action="set-room-digit"]');
-    if (element) handleAction(element);
   });
   root.addEventListener('pointerdown', (event) => {
     const element = event.target.closest('[data-action="move-maze"]');

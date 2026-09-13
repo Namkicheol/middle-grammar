@@ -355,6 +355,7 @@ header{display:flex;align-items:center;gap:8px;padding:12px 14px 6px;position:re
 #screen-start,#screen-end{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;
   background:radial-gradient(ellipse at center,rgba(15,10,38,.78) 0%,rgba(8,8,26,.95) 100%);
   backdrop-filter:blur(10px);z-index:20;padding:24px;}
+html[data-solo-launch] #screen-start{display:none!important;}
 .panel{background:linear-gradient(180deg,rgba(15,10,38,.95),rgba(8,8,26,.95));
   border:1.5px solid rgba(34,211,238,.42);
   border-radius:22px;padding:26px 22px;text-align:center;width:100%;max-width:380px;
@@ -486,6 +487,14 @@ header{display:flex;align-items:center;gap:8px;padding:12px 14px 6px;position:re
   100%{opacity:1;transform:translate(-50%,-50%) scale(1) rotate(0);}
 }
 </style>
+<script>
+  // Solo direct URLs own a selected unit (or redirect through the hub). Hide
+  // the legacy selector before the body paints; classroom launches keep it
+  // visible until the classroom bridge is ready.
+  if (new URLSearchParams(location.search).get('classroom') !== '1') {
+    document.documentElement.dataset.soloLaunch = '1';
+  }
+</script>
 <link rel="stylesheet" href="../game/question-surface.css">
 <link rel="stylesheet" href="./play.css">
 <link rel="stylesheet" href="../multiplayer/game-type.css">
@@ -1494,15 +1503,18 @@ document.getElementById('btn-go').addEventListener('click', startGame);
 document.getElementById('btn-retry').addEventListener('click', startGame);
 const _params = new URLSearchParams(location.search);
 const _unitParam = _params.get('unit');
-if (_unitParam && GAME_QUESTIONS[_unitParam]) unitKey = _unitParam;
+const _validUnitParam = _unitParam === 'all'
+  || Boolean(_unitParam && GAME_QUESTIONS[_unitParam] && !GAME_QUESTIONS[_unitParam].hidden);
+if (!_validUnitParam && !classroomMode) location.replace('../game/?mode=whack');
+if (_validUnitParam) unitKey = _unitParam;
 buildUnitList();
 buildGrid();
 // 허브에서 ?unit=로 들어오면 시작 화면 없이 바로 게임 시작(시작 버튼이 모바일에서 화면 밖으로
 // 밀리는 문제 제거). 자동 시작은 제스처가 없어 BGM이 막히므로 첫 입력에 BGM을 시작한다.
 if (classroomMode) {
   setTimeout(startGame, 0);
-} else if (_unitParam && GAME_QUESTIONS[_unitParam]) {
-  setTimeout(startGame, 60);
+} else if (_validUnitParam) {
+  startGame();
   (function () {
     function kick() {
       if (gameRunning) startWhackBgm();

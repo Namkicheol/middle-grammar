@@ -2,6 +2,7 @@ import { ApiError, createRoomSocket, roomApi } from "./api.js";
 import { ClassroomHost } from "./classroom-host.js";
 import { initResultPresentation, updateResultPresentation } from "./results.js";
 import { createEscapePuzzleDraft, updateEscapePuzzleDraft, escapePuzzleCode, escapeRoomExperienceHtml } from "./escape-game.js";
+import { muteTreasureEffects, playTreasureEffect } from "./treasure-effects.js";
 
 const SESSION_PLAYER_ID = "mg.multiplayer.playerId";
 const SESSION_RESUME_TOKEN = "mg.multiplayer.resumeToken";
@@ -41,16 +42,18 @@ const gameAudio = (() => {
       oscillator.start(now + offset); oscillator.stop(now + offset + duration + .02);
     });
   };
-  const sync = () => document.querySelectorAll("[data-game-sound-toggle]").forEach((button) => {
-    const escape = document.querySelector(".escape-layout") ? window.EscapeAudio : null;
+  const sync = () => {
     const preference = muted();
-    if (escape && escape.isMuted() !== preference) escape.setMuted(preference);
-    const off = preference;
-    button.setAttribute("aria-pressed", String(off));
-    button.setAttribute("aria-label", off ? "경기 효과음 켜기" : "경기 효과음 끄기");
-    button.textContent = off ? "🔇 소리" : "🔊 소리";
-  });
-  return { unlock, tone, muted, sync };
+    muteTreasureEffects(context, preference);
+    document.querySelectorAll("[data-game-sound-toggle]").forEach((button) => {
+      const escape = document.querySelector(".escape-layout") ? window.EscapeAudio : null;
+      if (escape && escape.isMuted() !== preference) escape.setMuted(preference);
+      button.setAttribute("aria-pressed", String(preference));
+      button.setAttribute("aria-label", preference ? "경기 효과음 켜기" : "경기 효과음 끄기");
+      button.textContent = preference ? "🔇 소리" : "🔊 소리";
+    });
+  };
+  return { unlock, tone, muted, sync, context: () => context };
 })();
 
 function escapeAudioInstance() {
@@ -163,6 +166,7 @@ const statusRegion = document.querySelector("#status");
 const connectionBadge = document.querySelector("#connection-badge");
 const initialParams = new URLSearchParams(location.search);
 const initialTeacherIntent = initialParams.get("teacher") === "1";
+const initialStudentIntent = initialParams.get("join") === "1";
 const initialAuthError = initialParams.get("auth_error") || "";
 const initialTeacherDraft = loadTeacherDraft();
 
@@ -193,6 +197,11 @@ const state = {
   needsQuestionFocus: false,
   localSet: initialTeacherDraft?.customSet || (initialParams.get("set") === "local" ? loadLocalSet() : null),
   treasureBusy: false,
+  treasureEvent: null,
+  treasureEventOpen: true,
+  treasureEventSnapshotReady: false,
+  treasureEventId: "",
+  treasureSoundedIds: new Set(),
   mazeBusy: false,
   escapeBusy: false,
   escapeAction: null,
@@ -334,6 +343,131 @@ function applyRoom(payload) {
     playStyle: room.playStyle || room.play_style || metadata.playStyle || "individual",
     teamCount: Number(room.teamCount ?? room.team_count ?? metadata.teamCount ?? 0),
   };
+}
+
+const TREASURE_EVENT_LABELS = Object.freeze({
+  safe_bonus: "안전 금고",
+  loot: "보물 약탈",
+  share: "팀 보물 나눔",
+  trap: "함정",
+  double: "2배 보너스",
+  triple: "3배 보너스",
+  donate: "보물 기부",
+  gift: "랜덤 선물",
+  angel: "천사 보너스",
+  global_bomb: "전체 폭탄",
+  mystery: "행운 상자",
+});
+
+function normalizeTreasureEvent(raw) {
+  if (!raw || typeof raw !== "object") return null;
+  const id = String(raw.id || "").trim();
+  if (!id) return null;
+  const numberOrNull = (value) => value === null || value === undefined || value === ""
+    ? null
+    : Number.isFinite(Number(value)) ? Number(value) : null;
+  const affectedRaw = raw.affectedPlayers ?? raw.affected_players;
+  const affectedPlayers = Array.isArray(affectedRaw) ? affectedRaw.map((player) => ({
+    playerId: String(player?.playerId ?? player?.player_id ?? ""),
+    nickname: String(player?.nickname ?? player?.name ?? "학생"),
+    scoreBefore: numberOrNull(player?.scoreBefore ?? player?.score_before),
+    scoreAfter: numberOrNull(player?.scoreAfter ?? player?.score_after),
+    unbankedBefore: numberOrNull(player?.unbankedBefore ?? player?.unbanked_before),
+    unbankedAfter: numberOrNull(player?.unbankedAfter ?? player?.unbanked_after),
+  })) : [];
+  return {
+    id,
+    kind: String(raw.kind || "safe_bonus"),
+    title: String(raw.title || TREASURE_EVENT_LABELS[raw.kind] || "최근 금고 효과"),
+    description: String(raw.description || "서버가 금고 결과를 확정했어요."),
+    actorNickname: String(raw.actorNickname ?? raw.actor_nickname ?? "학생"),
+    affectedPlayers,
+    createdAt: Number(raw.createdAt ?? raw.created_at ?? 0) || 0,
+  };
+}
+
+function treasureSnapshotEvent(room) {
+  return normalizeTreasureEvent(room?.lastTreasureEvent ?? room?.last_treasure_event);
+}
+
+function playTreasureEventAudio(event) {
+  playTreasureEffect(event.kind, {
+    unlock: gameAudio.unlock,
+    getContext: gameAudio.context,
+    isMuted: gameAudio.muted,
+  }).catch(() => {});
+}
+
+function syncTreasureSnapshot(room, { play = false } = {}) {
+  const event = treasureSnapshotEvent(room);
+  if (!state.treasureEventSnapshotReady) {
+    state.treasureEventSnapshotReady = true;
+    if (event) {
+      state.treasureEvent = event;
+      state.treasureEventId = event.id;
+    }
+    return;
+  }
+  if (!event) return;
+  if (event.id === state.treasureEventId) {
+    state.treasureEvent = event;
+    return;
+  }
+  state.treasureEvent = event;
+  state.treasureEventId = event.id;
+  state.treasureEventOpen = true;
+  if (play && !state.treasureSoundedIds.has(event.id)) {
+    state.treasureSoundedIds.add(event.id);
+    playTreasureEventAudio(event);
+  }
+}
+
+function syncTreasureResultEvent(raw, { play = true } = {}) {
+  const event = normalizeTreasureEvent(raw);
+  if (!event) return null;
+  state.treasureEventSnapshotReady = true;
+  if (event.id === state.treasureEventId) {
+    state.treasureEvent = event;
+    return event;
+  }
+  state.treasureEvent = event;
+  state.treasureEventId = event.id;
+  state.treasureEventOpen = true;
+  if (play && !state.treasureSoundedIds.has(event.id)) {
+    state.treasureSoundedIds.add(event.id);
+    playTreasureEventAudio(event);
+  }
+  return event;
+}
+
+function legacyTreasureEvent(result) {
+  const strategy = String(result?.strategy || "");
+  const kind = String(result?.kind || (strategy === "dive" ? "safe_bonus" : "safe_bonus"));
+  const amount = Number(result?.amount || 0).toLocaleString();
+  const title = TREASURE_EVENT_LABELS[kind] || TREASURE_EVENT_LABELS.safe_bonus;
+  return normalizeTreasureEvent({
+    id: `legacy:${result?.choiceId || strategy || kind}:${result?.score ?? ""}:${result?.amount ?? ""}`,
+    kind,
+    title,
+    description: result?.targetNickname ? `${result.targetNickname}에게 적용된 이전 결과 형식이에요.` : `서버 결과 +${amount}점이 반영됐어요.`,
+    actorNickname: playerName(currentPlayer()),
+    affectedPlayers: [],
+    createdAt: Date.now(),
+  });
+}
+
+function resetTreasureEventState() {
+  state.treasureEvent = null;
+  state.treasureEventOpen = true;
+  state.treasureEventSnapshotReady = false;
+  state.treasureEventId = "";
+  state.treasureSoundedIds = new Set();
+}
+
+function setRoomFromPayload(payload, options = {}) {
+  const room = applyRoom(payload);
+  if (room) syncTreasureSnapshot(room, options);
+  return room;
 }
 
 function roomStatus(room = state.room) {
@@ -561,6 +695,7 @@ function updateUrl(code) {
   const url = new URL(location.href);
   if (code) url.searchParams.set("room", code);
   else url.searchParams.delete("room");
+  url.searchParams.delete("join");
   history.replaceState({}, "", url);
 }
 
@@ -587,6 +722,7 @@ function resetConnection() {
 function resetToRole() {
   resetConnection();
   stopClock();
+  resetTreasureEventState();
   state.role = null;
   state.view = "role";
   state.room = null;
@@ -783,9 +919,8 @@ function handleSocketMessage(message) {
   const type = message?.type;
   if (type === "hello") {
     const previousEscape = escapeState();
-    const room = applyRoom(message);
+    const room = setRoomFromPayload(message);
     if (room && room !== message) {
-      state.room = room;
       syncEscapeCode(previousEscape, escapeState());
     }
     state.escapeBusy = false;
@@ -794,7 +929,7 @@ function handleSocketMessage(message) {
   } else if (type === "room_state" || type === "start") {
     const previousEscape = escapeState();
     const previousQuestionKey = questionOccurrenceKey();
-    state.room = applyRoom(message);
+    state.room = setRoomFromPayload(message, { play: type === "room_state" });
     syncEscapeCode(previousEscape, escapeState());
     const nextQuestionKey = questionOccurrenceKey();
     if (type === "start" || (state.pendingQuestionKey && previousQuestionKey !== nextQuestionKey)) {
@@ -810,7 +945,7 @@ function handleSocketMessage(message) {
     }
   } else if (type === "answer_result") {
     const result = message.result || message;
-    if (message.state || message.room) state.room = applyRoom(message);
+    if (message.state || message.room) state.room = setRoomFromPayload(message, { play: true });
     classroomHost?.answerResult({ ...result, score: Number(result.score ?? result.totalScore ?? playerScore(currentPlayer())) });
     const resultIndex = Number(result.occurrenceIndex ?? result.occurrence_index);
     state.feedback = {
@@ -828,7 +963,16 @@ function handleSocketMessage(message) {
     playModeSound(state.feedback.correct ? "correct" : "wrong");
   } else if (type === "treasure_result") {
     const result = message.result || message;
-    if (message.state || message.room) state.room = applyRoom(message);
+    const hasRoomSnapshot = Boolean(message.state || message.room);
+    if (hasRoomSnapshot) state.room = setRoomFromPayload(message, { play: true });
+    const explicitEvent = normalizeTreasureEvent(result.event);
+    const event = explicitEvent
+      ? syncTreasureResultEvent(explicitEvent, { play: true })
+      : hasRoomSnapshot
+        ? treasureSnapshotEvent(state.room)
+        : null;
+    const resolvedEvent = event || legacyTreasureEvent(result);
+    if (!event) syncTreasureResultEvent(resolvedEvent, { play: true });
     const messages = {
       safe_bonus: `안전 금고! +${Number(result.amount || 0).toLocaleString()}점`,
       loot: `${result.targetNickname ? `${result.targetNickname}에게서 ` : ""}${Number(result.amount || 0).toLocaleString()}점을 가져왔어요!`,
@@ -841,13 +985,12 @@ function handleSocketMessage(message) {
       raid: result.kind === "trap" ? `${result.targetNickname || "라이벌"}의 방패에 막혔어요.` : `${result.targetNickname || "라이벌"}에게서 미확정 보물 ${Number(result.amount || 0).toLocaleString()}점을 가져왔어요!`,
       switch: result.kind === "trap" ? `${result.targetNickname || "라이벌"}의 방패가 점수 교환을 막았어요.` : `${result.targetNickname || "라이벌"}와 전체 점수를 바꿨어요!`,
     };
-    state.feedback = { treasureMessage: vaultMessages[result.strategy] || messages[result.kind] || "금고 결과가 반영됐어요.", treasureTone: result.kind === "trap" ? "wrong" : "correct" };
+    state.feedback = { treasureMessage: vaultMessages[result.strategy] || messages[result.kind] || resolvedEvent.description, treasureTone: result.kind === "trap" ? "wrong" : "correct" };
     state.treasureBusy = false;
-    playModeSound(result.kind === "trap" ? "wrong" : "reward");
     setStatus("금고 결과가 점수에 반영됐어요.", result.kind === "trap" ? "" : "success");
   } else if (type === "maze_move_result") {
     const result = message.result || message;
-    if (message.state || message.room) state.room = applyRoom(message);
+    if (message.state || message.room) state.room = setRoomFromPayload(message);
     const eventMessages = {
       move: "한 칸 이동했어요. 보물을 찾아 금고로 돌아오세요.",
       bank: `보물을 금고에 넣어 ${Number(result.amount || result.starDustTransferred || 0)}점을 확보했어요!`,
@@ -873,7 +1016,7 @@ function handleSocketMessage(message) {
     setStatus("서버 위치를 확인했어요.", result.event === "trap" ? "" : "success");
   } else if (type === "escape_result") {
     const previousEscape = escapeState();
-    if (message.room || message.state) state.room = applyRoom(message);
+    if (message.room || message.state) state.room = setRoomFromPayload(message);
     const result = message.result || {};
     const action = state.escapeAction;
     const retryActive = action === "unlock" && escapeRetrySeconds(escapeState()) > 0;
@@ -890,7 +1033,7 @@ function handleSocketMessage(message) {
     }
     setStatus(result.message || "야간학교의 단서가 갱신됐어요.", retryActive ? "error" : "success");
   } else if (type === "finish") {
-    state.room = applyRoom(message);
+    state.room = setRoomFromPayload(message);
     if (state.room && !state.room.status) state.room.status = "finished";
     if (escapeModeActive()) state.escapeAmbientBlocked = true;
     if (escapeModeActive()) escapeAudioInstance()?.stopAmbient?.();
@@ -899,7 +1042,7 @@ function handleSocketMessage(message) {
     if (state.role === "teacher") loadTeacherReport();
   } else if (type === "error") {
     const error = new ApiError(message.message || "게임 요청을 처리하지 못했어요.", 0, message.code || message.error);
-    if (message.room || message.state) state.room = applyRoom(message);
+    if (message.room || message.state) state.room = setRoomFromPayload(message);
     setStatus(friendlyError(error), "error");
     if (message.error === "DUPLICATE_ANSWER") {
       state.pendingQuestionKey = null;
@@ -931,7 +1074,7 @@ function roleChooser() {
   return `
     <section class="screen entry-screen" aria-labelledby="welcome-title">
       <div class="entry-copy">
-        <p class="entry-kicker">실시간 교실 게임</p>
+        <p class="entry-kicker">실시간 교실 게임 <span class="product-beta-badge" aria-label="베타 버전">β BETA</span></p>
         <h1 id="welcome-title">수업이 시작되면,<br><span>경기가 된다.</span></h1>
         <p class="lead">학생은 방 번호로 바로 참가하고, 선생님은 게임방을 만들어 수업을 시작하세요.</p>
       </div>
@@ -1404,6 +1547,44 @@ function escapePlayView() {
   "</section>";
 }
 
+function treasureScoreDelta(before, after) {
+  if (!Number.isFinite(before) || !Number.isFinite(after)) return "";
+  const delta = after - before;
+  return `${delta > 0 ? "+" : ""}${delta.toLocaleString()}점`;
+}
+
+function treasureEventChangeHtml(player) {
+  const scoreBefore = player.scoreBefore;
+  const scoreAfter = player.scoreAfter;
+  const unbankedBefore = player.unbankedBefore;
+  const unbankedAfter = player.unbankedAfter;
+  const scoreChange = Number.isFinite(scoreBefore) && Number.isFinite(scoreAfter)
+    ? `<span class="treasure-event-change treasure-event-confirmed"><strong>확정 점수</strong> ${scoreBefore.toLocaleString()} → ${scoreAfter.toLocaleString()}점 <b>(${treasureScoreDelta(scoreBefore, scoreAfter)})</b></span>`
+    : "";
+  const unbankedChange = Number.isFinite(unbankedBefore) && Number.isFinite(unbankedAfter)
+    ? `<span class="treasure-event-change treasure-event-unconfirmed"><strong>미확정 보물</strong> ${unbankedBefore.toLocaleString()} → ${unbankedAfter.toLocaleString()}점 <b>(${treasureScoreDelta(unbankedBefore, unbankedAfter)})</b></span>`
+    : "";
+  return `<li class="treasure-event-player"><strong>${escapeHtml(player.nickname)}</strong>${scoreChange || unbankedChange ? `<div>${scoreChange}${unbankedChange}</div>` : `<span class="treasure-event-change treasure-event-unconfirmed">서버 기록에 상세 증감이 없어요. 최신 점수에서 확인해 주세요.</span>`}</li>`;
+}
+
+function treasureEventCardHtml() {
+  if (roomMode() !== "treasure_heist" || !state.treasureEvent) return "";
+  const event = state.treasureEvent;
+  const affectedPlayers = Array.isArray(event.affectedPlayers) ? event.affectedPlayers.slice(0, 30) : [];
+  const label = TREASURE_EVENT_LABELS[event.kind] || "금고 효과";
+  const details = affectedPlayers.length
+    ? `<ul class="treasure-event-players">${affectedPlayers.map(treasureEventChangeHtml).join("")}</ul>`
+    : `<p class="treasure-event-unconfirmed">기존 결과 형식이에요. 상세 증감은 최신 점수에서 확인해 주세요.</p>`;
+  return `<section class="treasure-event-card" data-treasure-event-id="${escapeHtml(event.id)}" aria-labelledby="treasure-event-title">
+    <div class="treasure-event-head">
+      <div><p class="eyebrow">최근 금고 효과 · 서버 확정</p><h2 id="treasure-event-title">${escapeHtml(event.title)}</h2></div>
+      <button class="treasure-event-toggle" type="button" data-action="toggle-treasure-event" aria-controls="treasure-event-details" aria-expanded="${String(state.treasureEventOpen)}">${state.treasureEventOpen ? "기록 접기" : "최근 효과 보기"}</button>
+    </div>
+    <div class="treasure-event-summary"><p><strong>${escapeHtml(label)}</strong> · 행동한 사람 ${escapeHtml(event.actorNickname)}</p><p>${escapeHtml(event.description)}</p></div>
+    <div id="treasure-event-details" class="treasure-event-details" ${state.treasureEventOpen ? "" : "hidden"}><p class="treasure-event-details-label">서버가 확정한 실제 변화</p>${details}<p class="treasure-event-note">확정 점수와 미확정 보물을 구분해 표시해요. 다음 선택은 새 서버 결과로 갱신됩니다.</p></div>
+  </section>`;
+}
+
 function studentPlayView() {
   if (roomMode() === "grammar_escape") return escapePlayView();
   const question = currentQuestion();
@@ -1435,6 +1616,7 @@ function studentPlayView() {
         </div>
       </header>
       <article class="arena-floor">
+        ${roomMode() === "treasure_heist" ? treasureEventCardHtml() : ""}
         ${teamMode ? teamSummaryHtml() : ""}
         ${roomMode() === "treasure_heist" && treasureChoices.length ? treasureChoiceView(treasureChoices) : question ? `
           <div class="question-console arena-question-console">
@@ -1580,7 +1762,8 @@ function treasureChoiceView(choices) {
   const run = currentPlayer()?.vaultRun || currentPlayer()?.vault_run || { unbanked: 0, depth: 0, shield: 0 };
   const depth = Math.max(0, Math.min(4, Number(run.depth || 0)));
   const risk = [15, 25, 40, 55, 70][depth];
-  const actionIcon = { bank: "⬇", dive: "◆", raid: "⚔", switch: "⇄" };
+  const actionIcon = { bank: "⬇", dive: "◆", raid: "⚔", switch: "⇄", mystery: "?" };
+  const mysteryAvailable = choices.some((choice) => choice.strategy === "mystery");
   const actionButton = (choice, label) => `<button class="treasure-button vault-action ${escapeHtml(choice.strategy || "")}" type="button" data-action="treasure-choice" data-choice-id="${escapeHtml(choice.id)}" ${state.treasureBusy ? "disabled" : ""}><span class="vault-action-icon" aria-hidden="true">${actionIcon[choice.strategy] || "◇"}</span><strong>${escapeHtml(label || choice.label || "보물 선택")}</strong><span>${escapeHtml(choice.hint || "행동 기회 1회 사용")}</span></button>`;
   const targeted = ["raid", "switch"].map(strategy => {
     const options = choices.filter(choice => choice.strategy === strategy);
@@ -1596,6 +1779,7 @@ function treasureChoiceView(choices) {
   return `<div class="treasure-stage" aria-labelledby="treasure-title">
     <div class="treasure-stage-copy"><p class="eyebrow">VAULT RUN · DEPTH ${depth + 1}</p><h1 id="treasure-title" tabindex="-1">보물을 확보할까, 더 내려갈까?</h1><p>행동은 한 번! 보물을 지키거나, 위험을 감수해 더 가져오세요.</p></div>
     <div class="vault-run-scene" style="--vault-heat:${risk}%"><div class="vault-loot"><span>들고 있는 보물</span><strong>${Number(run.unbanked || 0).toLocaleString()}점</strong><small>확보하면 내 점수에 더해져요</small></div><div class="vault-tunnel" aria-label="현재 깊이 ${depth + 1}단계"><i></i><i></i><i></i><i></i><i></i><b style="left:${depth * 23}%">나</b></div><div class="vault-risk"><span>다음 함정 확률</span><strong>${risk}%</strong><small>방패 ${Number(run.shield || 0)}개 · 교환권 ${Number(run.switchCharge || 0)}/1</small></div></div>
+    ${mysteryAvailable ? '<p class="treasure-mystery-note"><strong>행운 상자</strong> · 개봉 전 결과는 비공개예요. 배수·랜덤 친구 선물·아주 드문 전체 초기화 중 하나가 서버에서 확정돼요.</p>' : ""}
     <div class="vault-final-warning" data-vault-warning hidden></div>
     <div class="treasure-grid">${choices.filter(choice => !["raid", "switch"].includes(choice.strategy)).map(choice => actionButton(choice)).join("")}${targeted}</div>
     ${state.feedback?.treasureMessage ? `<div class="feedback ${state.feedback.treasureTone || "correct"}" role="status">${escapeHtml(state.feedback.treasureMessage)}</div>` : ""}
@@ -1643,6 +1827,7 @@ function teacherLiveView() {
           <div class="mini-stat"><span>반 평균</span><strong>${average}%</strong></div>
           <div class="mini-stat"><span>남은 시간</span><strong id="game-timer">${formatTime(remainingSeconds())}</strong></div>
         </div>
+        ${roomMode() === "treasure_heist" ? treasureEventCardHtml() : ""}
         <div class="section-title"><h2 id="live-title">개인 순위 · 점수</h2><span class="tag live">● LIVE</span></div>
         ${leaderboardHtml(players)}
         ${isTeamMode() ? `<div class="leaderboard-divider"></div><div class="section-title"><h2>팀 순위 · 합산 점수</h2><span class="tag team-badge">🛡️ 팀전</span></div>${teamLeaderboardHtml()}` : ""}
@@ -1967,6 +2152,7 @@ function bindEvents() {
     if (action === "finish-room") element.addEventListener("click", finishRoom);
     if (action === "answer") element.addEventListener("click", submitAnswer);
     if (action === "treasure-choice") element.addEventListener("click", chooseTreasure);
+    if (action === "toggle-treasure-event") element.addEventListener("click", toggleTreasureEvent);
     if (action === "maze-move") element.addEventListener("click", moveMaze);
     if (action === "escape-inspect") element.addEventListener("click", inspectEscapeHotspot);
     if (action === "escape-unlock") element.addEventListener("click", unlockEscapeDoor);
@@ -2113,6 +2299,12 @@ function chooseTreasure(event) {
   }
 }
 
+function toggleTreasureEvent() {
+  if (!state.treasureEvent) return;
+  state.treasureEventOpen = !state.treasureEventOpen;
+  render();
+}
+
 function toggleEscapeQuestion() {
   if (!state.escapeQuestionOpen) {
     openEscapeQuestion();
@@ -2239,6 +2431,7 @@ async function logoutTeacher() {
   }
   resetConnection();
   stopClock();
+  resetTreasureEventState();
   state.role = null;
   state.room = null;
   state.report = null;
@@ -2267,7 +2460,7 @@ async function reopenTeacherRoom() {
       return;
     }
     const payload = await roomApi.getTeacherRoomState(state.roomCode);
-    state.room = applyRoom(payload);
+    state.room = setRoomFromPayload(payload);
     state.busy = false;
     state.teacherLoginRequired = false;
     connectLiveRoom();
@@ -2297,6 +2490,7 @@ function leaveRoom() {
 function newRoom() {
   resetConnection();
   stopClock();
+  resetTreasureEventState();
   state.role = "teacher";
   state.room = null;
   state.report = null;
@@ -2340,7 +2534,7 @@ async function joinRoom(event) {
     state.roomCode = code;
     state.playerId = payload.playerId;
     state.resumeToken = payload.resumeToken;
-    state.room = applyRoom(payload);
+    state.room = setRoomFromPayload(payload);
     if (!state.playerId || !state.resumeToken || !state.room) throw new ApiError("참가 정보를 받지 못했어요.", 500);
     saveStudentCredentials(state.playerId, state.resumeToken);
     updateUrl(code);
@@ -2386,7 +2580,7 @@ async function createRoom(event) {
   try {
     const payload = await roomApi.createRoom(config);
     state.roomCode = sanitizeCode(payload.code || payload.state?.code || payload.room?.code);
-    state.room = applyRoom(payload);
+    state.room = setRoomFromPayload(payload);
     if (!state.roomCode || !state.room) throw new ApiError("방 정보를 받지 못했어요.", 500);
     state.busy = false;
     state.teacherLoginRequired = false;
@@ -2409,7 +2603,7 @@ async function startRoom() {
   setStatus("게임을 시작하고 있어요…");
   try {
     const payload = await roomApi.startRoom(state.roomCode);
-    state.room = applyRoom(payload);
+    state.room = setRoomFromPayload(payload);
     state.busy = false;
     setStatus(`${modeLabel()} 시작!`, "success");
     render();
@@ -2427,7 +2621,7 @@ async function finishRoom() {
   render();
   try {
     const payload = await roomApi.finishRoom(state.roomCode);
-    state.room = applyRoom(payload);
+    state.room = setRoomFromPayload(payload);
     state.busy = false;
     await loadTeacherReport();
     setStatus("게임 결과를 집계했어요.", "success");
@@ -2512,7 +2706,7 @@ async function restoreStudentSession() {
       playerId: storedId,
       resumeToken: storedToken,
     });
-    state.room = applyRoom(payload);
+    state.room = setRoomFromPayload(payload);
     if (roomStatus(state.room) === "playing") setStatus();
     else if (roomStatus(state.room) === "finished") setStatus("게임 종료", "success");
     else setStatus("게임방에 다시 연결했어요.", "success");
@@ -2543,9 +2737,20 @@ async function restoreTeacherIntent() {
   return true;
 }
 
+function restoreStudentIntent() {
+  if (!initialStudentIntent) return false;
+  state.role = "student";
+  state.view = "join";
+  setStatus();
+  render();
+  window.setTimeout(() => document.querySelector(state.roomCode ? "#nickname" : "#room-code")?.focus(), 0);
+  return true;
+}
+
 async function bootstrap() {
   if (await restoreTeacherIntent()) return;
   if (await restoreStudentSession()) return;
+  if (restoreStudentIntent()) return;
   await loadTeacherSession({ quiet: true });
   render();
 }

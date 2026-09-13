@@ -8,6 +8,11 @@ const html=fs.readFileSync(new URL('index.html',`file://${__dirname}/`),'utf8');
 const script=html.match(/<script>\s*('use strict';[\s\S]*?)<\/script>/)?.[1];
 assert(script,'inline game script not found');
 new vm.Script(script,{filename:'sentence-blast/index.html'});
+assert.match(script,/validUnitLaunch=requestedUnitKey==='all'\|\|Boolean\(requestedUnitKey&&GAME_QUESTIONS\[requestedUnitKey\]&&!GAME_QUESTIONS\[requestedUnitKey\]\.hidden\)/,'solo launch must accept only visible units or all');
+assert.match(script,/location\.replace\('\.\.\/game\/\?mode=sentence'\)/,'invalid solo launch must return to sentence mode picker');
+assert.match(script,/requestedSeconds=params\.get\('seconds'\)/,'sentence launch must read the shared seconds query');
+assert.match(script,/requestedSeconds==='0'\?0/,'seconds=0 must remain unlimited');
+assert.match(script,/duration===0&&!classroomMode\?'∞':time/,'unlimited solo sentence blast must show an unlimited timer');
 
 function functionSource(name){
   const start=script.indexOf(`function ${name}(`);
@@ -80,4 +85,56 @@ async function testLateRejection(){
   assert.equal(buttons['reset-btn'].disabled,true,'late rejection must not enable the newer reset button');
 }
 
-testLateRejection().then(()=>console.log('Sentence Blast state regression checks passed.'));
+function testUnlimitedClockAndChallengeCadence(){
+  let opened=0, resolved=false, critState=null;
+  const elements={
+    score:{textContent:''},lines:{textContent:''},combo:{textContent:''},grammar:{textContent:''},
+    'rescue-left':{textContent:''},time:{textContent:'',classList:{toggle(name,value){if(name==='crit')critState=value;}}},
+    'phase-fill':{style:{}},'phase-label':{textContent:''},'challenge-time':{textContent:''}
+  };
+  let now=100;
+  const context={
+    duration:0,classroomMode:false,remaining:Infinity,remainingMs:Infinity,phase:'play',phaseRemaining:0,
+    phaseRemainingMs:0,playDeadline:Infinity,phaseDeadline:0,challengeDeadline:0,
+    PLAY_PHASE_SECONDS:15,
+    score:0,lines:0,combo:0,grammarCorrect:0,grammarTotal:0,rescuesRemaining:2,lastHUDState:'',
+    challengeLeft:10,lastChallengeTime:-1,locked:false,performance:{now:()=>now},$:id=>elements[id],
+    openChallenge(){opened++;context.phase='challenge';},finish(){throw new Error('unlimited clock must not finish');},
+    resolveChallenge(_correct,timedOut){resolved=timedOut;}
+  };
+  vm.createContext(context);
+  vm.runInContext([
+    functionSource('formatTime'),functionSource('reconcilePlayClock'),
+    functionSource('updateHUD'),functionSource('tick')
+  ].join('\n'),context);
+
+  context.tick();
+  assert.equal(opened,1,'seconds=0 must keep the play clock alive and reach the challenge cadence');
+  assert.equal(elements.time.textContent,'∞','solo seconds=0 HUD must show the unlimited marker');
+
+  now=500;
+  context.challengeDeadline=1000;
+  context.tick();
+  assert.equal(context.challengeLeft,1,'challenge countdown must continue during an unlimited run');
+  assert.equal(resolved,false,'challenge must remain active before its deadline');
+  now=1200;
+  context.tick();
+  assert.equal(resolved,true,'challenge timeout must still resolve during an unlimited run');
+
+  context.classroomMode=true;
+  context.phase='play';
+  context.remaining=42;
+  context.lastHUDState='';
+  context.updateHUD();
+  assert.equal(elements.time.textContent,'0:42','classroom HUD must use its finite server clock');
+  assert.notEqual(elements.time.textContent,'∞','classroom HUD must never show the solo unlimited marker');
+  context.remaining=12;
+  context.lastHUDState='';
+  context.updateHUD();
+  assert.equal(critState,true,'classroom finite low-time HUD must retain its warning state');
+}
+
+testLateRejection().then(()=>{
+  testUnlimitedClockAndChallengeCadence();
+  console.log('Sentence Blast state regression checks passed.');
+});

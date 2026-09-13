@@ -6,9 +6,11 @@ import {
   chooseTreasure,
   createRoomState,
   escapeAction,
+  isGlobalBombWindow,
   joinPlayer,
   mazeMove,
   publicRoomState,
+  resolveMysteryEffect,
   startRoom,
   submitAnswer,
   teacherRoomState,
@@ -19,6 +21,8 @@ import {
   MAZE_SPAWN_PROTECTION_MS,
   type Question,
   type RoomState,
+  type TreasureChoice,
+  type TreasureMysteryEffectId,
 } from "../src/room-engine";
 
 const QUESTIONS: Question[] = [
@@ -177,6 +181,20 @@ function submitCurrent(
     answer,
     serverNow,
   });
+}
+
+function mysteryChoice(
+  id: string,
+  effectId: TreasureMysteryEffectId,
+  targetPlayerId?: string,
+): TreasureChoice {
+  return {
+    id,
+    strategy: "mystery",
+    kind: "safe_bonus",
+    amount: 0,
+    mystery: { effectId, kind: effectId, targetPlayerId },
+  };
 }
 
 describe("room engine", () => {
@@ -732,16 +750,210 @@ describe("room engine", () => {
   it("issues opaque bank and push-your-luck actions after a correct answer", () => {
     const started = startRoom(addPlayer(heistRoom()), 3_000);
     const submitted = submitCurrent(started, "player-1", 3_500);
-    expect(submitted.result.treasureChoices).toHaveLength(2);
+    expect(submitted.result.treasureChoices).toHaveLength(3);
     expect(submitted.result.treasureChoices?.every((choice) => Object.keys(choice).sort().join() === "hint,id,label,strategy")).toBe(true);
-    expect(submitted.result.treasureChoices?.map((choice) => choice.strategy)).toEqual(["bank", "dive"]);
-    expect(submitted.state.players["player-1"].pendingTreasureChoices).toHaveLength(2);
+    expect(submitted.result.treasureChoices?.map((choice) => choice.strategy)).toEqual(["bank", "dive", "mystery"]);
+    expect(submitted.state.players["player-1"].pendingTreasureChoices).toHaveLength(3);
     expect(submitted.state.players["player-1"].vaultRun).toEqual({ unbanked: 50, depth: 0, shield: 1, switchCharge: 0 });
     expect(publicRoomState(submitted.state, "player-1").self?.treasureChoices).toEqual(
       submitted.result.treasureChoices,
     );
     expect(JSON.stringify(publicRoomState(submitted.state, "player-1"))).not.toContain("targetPlayerId");
     expect(JSON.stringify(publicRoomState(submitted.state, "player-1"))).not.toContain('"amount"');
+    expect(JSON.stringify(submitted.result.treasureChoices)).not.toContain("double");
+    expect(submitted.result.treasureChoices?.find((choice) => choice.strategy === "mystery")).toMatchObject({
+      label: "행운 상자",
+      hint: "배수·랜덤 친구 선물·보물 나눔·아주 드문 전체 0점 가능",
+    });
+  });
+
+  it("applies a mystery double and broadcasts flat snapshots to every view", () => {
+    let state = startRoom(addPlayer(addPlayer(heistRoom(), "player-1", "하나", 2_000), "player-2", "둘", 2_100), 3_000);
+    state = {
+      ...state,
+      players: {
+        ...state.players,
+        "player-1": {
+          ...state.players["player-1"],
+          vaultRun: { unbanked: 80, depth: 1, shield: 1, switchCharge: 0 },
+          pendingTreasureChoices: [mysteryChoice("mystery-double", "double")],
+        },
+        "player-2": {
+          ...state.players["player-2"],
+          score: 40,
+          vaultRun: { unbanked: 20, depth: 0, shield: 1, switchCharge: 0 },
+        },
+      },
+    };
+    const chosen = chooseTreasure(state, { playerId: "player-1", choiceId: "mystery-double", serverNow: 3_600 });
+    expect(chosen.state.players["player-1"].vaultRun?.unbanked).toBe(160);
+    expect(chosen.state.players["player-1"].score).toBe(0);
+    expect(chosen.result).toMatchObject({ kind: "double", amount: 80, strategy: "mystery" });
+    expect(chosen.result.event).toMatchObject({
+      id: "treasure-event:mystery-double",
+      kind: "double",
+      actorNickname: "하나",
+      createdAt: 3_600,
+    });
+    expect(chosen.result.event?.affectedPlayers).toEqual([
+      { playerId: "player-1", nickname: "하나", scoreBefore: 0, scoreAfter: 0, unbankedBefore: 80, unbankedAfter: 160 },
+      { playerId: "player-2", nickname: "둘", scoreBefore: 40, scoreAfter: 40, unbankedBefore: 20, unbankedAfter: 20 },
+    ]);
+    expect(publicRoomState(chosen.state, "player-2").lastTreasureEvent).toEqual(chosen.result.event);
+    expect(teacherRoomState(chosen.state).lastTreasureEvent).toEqual(chosen.result.event);
+  });
+
+  it("caps multiplier and angel bonuses while keeping the zero treasure base", () => {
+    let state = startRoom(addPlayer(addPlayer(heistRoom(), "player-1", "하나", 2_000), "player-2", "둘", 2_100), 3_000);
+    state = {
+      ...state,
+      players: {
+        ...state.players,
+        "player-1": { ...state.players["player-1"], vaultRun: { unbanked: 1_000, depth: 0, shield: 1, switchCharge: 0 }, pendingTreasureChoices: [mysteryChoice("cap-double", "double")] },
+        "player-2": { ...state.players["player-2"], vaultRun: { unbanked: 1_000, depth: 0, shield: 1, switchCharge: 0 } },
+      },
+    };
+    const doubled = chooseTreasure(state, { playerId: "player-1", choiceId: "cap-double", serverNow: 3_600 });
+    expect(doubled.state.players["player-1"].vaultRun?.unbanked).toBe(1_500);
+    expect(doubled.result.event?.description).toContain("최대 +500점");
+
+    state = {
+      ...doubled.state,
+      players: {
+        ...doubled.state.players,
+        "player-1": { ...doubled.state.players["player-1"], vaultRun: { unbanked: 1_000, depth: 0, shield: 1, switchCharge: 0 }, pendingTreasureChoices: [mysteryChoice("cap-triple", "triple")] },
+      },
+    };
+    const tripled = chooseTreasure(state, { playerId: "player-1", choiceId: "cap-triple", serverNow: 3_700 });
+    expect(tripled.state.players["player-1"].vaultRun?.unbanked).toBe(2_000);
+    expect(tripled.result.event?.description).toContain("최대 +1000점");
+
+    state = {
+      ...tripled.state,
+      players: {
+        ...tripled.state.players,
+        "player-1": { ...tripled.state.players["player-1"], vaultRun: { unbanked: 0, depth: 0, shield: 1, switchCharge: 0 }, pendingTreasureChoices: [mysteryChoice("base-double", "double")] },
+        "player-2": { ...tripled.state.players["player-2"], vaultRun: { unbanked: 0, depth: 0, shield: 1, switchCharge: 0 } },
+      },
+    };
+    const baseDouble = chooseTreasure(state, { playerId: "player-1", choiceId: "base-double", serverNow: 3_800 });
+    expect(baseDouble.state.players["player-1"].vaultRun?.unbanked).toBe(100);
+    state = { ...baseDouble.state, players: { ...baseDouble.state.players, "player-1": { ...baseDouble.state.players["player-1"], vaultRun: { unbanked: 0, depth: 0, shield: 1, switchCharge: 0 }, pendingTreasureChoices: [mysteryChoice("base-triple", "triple")] } } };
+    const baseTriple = chooseTreasure(state, { playerId: "player-1", choiceId: "base-triple", serverNow: 3_900 });
+    expect(baseTriple.state.players["player-1"].vaultRun?.unbanked).toBe(150);
+
+    state = { ...baseTriple.state, players: { ...baseTriple.state.players, "player-1": { ...baseTriple.state.players["player-1"], pendingTreasureChoices: [mysteryChoice("cap-angel", "angel", "player-2")] }, "player-2": { ...baseTriple.state.players["player-2"], vaultRun: { unbanked: 1_000, depth: 0, shield: 1, switchCharge: 0 } } } };
+    const angeled = chooseTreasure(state, { playerId: "player-1", choiceId: "cap-angel", serverNow: 4_000 });
+    expect(angeled.state.players["player-2"].vaultRun?.unbanked).toBe(1_500);
+    expect(angeled.result.event?.description).toContain("최대 +500점");
+  });
+
+  it("keeps mystery choice and event IDs unique across players", () => {
+    const started = startRoom(addPlayer(addPlayer(heistRoom(), "player-1", "하나", 2_000), "player-2", "둘", 2_100), 3_000);
+    const answeredA = submitCurrent(started, "player-1", 3_500).state;
+    const answeredBoth = submitCurrent(answeredA, "player-2", 3_600).state;
+    const mysteryA = answeredBoth.players["player-1"].pendingTreasureChoices?.find((choice) => choice.strategy === "mystery");
+    const mysteryB = answeredBoth.players["player-2"].pendingTreasureChoices?.find((choice) => choice.strategy === "mystery");
+    expect(mysteryA?.id).toBeDefined();
+    expect(mysteryB?.id).toBeDefined();
+    expect(mysteryA?.id).not.toBe(mysteryB?.id);
+    const openedA = chooseTreasure(answeredBoth, { playerId: "player-1", choiceId: mysteryA!.id, serverNow: 3_700 });
+    const openedB = chooseTreasure(openedA.state, { playerId: "player-2", choiceId: mysteryB!.id, serverNow: 3_800 });
+    expect(openedA.result.event?.id).not.toBe(openedB.result.event?.id);
+  });
+
+  it("transfers donate treasure and gives external gift or angel effects to one server target", () => {
+    let state = startRoom(addPlayer(addPlayer(heistRoom(), "player-1", "하나", 2_000), "player-2", "둘", 2_100), 3_000);
+    state = {
+      ...state,
+      players: {
+        ...state.players,
+        "player-1": {
+          ...state.players["player-1"],
+          vaultRun: { unbanked: 100, depth: 0, shield: 1, switchCharge: 0 },
+          pendingTreasureChoices: [mysteryChoice("mystery-donate", "donate", "player-2")],
+        },
+        "player-2": {
+          ...state.players["player-2"],
+          score: 20,
+          vaultRun: { unbanked: 30, depth: 0, shield: 1, switchCharge: 0 },
+        },
+      },
+    };
+    const donated = chooseTreasure(state, { playerId: "player-1", choiceId: "mystery-donate", serverNow: 3_600 });
+    expect(donated.state.players["player-1"].vaultRun?.unbanked).toBe(50);
+    expect(donated.state.players["player-2"].vaultRun?.unbanked).toBe(80);
+    expect(donated.result).toMatchObject({ kind: "donate", amount: 50, targetNickname: "둘" });
+
+    const giftState = {
+      ...donated.state,
+      players: {
+        ...donated.state.players,
+        "player-1": {
+          ...donated.state.players["player-1"],
+          pendingTreasureChoices: [mysteryChoice("mystery-gift", "gift", "player-2")],
+        },
+      },
+    };
+    const gifted = chooseTreasure(giftState, { playerId: "player-1", choiceId: "mystery-gift", serverNow: 3_700 });
+    expect(gifted.state.players["player-2"].score).toBe(120);
+    expect(gifted.result.event?.kind).toBe("gift");
+
+    const angelState = {
+      ...gifted.state,
+      players: {
+        ...gifted.state.players,
+        "player-1": {
+          ...gifted.state.players["player-1"],
+          pendingTreasureChoices: [mysteryChoice("mystery-angel", "angel", "player-2")],
+        },
+      },
+    };
+    const angeled = chooseTreasure(angelState, { playerId: "player-1", choiceId: "mystery-angel", serverNow: 3_800 });
+    expect(angeled.state.players["player-2"].vaultRun?.unbanked).toBe(160);
+    expect(angeled.result.event?.kind).toBe("angel");
+  });
+
+  it("zeros every participant for a valid global bomb without restoring the chooser", () => {
+    let state = startRoom(addPlayer(addPlayer(addPlayer(heistRoom(), "player-1", "하나", 2_000), "player-2", "둘", 2_100), "player-3", "셋", 2_200), 3_000);
+    state = {
+      ...state,
+      players: {
+        ...state.players,
+        "player-1": {
+          ...state.players["player-1"],
+          score: 120,
+          lastAnswer: { occurrenceIndex: 0, questionId: "g1-l1-q1", correct: true, responseTimeMs: 100, scoreGain: 100, submittedAt: 3_100 },
+          vaultRun: { unbanked: 70, depth: 2, shield: 1, switchCharge: 1 },
+          pendingTreasureChoices: [mysteryChoice("mystery-bomb", "global_bomb")],
+        },
+        "player-2": { ...state.players["player-2"], score: 230, vaultRun: { unbanked: 40, depth: 1, shield: 1, switchCharge: 0 } },
+        "player-3": { ...state.players["player-3"], score: 90, vaultRun: { unbanked: 10, depth: 0, shield: 1, switchCharge: 0 } },
+      },
+    };
+    expect(isGlobalBombWindow(state, 34_000)).toBe(true);
+    const chosen = chooseTreasure(state, { playerId: "player-1", choiceId: "mystery-bomb", serverNow: 34_000 });
+    for (const player of Object.values(chosen.state.players)) {
+      expect(player.score).toBe(0);
+      expect(player.vaultRun?.unbanked).toBe(0);
+    }
+    expect(chosen.state.players["player-1"].lastAnswer?.questionId).toBe("g1-l1-q1");
+    expect(chosen.result.event?.kind).toBe("global_bomb");
+    expect(chosen.result.event?.affectedPlayers).toHaveLength(3);
+    expect(publicRoomState(chosen.state, "player-1").lastTreasureEvent?.kind).toBe("global_bomb");
+  });
+
+  it("gates global bomb to the middle of the room and prevents a second roll", () => {
+    const state = startRoom(addPlayer(heistRoom()), 3_000);
+    expect(isGlobalBombWindow(state, 33_000)).toBe(false);
+    expect(isGlobalBombWindow(state, 273_000)).toBe(false);
+    expect(resolveMysteryEffect(state, "player-1", 0, 34_000, { unbanked: 50, depth: 0, shield: 1, switchCharge: 0 }, { globalRoll: 0 })).toMatchObject({ kind: "global_bomb" });
+    expect(resolveMysteryEffect({ ...state, globalBombUsed: true }, "player-1", 0, 34_000, { unbanked: 50, depth: 0, shield: 1, switchCharge: 0 }, { globalRoll: 0 }).kind).not.toBe("global_bomb");
+
+    expect(resolveMysteryEffect(state, "player-1", 0, 34_000, { unbanked: 50, depth: 0, shield: 1, switchCharge: 0 }, { globalRoll: 1, effectRoll: 0 }).kind).toBe("safe_bonus");
+    expect(resolveMysteryEffect(state, "player-1", 0, 34_000, { unbanked: 50, depth: 0, shield: 1, switchCharge: 0 }, { globalRoll: 1, effectRoll: 0.35 }).kind).toBe("double");
+    expect(resolveMysteryEffect(state, "player-1", 0, 34_000, { unbanked: 50, depth: 0, shield: 1, switchCharge: 0 }, { globalRoll: 1, effectRoll: 0.5 }).kind).toBe("triple");
+    expect(resolveMysteryEffect(state, "player-1", 0, 34_000, { unbanked: 50, depth: 0, shield: 1, switchCharge: 0 }, { globalRoll: 1, effectRoll: 0.55 }).kind).toBe("safe_bonus");
   });
 
   it("prevents advancing until a treasure choice is selected", () => {

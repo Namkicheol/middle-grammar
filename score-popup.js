@@ -264,7 +264,7 @@
     injectCSS();
     opts = opts || {};
     var prev = getBest();
-    var sc = Math.round(correct / total * 100);
+    var sc = total > 0 ? Math.round(correct / total * 100) : 0;
     var isNew = saveBest(sc, correct, total);
     var wrongItems = collectWrongItems(opts);
 

@@ -1,4 +1,5 @@
 import assert from 'node:assert/strict';
+import { readFile } from 'node:fs/promises';
 import {
   ARCHIVE_ORDER,
   CLASSROOM_HOTSPOTS,
@@ -12,6 +13,10 @@ import {
 
 const step = (state, action) => reduceState(state, action);
 const inspectAll = (state, ids) => ids.reduce((current, id) => step(current, { type: 'inspect', id }), state);
+const gameSource = await readFile(new URL('./game.js', import.meta.url), 'utf8');
+
+assert.match(gameSource, /class="number-pad"/, 'classroom code uses persistent tap buttons');
+assert.doesNotMatch(gameSource, /<select data-action="set-room-digit"/, 'classroom code no longer rerenders a native select on click');
 
 let state = createInitialState();
 assert.equal(state.scene, 'classroom');
@@ -21,10 +26,21 @@ assert.equal(MAZE.every((row) => row.length === 15), true, 'maze rows keep a sta
 assert.equal(isMazeWalkable(1, 1), true);
 assert.equal(isMazeWalkable(0, 1), false);
 
+let clueState = step(state, { type: 'inspect', id: 'board' });
+const firstClueMessage = clueState.message;
+clueState = step(clueState, { type: 'inspect', id: 'board' });
+assert.equal(clueState.message, firstClueMessage, 'revisiting a scene hotspot keeps the full clue text');
+clueState = step(clueState, { type: 'revisit-clue', scene: 'classroom', id: 'board' });
+assert.equal(clueState.message, firstClueMessage, 'stored clues can be reopened from inventory');
+assert.equal(clueState.inventory.clues[0].detail, CLASSROOM_HOTSPOTS[0].detail, 'stored clue keeps its readable detail');
+
 state = inspectAll(state, CLASSROOM_HOTSPOTS.filter((hotspot) => !hotspot.locked).map((hotspot) => hotspot.id));
 assert.equal(state.puzzleReady.classroom, true, 'classroom puzzle appears after all spatial clues');
 assert.equal(state.inventory.clues.length, 3);
 state = step(state, { type: 'set-room-digit', index: 0, value: '5' });
+state = step(state, { type: 'set-room-digit', index: 1, value: '2' });
+state = step(state, { type: 'set-room-digit', index: 1, value: '' });
+assert.equal(state.classroomCode[1], '', 'numeric keypad can clear an active slot');
 state = step(state, { type: 'set-room-digit', index: 1, value: '2' });
 state = step(state, { type: 'set-room-digit', index: 2, value: '8' });
 state = step(state, { type: 'solve-room' });

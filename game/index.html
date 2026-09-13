@@ -901,6 +901,11 @@ body:has(#speed-screen[style*="display: block"]) #sp-badge{display:none!importan
       <a class="play-tab on" href="./" aria-current="page">혼자 하기</a>
       <a class="play-tab multi" id="multiplayer-tab" href="../multiplayer/">같이 하기</a>
     </nav>
+    <a class="multi-entry-cta" id="multiplayer-join-cta" href="../multiplayer/?join=1" aria-label="멀티 참여하기, 학생 방 번호 입력, 베타 버전">
+      <span class="multi-entry-copy"><strong>멀티 참여하기</strong><small>학생 방 번호 입력</small></span>
+      <em class="multi-entry-beta" aria-label="베타 버전">β BETA</em>
+      <b aria-hidden="true">→</b>
+    </a>
   </header>
   <main class="arena-selector">
     <section class="game-select mode-library" aria-labelledby="mode-heading">
@@ -939,9 +944,9 @@ body:has(#speed-screen[style*="display: block"]) #sp-badge{display:none!importan
               <i class="mode-thumb" aria-hidden="true">💥</i>
               <span class="mode-copy"><strong>블록 블라스트</strong></span>
             </button>
-            <button class="mode-btn" type="button" data-mode="escape" aria-label="야간학교 탈출">
+            <button class="mode-btn" type="button" data-mode="escape" aria-label="야간학교 탈출, 베타 버전">
               <i class="mode-thumb" aria-hidden="true">🌙</i>
-              <span class="mode-copy"><strong>야간학교 탈출</strong></span>
+              <span class="mode-copy"><strong>야간학교 탈출</strong><small class="mode-beta" aria-label="베타 버전">β BETA</small></span>
             </button>
           </div>
         </div>
@@ -1461,10 +1466,18 @@ cleanupZeroScoreRecords();
 
 (function buildStartScreen(){
   const multiplayerTab = document.getElementById('multiplayer-tab');
+  const multiplayerJoinCta = document.getElementById('multiplayer-join-cta');
   const localHost = ['localhost', '127.0.0.1', '::1'].includes(location.hostname);
-  multiplayerTab.href = localHost
+  const multiplayerHref = localHost
     ? 'http://127.0.0.1:8787/multiplayer/'
     : 'https://middle-grammar-multiplayer.obangti.workers.dev/multiplayer/';
+  multiplayerTab.href = multiplayerHref;
+  if (multiplayerJoinCta) {
+    const roomInputUrl = new URL(multiplayerHref);
+    roomInputUrl.searchParams.set('join', '1');
+    roomInputUrl.searchParams.delete('room');
+    multiplayerJoinCta.href = roomInputUrl.href;
+  }
 
   // deco bubbles
   const deco = document.getElementById('deco');
@@ -1557,6 +1570,12 @@ cleanupZeroScoreRecords();
       document.querySelector('.unit-section').scrollIntoView({behavior:matchMedia('(prefers-reduced-motion: reduce)').matches ? 'instant' : 'smooth',block:'start'});
     });
   });
+  // 게임 화면에서 단원 없이 되돌아온 경우에도 허브에서 모드를 먼저 골라 둔다.
+  // 각 게임은 이 허브의 단원 카드만을 진입점으로 사용하므로 자체 선택 게이트가 중복되지 않는다.
+  const requestedMode = new URLSearchParams(location.search).get('mode');
+  const requestedModeButton = [...document.querySelectorAll('.mode-btn')]
+    .find(btn => btn.dataset.mode === requestedMode);
+  if (requestedModeButton) requestedModeButton.click();
   selectGrade(activeGrade);
   syncTimeOptionsVisibility();
   setTimeout(renderUnitBestBadges, 0);
@@ -1578,16 +1597,25 @@ function selectGrade(grade) {
   document.getElementById('grade-random').innerHTML = `🎲 ${gradeLabel} 전체에서 랜덤<span>16개 주제 중 하나를 골라 시작</span>`;
 }
 
+function soloLaunchQuery(unitKey) {
+  const query = new URLSearchParams();
+  query.set('autostart', '1');
+  query.set('unit', unitKey || 'all');
+  // 홈에서 고른 시간은 모든 런처가 읽을 수 있게 전달한다. 0은 무제한이다.
+  const seconds = Number(timeLimitSec);
+  if (Number.isFinite(seconds) && seconds >= 0) query.set('seconds', String(seconds));
+  return '?' + query.toString();
+}
+
 function startSelectedGame(unitKey) {
   if (selectedMode === 'boss') {
-    location.href = '../game2/?unit=' + encodeURIComponent(unitKey);
+    location.href = '../game2/' + soloLaunchQuery(unitKey);
   } else if (selectedMode === 'speed') startSpeedQuiz(unitKey);
-  else if (selectedMode === 'whack') location.href = '../whack-grammar/?unit=' + encodeURIComponent(unitKey);
-  else if (selectedMode === 'tower') location.href = '../tower/?unit=' + encodeURIComponent(unitKey);
-  else if (selectedMode === 'rangers') location.href = '../grammar-rangers/?unit=' + encodeURIComponent(unitKey);
+  else if (selectedMode === 'whack') location.href = '../whack-grammar/' + soloLaunchQuery(unitKey);
+  else if (selectedMode === 'tower') location.href = '../tower/' + soloLaunchQuery(unitKey);
+  else if (selectedMode === 'rangers') location.href = '../grammar-rangers/' + soloLaunchQuery(unitKey);
   else if (selectedMode === 'sentence') {
-    const seconds = timeLimitSec > 0 ? timeLimitSec : 300;
-    location.href = '../sentence-blast/?unit=' + encodeURIComponent(unitKey) + '&seconds=' + seconds;
+    location.href = '../sentence-blast/' + soloLaunchQuery(unitKey);
   } else if (selectedMode === 'escape') location.href = '../escape/';
   else startGame(unitKey);
 }

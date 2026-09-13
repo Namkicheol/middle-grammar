@@ -247,6 +247,9 @@ button{font-family:inherit;}
   #gate-go{margin-top:14px;padding:14px 48px;}
 }
 /* 2026 expedition visual refresh */
+html[data-solo-launch] #gate{display:none!important}
+html[data-solo-launch] body::before{content:'전장을 준비 중…';position:fixed;inset:0;z-index:90;display:grid;place-items:center;background:#101923;color:#f2c86f;font-size:1rem;font-weight:700;letter-spacing:.02em}
+html[data-solo-launch] body.launch-ready::before{display:none}
 body{background:#101923;font-family:'Noto Sans KR',system-ui,sans-serif;color:#f4f7f6}
 #gate{background:linear-gradient(155deg,#13232c 0%,#1b3138 52%,#24302d 100%);padding:22px 16px}
 .gate-title{font-size:clamp(1.8rem,5vw,2.35rem);font-weight:800;letter-spacing:-.04em;text-shadow:none;color:#f8faf9}
@@ -288,6 +291,12 @@ body{background:#101923;font-family:'Noto Sans KR',system-ui,sans-serif;color:#f
   #fb{margin-top:7px;padding:7px 9px}
 }
 </style>
+<script>
+  // Mark direct solo launches before the body paints so the legacy gate never flashes.
+  // All standalone entry paths resolve through the hub when their unit is
+  // missing/invalid; hide the legacy gate during that redirect too.
+  document.documentElement.dataset.soloLaunch = '1';
+</script>
 </head>
 <body>
 
@@ -462,8 +471,10 @@ window.addEventListener('resize',()=>{if(GS)drawSky(Math.floor(GS.floor/10));});
 const params=new URLSearchParams(location.search);
 // questions.js의 'all' 키와 허브 unit=all은 단원이 아니라 전 단원 취급
 const UNIT_KEYS=Object.keys(GAME_QUESTIONS).filter(k=>k!=='all'&&!GAME_QUESTIONS[k].hidden);
-const _u=params.get('unit');
-const unitParam=(_u&&_u!=='all'&&GAME_QUESTIONS[_u])?_u:null;
+const rawUnitParam=params.get('unit');
+const visibleUnitParam=rawUnitParam&&rawUnitParam!=='all'&&GAME_QUESTIONS[rawUnitParam]&&!GAME_QUESTIONS[rawUnitParam].hidden;
+const validUnitParam=rawUnitParam==='all'||Boolean(visibleUnitParam);
+const unitParam=rawUnitParam==='all'?'all':(visibleUnitParam?rawUnitParam:null);
 function buildPool(scope){ // null/'all'=전 단원, 'g1'/'g2'=학년 전체, 그 외=단원 키
   let keys=UNIT_KEYS;
   if(scope==='g1'||scope==='g2')keys=UNIT_KEYS.filter(k=>k.startsWith(scope+'-'));
@@ -631,6 +642,7 @@ function startRun(mode){
   wallY=0;wall.style.transition='none';wall.style.backgroundPositionY='0px';
   void wall.offsetWidth;wall.style.transition='';
   $('gate').style.display='none';$('result').style.display='none';$('game').style.display='flex';
+  document.body.classList.add('launch-ready');
   drawSky(0);
   setHero('idle');
   setMonster(null);
@@ -1067,9 +1079,9 @@ window.addEventListener('pagehide',pauseForPage);
 window.addEventListener('pageshow',()=>{if(!classroomOn()||classroom.isActive())resumeForPage();});
 
 // ── 게이트 ──
-let gateMode='daily';
-let gateUnit=unitParam||'all';   // 자유 등반 단원 (all=전 단원)
-let unitPickerOpen=!unitParam;
+let gateMode=unitParam!==null?'free':'daily';
+let gateUnit=unitParam===null?'all':unitParam;   // 자유 등반 단원 (all=전 단원)
+let unitPickerOpen=false;
 function buildUnitChips(){
   const mk=(grid,key,label)=>{
     const b=document.createElement('button');
@@ -1110,13 +1122,23 @@ $('unit-toggle').onclick=()=>{unitPickerOpen=!unitPickerOpen;refreshGate();};
 $('gate-go').onclick=()=>startRun(gateMode);
 $('hud-exit').hidden=classroomOn();
 $('hud-exit').onclick=leaveActiveRun;
-// 허브에서 ?unit=으로 들어오면 자유 등반을 기본 선택
-if(unitParam)gateMode='free';
+function redirectToHub(){
+  const hub=new URL('../game/index.html',location.href);
+  hub.searchParams.set('mode','tower');
+  location.replace(hub.href);
+}
+// Direct solo URLs must name a valid unit (or all); the hub owns selection.
+if(!classroomOn()&&!validUnitParam){redirectToHub();}
 buildUnitChips();
 refreshGate();
+if(!classroomOn()&&validUnitParam){startRun(gateMode);}
 if(classroomOn()){
   classroom.onFinish(stopForClassroomFinish);
-  classroom.ready.then(()=>{if(!classroomFinished)startRun(gateMode);}).catch(()=>{$('gate-go').textContent='연결을 확인한 뒤 다시 시도';});
+  classroom.ready.then(()=>{if(!classroomFinished)startRun(gateMode);}).catch(()=>{
+    document.documentElement.removeAttribute('data-solo-launch');
+    $('gate').style.display='flex';
+    $('gate-go').textContent='연결을 확인한 뒤 다시 시도';
+  });
 }
 </script>
 </body>

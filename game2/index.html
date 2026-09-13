@@ -288,8 +288,8 @@ canvas#c{position:absolute;inset:0;width:100%;height:100%;}
 </head>
 <body>
 
-<!-- 단원 선택은 게임 허브(../game/)에서 한다. ?unit=KEY 로 들어오면 시작 게이트만 보여주고,
-     '전투 시작' 버튼을 누르는 그 제스처 안에서 전투+BGM이 시작돼 음악이 바로 난다(보글보글과 동일 원리). -->
+<!-- 단원 선택은 게임 허브(../game/)에서 한다. ?unit=KEY 로 들어오면 바로 전투를 시작한다.
+     classroom 모드만 부모 ready 이벤트 뒤에 시작한다. -->
 <div id="boss-start">
   <div class="bs-title">⚔️ 문법 보스전</div>
   <div class="bs-unit" id="boss-start-unit"></div>
@@ -2281,23 +2281,32 @@ function cancelTimers() {
 // ═══════════════════════════════════════════════════════════
 //  SELECT SCREEN
 // ═══════════════════════════════════════════════════════════
-// 허브(game/index.html)에서 ?unit=KEY 로 진입 → 해당 단원 보스전 바로 시작.
-// param 없거나 잘못된 경우 게임 허브로 돌려보낸다(자체 단원 선택 화면 없음).
+// 허브(game/index.html)에서 ?unit=KEY 로 진입 → 해당 단원 보스전을 바로 시작.
+// param 없거나 잘못된 경우 게임 허브의 보스 모드로 돌려보낸다(자체 단원 선택 화면 없음).
 const HUB_URL = '../game/index.html';
 let _pendingBattle = null, _unitKey = '';
-// 허브에서 ?unit=KEY 로 진입 → 시작 게이트를 띄운다(전투 자동 시작 X).
-// 사용자가 '전투 시작' 버튼을 누르는 그 제스처 안에서 G.start→BGM.start 가 실행돼 음악이 바로 난다.
+function redirectToHub() {
+  const hub = new URL(HUB_URL, location.href);
+  hub.searchParams.set('mode', 'boss');
+  location.replace(hub.href);
+}
+function startPendingBattle() {
+  if (!_pendingBattle || classroomFinished) return;
+  document.getElementById('boss-start').style.display = 'none';
+  G.start(_pendingBattle.qs, _pendingBattle.label);
+}
 function initFromParam() {
-  if (typeof GAME_QUESTIONS === 'undefined') { showInvalidBattleStart(); return; }
+  if (typeof GAME_QUESTIONS === 'undefined') { redirectToHub(); return; }
   const unit = new URLSearchParams(location.search).get('unit');
+  const visibleUnit = unit && unit !== 'all' && GAME_QUESTIONS[unit] && !GAME_QUESTIONS[unit].hidden;
   if(classroomOn()){
     _pendingBattle={qs:Object.values(GAME_QUESTIONS).filter(u=>!u.hidden).flatMap(u=>u.questions),label:'교실 보스전'};
   } else if (unit === 'all') {
     _pendingBattle = { qs: Object.values(GAME_QUESTIONS).filter(u => !u.hidden).flatMap(u => u.questions), label: '전체 단원' };
-  } else if (unit && GAME_QUESTIONS[unit]) {
+  } else if (visibleUnit) {
     _pendingBattle = { qs: GAME_QUESTIONS[unit].questions, label: GAME_QUESTIONS[unit].label };
   } else {
-    showInvalidBattleStart(); return;
+    redirectToHub(); return;
   }
   _unitKey = unit;
   document.getElementById('boss-start-unit').textContent = _pendingBattle.label;
@@ -2309,19 +2318,16 @@ function initFromParam() {
         '🏆 최고 기록 — ' + (r.stage ? 'STAGE ' + r.stage + (r.clear ? ' 클리어' : ' 도달') + ' · ' : '') + (r.score || 0) + '점';
     }
   } catch (e) {}
-  document.getElementById('boss-start').style.display = 'flex';
-}
-function showInvalidBattleStart() {
-  document.getElementById('boss-start').style.display = 'flex';
-  document.querySelector('.bs-title').textContent = '⚔️ 문법 보스전';
-  document.getElementById('boss-start-unit').textContent = '단원 선택이 필요해요';
-  document.getElementById('bs-record').style.display = 'none';
-  document.querySelector('.bs-row').style.display = 'none';
-  document.querySelector('.bs-progression').style.display = 'none';
-  document.getElementById('bs-rules').style.display = 'none';
-  document.getElementById('bs-diff').style.display = 'none';
-  document.getElementById('boss-start-btn').style.display = 'none';
-  document.getElementById('bs-invalid').hidden = false;
+  // Non-classroom launches are already inside a user-selected run.  Keep the
+  // initial gate hidden and let G.start own the first user-facing surface.
+  if (!classroomOn()) startPendingBattle();
+  else {
+    const gate = document.getElementById('boss-start');
+    const button = document.getElementById('boss-start-btn');
+    gate.style.display = 'flex';
+    button.disabled = true;
+    button.textContent = '⏳ 교실 연결 중…';
+  }
 }
 // ── 난이도 선택 (초급=느리게·2단계 / 중급=기본·3단계) ──
 window.__bossDiff = localStorage.getItem('egm.boss.diff') || 'medium';
@@ -2333,14 +2339,16 @@ document.querySelectorAll('#bs-diff .bs-diff-btn').forEach(b => b.addEventListen
 }));
 syncDiffUI();
 document.getElementById('boss-start-btn').addEventListener('click', () => {
-  if (!_pendingBattle) return;
-  document.getElementById('boss-start').style.display = 'none';
-  G.start(_pendingBattle.qs, _pendingBattle.label);   // 버튼 제스처 안에서 시작 → BGM 즉시 재생
+  startPendingBattle();
 });
 initFromParam();
 if(classroomOn()){
   classroom.onFinish(stopForClassroomFinish);
-  classroom.ready.then(()=>{if(!classroomFinished&&_pendingBattle){document.getElementById('boss-start').style.display='none';G.start(_pendingBattle.qs,_pendingBattle.label);}}).catch(()=>{document.getElementById('boss-start-unit').textContent='연결을 확인한 뒤 다시 시도해 주세요';});
+  classroom.ready.then(()=>{if(!classroomFinished&&_pendingBattle)startPendingBattle();}).catch(()=>{
+    document.getElementById('boss-start').style.display='flex';
+    document.getElementById('boss-start-unit').textContent='연결을 확인한 뒤 다시 시도해 주세요';
+    document.getElementById('boss-start-btn').textContent='연결을 확인한 뒤 다시 시도';
+  });
 }
 </script>
 </body>

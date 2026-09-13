@@ -2,6 +2,10 @@ import fs from 'node:fs';
 
 const html = fs.readFileSync('game/index.html', 'utf8');
 const css = fs.readFileSync('game/arcade-lobby.css', 'utf8');
+const multiplayerIndex = fs.readFileSync('multiplayer/index.html', 'utf8');
+const multiplayerApp = fs.readFileSync('multiplayer/app.js', 'utf8');
+const creatorHtml = fs.readFileSync('multiplayer/creator.html', 'utf8');
+const creatorCss = fs.readFileSync('multiplayer/creator.css', 'utf8');
 const modes = ['boss', 'speed', 'whack', 'bubble', 'tower', 'rangers', 'sentence', 'escape'];
 
 const assert = (condition, message) => {
@@ -14,12 +18,32 @@ assert(html.includes('id="unit-section"') && html.includes('id="unit-section" ar
 assert(!html.includes('id="mode-summary"'), 'old mode summary must not remain in the art-first lobby');
 assert(!html.includes('콤보와 필살기로 보스 격파'), 'mode descriptions should not return as card bodies');
 assert(html.includes('lobbyConfig.hidden = false') && html.includes('unitSection.hidden = false'), 'mode selection must reveal configuration');
-assert(html.includes("location.href = '../game2/?unit='"), 'boss route contract missing');
-assert(html.includes("location.href = '../whack-grammar/?unit='"), 'whack route contract missing');
-assert(html.includes("location.href = '../tower/?unit='"), 'tower route contract missing');
-assert(html.includes("location.href = '../grammar-rangers/?unit='"), 'rangers route contract missing');
-assert(html.includes("location.href = '../sentence-blast/?unit='"), 'sentence route contract missing');
+assert(html.includes("function soloLaunchQuery(unitKey)"), 'solo launch query helper missing');
+assert(html.includes("query.set('autostart', '1')") && html.includes("query.set('unit', unitKey || 'all')") && html.includes("query.set('seconds', String(seconds))"), 'solo launch query must preserve unit, autostart, and seconds');
+assert(html.includes("location.href = '../game2/' + soloLaunchQuery(unitKey)"), 'boss route contract missing');
+assert(html.includes("location.href = '../whack-grammar/' + soloLaunchQuery(unitKey)"), 'whack route contract missing');
+assert(html.includes("location.href = '../tower/' + soloLaunchQuery(unitKey)"), 'tower route contract missing');
+assert(html.includes("location.href = '../grammar-rangers/' + soloLaunchQuery(unitKey)"), 'rangers route contract missing');
+assert(html.includes("new URLSearchParams(location.search).get('mode')") && html.includes('requestedModeButton.click()'), 'hub mode deep-link must preselect the requested game');
+assert(html.includes("location.href = '../sentence-blast/' + soloLaunchQuery(unitKey)"), 'sentence route contract missing');
 assert(html.includes("location.href = '../escape/'"), 'escape route contract missing');
+assert(html.includes('id="multiplayer-join-cta"'), 'student multiplayer CTA must be present');
+assert(html.includes('href="../multiplayer/?join=1"'), 'student CTA must target the supported student join parameter');
+assert(html.includes('멀티 참여하기') && html.includes('학생 방 번호 입력') && html.includes('aria-label="멀티 참여하기, 학생 방 번호 입력, 베타 버전"'), 'student CTA must explain its direct room-entry purpose');
+assert(html.includes("roomInputUrl.searchParams.set('join', '1')") && html.includes("roomInputUrl.searchParams.delete('room')"), 'student CTA must preserve the dynamic worker destination without a stale room code');
+assert(html.includes('class="mode-beta"') && html.includes('야간학교 탈출, 베타 버전'), 'night school card must carry the beta label');
+assert(css.includes('.multi-entry-cta') && css.includes('min-height:48px'), 'student CTA needs a touch-safe responsive rule');
+assert(multiplayerIndex.includes('class="product-beta-badge"') && multiplayerIndex.includes('β BETA'), 'multiplayer header must expose its beta status');
+assert(multiplayerApp.includes('initialParams.get("room")'), 'multiplayer must continue to support the room query parameter');
+assert(multiplayerApp.includes('initialParams.get("join") === "1"') && multiplayerApp.includes('restoreStudentIntent()'), 'multiplayer must support a direct student join entry');
+assert(multiplayerApp.includes('url.searchParams.delete("join")'), 'joining a room must clear the one-shot student intent');
+const teacherBootstrap = multiplayerApp.indexOf('if (await restoreTeacherIntent()) return;');
+const resumeBootstrap = multiplayerApp.indexOf('if (await restoreStudentSession()) return;');
+const studentBootstrap = multiplayerApp.indexOf('if (restoreStudentIntent()) return;');
+assert(teacherBootstrap >= 0 && resumeBootstrap > teacherBootstrap && studentBootstrap > resumeBootstrap, 'teacher and resume entry priorities must precede direct student join');
+assert(multiplayerApp.includes('class="product-beta-badge"'), 'multiplayer entry UI must expose its beta status');
+assert(creatorHtml.includes('class="product-beta-badge"'), 'multiplayer creator must carry the product beta label');
+assert(creatorCss.includes('.product-beta-badge'), 'creator beta label must have scoped styling');
 for (const mode of modes) {
   assert(html.includes(`data-mode="${mode}"`), `mode button missing: ${mode}`);
   assert(css.includes(`data-mode="${mode}"] .mode-thumb`), `cover art selector missing: ${mode}`);

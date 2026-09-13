@@ -39,7 +39,9 @@ export function isClassroomMode(mode: RoomMode): boolean {
 }
 export type PlayStyle = "individual" | "team";
 export type TreasureOutcomeKind = "safe_bonus" | "loot" | "share" | "trap";
-export type TreasureStrategy = "bank" | "dive" | "raid" | "switch" | "safe" | "team" | "risk";
+export type TreasureEventKind = TreasureOutcomeKind | "double" | "triple" | "donate" | "gift" | "angel" | "global_bomb";
+export type TreasureMysteryEffectId = "double" | "triple" | "donate" | "gift" | "angel" | "global_bomb" | "safe_bonus";
+export type TreasureStrategy = "bank" | "dive" | "raid" | "switch" | "mystery" | "safe" | "team" | "risk";
 
 export interface VaultRunState {
   unbanked: number;
@@ -80,6 +82,37 @@ export const TREASURE_SAFE_BONUS = 150;
 export const TREASURE_LOOT_AMOUNT = 100;
 export const TREASURE_SHARE_AMOUNT = 25;
 export const TREASURE_TRAP_AMOUNT = 75;
+export const TREASURE_MYSTERY_SAFE_BONUS = 50;
+export const TREASURE_MYSTERY_DOUBLE_CAP = 500;
+export const TREASURE_MYSTERY_TRIPLE_CAP = 1_000;
+export const TREASURE_MYSTERY_ANGEL_CAP = 500;
+export const TREASURE_GLOBAL_BOMB_PROBABILITY = 0.001;
+export const TREASURE_GLOBAL_BOMB_WINDOW_MS = 30_000;
+
+export interface TreasureMysteryResolution {
+  effectId: TreasureMysteryEffectId;
+  kind: TreasureEventKind;
+  targetPlayerId?: string;
+}
+
+export interface TreasurePlayerSnapshot {
+  playerId: string;
+  nickname: string;
+  scoreBefore: number;
+  scoreAfter: number;
+  unbankedBefore: number;
+  unbankedAfter: number;
+}
+
+export interface LastTreasureEvent {
+  id: string;
+  kind: TreasureEventKind;
+  title: string;
+  description: string;
+  actorNickname: string;
+  affectedPlayers: TreasurePlayerSnapshot[];
+  createdAt: number;
+}
 
 export interface TreasureChoice {
   id: string;
@@ -88,6 +121,7 @@ export interface TreasureChoice {
   amount: number;
   targetPlayerId?: string;
   targetNickname?: string;
+  mystery?: TreasureMysteryResolution;
 }
 
 export interface TreasureChoiceView {
@@ -231,6 +265,8 @@ export interface RoomState {
   escapeRuns?: Record<string, EscapeRunState>;
   questions: Question[];
   players: Record<string, PlayerState>;
+  lastTreasureEvent?: LastTreasureEvent;
+  globalBombUsed?: boolean;
   createdAt: number;
   startedAt?: number;
   finishedAt?: number;
@@ -345,11 +381,12 @@ export interface AnswerResult {
 
 export interface TreasureResult {
   choiceId: string;
-  kind: TreasureOutcomeKind;
+  kind: TreasureEventKind;
   amount: number;
   score: number;
   targetNickname?: string;
   strategy?: TreasureStrategy;
+  event?: LastTreasureEvent;
 }
 
 export interface MazeMoveResult {
@@ -427,6 +464,7 @@ export interface PublicRoomView {
   leaderboard: PublicLeaderboardEntry[];
   teamLeaderboard?: TeamLeaderboardEntry[];
   team?: TeamLeaderboardEntry;
+  lastTreasureEvent?: LastTreasureEvent;
   self?: TeacherLeaderboardEntry & {
     streak: number;
     currentQuestion?: SafeQuestion;
@@ -454,6 +492,7 @@ export interface TeacherRoomView {
   questionCount: number;
   leaderboard: TeacherLeaderboardEntry[];
   teamLeaderboard?: TeamLeaderboardEntry[];
+  lastTreasureEvent?: LastTreasureEvent;
 }
 
 export function createRoomState(input: CreateRoomInput): RoomState {
@@ -511,6 +550,8 @@ export function createRoomState(input: CreateRoomInput): RoomState {
     escapeRuns: input.mode === "grammar_escape" ? {} : undefined,
     questions,
     players: {},
+    lastTreasureEvent: undefined,
+    globalBombUsed: false,
     createdAt: input.createdAt,
   };
 }
@@ -688,6 +729,9 @@ export function submitAnswer(
     ? { ...(player.vaultRun ?? { unbanked: 0, depth: 0, shield: 1, switchCharge: 0 }), unbanked: (player.vaultRun?.unbanked ?? 0) + 50,
       switchCharge: (player.correct + 1) % 3 === 0 ? 1 : (player.vaultRun?.switchCharge ?? 0) }
     : player.vaultRun;
+  const nextTreasureChoices = state.mode === "treasure_heist" && correct
+    ? createTreasureChoices(state, player.id, input.occurrenceIndex, nextVaultRun, input.serverNow)
+    : undefined;
   const nextPlayer: PlayerState = {
     ...player,
     score: state.mode === "maze_heist" ? Number((nextMaze as unknown as MazePlayerV2)?.bankedLoot || 0) : player.score + scoreGain,
@@ -702,13 +746,14 @@ export function submitAnswer(
     starDust: player.starDust ?? 0,
     maze: nextMaze,
     vaultRun: nextVaultRun,
-    pendingTreasureChoices: state.mode === "treasure_heist" && correct
-      ? createTreasureChoices(state, player.id, input.occurrenceIndex, nextVaultRun)
-      : undefined,
+    pendingTreasureChoices: nextTreasureChoices,
   };
   const stateWithAnswer: RoomState = {
     ...state,
     players: { ...state.players, [player.id]: nextPlayer },
+    globalBombUsed: nextTreasureChoices?.some((choice) => choice.mystery?.kind === "global_bomb")
+      ? true
+      : state.globalBombUsed,
   };
   const nextState = state.mode === "grammar_escape"
     ? addEscapeFocus(stateWithAnswer, nextPlayer, correct)
@@ -884,6 +929,9 @@ export function chooseTreasure(
   const players = Object.fromEntries(
     Object.entries(state.players).map(([id, candidate]) => [id, { ...candidate }]),
   );
+  if (choice.strategy === "mystery") {
+    return chooseMysteryTreasure(state, players, player.id, pending, choice, input.serverNow);
+  }
   const chooser = { ...players[player.id] };
   if (chooser.vaultRun && choice.strategy && ["bank", "dive", "raid", "switch"].includes(choice.strategy)) {
     const run = { ...chooser.vaultRun };
@@ -965,6 +1013,135 @@ export function chooseTreasure(
         : choice.amount,
       score,
       targetNickname,
+    },
+  };
+}
+
+function chooseMysteryTreasure(
+  state: RoomState,
+  players: Record<string, PlayerState>,
+  playerId: string,
+  pending: TreasureChoice[],
+  choice: TreasureChoice,
+  serverNow: number,
+): { state: RoomState; result: TreasureResult } {
+  const resolution = choice.mystery;
+  if (!resolution) {
+    throw new EngineError("TREASURE_NOT_AVAILABLE", "This mystery choice is unavailable.");
+  }
+  const actor = players[playerId];
+  if (!actor) throw new EngineError("UNKNOWN_PLAYER", "The player is not in this room.");
+  const before = treasureBalances(players);
+  let kind = resolution.kind;
+  let amount = 0;
+  let targetNickname: string | undefined;
+
+  if (kind === "global_bomb" &&
+    (!isGlobalBombWindow(state, serverNow) || state.lastTreasureEvent?.kind === "global_bomb")) {
+    kind = "safe_bonus";
+  }
+
+  if (kind === "double" || kind === "triple") {
+    const run = { ...(actor.vaultRun ?? emptyVaultRun()) };
+    const multiplier = kind === "double" ? 2 : 3;
+    const cap = kind === "double" ? TREASURE_MYSTERY_DOUBLE_CAP : TREASURE_MYSTERY_TRIPLE_CAP;
+    const nextUnbanked = Math.max(run.unbanked, 50) * multiplier;
+    amount = Math.min(nextUnbanked - run.unbanked, cap);
+    const cappedUnbanked = run.unbanked + amount;
+    players[playerId] = { ...actor, vaultRun: { ...run, unbanked: cappedUnbanked } };
+  } else if (kind === "donate") {
+    const target = resolution.targetPlayerId ? players[resolution.targetPlayerId] : undefined;
+    const run = { ...(actor.vaultRun ?? emptyVaultRun()) };
+    const transfer = Math.floor(run.unbanked / 2);
+    if (!target || transfer <= 0) {
+      kind = "safe_bonus";
+      amount = TREASURE_MYSTERY_SAFE_BONUS;
+      players[playerId] = { ...actor, score: actor.score + amount };
+    } else {
+      const targetRun = { ...(target.vaultRun ?? emptyVaultRun()) };
+      run.unbanked -= transfer;
+      targetRun.unbanked += transfer;
+      targetNickname = target.nickname;
+      players[playerId] = { ...actor, vaultRun: run };
+      players[target.id] = { ...target, vaultRun: targetRun };
+      amount = transfer;
+    }
+  } else if (kind === "gift") {
+    const target = resolution.targetPlayerId ? players[resolution.targetPlayerId] : undefined;
+    if (!target) {
+      kind = "safe_bonus";
+      amount = TREASURE_MYSTERY_SAFE_BONUS;
+      players[playerId] = { ...actor, score: actor.score + amount };
+    } else {
+      targetNickname = target.nickname;
+      players[target.id] = { ...target, score: target.score + 100 };
+      amount = 100;
+    }
+  } else if (kind === "angel") {
+    const target = resolution.targetPlayerId ? players[resolution.targetPlayerId] : undefined;
+    if (!target) {
+      kind = "safe_bonus";
+      amount = TREASURE_MYSTERY_SAFE_BONUS;
+      players[playerId] = { ...actor, score: actor.score + amount };
+    } else {
+      const targetRun = { ...(target.vaultRun ?? emptyVaultRun()) };
+      targetNickname = target.nickname;
+      amount = Math.min(targetRun.unbanked, TREASURE_MYSTERY_ANGEL_CAP);
+      targetRun.unbanked += amount;
+      players[target.id] = { ...target, vaultRun: targetRun };
+    }
+  } else if (kind === "global_bomb") {
+    for (const [id, candidate] of Object.entries(players)) {
+      players[id] = {
+        ...candidate,
+        score: 0,
+        vaultRun: candidate.vaultRun
+          ? { ...candidate.vaultRun, unbanked: 0 }
+          : candidate.vaultRun,
+      };
+    }
+  } else if (kind === "safe_bonus") {
+    amount = TREASURE_MYSTERY_SAFE_BONUS;
+    players[playerId] = { ...actor, score: actor.score + amount };
+  } else {
+    throw new EngineError("TREASURE_NOT_AVAILABLE", "This mystery effect is unavailable.");
+  }
+
+  const event: LastTreasureEvent = {
+    id: `treasure-event:${choice.id}`,
+    kind,
+    title: treasureEventTitle(kind),
+    description: treasureEventDescription(kind, targetNickname, amount),
+    actorNickname: actor.nickname,
+    affectedPlayers: treasureEventPlayers(before, players),
+    createdAt: serverNow,
+  };
+  const currentActor = players[playerId];
+  players[playerId] = {
+    ...currentActor,
+    lastSeenAt: serverNow,
+    pendingTreasureChoices: undefined,
+    consumedTreasureChoiceIds: [
+      ...(actor.consumedTreasureChoiceIds ?? []),
+      ...pending.map((candidate) => candidate.id),
+    ].slice(-6),
+  };
+  const nextState: RoomState = {
+    ...state,
+    players,
+    lastTreasureEvent: event,
+    globalBombUsed: kind === "global_bomb" ? true : state.globalBombUsed,
+  };
+  return {
+    state: nextState,
+    result: {
+      choiceId: choice.id,
+      kind,
+      amount,
+      score: players[playerId].score,
+      targetNickname,
+      strategy: "mystery",
+      event,
     },
   };
 }
@@ -1183,6 +1360,7 @@ export function publicRoomState(
     finishedAt: state.finishedAt,
     participantCount: ranked.length,
     questionCount: state.questions.length,
+    lastTreasureEvent: state.lastTreasureEvent ? cloneTreasureEvent(state.lastTreasureEvent) : undefined,
     leaderboard,
     teamLeaderboard: playStyle === "team" ? rankedTeams(state, viewerPlayerId) : undefined,
     team: playStyle === "team" && viewer?.teamId
@@ -1224,6 +1402,7 @@ export function teacherRoomState(state: RoomState): TeacherRoomView {
     finishedAt: state.finishedAt,
     participantCount: ranked.length,
     questionCount: state.questions.length,
+    lastTreasureEvent: state.lastTreasureEvent ? cloneTreasureEvent(state.lastTreasureEvent) : undefined,
     leaderboard: ranked.map(({ rank, player }) => toTeacherEntry(player, rank, state.mode === "maze_heist", state)),
     teamLeaderboard: playStyle === "team" ? rankedTeams(state) : undefined,
   };
@@ -1466,7 +1645,10 @@ function clonePlayer(player: PlayerState): PlayerState {
   return {
     ...player,
     lastAnswer: player.lastAnswer ? { ...player.lastAnswer } : undefined,
-    pendingTreasureChoices: player.pendingTreasureChoices?.map((choice) => ({ ...choice })),
+    pendingTreasureChoices: player.pendingTreasureChoices?.map((choice) => ({
+      ...choice,
+      mystery: choice.mystery ? { ...choice.mystery } : undefined,
+    })),
     consumedTreasureChoiceIds: player.consumedTreasureChoiceIds
       ? [...player.consumedTreasureChoiceIds]
       : undefined,
@@ -1489,10 +1671,153 @@ function toTreasureChoiceView(choice: TreasureChoice): TreasureChoiceView {
   return {
     id: choice.id,
     strategy,
-    label: strategy === "bank" ? "지금 확보" : strategy === "dive" ? "더 깊이" : strategy === "raid" ? "라이벌 습격" : strategy === "switch" ? `${choice.targetNickname || "라이벌"}와 점수 바꾸기` : strategy === "safe" ? "안전 상자" : strategy === "team" ? "팀 상자" : "위험 상자",
-    hint: strategy === "bank" ? "모은 보물을 점수로 확정" : strategy === "dive" ? "깊을수록 보상과 함정 위험 증가" : strategy === "raid" ? "상대의 미확정 보물 최대 60 약탈" : strategy === "switch" ? "충전 1개 사용 · 두 사람의 전체 점수 교환" : strategy === "safe" ? "확정 보너스" : strategy === "team" ? "모두에게 나눔" : "큰 보상 또는 함정",
+    label: strategy === "bank" ? "지금 확보" : strategy === "dive" ? "더 깊이" : strategy === "raid" ? "라이벌 습격" : strategy === "switch" ? `${choice.targetNickname || "라이벌"}와 점수 바꾸기` : strategy === "mystery" ? "행운 상자" : strategy === "safe" ? "안전 상자" : strategy === "team" ? "팀 상자" : "위험 상자",
+    hint: strategy === "bank" ? "모은 보물을 점수로 확정" : strategy === "dive" ? "깊을수록 보상과 함정 위험 증가" : strategy === "raid" ? "상대의 미확정 보물 최대 60 약탈" : strategy === "switch" ? "충전 1개 사용 · 두 사람의 전체 점수 교환" : strategy === "mystery" ? "배수·랜덤 친구 선물·보물 나눔·아주 드문 전체 0점 가능" : strategy === "safe" ? "확정 보너스" : strategy === "team" ? "모두에게 나눔" : "큰 보상 또는 함정",
     ...(["raid", "switch"].includes(strategy) && choice.targetPlayerId ? { targetPlayerId: choice.targetPlayerId, targetNickname: choice.targetNickname || "라이벌" } : {}),
   };
+}
+
+function emptyVaultRun(): VaultRunState {
+  return { unbanked: 0, depth: 0, shield: 1, switchCharge: 0 };
+}
+
+type TreasureBalance = {
+  nickname: string;
+  score: number;
+  unbanked: number;
+};
+
+function treasureBalances(players: Record<string, PlayerState>): Record<string, TreasureBalance> {
+  return Object.fromEntries(Object.entries(players).map(([id, player]) => [id, {
+    nickname: player.nickname,
+    score: player.score,
+    unbanked: player.vaultRun?.unbanked ?? 0,
+  }]));
+}
+
+function treasureEventPlayers(
+  before: Record<string, TreasureBalance>,
+  after: Record<string, PlayerState>,
+): TreasurePlayerSnapshot[] {
+  return Object.keys(before).sort().slice(0, 50).map((playerId) => {
+    const previous = before[playerId];
+    const current = after[playerId];
+    return {
+      playerId,
+      nickname: current?.nickname ?? previous.nickname,
+      scoreBefore: previous.score,
+      scoreAfter: current?.score ?? previous.score,
+      unbankedBefore: previous.unbanked,
+      unbankedAfter: current?.vaultRun?.unbanked ?? 0,
+    };
+  });
+}
+
+function treasureEventTitle(kind: TreasureEventKind): string {
+  return {
+    safe_bonus: "안전 보너스",
+    loot: "보물 약탈",
+    share: "보물 나눔",
+    trap: "함정",
+    double: "보물 두 배",
+    triple: "보물 세 배",
+    donate: "보물 기부",
+    gift: "점수 선물",
+    angel: "천사의 손길",
+    global_bomb: "전체 폭탄",
+  }[kind];
+}
+
+function treasureEventDescription(kind: TreasureEventKind, targetNickname?: string, amount = 0): string {
+  const target = targetNickname ? ` (${targetNickname})` : " (랜덤 친구)";
+  return {
+    safe_bonus: "안전 보너스 50점을 받았어요.",
+    loot: "상대의 보물을 가져왔어요.",
+    share: "보물을 함께 나눴어요.",
+    trap: "함정이 발동했어요.",
+    double: `내 미확정 보물이 2배가 됐어요. 이번 보너스 +${amount}점 (최대 +${TREASURE_MYSTERY_DOUBLE_CAP}점).`,
+    triple: `내 미확정 보물이 3배가 됐어요. 이번 보너스 +${amount}점 (최대 +${TREASURE_MYSTERY_TRIPLE_CAP}점).`,
+    donate: `내 미확정 보물 ${amount}점을 친구에게 보냈어요${target}.`,
+    gift: `친구에게 점수 100점을 선물했어요${target}.`,
+    angel: `친구의 미확정 보물이 2배가 됐어요${target}. 이번 보너스 +${amount}점 (최대 +${TREASURE_MYSTERY_ANGEL_CAP}점).`,
+    global_bomb: "모든 참가자의 점수와 미확정 보물이 0점이 됐어요.",
+  }[kind];
+}
+
+function cloneTreasureEvent(event: LastTreasureEvent): LastTreasureEvent {
+  return {
+    ...event,
+    affectedPlayers: event.affectedPlayers.map((player) => ({ ...player })),
+  };
+}
+
+export interface TreasureMysteryRollFixture {
+  globalRoll?: number;
+  effectRoll?: number;
+  targetRoll?: number;
+}
+
+export function isGlobalBombWindow(state: RoomState, serverNow: number): boolean {
+  if (state.startedAt === undefined) return false;
+  const elapsed = serverNow - state.startedAt;
+  const remaining = state.startedAt + state.durationSeconds * 1_000 - serverNow;
+  return elapsed > TREASURE_GLOBAL_BOMB_WINDOW_MS && remaining > TREASURE_GLOBAL_BOMB_WINDOW_MS;
+}
+
+export function resolveMysteryEffect(
+  state: RoomState,
+  playerId: string,
+  occurrenceIndex: number,
+  serverNow: number,
+  vaultRun: VaultRunState,
+  fixture: TreasureMysteryRollFixture = {},
+): TreasureMysteryResolution {
+  const seed = `${state.code}:${playerId}:${occurrenceIndex}:mystery`;
+  const targetIds = shuffled(
+    Object.keys(state.players).filter((candidate) => candidate !== playerId),
+    `${seed}:target`,
+  );
+  const globalRoll = normalizedRoll(fixture.globalRoll, `${seed}:global`);
+  const globalChance = TREASURE_GLOBAL_BOMB_PROBABILITY / Math.max(Object.keys(state.players).length, 1);
+  if (!state.globalBombUsed && isGlobalBombWindow(state, serverNow) && globalRoll < globalChance) {
+    return { effectId: "global_bomb", kind: "global_bomb" };
+  }
+
+  const effectRoll = normalizedRoll(fixture.effectRoll, `${seed}:effect`);
+  const weightedEffects: Array<{ effectId: TreasureMysteryEffectId; weight: number }> = [
+    { effectId: "safe_bonus", weight: 35 },
+    { effectId: "double", weight: 15 },
+    { effectId: "triple", weight: 5 },
+    { effectId: targetIds.length > 0 ? "donate" : "safe_bonus", weight: 20 },
+    { effectId: targetIds.length > 0 ? "gift" : "safe_bonus", weight: 15 },
+    { effectId: targetIds.length > 0 ? "angel" : "safe_bonus", weight: 10 },
+  ];
+  const effectPoint = effectRoll * 100;
+  let effectCursor = 0;
+  let effectId = weightedEffects[weightedEffects.length - 1].effectId;
+  for (const weightedEffect of weightedEffects) {
+    effectCursor += weightedEffect.weight;
+    if (effectPoint < effectCursor) {
+      effectId = weightedEffect.effectId;
+      break;
+    }
+  }
+  if (effectId === "donate" && Math.floor(vaultRun.unbanked / 2) <= 0) {
+    return { effectId: "safe_bonus", kind: "safe_bonus" };
+  }
+  const targetRequired = effectId === "donate" || effectId === "gift" || effectId === "angel";
+  if (!targetRequired) return { effectId, kind: effectId };
+  const targetRoll = normalizedRoll(fixture.targetRoll, `${seed}:target-choice`);
+  return {
+    effectId,
+    kind: effectId,
+    targetPlayerId: targetIds[Math.floor(targetRoll * targetIds.length)],
+  };
+}
+
+function normalizedRoll(value: number | undefined, seed: string): number {
+  if (value !== undefined && Number.isFinite(value)) return Math.min(0.999999999, Math.max(0, value));
+  return hashString(seed) / 4_294_967_296;
 }
 
 function createMazeState(): MazeState {
@@ -1660,6 +1985,7 @@ function createTreasureChoices(
   playerId: string,
   occurrenceIndex: number,
   vaultRun?: VaultRunState,
+  serverNow?: number,
 ): TreasureChoice[] {
   const targetIds = shuffled(
     Object.keys(state.players).filter((candidate) => candidate !== playerId &&
@@ -1669,11 +1995,19 @@ function createTreasureChoices(
   if (vaultRun) {
     const riskPercent = [15, 25, 40, 55, 70][Math.min(4, vaultRun.depth)];
     const trapped = hashString(`${state.code}:${playerId}:${occurrenceIndex}:vault-dive`) % 100 < riskPercent;
+    const mystery = resolveMysteryEffect(
+      state,
+      playerId,
+      occurrenceIndex,
+      serverNow ?? state.startedAt ?? state.createdAt,
+      vaultRun,
+    );
     return [
       { id: `vault-${occurrenceIndex}-bank`, strategy: "bank", kind: "safe_bonus", amount: vaultRun.unbanked },
       { id: `vault-${occurrenceIndex}-dive`, strategy: "dive", kind: trapped ? "trap" : "safe_bonus", amount: 90 + vaultRun.depth * 45 },
       ...(state.allowSteal !== false ? targetIds.map((targetId, index) => ({ id: `vault-${occurrenceIndex}-raid-${index}`, strategy: "raid" as const, kind: "loot" as const, amount: 60, targetPlayerId: targetId, targetNickname: state.players[targetId].nickname })) : []),
       ...(state.allowScoreSwap !== false && vaultRun.switchCharge > 0 ? targetIds.map((targetId, index) => ({ id: `vault-${occurrenceIndex}-switch-${index}`, strategy: "switch" as const, kind: "share" as const, amount: 0, targetPlayerId: targetId, targetNickname: state.players[targetId].nickname })) : []),
+      { id: `vault-${state.code}-${encodeURIComponent(playerId)}-${occurrenceIndex}-mystery`, strategy: "mystery", kind: "safe_bonus", amount: 0, mystery },
     ];
   }
   const riskIsLoot = targetIds.length > 0 &&

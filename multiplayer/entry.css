@@ -6,11 +6,13 @@ body.entry-mode .site-header{padding-top:calc(20px + env(safe-area-inset-top));p
 body.entry-mode .brand{color:#24365c}
 body.entry-mode .brand strong{font-size:21px;letter-spacing:-.7px}
 body.entry-mode .brand small{color:#7064ad}
+.brand .product-beta-badge{display:inline-flex;align-items:center;margin:0 0 0 8px;padding:4px 7px;border:1px solid #c6baf3;border-radius:999px;color:#604bb8;background:#f1edff;font-size:10px;font-weight:800;letter-spacing:.05em;line-height:1;white-space:nowrap}
 body.entry-mode .solo-link{color:#5846ba;background:#fff;border:1px solid #d5cfec;border-radius:12px;min-height:44px}
 body.entry-mode .connection-badge{display:none}
 body.entry-mode #app{display:grid;align-items:center;min-height:calc(100svh - 170px);padding:36px 0}
 .entry-screen{display:grid;grid-template-columns:minmax(0,1.2fr) minmax(280px,.8fr);gap:clamp(24px,5vw,64px);align-items:center}
 .entry-kicker{color:#7260c9;font-size:12px;font-weight:900;letter-spacing:.1em;margin:0 0 15px}
+.entry-kicker .product-beta-badge{display:inline-flex;align-items:center;margin-left:8px;padding:4px 7px;border:1px solid #c6baf3;border-radius:999px;color:#604bb8;background:#f1edff;font-size:10px;font-weight:800;letter-spacing:.05em;line-height:1;vertical-align:middle;white-space:nowrap}
 .entry-copy h1{font-size:clamp(42px,5vw,68px);color:#27375e;line-height:1.1;letter-spacing:-.055em;margin:0}
 .entry-copy h1 span{color:#6b52d9}
 .entry-copy .lead{font-size:16px;line-height:1.7;color:#566a8c;max-width:480px;margin:20px 0}
@@ -105,6 +107,37 @@ body:has(.teacher-game-picker),body:has(.teacher-setup){font-family:Pretendard,"
   #app .arena-game[data-mode="treasure_heist"] .vault-action>strong{grid-area:title;min-width:0;align-self:end;font-size:16px;line-height:1.3;word-break:keep-all;overflow-wrap:normal}
   #app .arena-game[data-mode="treasure_heist"] .vault-action>span:last-child{grid-area:description;min-width:0;align-self:start;font-size:12px;line-height:1.45;word-break:keep-all;overflow-wrap:break-word}
   #app .arena-game[data-mode="treasure_heist"] .vault-target-action{width:100%;min-width:0}
+}
+
+/* Shared treasure outcomes stay visible after the one-shot result feedback closes. */
+#app .treasure-event-card{width:min(1080px,100%);margin:6px auto 22px;padding:20px 22px;background:#fffdf8;border:2px solid #ead9b2;border-radius:18px;color:#4a331d;box-shadow:0 5px 0 #ddcba5,0 12px 24px #654c1610}
+#app .treasure-event-head{display:flex;align-items:flex-start;justify-content:space-between;gap:16px}
+#app .treasure-event-head .eyebrow{margin:0 0 5px;color:#9a6a24;font-size:12px}
+#app .treasure-event-head h2{margin:0;color:#4c3420;font-size:clamp(20px,3vw,28px);line-height:1.25}
+#app .treasure-event-toggle{min-width:44px;min-height:44px;padding:8px 12px;border:1px solid #caa968;border-radius:10px;background:#fff;color:#694719;font:inherit;font-size:14px;font-weight:800;white-space:nowrap}
+#app .treasure-event-summary{margin-top:13px;padding:13px 15px;background:#fff7e4;border-radius:12px;font-size:16px;line-height:1.6}
+#app .treasure-event-summary p{margin:0}
+#app .treasure-event-summary p+p{margin-top:5px;color:#604c32}
+#app .treasure-event-details{margin-top:14px;padding-top:14px;border-top:1px solid #ead9b2;font-size:16px;line-height:1.55}
+#app .treasure-event-details-label{margin:0 0 8px;color:#735529;font-size:14px;font-weight:800}
+#app .treasure-event-players{display:grid;gap:8px;margin:0;padding:0;list-style:none}
+#app .treasure-event-player{display:grid;gap:4px;padding:10px 12px;background:#fff;border:1px solid #eee1c8;border-radius:10px}
+#app .treasure-event-player>strong{color:#4c3420}
+#app .treasure-event-player>div{display:grid;gap:3px}
+#app .treasure-event-change{display:block;color:#58452e;font-size:16px}
+#app .treasure-event-change strong{font-size:14px;color:#79551e}
+#app .treasure-event-change b{color:#4c3420}
+#app .treasure-event-confirmed b{color:#227355}
+#app .treasure-event-unconfirmed b{color:#a15b28}
+#app .treasure-event-note,#app .treasure-event-unconfirmed{margin:10px 0 0;color:#735f44;font-size:16px}
+#app .treasure-mystery-note{margin:15px 0 0;padding:12px 14px;background:#f2ecff;border:1px solid #d7c9f4;border-radius:12px;color:#4e3d70;font-size:16px;line-height:1.55}
+#app .treasure-mystery-note strong{color:#5d3da5}
+@media(max-width:600px){
+  #app .treasure-event-card{margin-bottom:17px;padding:16px}
+  #app .treasure-event-head{gap:10px}
+  #app .treasure-event-head h2{font-size:21px}
+  #app .treasure-event-toggle{padding:8px 10px;font-size:13px}
+  #app .treasure-event-summary,#app .treasure-event-details,#app .treasure-event-change,#app .treasure-event-note,#app .treasure-event-unconfirmed,#app .treasure-mystery-note{font-size:16px}
 }
 
 /* Match live question controls to the rebuilt arcade artwork. */

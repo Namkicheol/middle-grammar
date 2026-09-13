@@ -141,11 +141,14 @@ const SHAPES=[
   {n:'지그재그',c:[[0,1],[0,2],[1,0],[1,1]]}
 ];
 const params=new URLSearchParams(location.search);
-const requestedUnitKey=params.get('unit')||'all';
-const unitKey=GAME_QUESTIONS[requestedUnitKey]?requestedUnitKey:'all';
-const duration=Math.max(60,Math.min(600,Number(params.get('seconds'))||300));
+const requestedUnitKey=params.get('unit');
+const validUnitLaunch=requestedUnitKey==='all'||Boolean(requestedUnitKey&&GAME_QUESTIONS[requestedUnitKey]&&!GAME_QUESTIONS[requestedUnitKey].hidden);
+if(!validUnitLaunch&&!classroomMode)location.replace('../game/?mode=sentence');
+const unitKey=validUnitLaunch?requestedUnitKey:'all';
+const requestedSeconds=params.get('seconds');
+const duration=requestedSeconds==='0'?0:Math.max(60,Math.min(600,Number(requestedSeconds)||300));
 let remaining=duration, phaseRemaining=PLAY_PHASE_SECONDS, phase='play';
-let remainingMs=duration*1000, phaseRemainingMs=PLAY_PHASE_SECONDS*1000, playDeadline=0, phaseDeadline=0, challengeDeadline=0;
+let remainingMs=duration===0?Infinity:duration*1000, phaseRemainingMs=PLAY_PHASE_SECONDS*1000, playDeadline=0, phaseDeadline=0, challengeDeadline=0;
 let board=Array(SIZE*SIZE).fill(null), tray=[], selected=-1;
 let score=0, lines=0, combo=0, bestCombo=0, grammarCorrect=0, grammarTotal=0, grammarStreak=0;
 let rescuesRemaining=FREE_RESCUES, rescueUses=0, emergencyRescues=0;
@@ -161,7 +164,7 @@ const unit=GAME_QUESTIONS[unitKey]||GAME_QUESTIONS.all;
 const rawQuestions=unitKey==='all'?units.flatMap(([,u])=>u.questions):unit.questions;
 
 function shuffle(a){for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]]}return a}
-function formatTime(s){return Math.floor(s/60)+':'+String(s%60).padStart(2,'0')}
+function formatTime(s){return Number.isFinite(s)?Math.floor(s/60)+':'+String(s%60).padStart(2,'0'):'∞'}
 function esc(s){return String(s).replace(/[&<>'"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;',"'":'&#39;','"':'&quot;'}[c]))}
 function toast(msg,type=''){const t=$('toast');t.textContent=msg;t.className='toast show '+type;clearTimeout(t._id);t._id=setTimeout(()=>t.className='toast',2100)}
 function setEffectStatus(msg){const el=$('effect-status');el.textContent=msg||'';el.classList.toggle('super',Boolean(msg&&msg.includes('SUPER BLAST')))}
@@ -294,10 +297,10 @@ function resumePlayClocks(resetPhase=false){
 }
 
 function updateHUD(){
-  const grammar=grammarCorrect+'/'+grammarTotal,time=formatTime(remaining),pct=phase==='challenge'?0:Math.max(0,phaseRemaining/PLAY_PHASE_SECONDS*100),label=phase==='challenge'?'문장 챌린지 진행 중 · 게임 시간 멈춤':`문장 챌린지까지 ${phaseRemaining}초`;
-  const state=[score,lines,combo,grammar,rescuesRemaining,time,remaining<=20,pct,label].join('|');
+  const grammar=grammarCorrect+'/'+grammarTotal,time=formatTime(remaining),displayTime=duration===0&&!classroomMode?'∞':time,pct=phase==='challenge'?0:Math.max(0,phaseRemaining/PLAY_PHASE_SECONDS*100),label=phase==='challenge'?'문장 챌린지 진행 중 · 게임 시간 멈춤':`문장 챌린지까지 ${phaseRemaining}초`;
+  const state=[score,lines,combo,grammar,rescuesRemaining,displayTime,remaining<=20,pct,label].join('|');
   if(state===lastHUDState)return;
-  lastHUDState=state;$('score').textContent=score.toLocaleString();$('lines').textContent=lines;$('combo').textContent=combo;$('grammar').textContent=grammar;$('rescue-left').textContent=rescuesRemaining;$('time').textContent=time;$('time').classList.toggle('crit',remaining<=20);$('phase-fill').style.width=pct+'%';$('phase-label').textContent=label;
+  lastHUDState=state;$('score').textContent=score.toLocaleString();$('lines').textContent=lines;$('combo').textContent=combo;$('grammar').textContent=grammar;$('rescue-left').textContent=rescuesRemaining;$('time').textContent=displayTime;$('time').classList.toggle('crit',(classroomMode||duration>0)&&remaining<=20);$('phase-fill').style.width=pct+'%';$('phase-label').textContent=label;
 }
 function tick(){
   if(phase==='play'){

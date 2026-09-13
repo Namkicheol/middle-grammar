@@ -71,7 +71,9 @@ const socketStart = app.indexOf("function handleSocketMessage(message) {");
 const socketEnd = app.indexOf("\nfunction reconnectPanel()", socketStart);
 const socketSource = app.slice(socketStart, socketEnd);
 assert.match(socketSource, /type === "escape_result"/);
-assert.match(socketSource, /if \(message\.state \|\| message\.room\) state\.room = applyRoom\(message\)/);
+assert.match(app, /function setRoomFromPayload\(payload, options = \{\}\) \{[\s\S]*syncTreasureSnapshot\(room, options\)/, "room snapshots must flow through the shared helper");
+assert.match(socketSource, /if \(message\.room \|\| message\.state\) state\.room = setRoomFromPayload\(message\)/, "escape results must resync the server room snapshot");
+assert.match(socketSource, /type === "error"[\s\S]*if \(message\.room \|\| message\.state\) state\.room = setRoomFromPayload\(message\)/, "escape errors must preserve server resync");
 assert.match(socketSource, /type === "error"[\s\S]*state\.escapeAction = null/);
 
 const index = read("multiplayer/index.html");

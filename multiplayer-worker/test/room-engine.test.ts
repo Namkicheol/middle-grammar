@@ -2,6 +2,7 @@ import { describe, expect, it as vitestIt } from "vitest";
 const it = vitestIt;
 
 import {
+  ACTIVE_ROOM_MODES,
   EngineError,
   chooseTreasure,
   createRoomState,
@@ -16,6 +17,7 @@ import {
   teacherRoomState,
   TREASURE_LOOT_AMOUNT,
   TREASURE_SAFE_BONUS,
+  ROOM_MODES,
   MAZE_MOVE_FAST_THRESHOLD_MS,
   MAZE_PAIR_COOLDOWN_MS,
   MAZE_SPAWN_PROTECTION_MS,
@@ -658,7 +660,14 @@ describe("room engine", () => {
     });
   });
 
-  it("defaults existing rooms to score_race and accepts treasure_heist", () => {
+  it("keeps retired modes in the historical state union while excluding them from active creation", () => {
+    expect(ACTIVE_ROOM_MODES).not.toContain("treasure_heist");
+    expect(ACTIVE_ROOM_MODES).not.toContain("maze_heist");
+    expect(ACTIVE_ROOM_MODES).not.toContain("grammar_escape");
+    expect(ROOM_MODES).toEqual(expect.arrayContaining(["treasure_heist", "maze_heist", "grammar_escape"]));
+  });
+
+  it("defaults existing rooms to score_race and keeps historical treasure state readable", () => {
     expect(room().mode).toBe("score_race");
     expect(heistRoom().mode).toBe("treasure_heist");
   });

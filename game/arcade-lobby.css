@@ -48,8 +48,11 @@ body:has(#start-screen:not([style*="display: none"])){background:#eaf5ff}
 #start-screen .mode-btn[data-mode="tower"] .mode-thumb{background-image:url('../multiplayer/assets/arcade-20260908/tower.webp');background-size:cover}
 #start-screen .mode-btn[data-mode="rangers"] .mode-thumb{background-image:url('../multiplayer/assets/arcade-20260908/rangers.webp')}
 #start-screen .mode-btn[data-mode="sentence"] .mode-thumb{background-image:url('../multiplayer/assets/arcade-20260908/blast.webp')}
-#start-screen .mode-btn[data-mode="escape"] .mode-thumb{background-image:url('../multiplayer/assets/arcade-20260908/escape.webp')}
-#start-screen .mode-btn[data-mode="escape"]{--mode-glow:#f6c453}
+#start-screen .mode-coming-soon{cursor:default;background:linear-gradient(145deg,#f6f7fb,#eef2f8);border-color:#d8dee9;box-shadow:0 8px 20px #53649314}
+#start-screen .mode-coming-soon:hover{transform:none;border-color:#d8dee9;box-shadow:0 8px 20px #53649314}
+#start-screen .mode-coming-soon .mode-thumb{display:grid;place-items:center;background:radial-gradient(circle at 50% 40%,#d9e2f2,#bdc9dd 72%);color:#fff;text-shadow:0 2px 8px #24365c88;font-size:58px}
+#start-screen .mode-coming-soon .mode-copy{background:linear-gradient(180deg,transparent,#1e2f4ddd 78%)}
+#start-screen .mode-coming-soon .mode-copy small{display:block;margin-top:7px;color:#dce8fb;font-size:9px;font-weight:800;letter-spacing:.07em;line-height:1.2}
 #start-screen .time-row{border:0;margin-top:22px;padding:0}
 #start-screen .topt{min-height:44px;background:#fff;color:#526587;border-color:#cad8e9;font-size:13px}
 #start-screen .topt.on{background:#6557de;color:#fff;border-color:#6557de;box-shadow:0 3px 0 #433a9f}

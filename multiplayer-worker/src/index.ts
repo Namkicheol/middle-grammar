@@ -17,7 +17,7 @@ import bundledQuestionBank from "./generated/questions.json";
 import { GameRoom } from "./room";
 import type { Env, QuestionBank } from "./types";
 import type { PlayStyle, Question, RoomMode } from "./room-engine";
-import { ROOM_MODES } from "./room-engine";
+import { ACTIVE_ROOM_MODES } from "./room-engine";
 import { adminTeachers, banTeacher, unbanTeacher } from "./admin";
 
 export { GameRoom };
@@ -242,7 +242,7 @@ async function createRoom(request: Request, env: Env, origin: string): Promise<R
     allowScoreSwap?: boolean;
   };
   const mode = body.mode ?? "score_race";
-  if (!(ROOM_MODES as readonly string[]).includes(mode)) {
+  if (!(ACTIVE_ROOM_MODES as readonly string[]).includes(mode)) {
     throw new HttpError(400, "INVALID_MODE", "Choose a valid game mode.");
   }
   const playStyle = body.playStyle ?? "individual";

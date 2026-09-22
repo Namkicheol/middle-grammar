@@ -944,10 +944,10 @@ body:has(#speed-screen[style*="display: block"]) #sp-badge{display:none!importan
               <i class="mode-thumb" aria-hidden="true">💥</i>
               <span class="mode-copy"><strong>블록 블라스트</strong></span>
             </button>
-            <button class="mode-btn" type="button" data-mode="escape" aria-label="야간학교 탈출, 베타 버전">
+            <div class="mode-btn mode-coming-soon" role="status" aria-label="야간학교 탈출 · NEW GAME COMING SOON">
               <i class="mode-thumb" aria-hidden="true">🌙</i>
-              <span class="mode-copy"><strong>야간학교 탈출</strong><small class="mode-beta" aria-label="베타 버전">β BETA</small></span>
-            </button>
+              <span class="mode-copy"><strong>야간학교 탈출</strong><small>NEW GAME COMING SOON</small></span>
+            </div>
           </div>
         </div>
       </div>
@@ -1551,7 +1551,7 @@ cleanupZeroScoreRecords();
       renderUnitBestBadges();
     });
   });
-  document.querySelectorAll('.mode-btn').forEach(btn => {
+  document.querySelectorAll('.mode-btn[data-mode]').forEach(btn => {
     btn.setAttribute('aria-pressed', String(btn.classList.contains('on')));
     btn.addEventListener('click', () => {
       document.querySelectorAll('.mode-btn').forEach(b => {
@@ -1616,7 +1616,6 @@ function startSelectedGame(unitKey) {
   else if (selectedMode === 'rangers') location.href = '../grammar-rangers/' + soloLaunchQuery(unitKey);
   else if (selectedMode === 'sentence') {
     location.href = '../sentence-blast/' + soloLaunchQuery(unitKey);
-  } else if (selectedMode === 'escape') location.href = '../escape/';
   else startGame(unitKey);
 }
 

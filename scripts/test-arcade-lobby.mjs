@@ -4,9 +4,10 @@ const html = fs.readFileSync('game/index.html', 'utf8');
 const css = fs.readFileSync('game/arcade-lobby.css', 'utf8');
 const multiplayerIndex = fs.readFileSync('multiplayer/index.html', 'utf8');
 const multiplayerApp = fs.readFileSync('multiplayer/app.js', 'utf8');
+const soloEscape = fs.readFileSync('escape/index.html', 'utf8');
 const creatorHtml = fs.readFileSync('multiplayer/creator.html', 'utf8');
 const creatorCss = fs.readFileSync('multiplayer/creator.css', 'utf8');
-const modes = ['boss', 'speed', 'whack', 'bubble', 'tower', 'rangers', 'sentence', 'escape'];
+const modes = ['boss', 'speed', 'whack', 'bubble', 'tower', 'rangers', 'sentence'];
 
 const assert = (condition, message) => {
   if (!condition) throw new Error(message);
@@ -26,12 +27,17 @@ assert(html.includes("location.href = '../tower/' + soloLaunchQuery(unitKey)"), 
 assert(html.includes("location.href = '../grammar-rangers/' + soloLaunchQuery(unitKey)"), 'rangers route contract missing');
 assert(html.includes("new URLSearchParams(location.search).get('mode')") && html.includes('requestedModeButton.click()'), 'hub mode deep-link must preselect the requested game');
 assert(html.includes("location.href = '../sentence-blast/' + soloLaunchQuery(unitKey)"), 'sentence route contract missing');
-assert(html.includes("location.href = '../escape/'"), 'escape route contract missing');
+assert(!html.includes('data-mode="escape"'), 'retired solo escape mode must not remain selectable');
+assert(!html.includes("location.href = '../escape/'"), 'retired solo escape route must not remain');
+assert(html.includes('mode-coming-soon') && html.includes('NEW GAME COMING SOON'), 'retired solo escape must be a non-clickable coming-soon card');
 assert(html.includes('id="multiplayer-join-cta"'), 'student multiplayer CTA must be present');
 assert(html.includes('href="../multiplayer/?join=1"'), 'student CTA must target the supported student join parameter');
 assert(html.includes('멀티 참여하기') && html.includes('학생 방 번호 입력') && html.includes('aria-label="멀티 참여하기, 학생 방 번호 입력, 베타 버전"'), 'student CTA must explain its direct room-entry purpose');
 assert(html.includes("roomInputUrl.searchParams.set('join', '1')") && html.includes("roomInputUrl.searchParams.delete('room')"), 'student CTA must preserve the dynamic worker destination without a stale room code');
-assert(html.includes('class="mode-beta"') && html.includes('야간학교 탈출, 베타 버전'), 'night school card must carry the beta label');
+assert(!html.includes('야간학교 탈출, 베타 버전'), 'retired solo escape must not keep the beta selector label');
+assert(multiplayerApp.includes('const RETIRED_GAME_MODES') && multiplayerApp.includes('game-cover-coming-soon') && multiplayerApp.includes('NEW GAME COMING SOON'), 'retired multiplayer modes must be non-clickable coming-soon cards');
+assert(!multiplayerApp.includes('data-action="select-game" data-game-mode="treasure_heist"'), 'retired treasure mode must not be selectable');
+assert(soloEscape.includes('NEW GAME COMING SOON') && soloEscape.includes('href="../game/"') && !soloEscape.includes('./game.js'), 'direct solo escape page must be a static coming-soon page');
 assert(css.includes('.multi-entry-cta') && css.includes('min-height:48px'), 'student CTA needs a touch-safe responsive rule');
 assert(multiplayerIndex.includes('class="product-beta-badge"') && multiplayerIndex.includes('β BETA'), 'multiplayer header must expose its beta status');
 assert(multiplayerApp.includes('initialParams.get("room")'), 'multiplayer must continue to support the room query parameter');

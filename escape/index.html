@@ -5,6 +5,16 @@
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
   <title>야간학교 탈출 · 혼자 하기</title>
   <link rel="stylesheet" href="./game.css">
+  <style>
+    .escape-coming-soon-page { display: grid; grid-template-columns: minmax(0, 760px); min-height: calc(100svh - 78px); align-items: center; justify-content: center; }
+    .escape-coming-soon-card { padding: clamp(28px, 7vw, 76px); border: 1px solid rgba(103, 232, 249, .24); border-radius: 18px; background: linear-gradient(145deg, rgba(14, 38, 53, .96), rgba(8, 25, 37, .96)); box-shadow: 0 22px 55px rgba(0, 0, 0, .28), 0 0 42px rgba(103, 232, 249, .07); text-align: center; }
+    .escape-coming-soon-mark { display: grid; width: 78px; height: 78px; margin: 0 auto 20px; place-items: center; border: 1px solid rgba(246, 196, 83, .45); border-radius: 50%; background: radial-gradient(circle at 35% 30%, #2c5966, #122c3b); box-shadow: 0 0 28px rgba(103, 232, 249, .16); font-size: 38px; }
+    .escape-coming-soon-card h2 { margin: 12px 0 10px; color: #ffdda0; font-family: var(--serif); font-size: clamp(28px, 6vw, 52px); font-weight: 500; letter-spacing: -.05em; }
+    .escape-coming-soon-card p { max-width: 44ch; margin: 0 auto 24px; color: #b8ced2; font-size: 15px; line-height: 1.65; }
+    .escape-coming-soon-link { display: inline-flex; min-height: 46px; padding: 0 16px; align-items: center; gap: 10px; border: 1px solid rgba(103, 232, 249, .35); border-radius: 7px; color: var(--moon); background: rgba(103, 232, 249, .1); font-size: 13px; font-weight: 800; text-decoration: none; }
+    .escape-coming-soon-link:hover, .escape-coming-soon-link:focus-visible { border-color: var(--cyan); background: rgba(103, 232, 249, .2); }
+    @media (max-width: 600px) { .escape-coming-soon-page { min-height: calc(100svh - 115px); padding-inline: 14px; } .escape-coming-soon-card { padding: 38px 20px; } }
+  </style>
 </head>
 <body>
   <div class="escape-app" id="escape-app">
@@ -12,20 +22,18 @@
       <a class="escape-back" href="../game/" aria-label="게임 선택으로 돌아가기">‹ <span>게임 선택</span></a>
       <div class="escape-title">
         <span class="escape-kicker">SOLO MYSTERY · NIGHT SHIFT</span>
-        <h1>야간학교 탈출 <span class="escape-beta">BETA</span></h1>
+        <h1>야간학교 탈출</h1>
       </div>
-      <nav class="escape-progress" aria-label="진행 상황">
-        <span class="progress-step active" data-progress="classroom"><i>01</i>교실</span>
-        <span class="progress-line" aria-hidden="true"></span>
-        <span class="progress-step" data-progress="archive"><i>02</i>자료실</span>
-        <span class="progress-line" aria-hidden="true"></span>
-        <span class="progress-step" data-progress="maze"><i>03</i>복도</span>
-      </nav>
-      <button class="audio-toggle" id="audio-toggle" type="button" aria-pressed="false" aria-label="소리 켜기">♫ <span>소리 켜짐</span></button>
     </header>
-    <main class="escape-main" id="escape-root" aria-live="polite"></main>
+    <main class="escape-main escape-coming-soon-page" aria-labelledby="coming-soon-title">
+      <section class="escape-coming-soon-card">
+        <div class="escape-coming-soon-mark" aria-hidden="true">🌙</div>
+        <span class="escape-kicker">SOLO MYSTERY · NIGHT SHIFT</span>
+        <h2 id="coming-soon-title">NEW GAME COMING SOON</h2>
+        <p>야간학교 탈출은 잠시 준비 중이에요. 다른 문법 게임을 먼저 플레이해 보세요.</p>
+        <a class="escape-coming-soon-link" href="../game/">게임 선택으로 돌아가기 <span aria-hidden="true">→</span></a>
+      </section>
+    </main>
   </div>
-  <script src="./audio.js"></script>
-  <script type="module" src="./game.js"></script>
 </body>
 </html>

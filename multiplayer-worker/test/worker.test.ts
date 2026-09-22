@@ -191,16 +191,18 @@ describe("room routes", () => {
     expect(startRequest.bodyUsed).toBe(true);
   });
 
-  it("creates each supported game mode and rejects unknown modes", async () => {
-    for (const mode of ["score_race", "treasure_heist", "maze_heist"]) {
+  it("creates active game modes and rejects retired or unknown modes", async () => {
+    for (const mode of ["score_race", "boss_battle", "bubble_battle", "tower_race", "rangers_siege", "whack_race", "sentence_blast"]) {
       const { response, body } = await createRoom(TEACHER, { mode });
       expect(response.status).toBe(201);
       expect(body.state).toMatchObject({ mode });
     }
 
-    const invalid = await createRoom(TEACHER, { mode: "copied_game" });
-    expect(invalid.response.status).toBe(400);
-    expect(invalid.body).toMatchObject({ error: "INVALID_MODE" });
+    for (const mode of ["treasure_heist", "maze_heist", "grammar_escape", "copied_game"]) {
+      const invalid = await createRoom(TEACHER, { mode });
+      expect(invalid.response.status).toBe(400);
+      expect(invalid.body).toMatchObject({ error: "INVALID_MODE" });
+    }
   });
 
   it("defaults room creation to individual play and validates team count", async () => {
@@ -261,7 +263,7 @@ describe("room routes", () => {
       ...(index === 0 ? { image: "data:image/png;base64,iVBORw0KGgo=" } : {}),
     }));
     const { response, body } = await createRoom(TEACHER, {
-      mode: "maze_heist",
+      mode: "score_race",
       setTitle: "우리 반 문법 퀴즈",
       customQuestions,
       questionCount: customQuestions.length,
@@ -272,7 +274,7 @@ describe("room routes", () => {
       grade: "custom",
       unitKey: "custom-local",
       setTitle: "우리 반 문법 퀴즈",
-      mode: "maze_heist",
+      mode: "score_race",
       questionCount: 5,
     });
 
@@ -546,34 +548,6 @@ describe("socket tickets and scoring", () => {
     socket.close(1000, "test complete");
   });
 
-  it("resynchronizes a rejected escape action without exposing undiscovered digits", async () => {
-    const { body: room } = await createRoom(TEACHER, { mode: "grammar_escape" });
-    const { body: player } = await join(room.code, "탈출 학생");
-    await request(`/api/teacher/rooms/${room.code}/start`, {
-      method: "POST",
-      headers: { "x-dev-teacher-email": TEACHER },
-    });
-    const { body: ticket } = await socketTicket(room.code, player.playerId, player.resumeToken);
-    const response = await request(`/api/rooms/${room.code}/ws?ticket=${ticket.ticket}`, {
-      headers: { upgrade: "websocket" },
-    });
-    const socket = response.webSocket!;
-    socket.accept();
-    const hello = await nextMessage(socket);
-    expect(hello.state.self.escape).toMatchObject({ focus: 0, discoveredCount: 0, seq: 0 });
-    expect(JSON.stringify(hello)).not.toMatch(/"clue"|"digit"|"rooms"/);
-
-    socket.send(JSON.stringify({ type: "escape_action", action: "inspect", seq: 0, hotspotId: "desk" }));
-    const rejected = await nextMessage(socket);
-    expect(rejected).toMatchObject({
-      type: "error",
-      error: "ESCAPE_NO_FOCUS",
-      room: { self: { escape: { focus: 0, discoveredCount: 0, seq: 0 } } },
-    });
-    expect(JSON.stringify(rejected)).not.toMatch(/"clue"|"digit"|"rooms"/);
-    socket.close(1000, "test complete");
-  });
-
   it("rejects an expired socket ticket", async () => {
     const { body: room } = await createRoom();
     const { body: player } = await join(room.code, "만료 학생");
@@ -650,24 +624,31 @@ describe("reports", () => {
     expect(body.players[0]).toMatchObject({ teamId: "team-1", teamNumber: 1 });
   });
 
-  it("preserves grammar escape progress summaries in the finalized D1 report", async () => {
-    const { body: room } = await createRoom(TEACHER, { mode: "grammar_escape" });
-    await join(room.code, "리포트 탈출 학생");
-    await request(`/api/teacher/rooms/${room.code}/start`, {
-      method: "POST",
-      headers: { "x-dev-teacher-email": TEACHER },
-    });
-    expect((await request(`/api/teacher/rooms/${room.code}/finish`, {
-      method: "POST",
-      headers: { "x-dev-teacher-email": TEACHER },
-    })).status).toBe(200);
+  it("reads historical grammar escape progress summaries from D1 reports", async () => {
+    const code = "314159";
+    await env.REPORTS.batch([
+      env.REPORTS.prepare(
+        `INSERT INTO room_reports
+          (room_id, code, teacher_email, grade, unit_key, mode, duration_seconds, question_count,
+           participant_count, started_at, finished_at, created_at, escape_summary_json)
+         VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+      ).bind("legacy-escape-room", code, TEACHER, "g1", "g1-l1-be-verb", "grammar_escape", 300, 5, 1, 100, 200, 50,
+        JSON.stringify({ escapedCount: 0, participantCount: 1 })),
+      env.REPORTS.prepare(
+        `INSERT INTO player_results
+          (room_id, player_id, nickname, rank, score, accuracy, correct_count, answered_count,
+           average_response_time_ms, escape_rooms_cleared, escape_discovered_count)
+         VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+      ).bind("legacy-escape-room", "legacy-player", "기록 학생", 1, 100, 1, 1, 1, 500, 0, 0),
+    ]);
 
-    const report = await request(`/api/teacher/reports/${room.code}`, {
+    const report = await request(`/api/teacher/reports/${code}`, {
       headers: { "x-dev-teacher-email": TEACHER },
     });
+    expect(report.status).toBe(200);
     expect(await report.json()).toMatchObject({
       room: { mode: "grammar_escape", escapeSummary: { escapedCount: 0, participantCount: 1 } },
-      players: [{ escape: { roomsCleared: 0, discoveredCount: 0 } }],
+      players: [{ playerId: "legacy-player", escape: { roomsCleared: 0, discoveredCount: 0 } }],
     });
   });
 

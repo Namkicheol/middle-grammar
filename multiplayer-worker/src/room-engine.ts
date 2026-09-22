@@ -32,7 +32,9 @@ export interface AnswerRecord {
 }
 
 export const CLASSROOM_MODES = ["boss_battle", "bubble_battle", "tower_race", "rangers_siege", "whack_race", "sentence_blast"] as const;
+// ROOM_MODES remains the wire/storage union so old rooms and reports can still be read.
 export const ROOM_MODES = ["score_race", "treasure_heist", "maze_heist", "grammar_escape", ...CLASSROOM_MODES] as const;
+export const ACTIVE_ROOM_MODES = ["score_race", ...CLASSROOM_MODES] as const;
 export type RoomMode = typeof ROOM_MODES[number];
 export function isClassroomMode(mode: RoomMode): boolean {
   return (CLASSROOM_MODES as readonly string[]).includes(mode);

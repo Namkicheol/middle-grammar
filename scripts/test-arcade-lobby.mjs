@@ -34,10 +34,10 @@ assert(html.includes('id="multiplayer-join-cta"'), 'student multiplayer CTA must
 assert(html.includes('href="../multiplayer/?join=1"'), 'student CTA must target the supported student join parameter');
 assert(html.includes('멀티 참여하기') && html.includes('학생 방 번호 입력') && html.includes('aria-label="멀티 참여하기, 학생 방 번호 입력, 베타 버전"'), 'student CTA must explain its direct room-entry purpose');
 assert(html.includes("roomInputUrl.searchParams.set('join', '1')") && html.includes("roomInputUrl.searchParams.delete('room')"), 'student CTA must preserve the dynamic worker destination without a stale room code');
-assert(!html.includes('야간학교 탈출, 베타 버전'), 'retired solo escape must not keep the beta selector label');
-assert(multiplayerApp.includes('const RETIRED_GAME_MODES') && multiplayerApp.includes('game-cover-coming-soon') && multiplayerApp.includes('NEW GAME COMING SOON'), 'retired multiplayer modes must be non-clickable coming-soon cards');
+assert(!html.includes('야간학교 탈출') && html.includes('mode-coming-soon') && html.includes('NEW GAME COMING SOON'), 'retired solo escape must render only a neutral coming-soon card');
+assert(multiplayerApp.includes('const RETIRED_GAME_MODES') && multiplayerApp.includes('game-cover-coming-soon') && multiplayerApp.includes('game-cover-placeholder') && multiplayerApp.includes('aria-label="NEW GAME COMING SOON"'), 'retired multiplayer modes must render only neutral coming-soon cards');
 assert(!multiplayerApp.includes('data-action="select-game" data-game-mode="treasure_heist"'), 'retired treasure mode must not be selectable');
-assert(soloEscape.includes('NEW GAME COMING SOON') && soloEscape.includes('href="../game/"') && !soloEscape.includes('./game.js'), 'direct solo escape page must be a static coming-soon page');
+assert(soloEscape.includes('NEW GAME COMING SOON') && soloEscape.includes('href="../game/"') && !soloEscape.includes('야간학교 탈출') && !soloEscape.includes('./game.js'), 'direct solo escape page must be a neutral static coming-soon page');
 assert(css.includes('.multi-entry-cta') && css.includes('min-height:48px'), 'student CTA needs a touch-safe responsive rule');
 assert(multiplayerIndex.includes('class="product-beta-badge"') && multiplayerIndex.includes('β BETA'), 'multiplayer header must expose its beta status');
 assert(multiplayerApp.includes('initialParams.get("room")'), 'multiplayer must continue to support the room query parameter');

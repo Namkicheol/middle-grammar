@@ -156,9 +156,9 @@ const GAME_MODES = [
 ];
 
 const RETIRED_GAME_MODES = [
-  { value: "treasure_heist", title: "금고 작전", description: "보물을 확보하거나 더 깊이 들어가 점수를 뒤집어요.", tag: "준비 중", image: "./assets/arcade-20260908/vault.webp" },
-  { value: "maze_heist", title: "미궁 쟁탈전", description: "보물을 운반하고 라이벌에게서 빼앗아 금고에 넣어요.", tag: "준비 중", image: "./assets/arcade-20260908/maze.webp" },
-  { value: "grammar_escape", title: "야간학교 탈출", description: "세 방의 장치를 직접 조작해 출구를 열어요.", tag: "준비 중", image: "./assets/arcade-20260908/escape.webp" },
+  { value: "retired_slot_1" },
+  { value: "retired_slot_2" },
+  { value: "retired_slot_3" },
 ];
 
 const CLASSROOM_GAME_MODES = new Set(["boss_battle", "bubble_battle", "tower_race", "rangers_siege", "whack_race", "sentence_blast"]);
@@ -1247,7 +1247,7 @@ function teacherGamePickerView() {
   const gameCards = [...GAME_MODES, ...RETIRED_GAME_MODES];
   return `<section class="screen teacher-game-picker" aria-labelledby="game-picker-title">
     <header class="teacher-setup-header"><div><p class="setup-step-label">1단계 · 게임 선택</p><h1 id="game-picker-title">어떤 게임을 할까요?</h1><p>수업의 분위기에 맞는 방식부터 고르세요.</p><p class="game-score-rule">게임마다 승리 조건을 확인하고 시작하세요.</p>${teacherAccountHtml()}</div><button class="back-button" type="button" data-action="back-role">뒤로</button></header>
-    <div class="game-cover-grid">${gameCards.map((game) => RETIRED_GAME_MODES.some(({ value }) => value === game.value) ? `<div class="game-cover game-cover-coming-soon" role="img" aria-label="${escapeHtml(game.title)} · NEW GAME COMING SOON"><img src="${game.image}" alt="" width="320" height="200"><span class="game-cover-tag">${escapeHtml(game.tag)}</span><strong>${escapeHtml(game.title)}</strong><small>NEW GAME COMING SOON</small></div>` : `<button class="game-cover" type="button" data-action="select-game" data-game-mode="${game.value}"><img src="${game.image}" alt="" width="320" height="200"><span class="game-cover-tag">${escapeHtml(game.tag)}</span><strong>${escapeHtml(game.title)}</strong><small>${escapeHtml(game.description)}</small></button>`).join("")}</div>
+    <div class="game-cover-grid">${gameCards.map((game) => RETIRED_GAME_MODES.some(({ value }) => value === game.value) ? `<div class="game-cover game-cover-coming-soon" role="status" aria-label="NEW GAME COMING SOON"><div class="game-cover-placeholder" aria-hidden="true">✦</div><small>NEW GAME COMING SOON</small></div>` : `<button class="game-cover" type="button" data-action="select-game" data-game-mode="${game.value}"><img src="${game.image}" alt="" width="320" height="200"><span class="game-cover-tag">${escapeHtml(game.tag)}</span><strong>${escapeHtml(game.title)}</strong><small>${escapeHtml(game.description)}</small></button>`).join("")}</div>
   </section>`;
 }
 

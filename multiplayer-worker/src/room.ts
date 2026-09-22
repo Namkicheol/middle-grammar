@@ -7,6 +7,7 @@ import {
   startRoom,
   submitAnswer,
   chooseTreasure,
+  spaceAction,
   escapeAction,
   mazeMove,
   teacherRoomState,
@@ -121,7 +122,7 @@ export class GameRoom implements DurableObject {
       return;
     }
     let record: RoomRecord | undefined;
-    let payload: { type?: string; questionId?: string; occurrenceIndex?: number; answer?: string; choiceId?: string; seq?: number; direction?: string; action?: string; hotspotId?: string; code?: string } = {};
+    let payload: { type?: string; questionId?: string; occurrenceIndex?: number; answer?: string; choiceId?: string; seq?: number; direction?: string; action?: string; hotspotId?: string; code?: string; planetId?: string; targetPlayerId?: string } = {};
     try {
       payload = JSON.parse(
         typeof message === "string" ? message : new TextDecoder().decode(message),
@@ -166,6 +167,28 @@ export class GameRoom implements DurableObject {
           type: "maze_move_result",
           result: moved.result,
           state: studentView(record, attachment.playerId),
+        }));
+        await this.broadcastState(record);
+        return;
+      }
+      if (payload.type === "space_action") {
+        if (!Number.isInteger(payload.seq) || (payload.action !== "choose_planet" && payload.action !== "resolve_effect")) {
+          throw new EngineError("INVALID_SPACE_ACTION", "Invalid space action.");
+        }
+        const acted = spaceAction(record.state, {
+          playerId: attachment.playerId,
+          action: payload.action,
+          seq: payload.seq!,
+          planetId: payload.planetId,
+          targetPlayerId: payload.targetPlayerId,
+          serverNow: Date.now(),
+        });
+        record.state = acted.state;
+        await this.putRecord(record);
+        socket.send(JSON.stringify({
+          type: "space_result",
+          result: acted.result,
+          room: studentView(record, attachment.playerId),
         }));
         await this.broadcastState(record);
         return;

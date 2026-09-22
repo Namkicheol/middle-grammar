@@ -31,7 +31,7 @@ export interface AnswerRecord {
   submittedAt: number;
 }
 
-export const CLASSROOM_MODES = ["boss_battle", "bubble_battle", "tower_race", "rangers_siege", "whack_race", "sentence_blast"] as const;
+export const CLASSROOM_MODES = ["boss_battle", "bubble_battle", "tower_race", "rangers_siege", "whack_race", "sentence_blast", "space_raiders"] as const;
 // ROOM_MODES remains the wire/storage union so old rooms and reports can still be read.
 export const ROOM_MODES = ["score_race", "treasure_heist", "maze_heist", "grammar_escape", ...CLASSROOM_MODES] as const;
 export const ACTIVE_ROOM_MODES = ["score_race", ...CLASSROOM_MODES] as const;
@@ -50,6 +50,68 @@ export interface VaultRunState {
   depth: number;
   shield: number;
   switchCharge: number;
+}
+
+export type SpaceOutcomeKind = "energy" | "shield" | "double" | "triple" | "angel" | "steal" | "swap" | "bomb";
+export type SpaceActionKind = "choose_planet" | "resolve_effect";
+export type SpacePlanetStrategy = "safe" | "risky";
+
+export const SPACE_MAX_ENERGY = 9_999;
+export const SPACE_MAX_SHIELD = 1;
+export const SPACE_MAX_EXPLORATION_STREAK = 3;
+export const SPACE_OUTCOME_WEIGHTS: Record<SpacePlanetStrategy, Record<SpaceOutcomeKind, number>> = {
+  safe: { energy: 60, shield: 15, double: 15, triple: 8, angel: 2, steal: 0, swap: 0, bomb: 0 },
+  risky: { energy: 25, shield: 10, double: 18, triple: 10, angel: 5, steal: 15, swap: 15, bomb: 2 },
+};
+
+export interface SpacePlanetChoice {
+  id: string;
+  label: string;
+  color: "cyan" | "violet" | "gold";
+  strategy: SpacePlanetStrategy;
+}
+
+export interface SpaceEvent {
+  kind: SpaceOutcomeKind;
+  title: string;
+  message: string;
+  amount?: number;
+  targetNickname?: string;
+  actorNickname?: string;
+}
+
+export interface SpacePendingEffect {
+  kind: Exclude<SpaceOutcomeKind, "energy" | "shield" | "double" | "triple" | "bomb">;
+  amount?: number;
+  planetId: string;
+}
+
+export interface SpacePlayerState {
+  energy: number;
+  shield?: number;
+  explorationStreak?: number;
+  seq: number;
+  pendingPlanets?: SpacePlanetChoice[];
+  pendingEffect?: SpacePendingEffect;
+  exploredPlanetIds: string[];
+  lastEvent?: SpaceEvent;
+}
+
+export interface SpaceEffectTarget {
+  playerId: string;
+  nickname: string;
+  energy: number;
+  shield: number;
+}
+
+export interface SpacePlayerView {
+  energy: number;
+  shield: number;
+  explorationStreak: number;
+  seq: number;
+  pendingPlanets: SpacePlanetChoice[];
+  effect?: { kind: Exclude<SpaceOutcomeKind, "energy" | "shield" | "double" | "triple" | "bomb">; amount?: number; targets: SpaceEffectTarget[] };
+  lastEvent?: SpaceEvent;
 }
 
 export type MazeTileKind =
@@ -247,6 +309,7 @@ export interface PlayerState {
   teamId?: string;
   maze?: MazePlayerState;
   vaultRun?: VaultRunState;
+  space?: SpacePlayerState;
 }
 
 export type RoomStatus = "lobby" | "playing" | "finished";
@@ -269,6 +332,7 @@ export interface RoomState {
   players: Record<string, PlayerState>;
   lastTreasureEvent?: LastTreasureEvent;
   globalBombUsed?: boolean;
+  lastSpaceEvent?: SpaceEvent;
   createdAt: number;
   startedAt?: number;
   finishedAt?: number;
@@ -300,7 +364,12 @@ export type EngineErrorCode =
   | "ESCAPE_NO_FOCUS"
   | "ESCAPE_LOCKED"
   | "ESCAPE_RETRY_ACTIVE"
-  | "ESCAPE_COMPLETE";
+  | "ESCAPE_COMPLETE"
+  | "SPACE_CHOICE_REQUIRED"
+  | "SPACE_NOT_AVAILABLE"
+  | "SPACE_ACTION_OUT_OF_ORDER"
+  | "DUPLICATE_SPACE_ACTION"
+  | "INVALID_SPACE_ACTION";
 
 export class EngineError extends Error {
   readonly code: EngineErrorCode;
@@ -368,6 +437,25 @@ export interface EscapeActionResult {
   message: string;
 }
 
+export interface SpaceActionInput {
+  playerId: string;
+  action: SpaceActionKind;
+  seq: number;
+  planetId?: string;
+  targetPlayerId?: string;
+  serverNow: number;
+}
+
+export interface SpaceActionResult {
+  action: SpaceActionKind;
+  seq: number;
+  kind: SpaceOutcomeKind;
+  energy: number;
+  amount?: number;
+  targetNickname?: string;
+  event: SpaceEvent;
+}
+
 export interface AnswerResult {
   questionId: string;
   occurrenceIndex: number;
@@ -379,6 +467,7 @@ export interface AnswerResult {
   correctCount: number;
   answeredCount: number;
   treasureChoices?: TreasureChoiceView[];
+  space?: SpacePlayerView;
 }
 
 export interface TreasureResult {
@@ -411,6 +500,8 @@ export interface PublicLeaderboardEntry {
   isSelf: boolean;
   starDust?: number;
   escape?: EscapeProgressSummary;
+  spaceEnergy?: number;
+  spaceShield?: number;
 }
 
 export interface TeamLeaderboardEntry {
@@ -436,6 +527,8 @@ export interface TeacherLeaderboardEntry {
   teamId?: string;
   teamNumber?: number;
   escape?: EscapeProgressSummary;
+  spaceEnergy?: number;
+  spaceShield?: number;
 }
 
 export interface SafeQuestion {
@@ -467,6 +560,7 @@ export interface PublicRoomView {
   teamLeaderboard?: TeamLeaderboardEntry[];
   team?: TeamLeaderboardEntry;
   lastTreasureEvent?: LastTreasureEvent;
+  lastSpaceEvent?: SpaceEvent;
   self?: TeacherLeaderboardEntry & {
     streak: number;
     currentQuestion?: SafeQuestion;
@@ -476,6 +570,7 @@ export interface PublicRoomView {
     vaultRun?: VaultRunState;
     maze?: MazePlayerView;
     escape?: EscapePlayerView;
+    space?: SpacePlayerView;
   };
 }
 
@@ -495,6 +590,7 @@ export interface TeacherRoomView {
   leaderboard: TeacherLeaderboardEntry[];
   teamLeaderboard?: TeamLeaderboardEntry[];
   lastTreasureEvent?: LastTreasureEvent;
+  lastSpaceEvent?: SpaceEvent;
 }
 
 export function createRoomState(input: CreateRoomInput): RoomState {
@@ -607,6 +703,7 @@ export function joinPlayer(
     maze: state.mode === "maze_heist"
       ? createMazePlayer(Object.keys(state.players).length)
       : undefined,
+    space: state.mode === "space_raiders" ? createSpaceState() : undefined,
   };
 
   const escapeRuns = state.mode === "grammar_escape"
@@ -641,6 +738,7 @@ export function startRoom(state: RoomState, startedAt: number): RoomState {
         questionIndex: 0,
         questionStartedAt: startedAt,
         maze: player.maze ? { ...player.maze } : undefined,
+        space: player.space ? cloneSpaceState(player.space) : undefined,
       },
     ]),
   );
@@ -667,6 +765,9 @@ export function submitAnswer(
       "TREASURE_CHOICE_REQUIRED",
       "Choose a treasure chest before answering the next question.",
     );
+  }
+  if (state.mode === "space_raiders" && (player.space?.pendingPlanets?.length || player.space?.pendingEffect)) {
+    throw new EngineError("SPACE_CHOICE_REQUIRED", "Choose a planet before answering the next question.");
   }
 
   if (!Number.isInteger(input.occurrenceIndex) || input.occurrenceIndex < 0) {
@@ -734,6 +835,11 @@ export function submitAnswer(
   const nextTreasureChoices = state.mode === "treasure_heist" && correct
     ? createTreasureChoices(state, player.id, input.occurrenceIndex, nextVaultRun, input.serverNow)
     : undefined;
+  const nextSpace = state.mode === "space_raiders"
+    ? correct
+      ? createSpacePending({ ...(player.space ?? createSpaceState()), explorationStreak: Math.min(SPACE_MAX_EXPLORATION_STREAK, (player.space?.explorationStreak ?? 0) + 1) }, input.occurrenceIndex)
+      : { ...cloneSpaceState(player.space ?? createSpaceState()), explorationStreak: 0, pendingPlanets: undefined, pendingEffect: undefined }
+    : player.space;
   const nextPlayer: PlayerState = {
     ...player,
     score: state.mode === "maze_heist" ? Number((nextMaze as unknown as MazePlayerV2)?.bankedLoot || 0) : player.score + scoreGain,
@@ -749,6 +855,7 @@ export function submitAnswer(
     maze: nextMaze,
     vaultRun: nextVaultRun,
     pendingTreasureChoices: nextTreasureChoices,
+    space: nextSpace,
   };
   const stateWithAnswer: RoomState = {
     ...state,
@@ -774,6 +881,7 @@ export function submitAnswer(
       correctCount: nextPlayer.correct,
       answeredCount: nextPlayer.answered,
       treasureChoices: nextPlayer.pendingTreasureChoices?.map(toTreasureChoiceView),
+      space: state.mode === "space_raiders" ? spacePlayerView(stateWithAnswer, nextPlayer) : undefined,
     },
   };
 }
@@ -1148,6 +1256,172 @@ function chooseMysteryTreasure(
   };
 }
 
+function createSpaceState(): SpacePlayerState {
+  return { energy: 0, shield: 0, explorationStreak: 0, seq: 0, exploredPlanetIds: [] };
+}
+
+function cloneSpaceState(space: SpacePlayerState): SpacePlayerState {
+  return {
+    ...space,
+    shield: Math.min(SPACE_MAX_SHIELD, Math.max(0, space.shield ?? 0)),
+    explorationStreak: Math.min(SPACE_MAX_EXPLORATION_STREAK, Math.max(0, space.explorationStreak ?? 0)),
+    pendingPlanets: space.pendingPlanets?.map((planet) => ({ ...planet })),
+    pendingEffect: space.pendingEffect ? { ...space.pendingEffect } : undefined,
+    exploredPlanetIds: [...space.exploredPlanetIds],
+    lastEvent: space.lastEvent ? { ...space.lastEvent } : undefined,
+  };
+}
+
+function createSpacePending(space: SpacePlayerState, occurrenceIndex: number): SpacePlayerState {
+  const labels: SpacePlanetChoice[] = [
+    { id: `planet:${occurrenceIndex}:cyan`, label: "네온 해류", color: "cyan", strategy: "safe" },
+    { id: `planet:${occurrenceIndex}:violet`, label: "보라 성운", color: "violet", strategy: "risky" },
+    { id: `planet:${occurrenceIndex}:gold`, label: "황금 위성", color: "gold", strategy: "safe" },
+  ];
+  return {
+    ...cloneSpaceState(space),
+    pendingPlanets: labels,
+    pendingEffect: undefined,
+    lastEvent: { kind: "energy", title: "정답 확인", message: "항로가 열렸어요. 미지의 행성 하나를 선택하세요." },
+  };
+}
+
+function spaceOutcome(roomCode: string, playerId: string, planetId: string): SpaceOutcomeKind {
+  const strategy = planetId.endsWith(":violet") ? "risky" : "safe";
+  const weights = SPACE_OUTCOME_WEIGHTS[strategy];
+  let cursor = hashString(`${roomCode}:${playerId}:${planetId}`) % 100;
+  for (const [kind, weight] of Object.entries(weights) as Array<[SpaceOutcomeKind, number]>) {
+    cursor -= weight;
+    if (cursor < 0) return kind;
+  }
+  return "energy";
+}
+
+function clampSpaceEnergy(value: number): number {
+  return Math.min(SPACE_MAX_ENERGY, Math.max(0, Math.round(value)));
+}
+
+function spacePlayerView(state: RoomState, player: PlayerState): SpacePlayerView {
+  const space = player.space ?? createSpaceState();
+  const targets = Object.values(state.players)
+    .filter((candidate) => candidate.id !== player.id)
+    .map((candidate) => ({ playerId: candidate.id, nickname: candidate.nickname, energy: candidate.space?.energy ?? 0, shield: candidate.space?.shield ?? 0 }));
+  return {
+    energy: space.energy,
+    shield: space.shield ?? 0,
+    explorationStreak: space.explorationStreak ?? 0,
+    seq: space.seq,
+    pendingPlanets: space.pendingPlanets?.map((planet) => ({ ...planet })) ?? [],
+    ...(space.pendingEffect ? {
+      effect: { kind: space.pendingEffect.kind, amount: space.pendingEffect.amount, targets },
+    } : {}),
+    ...(space.lastEvent ? { lastEvent: { ...space.lastEvent } } : {}),
+  };
+}
+
+export function spaceAction(
+  state: RoomState,
+  input: SpaceActionInput,
+): { state: RoomState; result: SpaceActionResult } {
+  if (state.status !== "playing") throw new EngineError("ROOM_NOT_PLAYING", "The room is not accepting space actions.");
+  if (state.mode !== "space_raiders") throw new EngineError("INVALID_SPACE_ACTION", "Space actions are unavailable in this room.");
+  if (!Number.isFinite(input.serverNow) || state.startedAt === undefined || input.serverNow < state.startedAt || input.serverNow >= state.startedAt + state.durationSeconds * 1_000) {
+    throw new EngineError("ROOM_EXPIRED", "The room time has expired.");
+  }
+  const player = state.players[input.playerId];
+  if (!player) throw new EngineError("UNKNOWN_PLAYER", "The player is not in this room.");
+  const space = cloneSpaceState(player.space ?? createSpaceState());
+  if (!Number.isInteger(input.seq) || input.seq < 0) throw new EngineError("INVALID_SPACE_ACTION", "The action sequence is invalid.");
+  if (input.seq < space.seq) throw new EngineError("DUPLICATE_SPACE_ACTION", "This space action was already applied.");
+  if (input.seq > space.seq) throw new EngineError("SPACE_ACTION_OUT_OF_ORDER", "The space action is out of order.");
+
+  if (input.action === "choose_planet") {
+    if (!input.planetId) throw new EngineError("INVALID_SPACE_ACTION", "Choose a planet.");
+    const choice = space.pendingPlanets?.find((planet) => planet.id === input.planetId);
+    if (!choice) {
+      if (space.exploredPlanetIds.includes(input.planetId)) throw new EngineError("DUPLICATE_SPACE_ACTION", "This planet was already explored.");
+      throw new EngineError("SPACE_NOT_AVAILABLE", "That planet is not available.");
+    }
+    let outcome = spaceOutcome(state.code, player.id, choice.id);
+    if (outcome === "steal" && state.allowSteal === false) outcome = "energy";
+    if (outcome === "swap" && state.allowScoreSwap === false) outcome = "energy";
+    const exploredPlanetIds = [...space.exploredPlanetIds, choice.id].slice(-24);
+    const rivals = Object.values(state.players).filter((candidate) => candidate.id !== player.id);
+    const baseAmount = (choice.strategy === "risky" ? 100 : 70) + (space.explorationStreak ?? 0) * 15;
+    const multiplier = outcome === "double" ? 2 : outcome === "triple" ? 3 : 1;
+    if (["energy", "double", "triple"].includes(outcome) || (rivals.length === 0 && ["steal", "swap", "angel"].includes(outcome))) {
+      const amount = clampSpaceEnergy(space.energy + baseAmount * multiplier) - space.energy;
+      const label = outcome === "double" ? "×2 에너지 폭발" : outcome === "triple" ? "×3 에너지 폭발" : "에너지 광맥 발견";
+      const event: SpaceEvent = { kind: ["steal", "swap", "angel"].includes(outcome) ? "energy" : outcome, title: label, message: `${choice.label}에서 에너지 +${amount}${multiplier > 1 ? ` (×${multiplier})` : ""}을 확보했어요.`, amount, actorNickname: player.nickname };
+      const nextSpace = { ...space, energy: clampSpaceEnergy(space.energy + amount), seq: space.seq + 1, pendingPlanets: undefined, pendingEffect: undefined, exploredPlanetIds, lastEvent: event };
+      const nextPlayer = { ...player, space: nextSpace, lastSeenAt: input.serverNow };
+      const nextState = { ...state, players: { ...state.players, [player.id]: nextPlayer }, lastSpaceEvent: event };
+      return { state: nextState, result: { action: input.action, seq: nextSpace.seq, kind: event.kind, energy: nextSpace.energy, amount, event } };
+    }
+    if (outcome === "shield") {
+      const event: SpaceEvent = { kind: "shield", title: "방어막 충전", message: "다음 약탈 한 번을 막을 방어막이 준비됐어요.", actorNickname: player.nickname };
+      const nextSpace = { ...space, shield: Math.min(SPACE_MAX_SHIELD, (space.shield ?? 0) + 1), seq: space.seq + 1, pendingPlanets: undefined, pendingEffect: undefined, exploredPlanetIds, lastEvent: event };
+      const nextPlayer = { ...player, space: nextSpace, lastSeenAt: input.serverNow };
+      return { state: { ...state, players: { ...state.players, [player.id]: nextPlayer }, lastSpaceEvent: event }, result: { action: input.action, seq: nextSpace.seq, kind: "shield", energy: nextSpace.energy, event } };
+    }
+    if (outcome === "bomb") {
+      const event: SpaceEvent = { kind: "bomb", title: "공간 폭탄", message: "내 에너지가 전부 소멸했어요. 다음 문제로 바로 복귀합니다.", amount: space.energy, actorNickname: player.nickname };
+      const nextSpace = { ...space, energy: 0, seq: space.seq + 1, pendingPlanets: undefined, pendingEffect: undefined, exploredPlanetIds, lastEvent: event };
+      const nextPlayer = { ...player, space: nextSpace, lastSeenAt: input.serverNow };
+      return { state: { ...state, players: { ...state.players, [player.id]: nextPlayer }, lastSpaceEvent: event }, result: { action: input.action, seq: nextSpace.seq, kind: "bomb", energy: 0, amount: space.energy, event } };
+    }
+    const effectKind: SpacePendingEffect["kind"] = outcome === "angel" || outcome === "steal" || outcome === "swap" ? outcome : "steal";
+    const pendingEffect: SpacePendingEffect = { kind: effectKind, amount: effectKind === "steal" ? 60 : effectKind === "angel" ? 80 : undefined, planetId: choice.id };
+    const event: SpaceEvent = effectKind === "steal"
+      ? { kind: "steal", title: "약탈 신호 포착", message: "라이벌 한 명을 골라 에너지를 빼앗으세요.", actorNickname: player.nickname }
+      : effectKind === "angel"
+        ? { kind: "angel", title: "천사 신호 수신", message: "친구 한 명을 골라 +80 에너지를 선물하세요.", amount: 80, actorNickname: player.nickname }
+        : { kind: "swap", title: "중력 교환 발견", message: "라이벌 한 명을 골라 에너지 잔량을 통째로 교환하세요.", actorNickname: player.nickname };
+    const nextSpace = { ...space, seq: space.seq, pendingPlanets: undefined, pendingEffect, exploredPlanetIds, lastEvent: event };
+    const nextPlayer = { ...player, space: nextSpace, lastSeenAt: input.serverNow };
+    return { state: { ...state, players: { ...state.players, [player.id]: nextPlayer }, lastSpaceEvent: event }, result: { action: input.action, seq: nextSpace.seq, kind: effectKind, energy: nextSpace.energy, event } };
+  }
+
+  const pendingEffect = space.pendingEffect;
+  if (!pendingEffect || !input.targetPlayerId) throw new EngineError("SPACE_NOT_AVAILABLE", "Choose a rival for this effect.");
+  const target = state.players[input.targetPlayerId];
+  if (!target || target.id === player.id || input.serverNow - target.lastSeenAt > 30_000) throw new EngineError("SPACE_NOT_AVAILABLE", "That rival is unavailable.");
+  if (pendingEffect.kind === "steal" && state.allowSteal === false) throw new EngineError("SPACE_NOT_AVAILABLE", "Stealing is disabled for this room.");
+  if (pendingEffect.kind === "swap" && state.allowScoreSwap === false) throw new EngineError("SPACE_NOT_AVAILABLE", "Score swaps are disabled for this room.");
+  const targetSpace = cloneSpaceState(target.space ?? createSpaceState());
+  let amount: number | undefined;
+  let event: SpaceEvent;
+  let nextActorEnergy = space.energy;
+  let nextTargetEnergy = targetSpace.energy;
+  if (pendingEffect.kind === "steal") {
+    const targetShield = targetSpace.shield ?? 0;
+    if (targetShield > 0) {
+      amount = 0;
+      const blockedTargetSpace = { ...targetSpace, shield: targetShield - 1 };
+      const event: SpaceEvent = { kind: "steal", title: "방어막 작동", message: `${target.nickname}의 방어막이 약탈을 막았어요.`, amount: 0, targetNickname: target.nickname, actorNickname: player.nickname };
+      const nextSpace = { ...space, seq: space.seq + 1, pendingEffect: undefined, lastEvent: event };
+      const players = { ...state.players, [player.id]: { ...player, space: nextSpace, lastSeenAt: input.serverNow }, [target.id]: { ...target, space: blockedTargetSpace, lastSeenAt: input.serverNow } };
+      return { state: { ...state, players, lastSpaceEvent: event }, result: { action: input.action, seq: nextSpace.seq, kind: "steal", energy: nextSpace.energy, amount, targetNickname: target.nickname, event } };
+    }
+    amount = Math.min(pendingEffect.amount ?? 60, targetSpace.energy);
+    nextActorEnergy = clampSpaceEnergy(space.energy + amount);
+    nextTargetEnergy = clampSpaceEnergy(targetSpace.energy - amount);
+    event = { kind: "steal", title: "약탈 성공", message: `${target.nickname}에게서 에너지 ${amount}을 빼앗았어요.`, amount, targetNickname: target.nickname, actorNickname: player.nickname };
+  } else if (pendingEffect.kind === "angel") {
+    amount = Math.min(pendingEffect.amount ?? 80, SPACE_MAX_ENERGY - targetSpace.energy);
+    nextTargetEnergy = clampSpaceEnergy(targetSpace.energy + amount);
+    event = { kind: "angel", title: "천사 선물 도착", message: `${target.nickname}에게 +${amount} 에너지를 선물했어요.`, amount, targetNickname: target.nickname, actorNickname: player.nickname };
+  } else {
+    nextActorEnergy = targetSpace.energy;
+    nextTargetEnergy = space.energy;
+    event = { kind: "swap", title: "중력 교환 성공", message: `${target.nickname}와 에너지 잔량을 교환했어요.`, targetNickname: target.nickname, actorNickname: player.nickname };
+  }
+  const nextSpace = { ...space, energy: nextActorEnergy, seq: space.seq + 1, pendingEffect: undefined, lastEvent: event };
+  const nextTargetSpace = { ...targetSpace, energy: nextTargetEnergy };
+  const players = { ...state.players, [player.id]: { ...player, space: nextSpace, lastSeenAt: input.serverNow }, [target.id]: { ...target, space: nextTargetSpace, lastSeenAt: input.serverNow } };
+  return { state: { ...state, players, lastSpaceEvent: event }, result: { action: input.action, seq: nextSpace.seq, kind: pendingEffect.kind, energy: nextSpace.energy, amount, targetNickname: target.nickname, event } };
+}
+
 export function escapeAction(
   state: RoomState,
   input: EscapeActionInput,
@@ -1343,6 +1617,8 @@ export function publicRoomState(
     score: player.score,
     isSelf: player.id === viewerPlayerId,
     ...(state.mode === "maze_heist" ? { starDust: player.starDust ?? 0 } : {}),
+    ...(state.mode === "space_raiders" ? { spaceEnergy: player.space?.energy ?? 0 } : {}),
+    ...(state.mode === "space_raiders" ? { spaceShield: player.space?.shield ?? 0 } : {}),
     ...(state.mode === "grammar_escape" && escapeRunForPlayer(state, player)
       ? { escape: escapeSummary(escapeRunForPlayer(state, player)!) }
       : {}),
@@ -1363,6 +1639,7 @@ export function publicRoomState(
     participantCount: ranked.length,
     questionCount: state.questions.length,
     lastTreasureEvent: state.lastTreasureEvent ? cloneTreasureEvent(state.lastTreasureEvent) : undefined,
+    lastSpaceEvent: state.lastSpaceEvent ? { ...state.lastSpaceEvent } : undefined,
     leaderboard,
     teamLeaderboard: playStyle === "team" ? rankedTeams(state, viewerPlayerId) : undefined,
     team: playStyle === "team" && viewer?.teamId
@@ -1383,6 +1660,7 @@ export function publicRoomState(
           escape: state.mode === "grammar_escape" && escapeRunForPlayer(state, viewer)
             ? escapePlayerView(escapeRunForPlayer(state, viewer)!)
             : undefined,
+          space: state.mode === "space_raiders" ? spacePlayerView(state, viewer) : undefined,
         }
       : undefined,
   };
@@ -1405,6 +1683,7 @@ export function teacherRoomState(state: RoomState): TeacherRoomView {
     participantCount: ranked.length,
     questionCount: state.questions.length,
     lastTreasureEvent: state.lastTreasureEvent ? cloneTreasureEvent(state.lastTreasureEvent) : undefined,
+    lastSpaceEvent: state.lastSpaceEvent ? { ...state.lastSpaceEvent } : undefined,
     leaderboard: ranked.map(({ rank, player }) => toTeacherEntry(player, rank, state.mode === "maze_heist", state)),
     teamLeaderboard: playStyle === "team" ? rankedTeams(state) : undefined,
   };
@@ -1433,6 +1712,8 @@ function toTeacherEntry(
     accuracy: player.answered === 0 ? 0 : player.correct / player.answered,
     correctCount: player.correct,
     answeredCount: player.answered,
+    ...(state?.mode === "space_raiders" ? { spaceEnergy: player.space?.energy ?? 0 } : {}),
+    ...(state?.mode === "space_raiders" ? { spaceShield: player.space?.shield ?? 0 } : {}),
     averageResponseTimeMs:
       player.answered === 0 ? null : Math.round(player.responseTimeTotalMs / player.answered),
     ...(includeStarDust ? { starDust: player.starDust ?? 0 } : {}),
@@ -1525,6 +1806,10 @@ function rankedPlayers(state: RoomState): Array<{ rank: number; player: PlayerSt
       if (state.playStyle === "team") {
         const teamScoreDifference = teamScore(state, right.teamId) - teamScore(state, left.teamId);
         if (teamScoreDifference !== 0) return teamScoreDifference;
+      }
+      if (state.mode === "space_raiders") {
+        const energyDifference = (right.space?.energy ?? 0) - (left.space?.energy ?? 0);
+        if (energyDifference !== 0) return energyDifference;
       }
       const scoreDifference = right.score - left.score;
       if (scoreDifference !== 0) return scoreDifference;
@@ -1656,6 +1941,7 @@ function clonePlayer(player: PlayerState): PlayerState {
       : undefined,
     starDust: player.starDust ?? 0,
     maze: player.maze ? { ...player.maze } : undefined,
+    space: player.space ? cloneSpaceState(player.space) : undefined,
     questionOrder: [...player.questionOrder],
     optionOrders: Object.fromEntries(
       Object.entries(player.optionOrders).map(([questionId, options]) => [

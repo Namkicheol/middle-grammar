@@ -10,12 +10,24 @@ const SESSION_ROOM_CODE = "mg.multiplayer.studentRoomCode";
 const LOCAL_SET_KEY = "mg.multiplayer.localSet";
 const TEACHER_SETUP_KEY = "mg.multiplayer.teacherSetup";
 const GAME_SOUND_KEY = "mg.multiplayer.soundMuted";
+const SPACE_MUSIC_KEY = "mg.multiplayer.spaceMusicMuted";
 
 const gameAudio = (() => {
   let context;
+  let musicTimer = null;
+  let musicStep = 0;
+  let musicReady = false;
+  let musicAudio = null;
+  const assetAudio = {};
+  const assetRoot = "./assets/space-raiders/audio/";
+  const assetByKind = {
+    correct: "select.ogg", planet: "reveal.ogg", reward: "reveal.ogg", win: "reveal.ogg",
+    steal: "reveal.ogg", swap: "angel.ogg", shield: "shield.ogg", angel: "angel.ogg", bomb: "bomb.ogg",
+  };
   const muted = () => localStorage.getItem(GAME_SOUND_KEY) === "1";
+  const musicMuted = () => localStorage.getItem(SPACE_MUSIC_KEY) === "1";
   const unlock = async () => {
-    if (muted()) return false;
+    if (muted() && musicMuted()) return false;
     const AudioContext = window.AudioContext || window.webkitAudioContext;
     if (!AudioContext) return false;
     context ||= new AudioContext();
@@ -23,11 +35,25 @@ const gameAudio = (() => {
     return context.state === "running";
   };
   const tone = async (kind) => {
+    if (muted()) return;
+    const assetName = assetByKind[kind];
+    if (assetName && typeof Audio !== "undefined") {
+      try {
+        assetAudio[kind] ||= new Audio(`${assetRoot}${assetName}`);
+        assetAudio[kind].currentTime = 0;
+        assetAudio[kind].volume = kind === "bomb" ? .34 : .22;
+        await assetAudio[kind].play();
+        return;
+      } catch {
+        // The short WebAudio cue below is a local fallback for blocked asset playback.
+      }
+    }
     if (!(await unlock())) return;
     const phrases = {
       correct: [[659, 0, .09], [784, .1, .15]], wrong: [[294, 0, .12], [247, .13, .18]],
       reward: [[523, 0, .08], [659, .09, .08], [988, .18, .22]], move: [[392, 0, .07], [494, .07, .08]],
       clue: [[440, 0, .08], [659, .09, .14]], unlock: [[392, 0, .1], [523, .11, .1], [784, .23, .28]], start: [[330, 0, .08], [440, .1, .08], [660, .2, .17]],
+      planet: [[392, 0, .08], [587, .1, .1], [880, .22, .24]], steal: [[220, 0, .09], [330, .1, .09], [196, .21, .24]], swap: [[494, 0, .08], [370, .1, .08], [740, .2, .25]], win: [[523, 0, .09], [659, .1, .09], [784, .2, .09], [1047, .31, .32]],
     };
     const now = context.currentTime + .015;
     (phrases[kind] || phrases.move).forEach(([frequency, offset, duration]) => {
@@ -42,8 +68,51 @@ const gameAudio = (() => {
       oscillator.start(now + offset); oscillator.stop(now + offset + duration + .02);
     });
   };
+  const startMusic = async () => {
+    if (musicMuted() || document.hidden || musicTimer || (musicAudio && !musicAudio.paused)) return;
+    if (typeof Audio !== "undefined") {
+      try {
+        musicAudio ||= new Audio(`${assetRoot}../vendor/8bit-spaceshooter.mp3`);
+        musicAudio.loop = true;
+        musicAudio.volume = .16;
+        await musicAudio.play();
+        musicReady = true;
+        return;
+      } catch {
+        // Keep the lightweight synth fallback when a browser blocks the file.
+      }
+    }
+    if (!(await unlock())) return;
+    musicReady = true;
+    const notes = [220, 277, 330, 415, 330, 277, 247, 330];
+    const tick = () => {
+      if (muted() || document.hidden || !context || context.state !== "running") return;
+      const now = context.currentTime + .015;
+      const oscillator = context.createOscillator();
+      const gain = context.createGain();
+      oscillator.type = "triangle";
+      oscillator.frequency.value = notes[musicStep % notes.length];
+      gain.gain.setValueAtTime(.0001, now);
+      gain.gain.exponentialRampToValueAtTime(.035, now + .025);
+      gain.gain.exponentialRampToValueAtTime(.0001, now + .31);
+      oscillator.connect(gain).connect(context.destination);
+      oscillator.start(now); oscillator.stop(now + .34);
+      musicStep += 1;
+    };
+    tick();
+    musicTimer = window.setInterval(tick, 380);
+  };
+  const stopMusic = () => {
+    if (musicTimer) window.clearInterval(musicTimer);
+    musicTimer = null;
+    musicAudio?.pause();
+  };
   const sync = () => {
     const preference = muted();
+    if (preference) {
+      Object.values(assetAudio).forEach((audio) => audio.pause());
+    }
+    if (musicMuted()) stopMusic();
     muteTreasureEffects(context, preference);
     document.querySelectorAll("[data-game-sound-toggle]").forEach((button) => {
       const escape = document.querySelector(".escape-layout") ? window.EscapeAudio : null;
@@ -52,8 +121,14 @@ const gameAudio = (() => {
       button.setAttribute("aria-label", preference ? "경기 효과음 켜기" : "경기 효과음 끄기");
       button.textContent = preference ? "🔇 소리" : "🔊 소리";
     });
+    document.querySelectorAll("[data-space-music-toggle]").forEach((button) => {
+      const musicPreference = musicMuted();
+      button.setAttribute("aria-pressed", String(musicPreference));
+      button.setAttribute("aria-label", musicPreference ? "배경 음악 켜기" : "배경 음악 끄기");
+      button.textContent = musicPreference ? "🔇 음악" : "🎵 음악";
+    });
   };
-  return { unlock, tone, muted, sync, context: () => context };
+  return { unlock, tone, muted, sync, startMusic, stopMusic, musicReady: () => musicReady, context: () => context };
 })();
 
 function escapeAudioInstance() {
@@ -71,7 +146,7 @@ function playModeSound(kind) {
       if (kind === "start") {
         if (!state.escapeAmbientBlocked && state.connectionState === "connected" && roomStatus() === "playing" && !escapeState()?.escapedAt) audio.startAmbient?.();
       } else {
-        const sound = { correct: "pickup", wrong: "wrong", reward: "pickup", move: "step", clue: "pickup", unlock: "unlock", win: "win" }[kind] || "click";
+        const sound = { correct: "pickup", wrong: "wrong", reward: "pickup", move: "step", clue: "pickup", unlock: "unlock", planet: "pickup", steal: "click", swap: "unlock", win: "win" }[kind] || "click";
         audio.play?.(sound);
       }
       return;
@@ -85,12 +160,21 @@ function unlockPageAudio() {
   if (audio) Promise.resolve(audio.unlock?.()).then(() => {
     if (!state.escapeAmbientBlocked && state.connectionState === "connected" && roomStatus() === "playing" && !escapeState()?.escapedAt) audio.startAmbient?.();
   }).catch(() => {});
-  else gameAudio.unlock().catch(() => {});
+  else gameAudio.unlock().then(() => {
+    if (roomMode() === "space_raiders" && roomStatus() === "playing") gameAudio.startMusic();
+  }).catch(() => {});
 }
 
 document.addEventListener("pointerdown", unlockPageAudio, { capture: true, passive: true });
 document.addEventListener("keydown", unlockPageAudio, { capture: true });
 document.addEventListener("click", (event) => {
+  if (event.target.closest("[data-space-music-toggle]")) {
+    const nextMuted = localStorage.getItem(SPACE_MUSIC_KEY) !== "1";
+    localStorage.setItem(SPACE_MUSIC_KEY, nextMuted ? "1" : "0");
+    gameAudio.sync();
+    if (!nextMuted && roomMode() === "space_raiders" && roomStatus() === "playing") gameAudio.startMusic();
+    return;
+  }
   if (!event.target.closest("[data-game-sound-toggle]")) return;
   const escape = document.querySelector(".escape-layout") ? escapeAudioInstance() : null;
   const nextMuted = escape ? !escape.isMuted() : !gameAudio.muted();
@@ -102,7 +186,10 @@ document.addEventListener("click", (event) => {
     }).catch(() => {});
   }
   gameAudio.sync();
-  if (!escape && !nextMuted) gameAudio.tone("start").catch(() => {});
+  if (!escape && !nextMuted) {
+    gameAudio.tone("start").catch(() => {});
+    if (roomMode() === "space_raiders" && roomStatus() === "playing") gameAudio.startMusic();
+  }
 });
 gameAudio.sync();
 
@@ -147,6 +234,7 @@ const UNIT_OPTIONS = {
 
 const GAME_MODES = [
   { value: "score_race", title: "스피드 점수전", description: "빠른 연속 정답으로 콤보 순위를 뒤집어요.", tag: "개인 경쟁", image: "./assets/arcade-20260908/speed.webp" },
+  { value: "space_raiders", title: "우주 약탈단", description: "정답 뒤 미지의 행성을 고르고, 에너지를 훔치거나 교환해 순위를 뒤집어요.", tag: "우주 약탈", image: "./assets/space-raiders/space-raiders-cover.png" },
   { value: "boss_battle", title: "문법 보스전", description: "정답 공격과 강화 선택으로 보스 패턴을 돌파해요.", tag: "액션", image: "./assets/arcade-20260908/boss.webp" },
   { value: "bubble_battle", title: "버블 배틀", description: "버블 연사와 퀴즈 크리티컬로 전장을 밀어내요.", tag: "아케이드", image: "./assets/arcade-20260908/bubble.webp" },
   { value: "tower_race", title: "타워 레이스", description: "정답 블록을 쌓고 무너지기 전에 정상에 도전해요.", tag: "레이스", image: "./assets/arcade-20260908/tower.webp" },
@@ -206,6 +294,7 @@ const state = {
   treasureEventId: "",
   treasureSoundedIds: new Set(),
   mazeBusy: false,
+  spaceBusy: false,
   escapeBusy: false,
   escapeAction: null,
   escapeCode: "",
@@ -213,6 +302,11 @@ const state = {
   escapePuzzleDraft: null,
   escapeAmbientBlocked: false,
 };
+
+document.addEventListener("visibilitychange", () => {
+  if (document.hidden) gameAudio.stopMusic();
+  else if (roomMode() === "space_raiders" && roomStatus() === "playing" && gameAudio.musicReady()) gameAudio.startMusic();
+});
 
 function isLoopback() {
   return ["localhost", "127.0.0.1", "::1"].includes(location.hostname);
@@ -497,6 +591,10 @@ function playerScore(player) {
   return Number(player?.score || 0);
 }
 
+function playerEnergy(player) {
+  return Number(player?.spaceEnergy ?? player?.space_energy ?? player?.space?.energy ?? 0);
+}
+
 function playerCorrect(player) {
   return Number(player?.correctCount ?? player?.correct_count ?? player?.correct ?? 0);
 }
@@ -524,6 +622,7 @@ function currentPlayer(room = state.room) {
 
 function sortedPlayers(room = state.room) {
   return [...roomPlayers(room)].sort((a, b) => {
+    if (roomMode(room) === "space_raiders" && playerEnergy(b) !== playerEnergy(a)) return playerEnergy(b) - playerEnergy(a);
     if (playerScore(b) !== playerScore(a)) return playerScore(b) - playerScore(a);
     if (playerAccuracy(b) !== playerAccuracy(a)) return playerAccuracy(b) - playerAccuracy(a);
     if (playerCorrect(b) !== playerCorrect(a)) return playerCorrect(b) - playerCorrect(a);
@@ -648,6 +747,7 @@ function modeLabel(mode = roomMode()) {
     rangers_siege: "Grammar Rangers",
     whack_race: "문법 두더지",
     sentence_blast: "Sentence Blast",
+    space_raiders: "우주 약탈단",
   })[mode] || "멀티 게임";
 }
 
@@ -734,6 +834,7 @@ function resetToRole() {
   state.chosenAnswer = null;
   state.pendingQuestionKey = null;
   state.feedback = null;
+  state.spaceBusy = false;
   state.escapeBusy = false;
   state.escapeAction = null;
   state.escapeCode = "";
@@ -762,6 +863,10 @@ function friendlyError(error) {
       ESCAPE_LOCKED: "세 단서를 모두 찾아야 문을 열 수 있어요.",
       ESCAPE_RETRY_ACTIVE: "자물쇠가 잠시 멈췄어요. 3초 뒤에 다시 시도해 주세요.",
       ESCAPE_COMPLETE: "이미 야간학교를 탈출했어요.",
+      SPACE_CHOICE_REQUIRED: "행성 결과를 먼저 확인해 주세요.",
+      SPACE_NOT_AVAILABLE: "그 항로는 더 이상 사용할 수 없어요. 최신 화면을 확인해 주세요.",
+      SPACE_ACTION_OUT_OF_ORDER: "우주 항로 순서가 어긋났어요. 최신 화면을 확인해 주세요.",
+      DUPLICATE_SPACE_ACTION: "이미 처리한 우주 행동이에요.",
     };
     return byCode[error.code] || error.message;
   }
@@ -1035,12 +1140,20 @@ function handleSocketMessage(message) {
       playModeSound(retryActive ? "wrong" : action === "unlock" ? "unlock" : "clue");
     }
     setStatus(result.message || "야간학교의 단서가 갱신됐어요.", retryActive ? "error" : "success");
+  } else if (type === "space_result") {
+    const result = message.result || message;
+    if (message.room || message.state) state.room = setRoomFromPayload(message, { play: true });
+    state.spaceBusy = false;
+    playModeSound({ steal: "steal", swap: "swap", shield: "shield", double: "reward", triple: "reward", angel: "angel", bomb: "bomb" }[result.kind] || "planet");
+    setStatus(result.event?.message || "우주 결과가 반영됐어요.", "success");
   } else if (type === "finish") {
     state.room = setRoomFromPayload(message);
     if (state.room && !state.room.status) state.room.status = "finished";
     if (escapeModeActive()) state.escapeAmbientBlocked = true;
     if (escapeModeActive()) escapeAudioInstance()?.stopAmbient?.();
     stopClock();
+    gameAudio.stopMusic();
+    if (roomMode() === "space_raiders") playModeSound("win");
     setStatus("게임 종료", "success");
     if (state.role === "teacher") loadTeacherReport();
   } else if (type === "error") {
@@ -1055,6 +1168,7 @@ function handleSocketMessage(message) {
     state.mazeBusy = false;
     state.escapeBusy = false;
     state.escapeAction = null;
+    state.spaceBusy = false;
     state.busy = false;
   }
   render();
@@ -1392,7 +1506,7 @@ function leaderboardHtml(players, { studentView = false } = {}) {
     return `<li class="rank-row ${isMe ? "me" : ""}">
       <span class="rank-number">${rank}</span>
       <span class="rank-name">${escapeHtml(playerName(player))}${isMe ? " (나)" : ""}</span>
-      <span class="rank-score">${playerScore(player).toLocaleString()}점</span>
+      <span class="rank-score">${roomMode() === "space_raiders" ? `${playerEnergy(player).toLocaleString()}⚡${Number(player?.spaceShield ?? player?.space_shield ?? 0) ? ` · 🛡${Number(player.spaceShield ?? player.space_shield)}` : ""}` : `${playerScore(player).toLocaleString()}점`}</span>
     </li>`;
   }).join("")}</ol>`;
 }
@@ -1589,7 +1703,59 @@ function treasureEventCardHtml() {
   </section>`;
 }
 
+function spacePlanetCards(space) {
+  const planets = Array.isArray(space?.pendingPlanets) ? space.pendingPlanets : [];
+  if (!planets.length) return "";
+  return `<section class="space-choice-panel" aria-labelledby="space-choice-title">
+    <div class="space-choice-heading"><div><p class="eyebrow">UNKNOWN SIGNAL · ${planets.length} ROUTES</p><h2 id="space-choice-title">어느 행성을 약탈할까요?</h2><p>행성의 결과는 선택하는 순간 공개됩니다.</p></div><span class="space-choice-seq">항로 ${Number(space.seq || 0) + 1}</span></div>
+    <div class="space-planets">${planets.map((planet) => `<button class="space-planet planet-${escapeHtml(planet.color)}" type="button" data-action="space-planet" data-planet-id="${escapeHtml(planet.id)}" ${state.spaceBusy || state.connectionState !== "connected" ? "disabled" : ""}><span class="planet-orbit" aria-hidden="true"><span class="planet-core"></span></span><strong>${escapeHtml(planet.label)}</strong><small>${planet.strategy === "risky" ? "위험 탐사 · 2% 확률로 내 에너지 전부 소멸" : "안정 항로 · 안전 보상"}</small></button>`).join("")}</div>
+  </section>`;
+}
+
+function spaceEffectPanel(space) {
+  const effect = space?.effect;
+  if (!effect) return "";
+  const targets = Array.isArray(effect.targets) ? effect.targets : [];
+  const angel = effect.kind === "angel";
+  const label = angel ? "에너지를 선물할 친구" : effect.kind === "steal" ? "에너지를 빼앗을 라이벌" : "에너지를 교환할 라이벌";
+  const heading = angel ? "선물 받을 친구를 고르세요" : effect.kind === "steal" ? "약탈 대상을 고르세요" : "중력 교환 대상을 고르세요";
+  const description = angel ? `친구에게 보너스 +${Number(effect.amount || 80)}⚡를 보냅니다. 내 에너지는 줄지 않아요.` : effect.kind === "steal" ? `최대 ${Number(effect.amount || 60)}⚡를 가져옵니다. 방어막이 있으면 약탈을 막아요.` : "두 사람의 에너지를 통째로 맞바꿉니다.";
+  return `<section class="space-effect-panel" aria-labelledby="space-effect-title"><div><p class="eyebrow">TARGET LOCK</p><h2 id="space-effect-title">${heading}</h2><p>${description}</p></div><div class="space-targets" role="list" aria-label="${escapeHtml(label)}">${targets.length ? targets.map((target) => `<button class="space-target" type="button" data-action="space-target" data-target-player-id="${escapeHtml(target.playerId)}" ${state.spaceBusy || state.connectionState !== "connected" ? "disabled" : ""}><span>${escapeHtml(target.nickname)}</span><strong>${Number(target.energy || 0).toLocaleString()}⚡</strong><small>${angel ? "선물" : effect.kind === "steal" ? (Number(target.shield || 0) ? "방어막 있음" : "약탈") : "교환"}</small></button>`).join("") : `<p class="space-empty-target">아직 선택할 친구가 없어요.</p>`}</div></section>`;
+}
+
+function spaceEventHtml(space) {
+  const event = space?.lastEvent;
+  if (!event) return "";
+  const tone = ["steal", "swap", "shield", "double", "triple", "angel", "bomb"].includes(event.kind) ? event.kind : "energy";
+  const icon = { steal: "⚔", swap: "⇄", shield: "🛡", double: "×2", triple: "×3", angel: "✦", bomb: "◉", energy: "✦" }[tone];
+  return `<div class="space-event space-event-${tone}" role="status"><span class="space-event-icon" aria-hidden="true">${icon}</span><div><strong>${escapeHtml(event.title || "항로 결과")}</strong><p>${escapeHtml(event.message || "서버가 결과를 확정했어요.")}</p></div></div>`;
+}
+
+function spaceTeacherEventHtml() {
+  const event = state.room?.lastSpaceEvent || state.room?.last_space_event;
+  if (roomMode() !== "space_raiders" || !event) return "";
+  const target = event.targetNickname ? ` · 대상 ${escapeHtml(event.targetNickname)}` : "";
+  return `<section class="space-teacher-event" role="status"><p class="eyebrow">최근 항로 결과 · 서버 확정</p><strong>${escapeHtml(event.title || "항로 결과")}</strong><span>${escapeHtml(event.actorNickname || "학생")}${target} · ${escapeHtml(event.message || "")}</span></section>`;
+}
+
+function spaceRaiderPlayView() {
+  const me = currentPlayer() || {};
+  const space = me.space || me.space_state || { energy: 0, pendingPlanets: [] };
+  const question = currentQuestion();
+  const progress = getProgress();
+  const qId = questionId(question);
+  const qKey = questionOccurrenceKey(question, me);
+  const options = question?.opts || question?.options || [];
+  const answered = state.pendingQuestionKey === qKey || (me?.answeredQuestionIds || []).includes(qId);
+  const questionText = question?.eng || question?.prompt || question?.text || "다음 문법 신호를 기다리는 중이에요.";
+  const hasChoice = Array.isArray(space.pendingPlanets) && space.pendingPlanets.length;
+  const hasEffect = Boolean(space.effect);
+  const questionCard = !hasChoice && !hasEffect && question ? `<section class="space-question-card" aria-labelledby="space-question-title"><div class="space-question-meta"><span>문제 ${progress.current + 1}</span><span>${progress.current} / ${Number(state.room?.questionCount || 0) || "∞"}</span></div><p class="space-question-kor">${escapeHtml(question.kor || "알맞은 답을 고르세요.")}</p><h2 id="space-question-title">${escapeHtml(questionText)}</h2><div class="answers space-answers" aria-label="답 선택지">${options.map((option, index) => answerButtonHtml(option, answered, qKey, index)).join("")}</div>${pendingAnswerHtml(qKey)}${feedbackHtml(qKey)}</section>` : "";
+  return `<section class="screen space-raiders-screen" data-mode="space_raiders" aria-labelledby="space-title"><header class="space-hud"><div class="space-hud-brand"><span class="space-brand-orbit" aria-hidden="true">✦</span><div><p>CLASSROOM SPACE ARCADE</p><strong id="space-title">우주 약탈단</strong></div></div><div class="space-hud-stat"><span>내 에너지</span><strong>${playerEnergy(me).toLocaleString()}<em>⚡</em></strong></div><div class="space-hud-stat"><span>방어막</span><strong>${Number(space.shield || 0)}<em>🛡</em></strong></div><div class="space-hud-stat"><span>연속 탐사</span><strong>${Number(space.explorationStreak || 0)}<em>/3</em></strong></div><div class="space-hud-stat"><span>현재 순위</span><strong>${playerRank(me) || "-"}<em>위</em></strong></div><div class="space-hud-stat space-hud-time"><span>남은 시간</span><strong id="game-timer">${formatTime(remainingSeconds())}</strong></div><button class="game-sound-toggle in-game" type="button" data-game-sound-toggle aria-pressed="false">🔊 소리</button><button class="space-music-toggle" type="button" data-space-music-toggle aria-pressed="false">🎵 음악</button></header><div class="space-hero"><div class="space-hero-copy"><p class="eyebrow">CAPTAIN ${escapeHtml(playerName(me))}</p><h1>정답으로 항로를 열고<br><span>친구의 에너지를 노려요.</span></h1><p>문법 문제를 맞히면 미지의 행성 3곳 중 하나가 열립니다. 결과를 공개하고 라이벌의 균형을 흔드세요.</p></div><img class="space-ship-art" src="./assets/space-raiders/space-raiders-ship.png" alt="주황색 우주 정찰선" width="640" height="512"><div class="space-orbit-rings" aria-hidden="true"><i></i><i></i><i></i></div></div><main class="space-stage">${spaceEventHtml(space)}${spacePlanetCards(space)}${spaceEffectPanel(space)}${questionCard}${!questionCard && !hasChoice && !hasEffect ? `<div class="space-waiting" role="status">다음 문법 신호를 준비하고 있어요…</div>` : ""}<details class="space-ranking"><summary>LIVE 순위 · 내 주변 보기</summary><div class="space-ranking-body"><p>에너지는 서버가 확정한 실제 잔량입니다.</p>${leaderboardHtml(sortedPlayers(), { studentView: true })}</div></details></main></section>`;
+}
+
 function studentPlayView() {
+  if (roomMode() === "space_raiders") return spaceRaiderPlayView();
   if (roomMode() === "grammar_escape") return escapePlayView();
   const question = currentQuestion();
   const me = currentPlayer() || {};
@@ -1620,7 +1786,7 @@ function studentPlayView() {
         </div>
       </header>
       <article class="arena-floor">
-        ${roomMode() === "treasure_heist" ? treasureEventCardHtml() : ""}
+        ${roomMode() === "treasure_heist" ? treasureEventCardHtml() : roomMode() === "space_raiders" ? spaceTeacherEventHtml() : ""}
         ${teamMode ? teamSummaryHtml() : ""}
         ${roomMode() === "treasure_heist" && treasureChoices.length ? treasureChoiceView(treasureChoices) : question ? `
           <div class="question-console arena-question-console">
@@ -1831,8 +1997,8 @@ function teacherLiveView() {
           <div class="mini-stat"><span>반 평균</span><strong>${average}%</strong></div>
           <div class="mini-stat"><span>남은 시간</span><strong id="game-timer">${formatTime(remainingSeconds())}</strong></div>
         </div>
-        ${roomMode() === "treasure_heist" ? treasureEventCardHtml() : ""}
-        <div class="section-title"><h2 id="live-title">개인 순위 · 점수</h2><span class="tag live">● LIVE</span></div>
+        ${roomMode() === "treasure_heist" ? treasureEventCardHtml() : roomMode() === "space_raiders" ? spaceTeacherEventHtml() : ""}
+        <div class="section-title"><h2 id="live-title">개인 순위 · ${roomMode() === "space_raiders" ? "에너지" : "점수"}</h2><span class="tag live">● LIVE</span></div>
         ${leaderboardHtml(players)}
         ${isTeamMode() ? `<div class="leaderboard-divider"></div><div class="section-title"><h2>팀 순위 · 합산 점수</h2><span class="tag team-badge">🛡️ 팀전</span></div>${teamLeaderboardHtml()}` : ""}
         <button class="danger-button" style="margin-top:18px" type="button" data-action="finish-room" ${state.busy ? "disabled" : ""}>게임 종료</button>
@@ -2158,6 +2324,8 @@ function bindEvents() {
     if (action === "treasure-choice") element.addEventListener("click", chooseTreasure);
     if (action === "toggle-treasure-event") element.addEventListener("click", toggleTreasureEvent);
     if (action === "maze-move") element.addEventListener("click", moveMaze);
+    if (action === "space-planet") element.addEventListener("click", chooseSpacePlanet);
+    if (action === "space-target") element.addEventListener("click", resolveSpaceEffect);
     if (action === "escape-inspect") element.addEventListener("click", inspectEscapeHotspot);
     if (action === "escape-unlock") element.addEventListener("click", unlockEscapeDoor);
     if (["escape-puzzle-set", "escape-puzzle-move", "escape-puzzle-spin"].includes(action)) element.addEventListener("click", () => {
@@ -2301,6 +2469,35 @@ function chooseTreasure(event) {
     setStatus(friendlyError(error), "error");
     render();
   }
+}
+
+function sendSpaceAction(action, payload = {}) {
+  const space = currentPlayer()?.space || currentPlayer()?.space_state;
+  if (!space || state.spaceBusy || state.connectionState !== "connected" || roomStatus() !== "playing") return;
+  const seq = Number(space.seq);
+  if (!Number.isInteger(seq) || seq < 0) {
+    setStatus("우주 항로 순서를 확인하지 못했어요. 잠시 뒤 다시 시도해 주세요.", "error");
+    return;
+  }
+  state.spaceBusy = true;
+  render();
+  try {
+    state.socket?.send({ type: "space_action", action, seq, ...payload });
+  } catch (error) {
+    state.spaceBusy = false;
+    setStatus(friendlyError(error), "error");
+    render();
+  }
+}
+
+function chooseSpacePlanet(event) {
+  const planetId = event.currentTarget.dataset.planetId;
+  if (planetId) sendSpaceAction("choose_planet", { planetId });
+}
+
+function resolveSpaceEffect(event) {
+  const targetPlayerId = event.currentTarget.dataset.targetPlayerId;
+  if (targetPlayerId) sendSpaceAction("resolve_effect", { targetPlayerId });
 }
 
 function toggleTreasureEvent() {

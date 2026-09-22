@@ -192,7 +192,7 @@ describe("room routes", () => {
   });
 
   it("creates active game modes and rejects retired or unknown modes", async () => {
-    for (const mode of ["score_race", "boss_battle", "bubble_battle", "tower_race", "rangers_siege", "whack_race", "sentence_blast"]) {
+    for (const mode of ["score_race", "boss_battle", "bubble_battle", "tower_race", "rangers_siege", "whack_race", "sentence_blast", "space_raiders"]) {
       const { response, body } = await createRoom(TEACHER, { mode });
       expect(response.status).toBe(201);
       expect(body.state).toMatchObject({ mode });

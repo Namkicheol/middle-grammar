@@ -37,6 +37,7 @@ assert(html.includes("roomInputUrl.searchParams.set('join', '1')") && html.inclu
 assert(!html.includes('야간학교 탈출') && html.includes('mode-coming-soon') && html.includes('NEW GAME COMING SOON'), 'retired solo escape must render only a neutral coming-soon card');
 assert(multiplayerApp.includes('const RETIRED_GAME_MODES') && multiplayerApp.includes('game-cover-coming-soon') && multiplayerApp.includes('game-cover-placeholder') && multiplayerApp.includes('aria-label="NEW GAME COMING SOON"'), 'retired multiplayer modes must render only neutral coming-soon cards');
 assert(!multiplayerApp.includes('data-action="select-game" data-game-mode="treasure_heist"'), 'retired treasure mode must not be selectable');
+assert(multiplayerApp.includes('value: "space_raiders"') && multiplayerApp.includes('우주 약탈단'), 'space raiders must be selectable in the multiplayer picker');
 assert(soloEscape.includes('NEW GAME COMING SOON') && soloEscape.includes('href="../game/"') && !soloEscape.includes('야간학교 탈출') && !soloEscape.includes('./game.js'), 'direct solo escape page must be a neutral static coming-soon page');
 assert(css.includes('.multi-entry-cta') && css.includes('min-height:48px'), 'student CTA needs a touch-safe responsive rule');
 assert(multiplayerIndex.includes('class="product-beta-badge"') && multiplayerIndex.includes('β BETA'), 'multiplayer header must expose its beta status');

@@ -730,7 +730,12 @@ h3 {
 .room-shell,
 .teacher-grid {
   display: grid;
+  min-width: 0;
   gap: 14px;
+}
+
+.room-shell > .panel {
+  min-width: 0;
 }
 
 .room-code {
@@ -801,6 +806,11 @@ h3 {
   flex-wrap: wrap;
   align-content: flex-start;
   gap: 9px;
+}
+
+.teacher-grid > .panel:first-child .player-cloud {
+  max-height: min(210px, 32vh);
+  overflow-y: auto;
 }
 
 .player-chip {
@@ -1070,6 +1080,8 @@ h3 {
 
 .table-wrap {
   width: 100%;
+  min-width: 0;
+  max-width: 100%;
   overflow-x: auto;
   border: 1px solid var(--line);
   border-radius: 16px;

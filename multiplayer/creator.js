@@ -1,3 +1,5 @@
+import { roomApi } from "./api.js";
+
 const STORAGE_KEY = "mg.multiplayer.creatorDraft";
 const SET_KEY = "mg.multiplayer.localSet";
 const MIN_QUESTIONS = 5;
@@ -9,12 +11,216 @@ const MAX_XLSX_ENTRIES = 200;
 const MAX_XLSX_UNCOMPRESSED = 20 * 1024 * 1024;
 const $ = (selector) => document.querySelector(selector);
 const state = { questions: [], image: "" };
+const account = { authenticated: false, sets: [], templates: [] };
+const initialSetId = new URLSearchParams(location.search).get("setId") || "";
+const BUILTIN_LABELS = {
+  "g1-l1-be-verb": "L1 · be동사", "g1-l1-general-verb": "L1 · 일반동사",
+  "g1-l2-present-progressive": "L2 · 현재진행형", "g1-l2-gerund": "L2 · 동명사",
+  "g1-l3-past-tense": "L3 · be·일반동사 과거형", "g1-l3-when": "L3 · when",
+  "g1-l4-to-infinitive": "L4 · to부정사", "g1-l4-will-should": "L4 · will / should",
+  "g1-l5-reflexive": "L5 · 재귀대명사", "g1-l5-to-infinitive": "L5 · 목적의 to부정사",
+  "g1-l6-sensory-verbs": "L6 · 감각동사", "g1-l6-because": "L6 · because",
+  "g1-l7-make-adjective": "L7 · make+형용사", "g1-l7-that": "L7 · 접속사 that",
+  "g1-l8-exclamation": "L8 · 감탄문", "g1-l8-something-adjective": "L8 · -thing+형용사",
+  "g2-l1-give": "L1 · 수여동사", "g2-l1-relative-pronoun": "L1 · 관계대명사",
+  "g2-l2-present-perfect": "L2 · 현재완료", "g2-l2-comparative": "L2 · 비교급·최상급",
+  "g2-l3-adjective-to-infinitive": "L3 · 형용사 to부정사", "g2-l3-if": "L3 · if",
+  "g2-l4-so-that": "L4 · so~that", "g2-l4-passive": "L4 · 수동태",
+  "g2-l5-object-to-infinitive": "L5 · 동사+목적어+to부정사", "g2-l5-object-relative-pronoun": "L5 · 목적격 관계대명사",
+  "g2-l6-perception-verb": "L6 · 지각동사", "g2-l6-indirect-question": "L6 · 간접의문문",
+  "g2-l7-causative": "L7 · 사역동사", "g2-l7-as-as": "L7 · 원급 비교",
+  "g2-l8-dummy-it": "L8 · 가주어 it", "g2-l8-wh-to-infinitive": "L8 · 의문사+to부정사",
+};
 let editingId = "";
+let currentSetId = "";
+let sourceKind = "blank";
+let sourceLabel = "";
+let dirty = false;
+let templateGradeFilter = "all";
 
 function clean(value) { return String(value ?? "").trim(); }
 function announce(message, tone = "") { const el = $("#notice"); el.textContent = message; el.dataset.tone = tone; el.hidden = !message; }
 function id() { return `local-${Date.now()}-${Math.random().toString(36).slice(2, 8)}`; }
-function saveDraft() { try { localStorage.setItem(STORAGE_KEY, JSON.stringify({ title: $("#set-title").value, questions: state.questions })); const status = $("#save-status"); if (status) status.textContent = `이 기기에 저장됨 · ${new Date().toLocaleTimeString("ko-KR", { hour: "2-digit", minute: "2-digit" })}`; return true; } catch { announce("이 기기에 저장하지 못했어요. 입력 내용은 그대로 두었어요. 공간을 비우거나 JSON으로 내보내세요.", "error"); return false; } }
+function setSaveStatus(message, tone = "") { const status = $("#save-status"); if (status) { status.textContent = message; status.dataset.tone = tone; } }
+function sourceStatusText() {
+  const base = sourceKind === "template"
+    ? `기본 세트 복사본 · ${sourceLabel || "원본은 변경되지 않음"}`
+    : sourceKind === "account"
+      ? `내 계정 세트 · ${sourceLabel || "이 세트를 수정 중"}`
+      : "새 빈 세트";
+  if (dirty) return `${base} · 저장하지 않은 변경 있음`;
+  return sourceKind === "account" ? `${base} · 계정에 저장됨` : `${base} · 아직 저장하지 않았어요`;
+}
+function renderSourceStatus() {
+  const status = $("#source-status");
+  if (!status) return;
+  status.textContent = sourceStatusText();
+  status.dataset.dirty = dirty ? "true" : "false";
+}
+function saveStatusText() {
+  if (dirty && currentSetId) return "저장하지 않은 변경이 있어요 · 계정에 저장하세요.";
+  if (dirty && sourceKind === "template") return "기본 세트 사본 · 계정에 새로 저장하세요.";
+  if (dirty) return "이 기기에 임시 저장됨 · 계정에 저장 전";
+  if (currentSetId) return "계정에 저장됨 · 최신 내용이에요.";
+  return "이 기기에만 저장돼요 · 계정 동기화 안 됨";
+}
+function saveDraft() {
+  try {
+    localStorage.setItem(STORAGE_KEY, JSON.stringify({ title: $("#set-title").value, questions: state.questions, setId: currentSetId, sourceKind, sourceLabel, dirty }));
+    setSaveStatus(saveStatusText(), dirty ? "" : "success");
+    renderSourceStatus();
+    return true;
+  } catch {
+    announce("이 기기에 저장하지 못했어요. 입력 내용은 그대로 두었어요. 공간을 비우거나 JSON으로 내보내세요.", "error");
+    return false;
+  }
+}
+function markDirty() { dirty = true; renderSourceStatus(); }
+function canSwitchSource() {
+  if (!dirty || !state.questions.length) return true;
+  return window.confirm("저장하지 않은 변경이 있어요. 계속하면 현재 작업을 버리고 다른 세트를 열까요?");
+}
+function setSource(kind, label = "") { sourceKind = kind; sourceLabel = label; renderSourceStatus(); }
+function setPayload() { return { title: clean($("#set-title").value) || "내 퀴즈 세트", questions: state.questions.map(({ prompt, answer, choices, image }) => ({ prompt, answer, choices, ...(image ? { image } : {}) })) }; }
+function renderSavedSets() {
+  const panel = $("#saved-sets-panel");
+  const list = $("#saved-set-list");
+  if (!panel || !list) return;
+  panel.hidden = !account.authenticated;
+  list.replaceChildren();
+  if (!account.authenticated) return;
+  if (!account.sets.length) { const empty = document.createElement("p"); empty.className = "empty"; empty.textContent = "아직 계정에 저장한 세트가 없어요."; list.append(empty); return; }
+  account.sets.forEach((set) => {
+    const row = document.createElement("div"); row.className = "saved-set";
+    const copy = document.createElement("div"); copy.className = "saved-set-copy";
+    const title = document.createElement("strong"); title.textContent = set.title;
+    const detail = document.createElement("small"); detail.textContent = `${set.questions?.length || 0}문항 · ${new Date(set.updatedAt).toLocaleDateString("ko-KR")} 수정`;
+    copy.append(title, detail);
+    const open = document.createElement("button"); open.type = "button"; open.className = "button secondary"; open.dataset.openSet = set.id; open.textContent = "불러와 수정";
+    row.append(copy, open); list.append(row);
+  });
+}
+function renderTemplateSets() {
+  const panel = $("#template-sets-panel");
+  const list = $("#template-set-list");
+  if (!panel || !list) return;
+  panel.hidden = !account.authenticated;
+  list.replaceChildren();
+  if (!account.authenticated) return;
+  const query = clean($("#template-search")?.value).toLocaleLowerCase("ko-KR");
+  const templates = account.templates.filter((template) => {
+    const label = `${template.grade === "g2" ? "중2" : "중1"} ${BUILTIN_LABELS[template.unitKey] || template.unitKey}`.toLocaleLowerCase("ko-KR");
+    return (templateGradeFilter === "all" || template.grade === templateGradeFilter) && (!query || label.includes(query));
+  });
+  const count = $("#template-count");
+  if (count) count.textContent = `${templates.length}개`;
+  if (!templates.length) {
+    const empty = document.createElement("p"); empty.className = "empty";
+    empty.textContent = query ? "검색 결과가 없어요. 다른 문법이나 단원을 검색해 보세요." : "이 학년의 기본 세트가 없어요.";
+    list.append(empty); return;
+  }
+  templates.forEach((template) => {
+    const row = document.createElement("div"); row.className = "saved-set";
+    const copy = document.createElement("div"); copy.className = "saved-set-copy";
+    const title = document.createElement("strong"); title.textContent = `${template.grade === "g2" ? "중2" : "중1"} · ${BUILTIN_LABELS[template.unitKey] || template.unitKey}`;
+    const detail = document.createElement("small"); detail.textContent = `${template.questions?.length || 0}문항 · 제공 세트 · 원본 유지`;
+    copy.append(title, detail);
+    const open = document.createElement("button"); open.type = "button"; open.className = "button secondary"; open.dataset.openTemplate = template.id; open.textContent = "불러와 수정";
+    row.append(copy, open); list.append(row);
+  });
+}
+async function loadAccountSets() {
+  try {
+    const session = await roomApi.getTeacherSession();
+    if (!session?.authenticated && !["localhost", "127.0.0.1", "::1"].includes(location.hostname)) {
+      setSaveStatus("로그인하면 세트가 계정에 저장돼요.");
+      const entry = $("#account-entry");
+      if (entry) entry.hidden = false;
+      const login = $("#teacher-login");
+      if (login) login.href = roomApi.loginUrl(`${location.pathname}${location.search}`);
+      return;
+    }
+    const [payload, templatePayload] = await Promise.all([roomApi.listTeacherSets(), roomApi.listTeacherSetTemplates()]);
+    account.authenticated = true;
+    account.sets = Array.isArray(payload.sets) ? payload.sets : [];
+    account.templates = Array.isArray(templatePayload.templates) ? templatePayload.templates : [];
+    $("#save-account").hidden = false;
+    $("#account-entry").hidden = true;
+    setSaveStatus(dirty ? saveStatusText() : "계정에 저장할 수 있어요.");
+    renderSavedSets();
+    renderTemplateSets();
+    if (initialSetId) {
+      const initialSet = account.sets.find((set) => set.id === initialSetId);
+      if (initialSet) loadAccountSet(initialSet);
+    }
+  } catch {
+    setSaveStatus("이 기기에만 저장돼요 · 계정 연결을 확인해 주세요.");
+  }
+}
+function loadTemplateSet(template) {
+  if (!template || !canSwitchSource()) return;
+  const loaded = (template.questions || []).map((question, index) => normalizeQuestion({
+    prompt: question.eng,
+    answer: question.ans,
+    choices: question.opts,
+    image: question.image,
+  }, index)).filter((result) => !result.error).map((result) => result.question);
+  if (!loaded.length) { announce("불러올 문항이 없는 기본 세트예요.", "error"); return; }
+  currentSetId = "";
+  setSource("template", `${template.grade === "g2" ? "중2" : "중1"} ${BUILTIN_LABELS[template.unitKey] || template.unitKey} · 원본은 변경되지 않음`);
+  $("#set-title").value = BUILTIN_LABELS[template.unitKey] || template.unitKey;
+  state.questions = loaded.slice(0, MAX_QUESTIONS);
+  editingId = "";
+  dirty = true;
+  update(false);
+  saveDraft();
+  setSaveStatus("기본 세트를 불러왔어요. 수정 후 ‘계정에 저장’을 누르세요.", "success");
+  announce(`‘${$("#set-title").value}’ 기본 세트를 불러왔어요. 수정본은 계정에 새로 저장됩니다.`, "success");
+  window.scrollTo({ top: 0, behavior: "smooth" });
+}
+function loadAccountSet(set) {
+  if (!set || !canSwitchSource()) return;
+  const loaded = (set.questions || []).map((question, index) => normalizeQuestion({
+    prompt: question.prompt || question.eng,
+    answer: question.answer || question.ans,
+    choices: question.choices || question.opts,
+    image: question.image,
+  }, index)).filter((result) => !result.error).map((result) => result.question);
+  if (!loaded.length) { announce("불러올 문항이 없는 세트예요.", "error"); return; }
+  currentSetId = set.id;
+  setSource("account", "저장된 원본을 직접 수정");
+  $("#set-title").value = clean(set.title) || "내 퀴즈 세트";
+  state.questions = loaded.slice(0, MAX_QUESTIONS);
+  editingId = "";
+  dirty = false;
+  update(false);
+  saveDraft();
+  setSaveStatus("계정 세트를 불러왔어요. 수정 후 ‘계정에 저장’을 누르세요.", "success");
+  announce(`‘${$("#set-title").value}’ 세트를 불러왔어요.`, "success");
+  window.scrollTo({ top: 0, behavior: "smooth" });
+}
+async function saveAccountSet() {
+  if (!account.authenticated) { announce("계정에 저장하려면 먼저 교사 로그인을 완료해 주세요.", "error"); return false; }
+  if (!state.questions.length) { announce("계정에 저장할 문항을 하나 이상 추가해 주세요.", "error"); return false; }
+  const payload = setPayload();
+  try {
+    const result = currentSetId
+      ? await roomApi.updateTeacherSet(currentSetId, payload)
+      : await roomApi.createTeacherSet(payload);
+    const saved = result.set;
+    currentSetId = saved.id;
+    setSource("account", "저장된 원본을 직접 수정");
+    dirty = false;
+    account.sets = [saved, ...account.sets.filter((set) => set.id !== saved.id)];
+    renderSavedSets();
+    saveDraft();
+    setSaveStatus("계정에 저장됨 · 지금 수정한 내용이 반영됐어요.", "success");
+    return true;
+  } catch (error) {
+    announce(error.message || "계정에 저장하지 못했어요. 잠시 뒤 다시 시도해 주세요.", "error");
+    return false;
+  }
+}
 function isSafeImageData(value) {
   if (typeof value !== "string" || value.length === 0 || value.length > MAX_IMAGE_DATA_LENGTH) return false;
   if (!/^data:image\/(?:png|jpe?g|webp);base64,[a-z0-9+/]+={0,2}$/i.test(value)) return false;
@@ -43,6 +249,7 @@ function importRows(rows, source = "문항") {
     else if (imageTotal(state.questions) + imageLength(normalized.question.image) > 2_500_000) result.skipped.push(`${index + 1}번 행: 이미지 전체 용량이 2.5MB를 넘어요.`);
     else { state.questions.push(normalized.question); result.added += 1; if (normalized.truncatedChoices) result.truncated += 1; }
   });
+  if (result.added) markDirty();
   if (!update()) return result;
   result.saved = result.added > 0;
   const detail = [result.added ? `${result.added}개 문항을 가져왔어요.` : `${source}에서 추가할 문항이 없어요.`];
@@ -114,6 +321,7 @@ function addQuestion(prompt, answer, choices = [], image = "") {
   if (normalized.error) { announce(normalized.error, "error"); return false; }
   if (imageTotal(state.questions) + imageLength(normalized.question.image) > 2_500_000) { announce("문항 이미지 전체 용량은 2.5MB 이하로 맞춰 주세요.", "error"); return false; }
   state.questions.push(normalized.question);
+  markDirty();
   if (!update()) { state.questions.pop(); update(false); return false; }
   return true;
 }
@@ -215,7 +423,23 @@ function readImage(file) {
   return new Promise((resolve, reject) => { if (!file) return resolve(""); if (!file.type.startsWith("image/")) return reject(new Error("이미지 파일만 첨부할 수 있어요.")); if (file.size > 12 * 1024 * 1024) return reject(new Error("원본 이미지는 12MB 이하만 올릴 수 있어요.")); const reader = new FileReader(); reader.onload = () => { const image = new Image(); image.onload = () => { let scale = Math.min(1, 960 / image.width, 960 / image.height, Math.sqrt(MAX_IMAGE_BYTES / Math.max(file.size, 1))); let data = ""; for (let attempt = 0; attempt < 6; attempt += 1) { const canvas = document.createElement("canvas"); canvas.width = Math.max(1, Math.round(image.width * scale)); canvas.height = Math.max(1, Math.round(image.height * scale)); canvas.getContext("2d").drawImage(image, 0, 0, canvas.width, canvas.height); data = canvas.toDataURL("image/jpeg", Math.max(.58, .84 - attempt * .05)); if (data.length <= MAX_IMAGE_DATA_LENGTH) break; scale *= .78; } if (data.length > MAX_IMAGE_DATA_LENGTH) return reject(new Error("이미지를 충분히 줄이지 못했어요. 더 작은 사진을 선택해 주세요.")); resolve(data); }; image.onerror = () => reject(new Error("이미지를 읽지 못했어요.")); image.src = reader.result; }; reader.onerror = () => reject(new Error("이미지를 읽지 못했어요.")); reader.readAsDataURL(file); });
 }
 function download(filename, content) { const link = document.createElement("a"); link.href = URL.createObjectURL(new Blob([content], { type: "application/json" })); link.download = filename; link.click(); setTimeout(() => URL.revokeObjectURL(link.href), 1000); }
+function startBlankSet() {
+  if (!canSwitchSource()) return;
+  currentSetId = "";
+  setSource("blank");
+  dirty = false;
+  editingId = "";
+  $("#set-title").value = "";
+  state.questions = [];
+  localStorage.removeItem(STORAGE_KEY);
+  resetQuestionForm();
+  update(false);
+  setSaveStatus("새 빈 세트예요 · 문항을 추가하면 이 기기에 임시 저장돼요.");
+  announce("새 빈 세트를 준비했어요. 첫 문제를 추가해 보세요.", "success");
+  $("#question-text")?.focus();
+}
 
+$("#new-blank").addEventListener("click", startBlankSet);
 $("#add-choice").addEventListener("click", () => addChoiceField());
 document.querySelectorAll('input[name="answer-type"]').forEach((input) => input.addEventListener("change", () => setAnswerType(input.value)));
 $("#question-form").addEventListener("submit", async (event) => { event.preventDefault(); const mode = $('input[name="answer-type"]:checked').value; const draft = mode === "choice" ? validateChoiceDraft($("#choice-fields")) : { answer: clean($("#answer-text").value), choices: [] }; if (draft.error) { announce(draft.error, "error"); return; } if (!draft.answer) { announce("정답을 입력해 주세요.", "error"); $("#answer-text").focus(); return; } const ok = addQuestion($("#question-text").value, draft.answer, draft.choices, state.image); if (!ok) return; resetQuestionForm(); announce("문항을 저장했어요. 다음 문제를 입력하세요.", "success"); $("#question-text").focus(); });
@@ -224,7 +448,7 @@ $("#bulk-add").addEventListener("click", () => { const rows = parseBulkRows($("#
 $("#csv-file").addEventListener("change", async (event) => { const file = event.target.files[0]; if (!file) return; try { const rows = /\.xlsx$/i.test(file.name) ? await parseXlsx(file) : parseDelimited(await file.text()); if (!rows.length) throw new Error("파일에서 문제와 정답을 찾지 못했어요."); importRows(rows, file.name); } catch (error) { announce(`파일을 읽지 못했어요: ${error.message}`, "error"); } event.target.value = ""; });
 $("#question-list").addEventListener("click", (event) => {
   const remove = event.target.closest("[data-remove]");
-  if (remove) { const previous = state.questions; const previousEditingId = editingId; state.questions = state.questions.filter((q) => q.id !== remove.dataset.remove); if (editingId === remove.dataset.remove) editingId = ""; if (!update()) { state.questions = previous; editingId = previousEditingId; update(false); return; } announce("문항을 삭제했어요."); return; }
+  if (remove) { const previous = state.questions; const previousEditingId = editingId; state.questions = state.questions.filter((q) => q.id !== remove.dataset.remove); if (editingId === remove.dataset.remove) editingId = ""; markDirty(); if (!update()) { state.questions = previous; editingId = previousEditingId; update(false); return; } announce("문항을 삭제했어요."); return; }
   const edit = event.target.closest("[data-edit]");
   if (edit) { editingId = edit.dataset.edit; renderQuestionList(); $("[data-edit-prompt]")?.focus(); return; }
   if (event.target.closest("[data-cancel]")) { editingId = ""; renderQuestionList(); return; }
@@ -237,14 +461,39 @@ $("#question-list").addEventListener("click", (event) => {
   if (choiceDraft?.error) { announce(choiceDraft.error, "error"); return; }
   const normalized = normalizeQuestion({ prompt: editor.querySelector("[data-edit-prompt]").value, answer: choiceDraft?.answer || editor.querySelector("[data-edit-answer]").value, choices: choiceDraft?.choices || [], image: current.image }, state.questions.indexOf(current));
   if (normalized.error) { announce(normalized.error, "error"); return; }
-  Object.assign(current, normalized.question, { id: current.id }); editingId = "";
+  Object.assign(current, normalized.question, { id: current.id }); editingId = ""; markDirty();
   if (!update()) { editingId = current.id; renderQuestionList(); return; }
   announce("문항을 수정했어요.", "success");
 });
 $("#export-json").addEventListener("click", () => download(`${clean($("#set-title").value) || "quiz-set"}.json`, JSON.stringify({ version: 1, title: clean($("#set-title").value) || "내 퀴즈 세트", questions: state.questions }, null, 2)));
 $("#import-json").addEventListener("click", () => $("#json-file").click());
 $("#json-file").addEventListener("change", async (event) => { const file = event.target.files[0]; if (!file) return; try { const data = JSON.parse(await file.text()); if (!Array.isArray(data.questions)) throw new Error("가져올 문항이 없어요."); const room = MAX_QUESTIONS - state.questions.length; const result = { added: 0, skipped: [], truncated: 0 }; if (data.questions.length > room) result.skipped.push(`${data.questions.length - room}개 행: 최대 ${MAX_QUESTIONS}문항까지만 가져올 수 있어요.`); data.questions.slice(0, room).forEach((q, index) => { const normalized = normalizeQuestion(q, index); if (normalized.error) result.skipped.push(normalized.error); else if (imageTotal(state.questions) + imageLength(normalized.question.image) > 2_500_000) result.skipped.push(`${index + 1}번 행: 이미지 전체 용량이 2.5MB를 넘어요.`); else { state.questions.push(normalized.question); result.added += 1; if (normalized.truncatedChoices) result.truncated += 1; } }); if (!result.added) throw new Error(result.skipped[0] || "가져올 문항이 없어요."); $("#set-title").value = clean(data.title) || $("#set-title").value; if (!update()) return; const details = [`${result.added}개 문항을 가져왔어요.`]; if (result.truncated) details.push(`${result.truncated}개 행의 선택지는 4개로 줄였어요.`); if (result.skipped.length) details.push(`${result.skipped.length}개 행은 건너뛰었어요. ${result.skipped.slice(0, 2).join(" ")}`); announce(details.join(" "), "success"); } catch (error) { announce(`세트 파일을 불러오지 못했어요: ${error.message}`, "error"); } finally { event.target.value = ""; } });
-$("#create-room").addEventListener("click", () => { if (state.questions.length < MIN_QUESTIONS) return; const set = { version: 1, id: "local", title: clean($("#set-title").value) || "내 퀴즈 세트", questions: state.questions, createdAt: new Date().toISOString() }; try { localStorage.setItem(SET_KEY, JSON.stringify(set)); localStorage.removeItem(STORAGE_KEY); location.href = "./?set=local"; } catch { announce("세트를 저장할 공간이 부족해요. 이미지 수를 줄이거나 JSON으로 내보내 보관하세요.", "error"); } });
-$("#set-title").addEventListener("input", saveDraft);
-try { const draft = JSON.parse(localStorage.getItem(STORAGE_KEY) || "null"); if (draft) { $("#set-title").value = clean(draft.title); const loaded = Array.isArray(draft.questions) ? draft.questions : []; let imageBytes = 0; state.questions = loaded.slice(0, MAX_QUESTIONS).map((question, index) => { const normalized = normalizeQuestion(question, index); if (normalized.error || imageBytes + imageLength(normalized.question.image) > 2_500_000) return null; imageBytes += imageLength(normalized.question.image); return normalized.question; }).filter(Boolean); update(false); } } catch { localStorage.removeItem(STORAGE_KEY); }
+$("#saved-set-list").addEventListener("click", (event) => { const button = event.target.closest("[data-open-set]"); if (button) loadAccountSet(account.sets.find((set) => set.id === button.dataset.openSet)); });
+$("#template-set-list").addEventListener("click", (event) => { const button = event.target.closest("[data-open-template]"); if (button) loadTemplateSet(account.templates.find((template) => template.id === button.dataset.openTemplate)); });
+$("#template-search").addEventListener("input", renderTemplateSets);
+document.querySelectorAll("[data-template-grade]").forEach((button) => button.addEventListener("click", () => {
+  templateGradeFilter = button.dataset.templateGrade;
+  document.querySelectorAll("[data-template-grade]").forEach((item) => {
+    const selected = item === button;
+    item.classList.toggle("is-selected", selected);
+    item.setAttribute("aria-pressed", String(selected));
+  });
+  renderTemplateSets();
+}));
+$("#refresh-sets").addEventListener("click", async () => { $("#refresh-sets").disabled = true; await loadAccountSets(); $("#refresh-sets").disabled = false; });
+$("#save-account").addEventListener("click", async () => { const button = $("#save-account"); button.disabled = true; await saveAccountSet(); button.disabled = false; });
+$("#create-room").addEventListener("click", async () => {
+  if (state.questions.length < MIN_QUESTIONS) return;
+  const set = { version: 1, id: currentSetId || "local", title: clean($("#set-title").value) || "내 퀴즈 세트", questions: state.questions, createdAt: new Date().toISOString() };
+  try {
+    localStorage.setItem(SET_KEY, JSON.stringify(set));
+    if (account.authenticated && !await saveAccountSet()) return;
+    localStorage.removeItem(STORAGE_KEY);
+    location.href = "./?set=local";
+  } catch { announce("세트를 저장할 공간이 부족해요. 이미지 수를 줄이거나 JSON으로 내보내 보관하세요.", "error"); }
+});
+$("#set-title").addEventListener("input", () => { markDirty(); saveDraft(); });
+try { const draft = JSON.parse(localStorage.getItem(STORAGE_KEY) || "null"); if (draft) { currentSetId = clean(draft.setId); sourceKind = ["blank", "template", "account"].includes(draft.sourceKind) ? draft.sourceKind : currentSetId ? "account" : "blank"; sourceLabel = clean(draft.sourceLabel); dirty = Boolean(draft.dirty); $("#set-title").value = clean(draft.title); const loaded = Array.isArray(draft.questions) ? draft.questions : []; let imageBytes = 0; state.questions = loaded.slice(0, MAX_QUESTIONS).map((question, index) => { const normalized = normalizeQuestion(question, index); if (normalized.error || imageBytes + imageLength(normalized.question.image) > 2_500_000) return null; imageBytes += imageLength(normalized.question.image); return normalized.question; }).filter(Boolean); update(false); renderSourceStatus(); } } catch { localStorage.removeItem(STORAGE_KEY); }
 resetQuestionForm();
+renderSourceStatus();
+loadAccountSets();

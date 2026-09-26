@@ -103,6 +103,28 @@ export const roomApi = {
     });
   },
 
+  listTeacherSets() {
+    return request("/teacher/sets");
+  },
+
+  listTeacherSetTemplates() {
+    return request("/teacher/sets/templates");
+  },
+
+  createTeacherSet(set) {
+    return teacherMutation("/teacher/sets", {
+      method: "POST",
+      body: JSON.stringify(set),
+    });
+  },
+
+  updateTeacherSet(id, set) {
+    return teacherMutation(`/teacher/sets/${encodeURIComponent(id)}`, {
+      method: "PATCH",
+      body: JSON.stringify(set),
+    });
+  },
+
   joinRoom(code, nickname) {
     return request(`/rooms/${encodeURIComponent(code)}/join`, {
       method: "POST",

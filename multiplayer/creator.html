@@ -22,8 +22,19 @@
       <p>문제를 쓰고 정답을 고른 뒤, 바로 다음 문항을 추가하세요.</p>
     </section>
     <div id="notice" class="notice" role="status" aria-live="polite" hidden></div>
+    <div id="account-entry" class="account-entry notice" role="status" hidden><strong>교사 기능을 열어 보세요</strong><span>빈 세트는 바로 만들 수 있어요. 기본 문법 32개와 내 저장 세트를 쓰려면 <a id="teacher-login" href="/api/auth/google/start">교사 로그인</a>이 필요해요.</span></div>
     <section class="toolbar panel" aria-label="세트 관리">
-      <div class="field grow"><label for="set-title">세트 이름</label><input id="set-title" maxlength="80" placeholder="예: 중1 be동사 복습"></div><span id="save-status" class="save-status" role="status">이 기기에만 저장돼요 · 계정 동기화 안 됨</span>
+      <div class="field grow"><label for="set-title">세트 이름</label><input id="set-title" maxlength="80" placeholder="예: 중1 be동사 복습"><span id="source-status" class="source-status" role="status">새 빈 세트 · 아직 저장하지 않았어요</span></div><div class="toolbar-actions"><button class="button secondary" id="new-blank" type="button">새 빈 세트</button><button class="button secondary" id="save-account" type="button" hidden>계정에 저장</button></div><span id="save-status" class="save-status" role="status">이 기기에만 저장돼요 · 계정 동기화 안 됨</span>
+    </section>
+    <section id="template-sets-panel" class="panel saved-sets-panel" aria-labelledby="template-sets-title" hidden>
+      <div class="section-heading"><div><p class="eyebrow">START FROM A SET</p><h2 id="template-sets-title">기본 문법 세트에서 시작</h2></div><span id="template-count" class="count">32개</span></div>
+      <p class="muted">기본 세트는 원본으로 유지돼요. 골라서 고친 뒤 계정에 새 사본으로 저장하세요.</p>
+      <div class="template-controls"><label class="sr-only" for="template-search">기본 세트 검색</label><input id="template-search" type="search" placeholder="문법이나 단원 검색 · 예: 수동태, L4"><div class="template-filters" role="group" aria-label="기본 세트 학년 필터"><button class="filter-button is-selected" type="button" data-template-grade="all" aria-pressed="true">전체</button><button class="filter-button" type="button" data-template-grade="g1" aria-pressed="false">중1</button><button class="filter-button" type="button" data-template-grade="g2" aria-pressed="false">중2</button></div></div>
+      <div id="template-set-list" class="saved-set-list"></div>
+    </section>
+    <section id="saved-sets-panel" class="panel saved-sets-panel" aria-labelledby="saved-sets-title" hidden>
+      <div class="section-heading"><div><p class="eyebrow">MY SETS</p><h2 id="saved-sets-title">기존 세트 수정하기</h2></div><button class="button secondary compact-button" id="refresh-sets" type="button">새로고침</button></div>
+      <div id="saved-set-list" class="saved-set-list"></div>
     </section>
     <section class="panel input-panel" aria-labelledby="input-title">
       <div class="section-heading"><div><p class="eyebrow">ADD QUESTIONS</p><h2 id="input-title">문항 추가</h2></div><span id="question-count" class="count">0문항</span></div>

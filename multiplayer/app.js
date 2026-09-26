@@ -246,7 +246,6 @@ const GAME_MODES = [
 const RETIRED_GAME_MODES = [
   { value: "retired_slot_1" },
   { value: "retired_slot_2" },
-  { value: "retired_slot_3" },
 ];
 
 const CLASSROOM_GAME_MODES = new Set(["boss_battle", "bubble_battle", "tower_race", "rangers_siege", "whack_race", "sentence_blast"]);
@@ -357,6 +356,7 @@ function loadLocalSet() {
     const set = JSON.parse(localStorage.getItem(LOCAL_SET_KEY) || "null");
     if (!set || !Array.isArray(set.questions) || set.questions.length < 5) return null;
     return {
+      id: String(set.id || "local"),
       title: String(set.title || "내 퀴즈 세트").trim().slice(0, 80),
       questions: set.questions.slice(0, 30),
     };
@@ -661,6 +661,15 @@ function playerRank(player, room = state.room) {
   if (Number(player?.rank) > 0) return Number(player.rank);
   const index = sortedPlayers(room).findIndex((item) => playerId(item) === playerId(player));
   return index >= 0 ? index + 1 : 0;
+}
+
+function spaceRivalStrip(players = sortedPlayers()) {
+  if (players.length < 2) return "";
+  const visible = players.slice(0, 3);
+  return `<div class="space-rival-strip" aria-label="실시간 상위 순위">${visible.map((player, index) => {
+    const me = playerId(player) === state.playerId || player?.isSelf;
+    return `<span class="space-rival-chip ${me ? "me" : ""}"><strong>${Number(player.rank) || index + 1}위</strong> ${escapeHtml(playerName(player))} · ${playerEnergy(player).toLocaleString()}⚡</span>`;
+  }).join("")}${players.length > visible.length ? `<span class="space-rival-chip">+${players.length - visible.length}명</span>` : ""}</div>`;
 }
 
 function currentQuestion(room = state.room) {
@@ -1267,8 +1276,8 @@ function teacherSetupView() {
           <div class="teacher-config-main">
         ${customSet ? `
           <div class="custom-set-card">
-            <div><span>내 문제 세트</span><strong>${escapeHtml(customSet.title)}</strong><small>${customCount}문항 · 이 브라우저에 임시 저장됨</small></div>
-            <a href="./creator.html">문항 수정</a>
+            <div><span>내 문제 세트</span><strong>${escapeHtml(customSet.title)}</strong><small>${customCount}문항 · ${customSet.id && customSet.id !== "local" ? "계정에 저장됨" : "이 브라우저에 임시 저장됨"}</small></div>
+            <a href="./creator.html${customSet.id && customSet.id !== "local" ? `?setId=${encodeURIComponent(customSet.id)}` : ""}">문항 수정</a>
           </div>
           <input type="hidden" name="grade" value="custom">
           <input type="hidden" name="unitKey" value="custom-local">
@@ -1599,6 +1608,11 @@ function escapeProgressHtml(players, { team = false } = {}) {
   </ol>`;
 }
 
+function questionInstruction(question) {
+  const hint = String(question?.kor || question?.promptKor || "").trim();
+  return hint && hint !== "직접 만든 문제" ? hint : "알맞은 답을 고르세요.";
+}
+
 function escapeQuestionHtml(question, me) {
   const progress = getProgress();
   const qId = questionId(question);
@@ -1615,7 +1629,7 @@ function escapeQuestionHtml(question, me) {
   return `<section id="escape-question" class="question-console escape-question" aria-labelledby="question-title">
     <div class="question-console-top"><span class="question-kicker">문제 ${progress.current + 1}</span><button type="button" class="escape-fold-button" data-action="toggle-escape-question" aria-expanded="true">문제 접기</button></div>
     ${imageUrl ? `<img class="question-image" src="${imageUrl}" alt="문제 참고 이미지">` : ""}
-    <p class="question-kor">${escapeHtml(question?.kor || question?.promptKor || "알맞은 답을 고르세요.")}</p>
+    <p class="question-kor">${escapeHtml(questionInstruction(question))}</p>
     <h1 id="question-title" class="question-eng" tabindex="-1" role="status" aria-live="polite" aria-atomic="true">${escapeHtml(question?.eng || question?.prompt || question?.text || "문제를 불러오는 중이에요.")}</h1>
     <p class="answer-prompt">정답마다 조사 기회 1개를 얻어요.</p>
     <div class="answers" aria-label="답 선택지">${options.map((option, index) => answerButtonHtml(option, answered, qKey, index)).join("")}</div>
@@ -1750,8 +1764,8 @@ function spaceRaiderPlayView() {
   const questionText = question?.eng || question?.prompt || question?.text || "다음 문법 신호를 기다리는 중이에요.";
   const hasChoice = Array.isArray(space.pendingPlanets) && space.pendingPlanets.length;
   const hasEffect = Boolean(space.effect);
-  const questionCard = !hasChoice && !hasEffect && question ? `<section class="space-question-card" aria-labelledby="space-question-title"><div class="space-question-meta"><span>문제 ${progress.current + 1}</span><span>${progress.current} / ${Number(state.room?.questionCount || 0) || "∞"}</span></div><p class="space-question-kor">${escapeHtml(question.kor || "알맞은 답을 고르세요.")}</p><h2 id="space-question-title">${escapeHtml(questionText)}</h2><div class="answers space-answers" aria-label="답 선택지">${options.map((option, index) => answerButtonHtml(option, answered, qKey, index)).join("")}</div>${pendingAnswerHtml(qKey)}${feedbackHtml(qKey)}</section>` : "";
-  return `<section class="screen space-raiders-screen" data-mode="space_raiders" aria-labelledby="space-title"><header class="space-hud"><div class="space-hud-brand"><span class="space-brand-orbit" aria-hidden="true">✦</span><div><p>CLASSROOM SPACE ARCADE</p><strong id="space-title">우주 약탈단</strong></div></div><div class="space-hud-stat"><span>내 에너지</span><strong>${playerEnergy(me).toLocaleString()}<em>⚡</em></strong></div><div class="space-hud-stat"><span>방어막</span><strong>${Number(space.shield || 0)}<em>🛡</em></strong></div><div class="space-hud-stat"><span>연속 탐사</span><strong>${Number(space.explorationStreak || 0)}<em>/3</em></strong></div><div class="space-hud-stat"><span>현재 순위</span><strong>${playerRank(me) || "-"}<em>위</em></strong></div><div class="space-hud-stat space-hud-time"><span>남은 시간</span><strong id="game-timer">${formatTime(remainingSeconds())}</strong></div><button class="game-sound-toggle in-game" type="button" data-game-sound-toggle aria-pressed="false">🔊 소리</button><button class="space-music-toggle" type="button" data-space-music-toggle aria-pressed="false">🎵 음악</button></header><div class="space-hero"><div class="space-hero-copy"><p class="eyebrow">CAPTAIN ${escapeHtml(playerName(me))}</p><h1>정답으로 항로를 열고<br><span>친구의 에너지를 노려요.</span></h1><p>문법 문제를 맞히면 미지의 행성 3곳 중 하나가 열립니다. 결과를 공개하고 라이벌의 균형을 흔드세요.</p></div><img class="space-ship-art" src="./assets/space-raiders/space-raiders-ship.png" alt="주황색 우주 정찰선" width="640" height="512"><div class="space-orbit-rings" aria-hidden="true"><i></i><i></i><i></i></div></div><main class="space-stage">${spaceEventHtml(space)}${spacePlanetCards(space)}${spaceEffectPanel(space)}${questionCard}${!questionCard && !hasChoice && !hasEffect ? `<div class="space-waiting" role="status">다음 문법 신호를 준비하고 있어요…</div>` : ""}<details class="space-ranking"><summary>LIVE 순위 · 내 주변 보기</summary><div class="space-ranking-body"><p>에너지는 서버가 확정한 실제 잔량입니다.</p>${leaderboardHtml(sortedPlayers(), { studentView: true })}</div></details></main></section>`;
+  const questionCard = !hasChoice && !hasEffect && question ? `<section class="space-question-card" aria-labelledby="space-question-title"><div class="space-question-meta"><span>문제 ${progress.current + 1}</span><span>${progress.current} / ${Number(state.room?.questionCount || 0) || "∞"}</span></div><p class="space-question-kor">${escapeHtml(questionInstruction(question))}</p><h2 id="space-question-title">${escapeHtml(questionText)}</h2><div class="answers space-answers" aria-label="답 선택지">${options.map((option, index) => answerButtonHtml(option, answered, qKey, index)).join("")}</div>${pendingAnswerHtml(qKey)}${feedbackHtml(qKey)}</section>` : "";
+  return `<section class="screen space-raiders-screen" data-mode="space_raiders" aria-labelledby="space-title"><header class="space-hud"><div class="space-hud-brand"><span class="space-brand-orbit" aria-hidden="true">✦</span><div><p>CLASSROOM SPACE ARCADE</p><strong id="space-title">우주 약탈단</strong></div></div><div class="space-hud-stat"><span>내 에너지</span><strong>${playerEnergy(me).toLocaleString()}<em>⚡</em></strong></div><div class="space-hud-stat"><span>방어막</span><strong>${Number(space.shield || 0)}<em>🛡</em></strong></div><div class="space-hud-stat"><span>연속 탐사</span><strong>${Number(space.explorationStreak || 0)}<em>/3</em></strong></div><div class="space-hud-stat"><span>현재 순위</span><strong>${playerRank(me) || "-"}<em>위</em></strong></div><div class="space-hud-stat space-hud-time"><span>남은 시간</span><strong id="game-timer">${formatTime(remainingSeconds())}</strong></div><button class="game-sound-toggle in-game" type="button" data-game-sound-toggle aria-pressed="false">🔊 소리</button><button class="space-music-toggle" type="button" data-space-music-toggle aria-pressed="false">🎵 음악</button></header><div class="space-hero"><div class="space-hero-copy"><p class="eyebrow">CAPTAIN ${escapeHtml(playerName(me))}</p><h1>정답으로 항로를 열고<br><span>친구의 에너지를 노려요.</span></h1><p>문법 문제를 맞히면 미지의 행성 3곳 중 하나가 열립니다. 결과를 공개하고 라이벌의 균형을 흔드세요.</p>${spaceRivalStrip()}</div><img class="space-ship-art" src="./assets/space-raiders/space-raiders-ship.png" alt="주황색 우주 정찰선" width="640" height="512"><div class="space-orbit-rings" aria-hidden="true"><i></i><i></i><i></i></div></div><main class="space-stage">${spaceEventHtml(space)}${spacePlanetCards(space)}${spaceEffectPanel(space)}${questionCard}${!questionCard && !hasChoice && !hasEffect ? `<div class="space-waiting" role="status">다음 문법 신호를 준비하고 있어요…</div>` : ""}<details class="space-ranking"><summary>LIVE 순위 · 내 주변 보기</summary><div class="space-ranking-body"><p>에너지는 서버가 확정한 실제 잔량입니다.</p>${leaderboardHtml(sortedPlayers(), { studentView: true })}</div></details></main></section>`;
 }
 
 function studentPlayView() {
@@ -1796,7 +1810,7 @@ function studentPlayView() {
                 <span class="arena-mode-meta">푼 문제 ${progress.current} · ${questionCount}문항 · ${teamMode ? "팀전" : "개인전"}</span>
               </div>
               ${imageUrl ? `<img class="question-image" src="${imageUrl}" alt="문제 참고 이미지">` : ""}
-              <p class="question-kor">${escapeHtml(question.kor || question.promptKor || "알맞은 답을 고르세요.")}</p>
+              <p class="question-kor">${escapeHtml(questionInstruction(question))}</p>
               <h1 id="question-title" class="question-eng${longQuestionClass}" tabindex="-1" role="status" aria-live="polite" aria-atomic="true">${escapeHtml(questionText)}</h1>
             </div>
             <div class="answers arena-answers" data-option-count="${options.length}" aria-label="답 선택지">${options.map((option, index) => answerButtonHtml(option, answered, qKey, index)).join("")}</div>
@@ -1999,9 +2013,9 @@ function teacherLiveView() {
         </div>
         ${roomMode() === "treasure_heist" ? treasureEventCardHtml() : roomMode() === "space_raiders" ? spaceTeacherEventHtml() : ""}
         <div class="section-title"><h2 id="live-title">개인 순위 · ${roomMode() === "space_raiders" ? "에너지" : "점수"}</h2><span class="tag live">● LIVE</span></div>
+        <button class="danger-button" style="margin:12px 0 18px" type="button" data-action="finish-room" ${state.busy ? "disabled" : ""}>게임 종료</button>
         ${leaderboardHtml(players)}
         ${isTeamMode() ? `<div class="leaderboard-divider"></div><div class="section-title"><h2>팀 순위 · 합산 점수</h2><span class="tag team-badge">🛡️ 팀전</span></div>${teamLeaderboardHtml()}` : ""}
-        <button class="danger-button" style="margin-top:18px" type="button" data-action="finish-room" ${state.busy ? "disabled" : ""}>게임 종료</button>
       </article>
       <aside class="panel">
         <h2>진행 상황</h2>
@@ -2170,6 +2184,10 @@ function teacherReportView() {
   const teams = state.report?.teamLeaderboard || state.report?.team_leaderboard || state.room?.teamLeaderboard || [];
   const classAccuracy = players.length ? Math.round(players.reduce((sum, player) => sum + playerAccuracy(player), 0) / players.length) : 0;
   const totalCorrect = players.reduce((sum, player) => sum + playerCorrect(player), 0);
+  const reportRoom = state.report?.room || state.room || {};
+  const reportMode = reportRoom.mode || reportRoom.gameMode || state.roomConfig?.mode || roomMode();
+  const reportDuration = Number(reportRoom.durationSeconds ?? reportRoom.duration_seconds ?? state.roomConfig?.durationSeconds ?? 0);
+  const reportQuestionCount = Number(reportRoom.questionCount ?? reportRoom.question_count ?? state.roomConfig?.questionCount ?? 0);
   return `
     <section class="screen room-shell" aria-labelledby="report-title">
       <article class="panel">
@@ -2178,6 +2196,7 @@ function teacherReportView() {
             <p class="eyebrow">PRIVATE TEACHER REPORT</p>
             <h1 id="report-title">게임 결과</h1>
             <p class="muted">방 ${escapeHtml(state.roomCode)} · ${escapeHtml(selectedUnitLabel())}</p>
+            <div class="room-meta" aria-label="게임 설정"><span class="tag mode-tag">${escapeHtml(modeLabel(reportMode))}</span><span class="tag">${reportDuration ? `${escapeHtml(formatTime(reportDuration))} 제한 시간` : "제한 시간 정보 없음"}</span><span class="tag">${reportQuestionCount || "-"}문항</span></div>
             ${teacherAccountHtml()}
           </div>
           <button class="back-button" type="button" data-action="leave-room">끝내기</button>

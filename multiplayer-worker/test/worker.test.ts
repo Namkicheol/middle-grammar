@@ -64,7 +64,7 @@ async function nextMessage(socket: WebSocket) {
 }
 
 beforeEach(async () => {
-  await env.REPORTS.exec("DELETE FROM player_results; DELETE FROM room_reports; DELETE FROM teacher_session_rooms; DELETE FROM teacher_sessions; DELETE FROM teacher_identities; DELETE FROM oauth_states; DELETE FROM auth_rate_limits;");
+  await env.REPORTS.exec("DELETE FROM player_results; DELETE FROM room_reports; DELETE FROM teacher_quiz_sets; DELETE FROM teacher_session_rooms; DELETE FROM teacher_sessions; DELETE FROM teacher_identities; DELETE FROM oauth_states; DELETE FROM auth_rate_limits;");
 });
 
 describe("teacher authentication and ownership", () => {
@@ -139,6 +139,69 @@ describe("teacher authentication and ownership", () => {
     );
     expect(production.status).toBe(401);
     expect(await production.json()).toMatchObject({ error: "TEACHER_LOGIN_REQUIRED" });
+  });
+});
+
+describe("teacher quiz sets", () => {
+  const questions = Array.from({ length: 5 }, (_, index) => ({
+    prompt: `직접 만든 문법 문제 ${index + 1}`,
+    answer: `정답 ${index + 1}`,
+    choices: [`오답 ${index + 1}`, `정답 ${index + 1}`],
+  }));
+
+  it("persists a teacher set, reloads it, and updates only for its owner", async () => {
+    const templates = await request("/api/teacher/sets/templates", {
+      headers: { "x-dev-teacher-email": TEACHER },
+    });
+    expect(templates.status).toBe(200);
+    const templateBody = await templates.json<any>();
+    const base = templateBody.templates.find((template: any) => template.unitKey === "g1-l1-be-verb");
+    expect(base).toMatchObject({ grade: "g1", questions: expect.any(Array) });
+
+    const created = await request("/api/teacher/sets", {
+      method: "POST",
+      headers: { "content-type": "application/json", "x-dev-teacher-email": TEACHER },
+      body: JSON.stringify({ title: "내 문법 세트", questions }),
+    });
+    expect(created.status).toBe(201);
+    const createdBody = await created.json<any>();
+    expect(createdBody.set).toMatchObject({ title: "내 문법 세트", questions: expect.any(Array) });
+    expect(createdBody.set.questions).toHaveLength(5);
+
+    const listed = await request("/api/teacher/sets", {
+      headers: { "x-dev-teacher-email": TEACHER },
+    });
+    expect(listed.status).toBe(200);
+    expect((await listed.json<any>()).sets).toEqual(expect.arrayContaining([
+      expect.objectContaining({ id: createdBody.set.id, title: "내 문법 세트" }),
+    ]));
+
+    const updated = await request(`/api/teacher/sets/${createdBody.set.id}`, {
+      method: "PATCH",
+      headers: { "content-type": "application/json", "x-dev-teacher-email": TEACHER },
+      body: JSON.stringify({
+        title: "고친 문법 세트",
+        questions: questions.map((question, index) => index === 0 ? { ...question, prompt: "수정한 첫 문제" } : question),
+      }),
+    });
+    expect(updated.status).toBe(200);
+    expect((await updated.json<any>()).set).toMatchObject({ title: "고친 문법 세트", questions: expect.arrayContaining([expect.objectContaining({ eng: "수정한 첫 문제" })]) });
+
+    const denied = await request(`/api/teacher/sets/${createdBody.set.id}`, {
+      method: "PATCH",
+      headers: { "content-type": "application/json", "x-dev-teacher-email": "other@example.com" },
+      body: JSON.stringify({ title: "가로채기", questions }),
+    });
+    expect(denied.status).toBe(404);
+    expect(await denied.json()).toMatchObject({ error: "QUIZ_SET_NOT_FOUND" });
+  });
+
+  it("requires teacher authentication for account sets", async () => {
+    const response = await worker.fetch(new Request("https://preview.example/api/teacher/sets"), { ...env, ENVIRONMENT: "production" } as Env);
+    expect(response.status).toBe(401);
+    expect(await response.json()).toMatchObject({ error: "TEACHER_LOGIN_REQUIRED" });
+    const templates = await worker.fetch(new Request("https://preview.example/api/teacher/sets/templates"), { ...env, ENVIRONMENT: "production" } as Env);
+    expect(templates.status).toBe(401);
   });
 });
 

@@ -67,6 +67,15 @@ export interface FinalizedReport {
   createdAt: number;
 }
 
+export interface TeacherQuizSet {
+  id: string;
+  teacherEmail: string;
+  title: string;
+  questions: Question[];
+  createdAt: number;
+  updatedAt: number;
+}
+
 declare global {
   namespace Cloudflare {
     interface Env {

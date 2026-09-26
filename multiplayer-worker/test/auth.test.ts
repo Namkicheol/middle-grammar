@@ -33,7 +33,7 @@ beforeAll(async () => {
 });
 
 beforeEach(async () => {
-  await env.REPORTS.exec("DELETE FROM teacher_moderation_audit; DELETE FROM teacher_moderation; DELETE FROM teacher_session_rooms; DELETE FROM teacher_sessions; DELETE FROM teacher_identities; DELETE FROM oauth_states; DELETE FROM auth_rate_limits;");
+  await env.REPORTS.exec("DELETE FROM teacher_moderation_audit; DELETE FROM teacher_moderation; DELETE FROM teacher_quiz_sets; DELETE FROM teacher_session_rooms; DELETE FROM teacher_sessions; DELETE FROM teacher_identities; DELETE FROM oauth_states; DELETE FROM auth_rate_limits;");
 });
 
 afterEach(() => vi.unstubAllGlobals());

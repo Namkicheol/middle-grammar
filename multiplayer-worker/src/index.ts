@@ -15,7 +15,7 @@ import {
 } from "./auth";
 import bundledQuestionBank from "./generated/questions.json";
 import { GameRoom } from "./room";
-import type { Env, QuestionBank } from "./types";
+import type { Env, QuestionBank, TeacherQuizSet } from "./types";
 import type { PlayStyle, Question, RoomMode } from "./room-engine";
 import { ACTIVE_ROOM_MODES } from "./room-engine";
 import { adminTeachers, banTeacher, unbanTeacher } from "./admin";
@@ -60,6 +60,19 @@ export default {
       if (request.method === "POST" && url.pathname === "/api/admin/teachers/unban") return await unbanTeacher(request, env);
       if (request.method === "POST" && url.pathname === "/api/teacher/rooms") {
         return await createRoom(request, env, url.origin);
+      }
+      if (request.method === "GET" && url.pathname === "/api/teacher/sets") {
+        return await listTeacherQuizSets(request, env);
+      }
+      if (request.method === "GET" && url.pathname === "/api/teacher/sets/templates") {
+        return await listTeacherQuizSetTemplates(request, env);
+      }
+      if (request.method === "POST" && url.pathname === "/api/teacher/sets") {
+        return await createTeacherQuizSet(request, env);
+      }
+      const teacherSet = url.pathname.match(/^\/api\/teacher\/sets\/(?<id>[a-f0-9-]{10,80})$/i);
+      if (request.method === "PATCH" && teacherSet?.groups?.id) {
+        return await updateTeacherQuizSet(request, env, teacherSet.groups.id);
       }
 
       const teacherState = url.pathname.match(new RegExp(`^/api/teacher/rooms/${ROOM_CODE}/state$`));
@@ -334,6 +347,106 @@ async function createRoom(request: Request, env: Env, origin: string): Promise<R
   throw new HttpError(503, "ROOM_CODE_UNAVAILABLE", "Try creating the room again.");
 }
 
+async function listTeacherQuizSets(request: Request, env: Env): Promise<Response> {
+  const teacherEmail = (await requireTeacherSession(request, env)).email;
+  const rows = await env.REPORTS.prepare(
+    `SELECT id, teacher_email, title, questions_json, created_at, updated_at
+     FROM teacher_quiz_sets
+     WHERE teacher_email = ?
+     ORDER BY updated_at DESC, created_at DESC`,
+  ).bind(teacherEmail).all<TeacherQuizSetRow>();
+  return json({ sets: rows.results.map(camelTeacherQuizSet) });
+}
+
+async function listTeacherQuizSetTemplates(request: Request, env: Env): Promise<Response> {
+  await requireTeacherSession(request, env);
+  const units = questionBank(env).units;
+  return json({ templates: Object.entries(units).map(([unitKey, questions]) => ({
+    id: `template-${unitKey}`,
+    title: unitKey,
+    grade: unitKey.startsWith("g2-") ? "g2" : "g1",
+    unitKey,
+    questions,
+  })) });
+}
+
+async function createTeacherQuizSet(request: Request, env: Env): Promise<Response> {
+  const teacherEmail = (await requireTeacherSession(request, env, "mutation")).email;
+  const input = await parseTeacherQuizSet(request);
+  const now = Date.now();
+  const id = crypto.randomUUID();
+  await env.REPORTS.prepare(
+    `INSERT INTO teacher_quiz_sets
+      (id, teacher_email, title, questions_json, created_at, updated_at)
+     VALUES (?, ?, ?, ?, ?, ?)`,
+  ).bind(id, teacherEmail, input.title, JSON.stringify(input.questions), now, now).run();
+  return json({ set: camelTeacherQuizSet({
+    id,
+    teacher_email: teacherEmail,
+    title: input.title,
+    questions_json: JSON.stringify(input.questions),
+    created_at: now,
+    updated_at: now,
+  }) }, 201);
+}
+
+async function updateTeacherQuizSet(request: Request, env: Env, id: string): Promise<Response> {
+  const teacherEmail = (await requireTeacherSession(request, env, "mutation")).email;
+  const input = await parseTeacherQuizSet(request);
+  const now = Date.now();
+  const result = await env.REPORTS.prepare(
+    `UPDATE teacher_quiz_sets
+     SET title = ?, questions_json = ?, updated_at = ?
+     WHERE id = ? AND teacher_email = ?`,
+  ).bind(input.title, JSON.stringify(input.questions), now, id, teacherEmail).run();
+  if (!result.meta.changes) throw new HttpError(404, "QUIZ_SET_NOT_FOUND", "Quiz set not found.");
+  const row = await env.REPORTS.prepare(
+    `SELECT id, teacher_email, title, questions_json, created_at, updated_at
+     FROM teacher_quiz_sets WHERE id = ? AND teacher_email = ?`,
+  ).bind(id, teacherEmail).first<TeacherQuizSetRow>();
+  if (!row) throw new HttpError(404, "QUIZ_SET_NOT_FOUND", "Quiz set not found.");
+  return json({ set: camelTeacherQuizSet(row) });
+}
+
+async function parseTeacherQuizSet(request: Request): Promise<{ title: string; questions: Question[] }> {
+  assertContentLength(request, 3_000_000);
+  const rawBody = await request.json<unknown>();
+  if (!isPlainObject(rawBody) || !Array.isArray(rawBody.questions)) {
+    throw new HttpError(400, "INVALID_QUIZ_SET", "Quiz set title and questions are required.");
+  }
+  const questions = normalizeCustomQuestions(rawBody.questions);
+  if (questions.length < 1) throw new HttpError(400, "INVALID_QUIZ_SET", "Add at least one question.");
+  const title = String(rawBody.title || "내 퀴즈 세트").trim().slice(0, 80) || "내 퀴즈 세트";
+  return { title, questions };
+}
+
+interface TeacherQuizSetRow {
+  id: string;
+  teacher_email: string;
+  title: string;
+  questions_json: string;
+  created_at: number;
+  updated_at: number;
+}
+
+function camelTeacherQuizSet(row: TeacherQuizSetRow): TeacherQuizSet {
+  let questions: Question[];
+  try {
+    const parsed = JSON.parse(row.questions_json);
+    questions = Array.isArray(parsed) ? parsed : [];
+  } catch {
+    questions = [];
+  }
+  return {
+    id: row.id,
+    teacherEmail: row.teacher_email,
+    title: row.title,
+    questions,
+    createdAt: row.created_at,
+    updatedAt: row.updated_at,
+  };
+}
+
 function normalizeCustomQuestions(input: unknown[]): Question[] {
   if (input.length > 30) throw new HttpError(400, "INVALID_CUSTOM_SET", "Use 30 questions or fewer.");
   let imageBytes = 0;
@@ -355,7 +468,7 @@ function normalizeCustomQuestions(input: unknown[]): Question[] {
     }
     return {
       id: `custom-${index + 1}`,
-      kor: "직접 만든 문제",
+      kor: "",
       eng: prompt,
       ans: answer,
       opts: [...new Set((Array.isArray(item.choices) ? item.choices : []).map((value) => String(value).trim()).filter(Boolean))].slice(0, 4),

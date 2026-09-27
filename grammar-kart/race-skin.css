@@ -1,0 +1,718 @@
+/*
+ * Grammar Grand Prix surface skin.
+ * Loaded after style.css by solo and classroom race pages.
+ * Layout and event handlers stay in their existing files; this file only
+ * changes the visual hierarchy around the race canvas and its live HUD.
+ */
+:root {
+  --race-ink: #f4f0e6;
+  --race-muted: #9aa9a8;
+  --race-night: #090d0f;
+  --race-panel: #101719;
+  --race-line: #26383a;
+  --race-cyan: #35d6d1;
+  --race-orange: #ff9148;
+  --race-green: #a6e86e;
+}
+
+body {
+  color: var(--race-ink);
+  background: var(--race-night);
+}
+
+body button,
+body select {
+  font-family: Nunito, system-ui, sans-serif;
+}
+
+body .shell {
+  width: min(1180px, 100%);
+  padding: 8px clamp(10px, 2.4vw, 24px) 18px;
+}
+
+body .race-shell .mast {
+  min-height: 30px;
+  gap: 8px;
+}
+
+body .race-shell .brand {
+  color: var(--race-ink);
+  font-family: Nunito, system-ui, sans-serif;
+  font-size: clamp(13px, 2.2vw, 18px);
+  font-weight: 900;
+  letter-spacing: .08em;
+  line-height: 1;
+  text-shadow: none;
+}
+
+body .race-shell .brand b {
+  color: var(--race-orange);
+}
+
+body .race-shell .back,
+body .race-shell .sound {
+  border: 1px solid var(--race-line);
+  border-radius: 6px;
+  background: transparent;
+  color: var(--race-muted);
+  font-size: 11px;
+  padding: 5px 8px;
+}
+
+body .race-shell .race-top {
+  grid-template-columns: minmax(0, 1fr) auto auto;
+  gap: 12px;
+  margin: 5px 0 8px;
+}
+
+body .race-shell .race-title {
+  color: var(--race-ink);
+  font-family: Nunito, system-ui, sans-serif;
+  font-size: clamp(14px, 2vw, 19px);
+  font-weight: 900;
+  letter-spacing: .08em;
+  line-height: 1;
+}
+
+body .race-shell .race-title small {
+  color: var(--race-muted);
+  font-family: Nunito, system-ui, sans-serif;
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: .08em;
+  margin-top: 3px;
+}
+
+body .race-shell .speed {
+  min-width: 78px;
+  padding: 0 10px;
+  border: 0;
+  border-left: 2px solid var(--race-cyan);
+  border-radius: 0;
+  background: transparent;
+  color: var(--race-cyan);
+  font-size: 24px;
+  line-height: .85;
+}
+
+body .race-shell .speed small {
+  color: var(--race-muted);
+  font-size: 9px;
+  letter-spacing: .1em;
+  margin-top: 4px;
+}
+
+body .race-shell .place {
+  color: var(--race-orange);
+  font-family: Nunito, system-ui, sans-serif;
+  font-size: clamp(22px, 4vw, 31px);
+  font-weight: 900;
+  letter-spacing: -.04em;
+  text-shadow: none;
+}
+
+body .race-shell .track-wrap {
+  border: 1px solid var(--race-line);
+  border-radius: 14px;
+  background: #0d1517;
+  box-shadow: 0 12px 30px #0008;
+}
+
+body .race-shell .track-wrap::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border: 1px solid #f4f0e614;
+  border-radius: inherit;
+  pointer-events: none;
+}
+
+body .race-shell .race-hud {
+  left: 12px;
+  top: 12px;
+  right: 12px;
+  align-items: flex-start;
+}
+
+body .race-shell .hud-card {
+  border: 0;
+  border-left: 2px solid var(--race-orange);
+  border-radius: 2px;
+  background: #090d0edb;
+  box-shadow: none;
+  color: var(--race-muted);
+  font-size: 10px;
+  letter-spacing: .04em;
+  padding: 5px 8px;
+}
+
+body .race-shell .hud-card strong {
+  color: var(--race-ink);
+  font-size: 16px;
+  letter-spacing: -.02em;
+  line-height: 1.05;
+}
+
+body .race-shell .progress {
+  height: 4px;
+  margin: 8px 0;
+  border: 0;
+  border-radius: 0;
+  background: #253234;
+}
+
+body .race-shell .progress i {
+  position: relative;
+  border-radius: 0;
+  background: var(--race-cyan);
+  box-shadow: 0 0 8px #35d6d155;
+}
+
+body .race-shell .race-bottom {
+  gap: 10px;
+}
+
+body .race-shell.question-active .race-bottom {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(260px, 340px);
+  align-items: end;
+}
+
+body .race-shell .question {
+  min-height: 0;
+  border: 1px solid var(--race-line);
+  border-left: 3px solid var(--race-cyan);
+  border-radius: 10px;
+  background: #101719f5;
+  box-shadow: none;
+  padding: 12px 13px;
+}
+
+body .race-shell .question-head {
+  justify-content: flex-end;
+  min-height: 14px;
+  color: var(--race-muted);
+  font-size: 10px;
+  letter-spacing: .05em;
+}
+
+body .race-shell .question-head span:first-child {
+  display: none;
+}
+
+body .race-shell .question .question-timer {
+  color: var(--race-orange);
+  font-size: 11px;
+}
+
+body .race-shell .question p {
+  color: var(--race-muted);
+  font-size: 13px;
+  margin: 4px 0;
+}
+
+body .race-shell .question h2 {
+  color: var(--race-ink);
+  font-size: clamp(16px, 2vw, 21px);
+  line-height: 1.2;
+  margin: 0 0 10px;
+}
+
+body .race-shell .choices {
+  gap: 6px;
+}
+
+body .race-shell .choices button {
+  min-height: 48px;
+  border: 1px solid #d9e0d9;
+  border-radius: 8px;
+  background: #f4f0e6;
+  box-shadow: inset 0 -2px #c8ccc5;
+  color: #172123;
+  font-size: clamp(12px, 1.5vw, 15px);
+  padding: 7px;
+}
+
+body .race-shell .choices button:hover,
+body .race-shell .choices button:focus-visible {
+  border-color: var(--race-cyan);
+  background: #e8fbf7;
+}
+
+body .race-shell .choices button.correct {
+  border-color: var(--race-green);
+  background: var(--race-green);
+}
+
+body .race-shell .choices button.wrong {
+  border-color: #f08069;
+  background: #f6b19d;
+}
+
+body .race-shell .controls {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 6px;
+  align-items: stretch;
+  padding: 2px 0;
+}
+
+body .race-shell .control {
+  position: relative;
+  min-height: 54px;
+  overflow: hidden;
+  border: 1px solid var(--race-line);
+  border-radius: 8px;
+  background: var(--race-panel);
+  color: var(--race-ink);
+  font-size: 11px;
+  line-height: 1.1;
+  padding: 6px 4px 5px;
+  touch-action: manipulation;
+}
+
+body .race-shell .control::after {
+  position: absolute;
+  right: 7px;
+  bottom: 5px;
+  color: var(--race-muted);
+  font-size: 9px;
+  font-weight: 800;
+}
+
+body .race-shell .control.item {
+  grid-column: auto;
+  border-color: #7d5a34;
+  background-color: var(--race-panel);
+  background-image: none;
+  color: var(--race-orange);
+  font-size: 11px;
+  padding-left: 8px;
+  text-align: left;
+}
+
+body .race-shell .control.item::before {
+  content: "";
+  position: absolute;
+  z-index: 1;
+  left: 4px;
+  top: 50%;
+  width: 23px;
+  height: 23px;
+  border-radius: 50%;
+  background: var(--race-panel) url("assets/art/hud-boost.webp") center/23px 23px no-repeat;
+  transform: translateY(-50%);
+}
+
+body .race-shell .control.item::after {
+  content: "";
+  z-index: 2;
+  left: 0;
+  right: auto;
+  bottom: 0;
+  width: var(--meter, 0%);
+  height: 3px;
+  background: var(--race-orange);
+}
+
+body .race-shell .control.item.ready {
+  border-color: var(--race-orange);
+  background-color: #201a14;
+  animation: none;
+}
+
+body .race-shell .control.weapon {
+  border-color: var(--race-line);
+  background-color: var(--race-panel);
+  background-image: none;
+  background-repeat: no-repeat;
+  background-size: 136px 27px;
+  color: var(--race-ink);
+  font-size: 11px;
+  padding-left: 8px;
+  text-align: left;
+}
+
+body .race-shell .control.weapon::before {
+  content: "";
+  position: absolute;
+  z-index: 1;
+  left: 4px;
+  top: 50%;
+  width: 23px;
+  height: 23px;
+  border-radius: 50%;
+  background-color: var(--race-panel);
+  background-repeat: no-repeat;
+  background-size: 115px 23px;
+  transform: translateY(-50%);
+}
+
+body .race-shell #weapon::before,
+body .race-shell #kart-weapon::before,
+body .race-shell .controls .control:nth-child(2)::before {
+  background-image: url("assets/art/race-items-atlas.webp");
+  background-position: 0 center;
+}
+
+body .race-shell #missile::before,
+body .race-shell #kart-missile::before,
+body .race-shell .controls .control:nth-child(3)::before {
+  background-image: url("assets/art/race-items-atlas.webp");
+  background-position: -46px center;
+}
+
+body .race-shell #shield::before,
+body .race-shell #kart-shield::before,
+body .race-shell .controls .control:nth-child(4)::before {
+  background-image: url("assets/art/hud-shield.webp");
+  background-size: 23px 23px;
+  background-position: center;
+}
+
+body .race-shell .control.weapon:disabled {
+  border-color: #1e2a2c;
+  color: #697878;
+  opacity: 1;
+  padding-left: 8px;
+  text-align: center;
+}
+
+body .race-shell #shield,
+body .race-shell #kart-shield,
+body .race-shell .controls .control:nth-child(4) {
+  background-image: none;
+  padding-left: 8px;
+  text-align: left;
+}
+
+body .race-shell .control.weapon:disabled::before {
+  filter: grayscale(1);
+  opacity: .42;
+}
+
+body .race-shell #weapon:disabled::before,
+body .race-shell #kart-weapon:disabled::before,
+body .race-shell .controls .control:nth-child(2):disabled::before {
+  width: 0;
+  background-image: none;
+}
+
+body .race-shell .track-wrap > #left,
+body .race-shell .track-wrap > #right {
+  width: 62px;
+  height: 62px;
+  border: 1px solid #b4eeeb8c;
+  border-radius: 11px;
+  background: #09121466;
+  box-shadow: none;
+  color: var(--race-ink);
+  font-size: 22px;
+  backdrop-filter: none;
+}
+
+body .race-shell .track-wrap > #left:active,
+body .race-shell .track-wrap > #right:active {
+  background: #35d6d177;
+  transform: scale(.96);
+}
+
+body .race-shell .hint {
+  color: #758483;
+  font-size: 10px;
+  letter-spacing: .01em;
+  margin: 7px 0 0;
+}
+
+/* The menu is intentionally quieter so the selected cart owns the first view. */
+body .garage {
+  gap: 12px;
+  padding-top: 5px;
+}
+
+body .garage .showroom {
+  border: 1px solid var(--race-line);
+  border-radius: 14px;
+  box-shadow: 0 12px 30px #0008;
+}
+
+body .garage .showroom-label {
+  display: none;
+}
+
+body .garage .showroom-caption {
+  color: var(--race-ink);
+  font-size: 12px;
+  text-shadow: none;
+}
+
+body .garage .garage-design {
+  border: 1px solid var(--race-line);
+  border-radius: 9px;
+  background: var(--race-panel);
+  padding: 6px 8px;
+}
+
+body .garage .garage-design > span {
+  display: none;
+}
+
+body .garage .design-options {
+  gap: 6px;
+}
+
+body .garage .design-options button {
+  min-height: 56px;
+  border: 1px solid var(--race-line);
+  border-radius: 7px;
+  background: transparent;
+  color: var(--race-muted);
+  font-size: 10px;
+  padding: 3px;
+}
+
+body .garage .design-options button[aria-pressed="true"] {
+  border-color: var(--race-cyan);
+  background: #102225;
+  color: var(--race-ink);
+}
+
+body .garage .design-options img {
+  width: 42px;
+  height: 42px;
+}
+
+body .garage .garage-panel {
+  gap: 8px;
+  border: 0;
+  border-left: 1px solid var(--race-line);
+  border-radius: 0;
+  background: transparent;
+  box-shadow: none;
+  padding: 12px 0 12px 14px;
+}
+
+body .garage .garage-panel .eyebrow {
+  display: none;
+}
+
+body .garage .garage-panel h1 {
+  color: var(--race-ink);
+  font-family: Nunito, system-ui, sans-serif;
+  font-size: 23px;
+  letter-spacing: .03em;
+}
+
+body .garage .garage-panel label,
+body .garage .custom-label {
+  color: var(--race-muted);
+}
+
+body .garage .garage-panel select {
+  border: 1px solid var(--race-line);
+  border-radius: 7px;
+  background: var(--race-panel);
+  color: var(--race-ink);
+  padding: 9px;
+}
+
+body .garage .garage-panel .primary,
+body .garage .garage-panel .multi-link {
+  border-radius: 7px;
+  box-shadow: none;
+  font-size: 13px;
+  padding: 11px;
+}
+
+body .garage .garage-panel .primary {
+  background: var(--race-orange);
+  color: #191512;
+}
+
+body .garage .garage-panel .multi-link {
+  border: 1px solid var(--race-cyan);
+  background: transparent;
+  color: var(--race-cyan);
+}
+
+body .garage .garage-help,
+body .garage .best {
+  color: var(--race-muted);
+  font-size: 10px;
+}
+
+@media (max-width: 760px) {
+  body .race-shell.question-active .race-bottom {
+    display: block;
+  }
+
+  body .race-shell .controls {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    margin-top: 8px;
+  }
+
+  body .race-shell:not(.question-active) .controls {
+    margin-top: 8px;
+  }
+
+  body .race-shell:not(.question-active) .track-wrap canvas {
+    height: 53dvh;
+    min-height: 330px;
+    max-height: 560px;
+  }
+
+  body .race-shell.question-active .track-wrap canvas {
+    height: 32dvh;
+    min-height: 230px;
+  }
+
+  body .garage .garage-panel {
+    border-left: 0;
+    border-top: 1px solid var(--race-line);
+    padding: 12px 0 0;
+  }
+}
+
+@media (max-width: 430px) {
+  body .shell {
+    padding: 6px 8px 12px;
+  }
+
+  body .race-shell .race-top {
+    gap: 7px;
+    margin: 4px 0 7px;
+  }
+
+  body .race-shell .race-title small {
+    font-size: 9px;
+  }
+
+  body .race-shell .speed {
+    min-width: 68px;
+    font-size: 21px;
+    padding: 0 7px;
+  }
+
+  body .race-shell .place {
+    font-size: 24px;
+  }
+
+  body .race-shell .track-wrap > #left,
+  body .race-shell .track-wrap > #right {
+    width: 57px;
+    height: 57px;
+    bottom: 8px;
+  }
+
+  body .race-shell .question {
+    padding: 10px 11px;
+  }
+
+  body .race-shell .question h2 {
+    font-size: 16px;
+    margin-bottom: 8px;
+  }
+
+  body .race-shell .choices button {
+    min-height: 48px;
+  }
+
+  body .race-shell .controls {
+    gap: 5px;
+  }
+
+  body .race-shell .control {
+    min-height: 51px;
+    font-size: 10px;
+  }
+
+  body .race-shell .control.item {
+    padding-left: 8px;
+  }
+
+  body .race-shell .control.weapon {
+    padding-left: 8px;
+  }
+
+  body .race-shell #weapon:not(:disabled),
+  body .race-shell #kart-weapon:not(:disabled),
+  body .race-shell .controls .control:nth-child(2):not(:disabled) {
+    background-position: 4px center;
+  }
+
+  body .race-shell #missile:not(:disabled),
+  body .race-shell #kart-missile:not(:disabled),
+  body .race-shell .controls .control:nth-child(3):not(:disabled) {
+    background-position: -46px center;
+  }
+
+  body .race-shell #shield,
+  body .race-shell #kart-shield,
+  body .race-shell .controls .control:nth-child(4) {
+    padding-left: 8px;
+  }
+
+  body .race-shell .hint {
+    font-size: 0;
+    line-height: 1.35;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  body .race-shell .hint::after {
+    content: "좌우 버튼으로 조향 · 아이템을 눌러 사용";
+    color: #758483;
+    font-size: 11px;
+  }
+
+  body .garage .showroom {
+    height: 220px;
+  }
+
+  body .garage .showroom > canvas {
+    width: 170px;
+  }
+}
+
+body .shell:not(.race-shell) .mast {
+  min-height: 30px;
+}
+
+body .shell:not(.race-shell) .brand {
+  color: var(--race-ink);
+  font-family: Nunito, system-ui, sans-serif;
+  font-size: 18px;
+  letter-spacing: .08em;
+  line-height: 1;
+  text-shadow: none;
+}
+
+body .shell:not(.race-shell) .brand b {
+  color: var(--race-orange);
+}
+
+body .shell:not(.race-shell) .back,
+body .shell:not(.race-shell) .sound {
+  border: 1px solid var(--race-line);
+  border-radius: 6px;
+  background: transparent;
+  color: var(--race-muted);
+  font-size: 11px;
+  padding: 5px 8px;
+}
+
+/* Keep the generated art above live labels, including stock counts. */
+body .race-shell .controls #item,
+body .race-shell .controls #weapon,
+body .race-shell .controls #missile,
+body .race-shell .controls #shield {
+  padding: 29px 3px 6px;
+  text-align: center;
+  font-size: 11px;
+}
+body .race-shell .controls .control::before {
+  left: 50%;
+  top: 4px;
+  transform: translateX(-50%);
+}

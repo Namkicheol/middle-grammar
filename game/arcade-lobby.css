@@ -48,6 +48,7 @@ body:has(#start-screen:not([style*="display: none"])){background:#eaf5ff}
 #start-screen .mode-btn[data-mode="tower"] .mode-thumb{background-image:url('../multiplayer/assets/arcade-20260908/tower.webp');background-size:cover}
 #start-screen .mode-btn[data-mode="rangers"] .mode-thumb{background-image:url('../multiplayer/assets/arcade-20260908/rangers.webp')}
 #start-screen .mode-btn[data-mode="sentence"] .mode-thumb{background-image:url('../multiplayer/assets/arcade-20260908/blast.webp')}
+#start-screen .mode-btn[data-cover="grammar-kart"] .mode-thumb{background-image:url('../grammar-kart/assets/art/solo-cover.webp')}
 #start-screen .mode-coming-soon{cursor:default;background:linear-gradient(145deg,#f6f7fb,#eef2f8);border-color:#d8dee9;box-shadow:0 8px 20px #53649314}
 #start-screen .mode-coming-soon:hover{transform:none;border-color:#d8dee9;box-shadow:0 8px 20px #53649314}
 #start-screen .mode-coming-soon .mode-thumb{display:grid;place-items:center;background:radial-gradient(circle at 50% 40%,#d9e2f2,#bdc9dd 72%);color:#fff;text-shadow:0 2px 8px #24365c88;font-size:58px}

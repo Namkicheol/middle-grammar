@@ -24,7 +24,9 @@
     go: { file: 'reveal.ogg', volume: 0.40, rate: 1.08, stopAfter: 620, cooldown: 240 },
     boost: { file: 'shield.ogg', volume: 0.46, rate: 1.16, stopAfter: 760, cooldown: 180 },
     item: { file: 'shield.ogg', volume: 0.34, rate: 0.90, stopAfter: 760, cooldown: 200 },
-    hit: { file: 'bomb.ogg', volume: 0.30, rate: 1.05, stopAfter: 560, cooldown: 220 },
+    missile: { file: 'missile-whoosh.ogg', volume: 0.38, rate: 1, stopAfter: 720, cooldown: 350 },
+    hit: { file: 'kart-impact.ogg', volume: 0.4, rate: 1, stopAfter: 540, cooldown: 300 },
+    skid: { file: 'kart-skid.ogg', volume: 0.27, rate: 1, stopAfter: 650, cooldown: 900 },
     correct: { file: 'angel.ogg', volume: 0.27, rate: 1.65, stopAfter: 920, cooldown: 180 },
     wrong: { file: 'bomb.ogg', volume: 0.15, rate: 0.58, stopAfter: 680, cooldown: 220 },
     finish: { file: 'angel.ogg', volume: 0.48, rate: 1.00, stopAfter: 2650, cooldown: 900 }
@@ -115,6 +117,11 @@
     for (const audio of state.active) setElementMute(audio);
   }
 
+  function setEngineSpeed(speed, boosted) {
+    if (!state.engine) return;
+    state.engine.playbackRate = Math.max(0.78, Math.min(1.55, 0.78 + (Number(speed) || 0) / 190 + (boosted ? 0.18 : 0)));
+  }
+
   function scheduleCleanup(audio, delay) {
     if (!delay || !root.setTimeout) return;
     const timer = root.setTimeout(() => {
@@ -128,6 +135,10 @@
   function playFile(cue) {
     const audio = makeAudio(cue.file, false);
     if (!audio) return false;
+    if (state.active.size >= 3) {
+      const oldest = state.active.values().next().value;
+      stopElement(oldest); state.active.delete(oldest);
+    }
     audio.volume = state.muted ? 0 : cue.volume;
     audio.playbackRate = cue.rate;
     setElementMute(audio);
@@ -177,6 +188,7 @@
       tone(context, 880, now + 0.08, 0.14, 'sine', 0.035);
     }
     if (name === 'hit') tone(context, 130, now, 0.20, 'sawtooth', 0.05, 58);
+    if (name === 'missile') tone(context, 330, now, 0.26, 'sawtooth', 0.04, 850);
     if (name === 'correct') {
       tone(context, 659, now, 0.13, 'sine', 0.04);
       tone(context, 831, now + 0.09, 0.19, 'sine', 0.04);
@@ -228,5 +240,5 @@
     }
   });
 
-  root.KartAudio = Object.freeze({ unlock, startMusic, stopMusic, setMuted, play, destroy });
+  root.KartAudio = Object.freeze({ unlock, startMusic, stopMusic, setMuted, setEngineSpeed, play, destroy });
 })(window);

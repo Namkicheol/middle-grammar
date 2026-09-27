@@ -9,7 +9,7 @@ import {
   type MazeRival as MazeRivalV2,
 } from "./maze-game";
 import { createEscapeRooms, expectedEscapeCode, revealEscapeHotspot, publicEscapeRoom } from "./escape-game";
-import { advanceKart, createKart, kartView, rewardKart, steerKart, useKartItem, useKartWeapon, KART_COLORS, KART_DESIGNS, type KartState } from "./kart-game";
+import { advanceKart, createKart, kartView, rewardKart, steerKart, useKartItem, useKartWeapon, KART_COLORS, KART_DESIGNS, KART_QUESTION_MARKS, type KartState, type KartWeapon } from "./kart-game";
 
 export interface Question {
   id: string;
@@ -813,6 +813,10 @@ export function submitAnswer(
       "The submitted question is not the player's current question.",
     );
   }
+  if (state.mode === "grammar_kart" && (!player.kart || player.questionIndex >= KART_QUESTION_MARKS.length ||
+    advanceKart(player.kart, input.serverNow).distance < KART_QUESTION_MARKS[player.questionIndex])) {
+    throw new EngineError("NOT_CURRENT_QUESTION", "Reach the next checkpoint before answering.");
+  }
   const question = state.questions.find((candidate) => candidate.id === input.questionId);
   if (!question) {
     throw new EngineError("UNKNOWN_QUESTION", "The question is not in this room.");
@@ -837,7 +841,9 @@ export function submitAnswer(
   const correct = input.answer === question.ans;
   const streak = correct ? player.streak + 1 : 0;
   const scoreGain = correct ? 100 + Math.min(streak - 1, 5) * 10 : 0;
-  const responseTimeMs = Math.round(input.serverNow - player.questionStartedAt);
+  const checkpointAt = state.mode === "grammar_kart" && player.kart
+    ? advanceKart(player.kart, input.serverNow).checkpointsAt[player.questionIndex] : undefined;
+  const responseTimeMs = Math.round(input.serverNow - (checkpointAt ?? player.questionStartedAt));
   const answerRecord: AnswerRecord = {
     occurrenceIndex: input.occurrenceIndex,
     questionId: input.questionId,
@@ -902,13 +908,14 @@ export function submitAnswer(
       streak,
       correctCount: nextPlayer.correct,
       answeredCount: nextPlayer.answered,
+      ...(state.mode === "grammar_kart" && correct ? { reward: nextPlayer.kart?.lastCue?.kind?.replace("reward_", "") } : {}),
       treasureChoices: nextPlayer.pendingTreasureChoices?.map(toTreasureChoiceView),
       space: state.mode === "space_raiders" ? spacePlayerView(stateWithAnswer, nextPlayer) : undefined,
     },
   };
 }
 
-export function settleKartRace(state: RoomState, now: number): RoomState {
+export function settleKartRace(state: RoomState, now: number, movedPlayerId?: string): RoomState {
   if (state.mode !== "grammar_kart" || state.status !== "playing") return state;
   const players = Object.fromEntries(Object.entries(state.players).map(([id, player]) =>
     [id, player.kart ? { ...player, kart: advanceKart(player.kart, now) } : player]));
@@ -921,16 +928,42 @@ export function settleKartRace(state: RoomState, now: number): RoomState {
       if (old < banana.at && target.kart.distance >= banana.at && Math.abs(target.kart.lane - banana.lane) < .3 && now >= target.kart.hitUntil) {
         const blocked = now < target.kart.shieldUntil;
         players[targetId] = { ...target, kart: { ...target.kart, slowUntil: blocked ? target.kart.slowUntil : now + 2500,
-          slipUntil: blocked ? target.kart.slipUntil : now + 1700, hitUntil: now + 1600 } };
+          slipUntil: blocked ? target.kart.slipUntil : now + 1700, hitUntil: now + 1600,
+          lastCue: { kind: blocked ? "shield_block" : "banana_hit", at: now, from: ownerId, target: targetId } } };
         players[ownerId] = { ...owner, kart: { ...owner.kart!, banana: undefined } };
         break;
       }
     }
   }
+  const ordered = Object.entries(players).filter(([, p]) => p.kart && !p.kart.finishedAt && p.kart.distance > 40)
+    .sort((a, b) => (a[1].kart?.distance ?? 0) - (b[1].kart?.distance ?? 0));
+  for (let i = 0; i < ordered.length; i++) for (let j = i + 1; j < ordered.length; j++) {
+    const [leftId] = ordered[i], [rightId] = ordered[j];
+    const left = players[leftId].kart!, right = players[rightId].kart!;
+    const gap = right.distance - left.distance;
+    if (gap > 4) break;
+    if (gap < .8 && movedPlayerId !== leftId && movedPlayerId !== rightId) continue;
+    if (Math.abs(right.lane - left.lane) > .18 || now < left.hitUntil || now < right.hitUntil) continue;
+    players[leftId] = { ...players[leftId], kart: { ...left, lane: Math.max(-.88, Math.min(.88, left.lane + (left.lane <= right.lane ? -.1 : .1))),
+      slowUntil: now < left.shieldUntil ? left.slowUntil : now + 1100, hitUntil: now + 1100,
+      lastCue: { kind: "contact", at: now, from: rightId, target: leftId } } };
+    players[rightId] = { ...players[rightId], kart: { ...right, lane: Math.max(-.88, Math.min(.88, right.lane + (right.lane <= left.lane ? -.1 : .1))),
+      slowUntil: now < right.shieldUntil ? right.slowUntil : now + 1100, hitUntil: now + 1100,
+      lastCue: { kind: "contact", at: now, from: leftId, target: rightId } } };
+  }
+  for (const [id, racer] of Object.entries(players)) {
+    const kart = racer.kart;
+    if (!kart || kart.finishedAt) continue;
+    const drafting = Object.entries(players).some(([otherId, other]) => otherId !== id && other.kart &&
+      other.kart.distance - kart.distance > 9 && other.kart.distance - kart.distance < 48 && Math.abs(other.kart.lane - kart.lane) < .2);
+    const elapsed = Math.max(0, Math.min(1000, now - (state.players[id]?.kart?.updatedAt ?? now)));
+    const draftMs = drafting ? kart.draftMs + elapsed : 0;
+    players[id] = { ...racer, kart: { ...kart, draftMs, draftUntil: draftMs > 1500 ? now + 600 : kart.draftUntil } };
+  }
   return { ...state, players };
 }
 
-export function kartAction(state: RoomState, input: { playerId: string; action: "move" | "item" | "weapon"; lane?: number; seq?: number; serverNow: number }) {
+export function kartAction(state: RoomState, input: { playerId: string; action: "move" | "item" | "weapon"; lane?: number; seq?: number; weapon?: KartWeapon; serverNow: number }) {
   if (state.mode !== "grammar_kart" || state.status !== "playing" || state.startedAt === undefined ||
     input.serverNow >= state.startedAt + state.durationSeconds * 1000) {
     throw new EngineError("ROOM_NOT_PLAYING", "The race is not active.");
@@ -940,30 +973,37 @@ export function kartAction(state: RoomState, input: { playerId: string; action: 
   if (advanceKart(player.kart, input.serverNow).finishedAt) {
     throw new EngineError("ROOM_NOT_PLAYING", "This racer has finished.");
   }
+  const shooter = advanceKart(player.kart, input.serverNow);
+  const weapon = input.action === "weapon" ? input.weapon || player.kart.heldItem : undefined;
+  const ahead = weapon === "missile" ? Object.values(state.players).filter(other => other.id !== player.id && other.kart)
+    .map(other => ({ other, kart: advanceKart(other.kart!, input.serverNow) }))
+    .filter(row => row.kart.distance > shooter.distance && row.kart.distance - shooter.distance < 220 && !row.kart.finishedAt)
+    .sort((a,b) => a.kart.distance - b.kart.distance)[0] : undefined;
+  if (weapon === "missile" && !ahead) throw new EngineError("KART_ITEM_NOT_READY", "앞차가 있을 때 미사일을 발사할 수 있어요.");
   let kart: KartState;
   try {
     kart = input.action === "move"
       ? steerKart(player.kart, input.lane!, input.seq!, input.serverNow)
-      : input.action === "item" ? useKartItem(player.kart, input.serverNow) : useKartWeapon(player.kart, input.serverNow);
+      : input.action === "item" ? useKartItem(player.kart, input.serverNow) : useKartWeapon(player.kart, input.serverNow, input.weapon);
   } catch (error) {
     const code = error instanceof Error && error.message === "KART_ITEM_NOT_READY" ? "KART_ITEM_NOT_READY" : "INVALID_KART_MOVE";
-    throw new EngineError(code, code === "KART_ITEM_NOT_READY" ? "The star turbo is not ready." : "Invalid steering update.");
+    throw new EngineError(code, code === "KART_ITEM_NOT_READY" ? "아이템이 아직 준비되지 않았어요." : "Invalid steering update.");
   }
   const nextPlayer = { ...player, kart, score: Math.round(kart.distance), lastSeenAt: input.serverNow };
   let nextState = { ...state, players: { ...state.players, [player.id]: nextPlayer } };
-  if (input.action === "weapon" && player.kart.heldItem === "missile") {
-    const ahead = Object.values(nextState.players).filter(other => other.id !== player.id && other.kart)
-      .map(other => ({ other, kart: advanceKart(other.kart!, input.serverNow) }))
-      .filter(row => row.kart.distance > kart.distance && row.kart.distance - kart.distance < 220 && !row.kart.finishedAt)
-      .sort((a,b) => a.kart.distance - b.kart.distance)[0];
+  if (input.action === "weapon" && weapon === "missile") {
     if (ahead) {
       const blocked = input.serverNow < ahead.kart.shieldUntil || input.serverNow < ahead.kart.hitUntil;
+      kart.lastCue = { kind: "missile", at: input.serverNow, from: player.id, target: ahead.other.id };
+      nextState.players[player.id] = { ...nextState.players[player.id], kart };
       nextState.players[ahead.other.id] = { ...ahead.other, kart: { ...ahead.kart,
         slowUntil: blocked ? ahead.kart.slowUntil : input.serverNow + 2500,
-        hitUntil: input.serverNow + 1600 } };
+        hitUntil: input.serverNow + 1600,
+        lastCue: { kind: blocked ? "shield_block" : "missile_hit", at: input.serverNow, from: player.id, target: ahead.other.id } } };
     }
   }
-  nextState = settleKartRace(nextState, input.serverNow);
+  nextState = settleKartRace(nextState, input.serverNow,
+    input.action === "move" && Math.abs(kart.lane - player.kart.lane) > .02 ? player.id : undefined);
   return { state: nextState, result: { ...kartView(kart, input.serverNow), action: input.action } };
 }
 
@@ -1819,6 +1859,8 @@ function mazePlayerView(state: RoomState, player: PlayerState, now: number): Maz
 
 function currentSafeQuestion(state: RoomState, player: PlayerState): SafeQuestion | undefined {
   if (state.status !== "playing") return undefined;
+  if (state.mode === "grammar_kart" && (player.questionIndex >= KART_QUESTION_MARKS.length || !player.kart ||
+    (kartViewFor(state, player)?.distance ?? 0) < KART_QUESTION_MARKS[player.questionIndex])) return undefined;
   if (state.mode === "grammar_escape" && escapeRunForPlayer(state, player)?.escapedAt !== undefined) {
     return undefined;
   }

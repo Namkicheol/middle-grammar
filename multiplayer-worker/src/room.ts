@@ -17,7 +17,7 @@ import {
 } from "./room-engine";
 import type { Env, RoomInitBody, RoomRecord, SocketAttachment } from "./types";
 import { getTeacherSessionByHash } from "./auth";
-import { advanceKart } from "./kart-game";
+import { advanceKart, type KartWeapon } from "./kart-game";
 
 const RECORD_KEY = "room";
 const MAX_PLAYERS = 60;
@@ -138,7 +138,7 @@ export class GameRoom implements DurableObject {
       return;
     }
     let record: RoomRecord | undefined;
-    let payload: { type?: string; questionId?: string; occurrenceIndex?: number; answer?: string; choiceId?: string; seq?: number; lane?: number; direction?: string; action?: string; hotspotId?: string; code?: string; planetId?: string; targetPlayerId?: string } = {};
+    let payload: { type?: string; questionId?: string; occurrenceIndex?: number; answer?: string; choiceId?: string; seq?: number; lane?: number; weapon?: string; direction?: string; action?: string; hotspotId?: string; code?: string; planetId?: string; targetPlayerId?: string } = {};
     try {
       payload = JSON.parse(
         typeof message === "string" ? message : new TextDecoder().decode(message),
@@ -194,6 +194,7 @@ export class GameRoom implements DurableObject {
           action: payload.type === "kart_move" ? "move" : payload.type === "kart_item" ? "item" : "weapon",
           lane: payload.lane,
           seq: payload.seq,
+          weapon: payload.weapon as KartWeapon | undefined,
           serverNow: now,
         });
         record.state = moved.state;

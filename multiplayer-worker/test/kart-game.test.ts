@@ -33,8 +33,10 @@ describe("grammar kart authoritative race", () => {
     expect(() => useKartItem(moved, startedAt + 1100)).toThrow("KART_ITEM_NOT_READY");
     let earned = moved;
     for (let i = 0; i < 3; i++) earned = rewardKart(earned, true, startedAt + 1200 + i * 1000);
+    expect(earned).toMatchObject({ boostStock: 1, missiles: 1, shields: 1 });
     const used = useKartItem(earned, startedAt + 4400);
-    expect(used.charge).toBe(0);
+    expect(used.boostStock).toBe(0);
+    expect(used.charge).toBe(earned.charge);
     expect(used.boostUntil).toBeGreaterThan(startedAt + 4400);
     expect(used.shieldUntil).toBe(0);
     let recharged = used;
@@ -73,12 +75,12 @@ describe("grammar kart authoritative race", () => {
 
   it("shares all 30 server-ranked racers with the teacher and each student", () => {
     vi.useFakeTimers();
-    vi.setSystemTime(startedAt + 1000);
+    vi.setSystemTime(startedAt + 35_000);
     let room = createRoomState({ code: "654321", teacherEmail: "teacher@example.com", durationSeconds: 300,
       mode: "grammar_kart", playStyle: "individual", questions: [question], createdAt: startedAt - 1000 });
     for (let i = 0; i < 30; i++) room = joinPlayer(room, { id: `p${i}`, nickname: `학생${i + 1}`, resumeTokenHash: `h${i}`, joinedAt: startedAt - 500 }).state;
     room = startRoom(room, startedAt);
-    room = kartAction(room, { playerId: "p0", action: "move", lane: 0, seq: 1, serverNow: startedAt + 1000 }).state;
+    room = kartAction(room, { playerId: "p0", action: "move", lane: 0, seq: 1, serverNow: startedAt + 35_000 }).state;
     const current = publicRoomState(room, "p0");
     const teacher = teacherRoomState(room);
     expect(current.leaderboard).toHaveLength(30);
@@ -87,9 +89,9 @@ describe("grammar kart authoritative race", () => {
     const q = current.self?.currentQuestion;
     expect(q).toBeDefined();
     room = submitAnswer(room, { playerId: "p0", questionId: q!.id, occurrenceIndex: q!.occurrenceIndex,
-      answer: "am", serverNow: startedAt + 1500 }).state;
-    expect(room.players.p0.kart?.charge).toBe(1);
-    expect(room.players.p1.kart?.charge).toBe(0);
+      answer: "am", serverNow: startedAt + 35_500 }).state;
+    expect(room.players.p0.kart?.boostStock).toBe(1);
+    expect(room.players.p1.kart?.boostStock).toBe(0);
     vi.useRealTimers();
   });
 
@@ -102,5 +104,57 @@ describe("grammar kart authoritative race", () => {
       kartDesign: "red", kartColor: "violet" }).state;
     expect(publicRoomState(joined, "good").self?.kart).toMatchObject({ design: "red", color: "violet" });
     expect(teacherRoomState(joined).leaderboard[0].kart).toMatchObject({ design: "red", color: "violet" });
+  });
+
+  it("keeps a pre-update racer state playable and waits for the first checkpoint", () => {
+    const legacy = createKart(startedAt) as Partial<ReturnType<typeof createKart>>;
+    delete legacy.boostStock; delete legacy.missiles; delete legacy.shields;
+    delete legacy.rewardsGiven; delete legacy.checkpointsAt;
+    delete legacy.driftMs; delete legacy.draftMs; delete legacy.draftUntil; delete legacy.slipUntil;
+    const raced = advanceKart(legacy as ReturnType<typeof createKart>, startedAt + 35_000);
+    expect(raced.distance).toBeGreaterThan(550);
+    expect(raced.checkpointsAt).toHaveLength(1);
+    expect(rewardKart(raced, true, startedAt + 35_100).boostStock).toBe(1);
+  });
+
+  it("ignores overlapping start positions but detects a real sideways kart contact", () => {
+    let room = createRoomState({ code: "654324", teacherEmail: "teacher@example.com", durationSeconds: 300,
+      mode: "grammar_kart", playStyle: "individual", questions: [question], createdAt: startedAt - 1000 });
+    room = joinPlayer(room, { id: "p0", nickname: "A", resumeTokenHash: "a", joinedAt: startedAt - 500 }).state;
+    room = joinPlayer(room, { id: "p1", nickname: "B", resumeTokenHash: "b", joinedAt: startedAt - 500 }).state;
+    room = startRoom(room, startedAt);
+    room = settleKartRace(room, startedAt + 3000);
+    expect(room.players.p0.kart?.lastCue?.kind).not.toBe("contact");
+    const now = startedAt + 3100;
+    room.players.p0.kart = { ...room.players.p0.kart!, lane: -.2, distance: 70, updatedAt: now - 300, hitUntil: 0 };
+    room.players.p1.kart = { ...room.players.p1.kart!, lane: 0, distance: 70, updatedAt: now - 300, hitUntil: 0 };
+    room = kartAction(room, { playerId: "p0", action: "move", lane: -.08, seq: 1, serverNow: now }).state;
+    expect(room.players.p0.kart?.lastCue?.kind).toBe("contact");
+    expect(room.players.p0.kart?.slowUntil).toBeGreaterThan(now);
+  });
+
+  it("consumes answer-earned missile and shield stocks by the requested weapon", () => {
+    let room = createRoomState({ code: "654325", teacherEmail: "teacher@example.com", durationSeconds: 300,
+      mode: "grammar_kart", playStyle: "individual", questions: [question], createdAt: startedAt - 1000 });
+    room = joinPlayer(room, { id: "p0", nickname: "A", resumeTokenHash: "a", joinedAt: startedAt - 500 }).state;
+    room = joinPlayer(room, { id: "p1", nickname: "B", resumeTokenHash: "b", joinedAt: startedAt - 500 }).state;
+    room = startRoom(room, startedAt);
+    room.players.p0.kart = { ...room.players.p0.kart!, distance: 100, missiles: 1 };
+    room.players.p1.kart = { ...room.players.p1.kart!, distance: 145, shields: 1 };
+    room = kartAction(room, { playerId: "p1", action: "weapon", weapon: "shield", serverNow: startedAt + 100 }).state;
+    expect(room.players.p1.kart).toMatchObject({ shields: 0 });
+    room = kartAction(room, { playerId: "p0", action: "weapon", weapon: "missile", serverNow: startedAt + 200 }).state;
+    expect(room.players.p0.kart).toMatchObject({ missiles: 0 });
+    expect(room.players.p0.kart?.lastCue?.kind).toBe("missile");
+    expect(room.players.p1.kart?.lastCue?.kind).toBe("shield_block");
+    expect(room.players.p1.kart?.slowUntil).toBe(0);
+  });
+
+  it("makes the fixed track banana cause a timed slip and slowdown", () => {
+    const kart = advanceKart({ ...createKart(startedAt), lane: .55 }, startedAt + 14_000);
+    expect(kart.hits).toBeGreaterThan(0);
+    expect(kart.lastCue?.kind).toBe("banana_hit");
+    expect(kart.slipUntil).toBeGreaterThan(startedAt);
+    expect(kart.slowUntil).toBeGreaterThan(startedAt);
   });
 });

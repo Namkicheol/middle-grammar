@@ -1146,7 +1146,9 @@ function handleSocketMessage(message) {
     kartMovePending = false;
     const result = message.result || {};
     const nextKart = currentPlayer()?.kart || {};
-    const kind = result.action === "weapon" ? (previousKart.heldItem || "item")
+    const kind = result.action === "weapon" ?
+      (Number(previousKart.missiles || 0) > Number(nextKart.missiles || 0) ? "missile" :
+        Number(previousKart.shields || 0) > Number(nextKart.shields || 0) ? "shield" : previousKart.heldItem || "item")
       : Number(nextKart.hits || 0) > Number(previousKart.hits || 0) ? "hit"
       : Number(nextKart.pads || 0) > Number(previousKart.pads || 0) ? "pad"
       : Number(nextKart.stars || 0) > Number(previousKart.stars || 0) || result.action === "item" ? "star" : "";
@@ -1975,11 +1977,11 @@ window.addEventListener("message", (event) => {
     } else if (message.type === "grammar-kart-item-request") {
       state.socket?.send({ type: "kart_item" });
     } else if (message.type === "grammar-kart-weapon-request") {
-      state.socket?.send({ type: "kart_weapon" });
+      state.socket?.send({ type: "kart_weapon", weapon: message.weapon });
     } else if (message.type === "grammar-kart-answer-request") {
       const question = currentQuestion();
       if (question?.id === message.questionId && question?.occurrenceIndex === message.occurrenceIndex &&
-          question.opts?.includes(message.answer)) {
+          (message.answer === "" || question.opts?.includes(message.answer))) {
         state.socket?.send({ type: "answer", questionId: question.id, occurrenceIndex: question.occurrenceIndex, answer: message.answer });
       } else {
         kartFrame.contentWindow.postMessage({ type: "grammar-kart-error", message: "현재 문제를 다시 확인해 주세요." }, kartSiteOrigin());
@@ -2437,6 +2439,15 @@ function restoreFocus(saved) {
   return true;
 }
 
+function ensureGameTypeStyles() {
+  if (document.querySelector('link[data-game-type-styles]')) return;
+  const link = document.createElement("link");
+  link.rel = "stylesheet";
+  link.href = "./game-type.css";
+  link.dataset.gameTypeStyles = "true";
+  document.head.appendChild(link);
+}
+
 function render() {
   const savedFocus = captureFocus();
   const previousQuestionKey = state.renderedQuestionKey;
@@ -2452,6 +2463,7 @@ function render() {
       html = status === "waiting" ? teacherLobbyView() : status === "playing" ? teacherLiveView() : teacherReportView();
     }
   }
+  if (state.room || (state.role === "teacher" && isTeacherAuthenticated())) ensureGameTypeStyles();
   document.body.classList.toggle("entry-mode", !state.room && (!state.role || (state.role === "teacher" && !isTeacherAuthenticated())));
   const kartPlaying = state.role === "student" && state.room && roomStatus() === "playing" && roomMode() === "grammar_kart";
   if (kartPlaying) {
@@ -2913,6 +2925,7 @@ function newRoom() {
 
 async function joinRoom(event) {
   event.preventDefault();
+  if (state.busy) return;
   const form = new FormData(event.currentTarget);
   const code = sanitizeCode(form.get("roomCode"));
   const nickname = String(form.get("nickname") || "").trim().replace(/\s+/g, " ");
@@ -2927,6 +2940,13 @@ async function joinRoom(event) {
     return;
   }
 
+  state.busy = true;
+  const submitButton = event.currentTarget.querySelector("button[type=\"submit\"]");
+  if (submitButton) {
+    submitButton.disabled = true;
+    submitButton.textContent = "들어가는 중…";
+  }
+  setStatus("게임방을 확인하고 있어요…");
   try {
     const roomPreview = kartJoinMode ? null : await roomApi.getRoomState(code);
     const selectedMode = kartJoinMode || roomPreview?.mode || roomPreview?.state?.mode;
@@ -2934,11 +2954,11 @@ async function joinRoom(event) {
       kartJoinMode = "grammar_kart";
       document.querySelector("#kart-join-choice").hidden = false;
       paintKartJoinPreview();
+      state.busy = false;
       setStatus("카트 디자인과 색상을 고른 뒤 참가해 주세요.");
+      render();
       return;
     }
-    state.busy = true;
-    render();
     setStatus("게임방을 찾고 있어요…");
     const payload = await roomApi.joinRoom(code, nickname, selectedMode === "grammar_kart" ? { kartDesign: kartJoinDesign, kartColor: kartJoinColor } : {});
     state.roomCode = code;

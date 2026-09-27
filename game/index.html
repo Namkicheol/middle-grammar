@@ -5,6 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
 <title>중학 문법 게임</title>
 <link rel="icon" href="data:,">
+<link rel="preconnect" href="https://middle-grammar-multiplayer.obangti.workers.dev" crossorigin>
 <!-- Vercel Web Analytics -->
 <script>
   window.va = window.va || function () { (window.vaq = window.vaq || []).push(arguments); };
@@ -944,7 +945,7 @@ body:has(#speed-screen[style*="display: block"]) #sp-badge{display:none!importan
               <i class="mode-thumb" aria-hidden="true">💥</i>
               <span class="mode-copy"><strong>블록 블라스트</strong></span>
             </button>
-            <a class="mode-btn" href="../grammar-kart/" style="display:block;text-decoration:none;--mode-glow:#f7b955" aria-label="Grammar Grand Prix 문법 레이싱 혼자 하기">
+            <a class="mode-btn" data-cover="grammar-kart" href="../grammar-kart/" style="display:block;text-decoration:none;--mode-glow:#f7b955" aria-label="Grammar Grand Prix 문법 레이싱 혼자 하기">
               <i class="mode-thumb" aria-hidden="true">🏎️</i>
               <span class="mode-copy"><strong>Grammar Grand Prix</strong></span>
             </a>
@@ -1469,8 +1470,8 @@ cleanupZeroScoreRecords();
   const multiplayerJoinCta = document.getElementById('multiplayer-join-cta');
   const localHost = ['localhost', '127.0.0.1', '::1'].includes(location.hostname);
   const multiplayerHref = localHost
-    ? 'http://127.0.0.1:8787/multiplayer/'
-    : 'https://middle-grammar-multiplayer.obangti.workers.dev/multiplayer/';
+    ? 'http://127.0.0.1:8787/multiplayer/index.html'
+    : 'https://middle-grammar-multiplayer.obangti.workers.dev/multiplayer/index.html';
   multiplayerTab.href = multiplayerHref;
   if (multiplayerJoinCta) {
     const roomInputUrl = new URL(multiplayerHref);

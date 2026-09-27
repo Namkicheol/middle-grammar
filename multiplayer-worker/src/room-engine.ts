@@ -9,6 +9,7 @@ import {
   type MazeRival as MazeRivalV2,
 } from "./maze-game";
 import { createEscapeRooms, expectedEscapeCode, revealEscapeHotspot, publicEscapeRoom } from "./escape-game";
+import { advanceKart, createKart, kartView, rewardKart, steerKart, useKartItem, useKartWeapon, KART_COLORS, KART_DESIGNS, type KartState } from "./kart-game";
 
 export interface Question {
   id: string;
@@ -33,8 +34,8 @@ export interface AnswerRecord {
 
 export const CLASSROOM_MODES = ["boss_battle", "bubble_battle", "tower_race", "rangers_siege", "whack_race", "sentence_blast", "space_raiders"] as const;
 // ROOM_MODES remains the wire/storage union so old rooms and reports can still be read.
-export const ROOM_MODES = ["score_race", "treasure_heist", "maze_heist", "grammar_escape", ...CLASSROOM_MODES] as const;
-export const ACTIVE_ROOM_MODES = ["score_race", ...CLASSROOM_MODES] as const;
+export const ROOM_MODES = ["score_race", "treasure_heist", "maze_heist", "grammar_escape", "grammar_kart", ...CLASSROOM_MODES] as const;
+export const ACTIVE_ROOM_MODES = ["score_race", "grammar_kart", ...CLASSROOM_MODES] as const;
 export type RoomMode = typeof ROOM_MODES[number];
 export function isClassroomMode(mode: RoomMode): boolean {
   return (CLASSROOM_MODES as readonly string[]).includes(mode);
@@ -310,6 +311,7 @@ export interface PlayerState {
   maze?: MazePlayerState;
   vaultRun?: VaultRunState;
   space?: SpacePlayerState;
+  kart?: KartState;
 }
 
 export type RoomStatus = "lobby" | "playing" | "finished";
@@ -369,7 +371,9 @@ export type EngineErrorCode =
   | "SPACE_NOT_AVAILABLE"
   | "SPACE_ACTION_OUT_OF_ORDER"
   | "DUPLICATE_SPACE_ACTION"
-  | "INVALID_SPACE_ACTION";
+  | "INVALID_SPACE_ACTION"
+  | "INVALID_KART_MOVE"
+  | "KART_ITEM_NOT_READY";
 
 export class EngineError extends Error {
   readonly code: EngineErrorCode;
@@ -399,6 +403,8 @@ export interface CreateRoomInput {
 export interface JoinPlayerInput {
   id: string;
   nickname: string;
+  kartDesign?: string;
+  kartColor?: string;
   resumeTokenHash: string;
   joinedAt: number;
 }
@@ -502,6 +508,8 @@ export interface PublicLeaderboardEntry {
   escape?: EscapeProgressSummary;
   spaceEnergy?: number;
   spaceShield?: number;
+  playerId?: string;
+  kart?: ReturnType<typeof kartView>;
 }
 
 export interface TeamLeaderboardEntry {
@@ -529,6 +537,7 @@ export interface TeacherLeaderboardEntry {
   escape?: EscapeProgressSummary;
   spaceEnergy?: number;
   spaceShield?: number;
+  kart?: ReturnType<typeof kartView>;
 }
 
 export interface SafeQuestion {
@@ -571,6 +580,7 @@ export interface PublicRoomView {
     maze?: MazePlayerView;
     escape?: EscapePlayerView;
     space?: SpacePlayerView;
+    kart?: ReturnType<typeof kartView>;
   };
 }
 
@@ -668,6 +678,12 @@ export function joinPlayer(
   }
 
   const nickname = normalizeNickname(input.nickname);
+  const kartDesign = input.kartDesign ?? "teal";
+  const kartColor = input.kartColor ?? "cyan";
+  if (state.mode === "grammar_kart" && (!KART_DESIGNS.includes(kartDesign as typeof KART_DESIGNS[number]) ||
+    !KART_COLORS.includes(kartColor as typeof KART_COLORS[number]))) {
+    throw new EngineError("INVALID_ROOM", "Choose an available kart design and color.");
+  }
   if (!input.id || !input.resumeTokenHash || state.players[input.id]) {
     throw new EngineError("INVALID_NICKNAME", "Player identity is invalid.");
   }
@@ -704,6 +720,7 @@ export function joinPlayer(
       ? createMazePlayer(Object.keys(state.players).length)
       : undefined,
     space: state.mode === "space_raiders" ? createSpaceState() : undefined,
+    kart: state.mode === "grammar_kart" ? createKart(state.status === "playing" ? input.joinedAt : state.createdAt, kartDesign, kartColor) : undefined,
   };
 
   const escapeRuns = state.mode === "grammar_escape"
@@ -739,6 +756,7 @@ export function startRoom(state: RoomState, startedAt: number): RoomState {
         questionStartedAt: startedAt,
         maze: player.maze ? { ...player.maze } : undefined,
         space: player.space ? cloneSpaceState(player.space) : undefined,
+        kart: player.kart ? createKart(startedAt, player.kart.design, player.kart.color) : undefined,
       },
     ]),
   );
@@ -756,6 +774,9 @@ export function submitAnswer(
   const player = state.players[input.playerId];
   if (!player) {
     throw new EngineError("UNKNOWN_PLAYER", "The player is not in this room.");
+  }
+  if (state.mode === "grammar_kart" && player.kart && advanceKart(player.kart, input.serverNow).finishedAt) {
+    throw new EngineError("ROOM_NOT_PLAYING", "This racer has finished.");
   }
   if (state.mode === "grammar_escape" && escapeRunForPlayer(state, player)?.escapedAt !== undefined) {
     throw new EngineError("ESCAPE_COMPLETE", "The escape has already been completed.");
@@ -796,7 +817,7 @@ export function submitAnswer(
   if (!question) {
     throw new EngineError("UNKNOWN_QUESTION", "The question is not in this room.");
   }
-  const classroomTimeout = isClassroomMode(state.mode) && input.answer === "";
+  const classroomTimeout = (isClassroomMode(state.mode) || state.mode === "grammar_kart") && input.answer === "";
   if (typeof input.answer !== "string" || (!classroomTimeout && !question.opts.includes(input.answer))) {
     throw new EngineError("INVALID_ANSWER", "The answer is not a valid option.");
   }
@@ -856,6 +877,7 @@ export function submitAnswer(
     vaultRun: nextVaultRun,
     pendingTreasureChoices: nextTreasureChoices,
     space: nextSpace,
+    kart: state.mode === "grammar_kart" && player.kart ? rewardKart(player.kart, correct, input.serverNow) : player.kart,
   };
   const stateWithAnswer: RoomState = {
     ...state,
@@ -874,7 +896,7 @@ export function submitAnswer(
       questionId: input.questionId,
       occurrenceIndex: input.occurrenceIndex,
       correct,
-      ...(isClassroomMode(state.mode) ? { correctAnswer: question.ans } : {}),
+      ...(isClassroomMode(state.mode) || state.mode === "grammar_kart" ? { correctAnswer: question.ans } : {}),
       scoreGain,
       score: nextPlayer.score,
       streak,
@@ -884,6 +906,65 @@ export function submitAnswer(
       space: state.mode === "space_raiders" ? spacePlayerView(stateWithAnswer, nextPlayer) : undefined,
     },
   };
+}
+
+export function settleKartRace(state: RoomState, now: number): RoomState {
+  if (state.mode !== "grammar_kart" || state.status !== "playing") return state;
+  const players = Object.fromEntries(Object.entries(state.players).map(([id, player]) =>
+    [id, player.kart ? { ...player, kart: advanceKart(player.kart, now) } : player]));
+  for (const [ownerId, owner] of Object.entries(players)) {
+    const banana = owner.kart?.banana;
+    if (!banana || banana.until <= now) continue;
+    for (const [targetId, target] of Object.entries(players)) {
+      if (targetId === ownerId || !target.kart || target.kart.finishedAt) continue;
+      const old = state.players[targetId]?.kart?.distance ?? target.kart.distance;
+      if (old < banana.at && target.kart.distance >= banana.at && Math.abs(target.kart.lane - banana.lane) < .3 && now >= target.kart.hitUntil) {
+        const blocked = now < target.kart.shieldUntil;
+        players[targetId] = { ...target, kart: { ...target.kart, slowUntil: blocked ? target.kart.slowUntil : now + 2500,
+          slipUntil: blocked ? target.kart.slipUntil : now + 1700, hitUntil: now + 1600 } };
+        players[ownerId] = { ...owner, kart: { ...owner.kart!, banana: undefined } };
+        break;
+      }
+    }
+  }
+  return { ...state, players };
+}
+
+export function kartAction(state: RoomState, input: { playerId: string; action: "move" | "item" | "weapon"; lane?: number; seq?: number; serverNow: number }) {
+  if (state.mode !== "grammar_kart" || state.status !== "playing" || state.startedAt === undefined ||
+    input.serverNow >= state.startedAt + state.durationSeconds * 1000) {
+    throw new EngineError("ROOM_NOT_PLAYING", "The race is not active.");
+  }
+  const player = state.players[input.playerId];
+  if (!player?.kart) throw new EngineError("UNKNOWN_PLAYER", "The racer is not in this room.");
+  if (advanceKart(player.kart, input.serverNow).finishedAt) {
+    throw new EngineError("ROOM_NOT_PLAYING", "This racer has finished.");
+  }
+  let kart: KartState;
+  try {
+    kart = input.action === "move"
+      ? steerKart(player.kart, input.lane!, input.seq!, input.serverNow)
+      : input.action === "item" ? useKartItem(player.kart, input.serverNow) : useKartWeapon(player.kart, input.serverNow);
+  } catch (error) {
+    const code = error instanceof Error && error.message === "KART_ITEM_NOT_READY" ? "KART_ITEM_NOT_READY" : "INVALID_KART_MOVE";
+    throw new EngineError(code, code === "KART_ITEM_NOT_READY" ? "The star turbo is not ready." : "Invalid steering update.");
+  }
+  const nextPlayer = { ...player, kart, score: Math.round(kart.distance), lastSeenAt: input.serverNow };
+  let nextState = { ...state, players: { ...state.players, [player.id]: nextPlayer } };
+  if (input.action === "weapon" && player.kart.heldItem === "missile") {
+    const ahead = Object.values(nextState.players).filter(other => other.id !== player.id && other.kart)
+      .map(other => ({ other, kart: advanceKart(other.kart!, input.serverNow) }))
+      .filter(row => row.kart.distance > kart.distance && row.kart.distance - kart.distance < 220 && !row.kart.finishedAt)
+      .sort((a,b) => a.kart.distance - b.kart.distance)[0];
+    if (ahead) {
+      const blocked = input.serverNow < ahead.kart.shieldUntil || input.serverNow < ahead.kart.hitUntil;
+      nextState.players[ahead.other.id] = { ...ahead.other, kart: { ...ahead.kart,
+        slowUntil: blocked ? ahead.kart.slowUntil : input.serverNow + 2500,
+        hitUntil: input.serverNow + 1600 } };
+    }
+  }
+  nextState = settleKartRace(nextState, input.serverNow);
+  return { state: nextState, result: { ...kartView(kart, input.serverNow), action: input.action } };
 }
 
 function mazeMoveLegacy(
@@ -1607,7 +1688,7 @@ export function publicRoomState(
     throw new EngineError("UNKNOWN_PLAYER", "The player is not in this room.");
   }
   const visibleRanked = viewerPlayerId
-    ? ranked.slice(Math.max(0, viewerRankIndex - 1), viewerRankIndex + 2)
+    ? state.mode === "grammar_kart" ? ranked : ranked.slice(Math.max(0, viewerRankIndex - 1), viewerRankIndex + 2)
     : state.status === "lobby"
       ? ranked
       : [];
@@ -1616,6 +1697,7 @@ export function publicRoomState(
     nickname: player.nickname,
     score: player.score,
     isSelf: player.id === viewerPlayerId,
+    ...(state.mode === "grammar_kart" && player.kart ? { playerId: player.id, kart: kartViewFor(state, player) } : {}),
     ...(state.mode === "maze_heist" ? { starDust: player.starDust ?? 0 } : {}),
     ...(state.mode === "space_raiders" ? { spaceEnergy: player.space?.energy ?? 0 } : {}),
     ...(state.mode === "space_raiders" ? { spaceShield: player.space?.shield ?? 0 } : {}),
@@ -1649,7 +1731,8 @@ export function publicRoomState(
       ? {
           ...toTeacherEntry(viewer, viewerRankIndex + 1, state.mode === "maze_heist", state),
           streak: viewer.streak,
-          currentQuestion: currentSafeQuestion(state, viewer),
+          currentQuestion: state.mode === "grammar_kart" && viewer.kart && kartViewFor(state, viewer)?.finishedAt ? undefined : currentSafeQuestion(state, viewer),
+          ...(state.mode === "grammar_kart" && viewer.kart ? { kart: kartViewFor(state, viewer) } : {}),
           ...(isClassroomMode(state.mode) && viewer.lastAnswer ? {
             lastAnswer: { ...viewer.lastAnswer, correctAnswer: state.questions.find((q) => q.id === viewer.lastAnswer!.questionId)!.ans },
           } : {}),
@@ -1714,6 +1797,7 @@ function toTeacherEntry(
     answeredCount: player.answered,
     ...(state?.mode === "space_raiders" ? { spaceEnergy: player.space?.energy ?? 0 } : {}),
     ...(state?.mode === "space_raiders" ? { spaceShield: player.space?.shield ?? 0 } : {}),
+    ...(state?.mode === "grammar_kart" && player.kart ? { kart: kartViewFor(state, player) } : {}),
     averageResponseTimeMs:
       player.answered === 0 ? null : Math.round(player.responseTimeTotalMs / player.answered),
     ...(includeStarDust ? { starDust: player.starDust ?? 0 } : {}),
@@ -1785,9 +1869,24 @@ function answeredQuestionIdsInCurrentCycle(state: RoomState, player: PlayerState
   return answeredIds;
 }
 
+function kartViewFor(state: RoomState, player: PlayerState) {
+  if (!player.kart) return undefined;
+  const now = state.status === "lobby" ? player.kart.updatedAt
+    : state.status === "finished" ? state.finishedAt ?? Date.now() : Date.now();
+  return kartView(player.kart, Math.max(player.kart.updatedAt, now));
+}
+
 function rankedPlayers(state: RoomState): Array<{ rank: number; player: PlayerState }> {
   return Object.values(state.players)
     .sort((left, right) => {
+      if (state.mode === "grammar_kart") {
+        const first = kartViewFor(state, left) ?? { distance: 0, finishedAt: undefined };
+        const second = kartViewFor(state, right) ?? { distance: 0, finishedAt: undefined };
+        if (first.finishedAt && second.finishedAt) return first.finishedAt - second.finishedAt;
+        if (first.finishedAt) return -1;
+        if (second.finishedAt) return 1;
+        if (first.distance !== second.distance) return second.distance - first.distance;
+      }
       if (state.mode === "grammar_escape") {
         if (state.playStyle === "team") {
           const teamEscapeDifference = compareEscapeRuns(
@@ -1942,6 +2041,7 @@ function clonePlayer(player: PlayerState): PlayerState {
     starDust: player.starDust ?? 0,
     maze: player.maze ? { ...player.maze } : undefined,
     space: player.space ? cloneSpaceState(player.space) : undefined,
+    kart: player.kart ? { ...player.kart } : undefined,
     questionOrder: [...player.questionOrder],
     optionOrders: Object.fromEntries(
       Object.entries(player.optionOrders).map(([questionId, options]) => [

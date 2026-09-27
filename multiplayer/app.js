@@ -11,6 +11,12 @@ const LOCAL_SET_KEY = "mg.multiplayer.localSet";
 const TEACHER_SETUP_KEY = "mg.multiplayer.teacherSetup";
 const GAME_SOUND_KEY = "mg.multiplayer.soundMuted";
 const SPACE_MUSIC_KEY = "mg.multiplayer.spaceMusicMuted";
+let kartJoinMode = "";
+let kartJoinLookupSeq = 0;
+let kartJoinDesign = ["teal", "red", "yellow"].includes(localStorage.getItem("grammar-kart-design")) ? localStorage.getItem("grammar-kart-design") : "teal";
+let kartJoinColor = ["cyan", "coral", "gold", "violet", "lime", "pink"].includes(localStorage.getItem("grammar-kart-color")) ? localStorage.getItem("grammar-kart-color") : "cyan";
+const kartPaint = { cyan: "#35d6dc", coral: "#f65b65", gold: "#ffd04e", violet: "#a879ed", lime: "#94db64", pink: "#ef8bc0" };
+const kartJoinImages = new Map();
 
 const gameAudio = (() => {
   let context;
@@ -186,6 +192,7 @@ document.addEventListener("click", (event) => {
     }).catch(() => {});
   }
   gameAudio.sync();
+  if (roomMode() === "grammar_kart") kartFrame?.contentWindow?.postMessage({ type: "grammar-kart-mute", muted: nextMuted }, kartSiteOrigin());
   if (!escape && !nextMuted) {
     gameAudio.tone("start").catch(() => {});
     if (roomMode() === "space_raiders" && roomStatus() === "playing") gameAudio.startMusic();
@@ -233,6 +240,7 @@ const UNIT_OPTIONS = {
 };
 
 const GAME_MODES = [
+  { value: "grammar_kart", title: "Grammar Grand Prix", description: "직접 조향하고 문법 터보로 추월하는 반 전체 레이스!", tag: "문법 레이싱", image: kartAssetUrl("cover.svg") },
   { value: "score_race", title: "스피드 점수전", description: "빠른 연속 정답으로 콤보 순위를 뒤집어요.", tag: "개인 경쟁", image: "./assets/arcade-20260908/speed.webp" },
   { value: "space_raiders", title: "우주 약탈단", description: "정답 뒤 미지의 행성을 고르고, 에너지를 훔치거나 교환해 순위를 뒤집어요.", tag: "우주 약탈", image: "./assets/space-raiders/space-raiders-cover.png" },
   { value: "boss_battle", title: "문법 보스전", description: "정답 공격과 강화 선택으로 보스 패턴을 돌파해요.", tag: "액션", image: "./assets/arcade-20260908/boss.webp" },
@@ -250,6 +258,8 @@ const RETIRED_GAME_MODES = [
 
 const CLASSROOM_GAME_MODES = new Set(["boss_battle", "bubble_battle", "tower_race", "rangers_siege", "whack_race", "sentence_blast"]);
 let classroomHost = null;
+let kartFrame = null;
+let kartMovePending = false;
 
 const app = document.querySelector("#app");
 const statusRegion = document.querySelector("#status");
@@ -622,6 +632,13 @@ function currentPlayer(room = state.room) {
 
 function sortedPlayers(room = state.room) {
   return [...roomPlayers(room)].sort((a, b) => {
+    if (roomMode(room) === "grammar_kart") {
+      const first = a.kart || {}, second = b.kart || {};
+      if (first.finishedAt && second.finishedAt) return first.finishedAt - second.finishedAt;
+      if (first.finishedAt) return -1;
+      if (second.finishedAt) return 1;
+      if (Number(first.distance) !== Number(second.distance)) return Number(second.distance || 0) - Number(first.distance || 0);
+    }
     if (roomMode(room) === "space_raiders" && playerEnergy(b) !== playerEnergy(a)) return playerEnergy(b) - playerEnergy(a);
     if (playerScore(b) !== playerScore(a)) return playerScore(b) - playerScore(a);
     if (playerAccuracy(b) !== playerAccuracy(a)) return playerAccuracy(b) - playerAccuracy(a);
@@ -737,6 +754,47 @@ function soloGameUrl() {
   return new URL("/game/", mainSiteOrigin).href;
 }
 
+function kartSiteOrigin() {
+  if (["localhost", "127.0.0.1"].includes(location.hostname) && location.port === "8787") return "http://127.0.0.1:8766";
+  return location.hostname.endsWith("vercel.app") ? location.origin : "https://middle-grammar.vercel.app";
+}
+
+function kartAssetUrl(file) { return new URL(`/grammar-kart/${file}`, kartSiteOrigin()).href; }
+
+function paintKartJoinPreview() {
+  const canvas = document.querySelector("#kart-join-preview");
+  if (!canvas || canvas.closest("[hidden]")) return;
+  const ctx = canvas.getContext("2d");
+  let image = kartJoinImages.get(kartJoinDesign);
+  if (!image) {
+    image = new Image(); image.decoding = "async";
+    image.onload = paintKartJoinPreview;
+    image.src = kartAssetUrl(`assets/art/kart-rear-${kartJoinDesign}.webp`);
+    kartJoinImages.set(kartJoinDesign, image);
+  }
+  if (!image.complete || !image.naturalWidth) return;
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
+  ctx.drawImage(image, 0, 0, canvas.width, canvas.height);
+  ctx.globalCompositeOperation = "source-atop"; ctx.globalAlpha = .68;
+  ctx.fillStyle = kartPaint[kartJoinColor]; ctx.fillRect(0, 0, canvas.width, canvas.height);
+  ctx.globalAlpha = 1; ctx.globalCompositeOperation = "source-over";
+}
+
+async function previewKartJoin(code) {
+  const sequence = ++kartJoinLookupSeq;
+  const field = document.querySelector("#kart-join-choice");
+  if (!field) return;
+  field.hidden = true; kartJoinMode = "";
+  if (code.length !== 6) return;
+  try {
+    const room = await roomApi.getRoomState(code);
+    if (sequence !== kartJoinLookupSeq || document.querySelector("#room-code")?.value !== code) return;
+    kartJoinMode = room?.mode || room?.state?.mode || "";
+    field.hidden = kartJoinMode !== "grammar_kart";
+    if (!field.hidden) paintKartJoinPreview();
+  } catch { /* The join action shows the room error. */ }
+}
+
 function teamBadgeHtml(room = state.room) {
   if (!isTeamMode(room)) return "";
   const team = currentTeam(room);
@@ -750,6 +808,7 @@ function modeLabel(mode = roomMode()) {
     treasure_heist: "금고 작전",
     maze_heist: "미궁 쟁탈전",
     grammar_escape: "야간학교 탈출",
+    grammar_kart: "Grammar Grand Prix",
     boss_battle: "문법 보스전",
     bubble_battle: "버블 배틀",
     tower_race: "타워 레이스",
@@ -1035,6 +1094,7 @@ function connectLiveRoom() {
 function handleSocketMessage(message) {
   const type = message?.type;
   if (type === "hello") {
+    kartMovePending = false;
     const previousEscape = escapeState();
     const room = setRoomFromPayload(message);
     if (room && room !== message) {
@@ -1044,6 +1104,7 @@ function handleSocketMessage(message) {
     state.escapeAction = null;
     clearStaleStudentPlayStatus();
   } else if (type === "room_state" || type === "start") {
+    if (type === "start") kartMovePending = false;
     const previousEscape = escapeState();
     const previousQuestionKey = questionOccurrenceKey();
     state.room = setRoomFromPayload(message, { play: type === "room_state" });
@@ -1078,6 +1139,18 @@ function handleSocketMessage(message) {
     state.chosenAnswer = null;
     state.busy = false;
     playModeSound(state.feedback.correct ? "correct" : "wrong");
+    if (roomMode() === "grammar_kart") kartFrame?.contentWindow?.postMessage({ type: "grammar-kart-answer-result", result }, kartSiteOrigin());
+  } else if (type === "kart_result") {
+    const previousKart = currentPlayer()?.kart || {};
+    if (message.state) state.room = setRoomFromPayload(message, { play: true });
+    kartMovePending = false;
+    const result = message.result || {};
+    const nextKart = currentPlayer()?.kart || {};
+    const kind = result.action === "weapon" ? (previousKart.heldItem || "item")
+      : Number(nextKart.hits || 0) > Number(previousKart.hits || 0) ? "hit"
+      : Number(nextKart.pads || 0) > Number(previousKart.pads || 0) ? "pad"
+      : Number(nextKart.stars || 0) > Number(previousKart.stars || 0) || result.action === "item" ? "star" : "";
+    if (kind) kartFrame?.contentWindow?.postMessage({ type: "grammar-kart-event", kind }, kartSiteOrigin());
   } else if (type === "treasure_result") {
     const result = message.result || message;
     const hasRoomSnapshot = Boolean(message.state || message.room);
@@ -1179,6 +1252,10 @@ function handleSocketMessage(message) {
     state.escapeAction = null;
     state.spaceBusy = false;
     state.busy = false;
+    if (roomMode() === "grammar_kart") {
+      kartMovePending = false;
+      kartFrame?.contentWindow?.postMessage({ type: "grammar-kart-error", message: friendlyError(error) }, kartSiteOrigin());
+    }
   }
   render();
 }
@@ -1243,6 +1320,7 @@ function studentJoinView() {
           <label for="nickname">Name</label>
           <input id="nickname" name="nickname" maxlength="20" autocomplete="off" placeholder="Name" required>
         </div>
+        <fieldset class="kart-join-choice" id="kart-join-choice" ${kartJoinMode === "grammar_kart" ? "" : "hidden"}><legend>내 카트 만들기</legend><div class="kart-join-custom"><canvas id="kart-join-preview" width="180" height="180" aria-label="선택한 카트 미리보기"></canvas><div><span>디자인</span><div class="kart-join-design">${[["teal","NEON"],["red","BLAZE"],["yellow","BOLT"]].map(([id,label]) => `<button type="button" data-kart-design="${id}" aria-pressed="${kartJoinDesign === id}">${label}</button>`).join("")}</div><span>색상</span><div class="kart-join-colors">${Object.keys(kartPaint).map(id => `<button type="button" data-kart-color="${id}" aria-label="${id}" aria-pressed="${kartJoinColor === id}" style="--kart-paint:${kartPaint[id]}"></button>`).join("")}</div></div></div><p>디자인과 색상은 외형만 바뀌며 속도는 같아요.</p></fieldset>
         <button class="primary-button" type="submit" ${state.busy ? "disabled" : ""}>${state.busy ? "들어가는 중…" : "게임방 참가하기"}</button>
       </form>
       <div class="helper-box">학생은 회원가입·로그인 없이 참가해요.</div>
@@ -1325,7 +1403,7 @@ function teacherSetupView() {
           </div>
           <p class="choice-help">제한 시간 동안 모두 풀면 처음부터 계속 나와요.</p>
         </fieldset>`}
-        <fieldset class="setup-field play-style-field">
+        ${selectedGame.value === "grammar_kart" ? `<input type="hidden" name="playStyle" value="individual"><div class="helper-box">각자 카트를 조향하는 개인전입니다. 정답과 주행으로 순위가 정해져요.</div>` : `<fieldset class="setup-field play-style-field">
           <legend>플레이 스타일</legend>
           <div class="choice-grid play-style-grid">
             ${choicePill("playStyle", "individual", "개인전", true)}
@@ -1340,7 +1418,7 @@ function teacherSetupView() {
               ${choicePill("teamCount", "4", "4팀")}
             </div>
           </div>
-        </fieldset>
+        </fieldset>`}
         <details class="setup-more">
           <summary>추가 설정</summary>
           <fieldset class="toggle-list">
@@ -1866,6 +1944,53 @@ function renderClassroomGame() {
   classroomHost.update({ question: currentQuestion(), deadlineAt: classroomDeadlineAt(), score: playerScore(me), rank: playerRank(me), leaderboard: sortedPlayers(), connected: state.connectionState === "connected", lastAnswer: me.lastAnswer || me.last_answer });
 }
 
+function sendKartState() {
+  if (!kartFrame?.contentWindow || !state.room) return;
+  kartFrame.contentWindow.postMessage({ type: "grammar-kart-state", room: state.room }, kartSiteOrigin());
+}
+
+function renderKartStudent() {
+  if (!kartFrame || !app.contains(kartFrame)) {
+    app.innerHTML = `${reconnectPanel()}<section class="kart-student-shell"><iframe id="kart-race-frame" title="Grammar Grand Prix 교실 레이스" src="${kartAssetUrl("multi.html")}?parentOrigin=${encodeURIComponent(location.origin)}"></iframe></section>`;
+    kartFrame = app.querySelector("#kart-race-frame");
+    kartMovePending = false;
+  }
+  sendKartState();
+}
+
+window.addEventListener("message", (event) => {
+  if (event.origin !== kartSiteOrigin() || event.source !== kartFrame?.contentWindow || state.role !== "student" || roomMode() !== "grammar_kart") return;
+  const message = event.data || {};
+  if (message.type === "grammar-kart-ready") {
+    kartFrame.contentWindow.postMessage({ type: "grammar-kart-init", room: state.room, playerId: state.playerId }, kartSiteOrigin());
+    kartFrame.contentWindow.postMessage({ type: "grammar-kart-mute", muted: gameAudio.muted() }, kartSiteOrigin());
+    return;
+  }
+  if (state.connectionState !== "connected" || roomStatus() !== "playing") return;
+  try {
+    if (message.type === "grammar-kart-move" && !kartMovePending) {
+      const seq = Number(currentPlayer()?.kart?.seq || 0) + 1;
+      state.socket?.send({ type: "kart_move", lane: Number(message.lane), seq });
+      kartMovePending = true;
+    } else if (message.type === "grammar-kart-item-request") {
+      state.socket?.send({ type: "kart_item" });
+    } else if (message.type === "grammar-kart-weapon-request") {
+      state.socket?.send({ type: "kart_weapon" });
+    } else if (message.type === "grammar-kart-answer-request") {
+      const question = currentQuestion();
+      if (question?.id === message.questionId && question?.occurrenceIndex === message.occurrenceIndex &&
+          question.opts?.includes(message.answer)) {
+        state.socket?.send({ type: "answer", questionId: question.id, occurrenceIndex: question.occurrenceIndex, answer: message.answer });
+      } else {
+        kartFrame.contentWindow.postMessage({ type: "grammar-kart-error", message: "현재 문제를 다시 확인해 주세요." }, kartSiteOrigin());
+      }
+    }
+  } catch (error) {
+    kartMovePending = false;
+    kartFrame.contentWindow.postMessage({ type: "grammar-kart-error", message: friendlyError(error) }, kartSiteOrigin());
+  }
+});
+
 function mazeView(maze) {
   if (window.MazeArena && Array.isArray(maze?.layout)) return `<div class="maze-v2-host">${window.MazeArena.markup(maze)}</div>${state.feedback?.mazeMessage ? `<div class="feedback ${state.feedback.mazeTone || "correct"}" role="status">${escapeHtml(state.feedback.mazeMessage)}</div>` : ""}`;
   const visibleTiles = Array.isArray(maze.visibleTiles) ? maze.visibleTiles : [];
@@ -1995,6 +2120,7 @@ function pendingAnswerHtml(currentKey) {
 }
 
 function teacherLiveView() {
+  if (roomMode() === "grammar_kart") return teacherKartLiveView();
   if (roomMode() === "grammar_escape") return teacherEscapeLiveView();
   const players = sortedPlayers();
   const average = players.length ? Math.round(players.reduce((sum, player) => sum + playerAccuracy(player), 0) / players.length) : 0;
@@ -2027,6 +2153,34 @@ function teacherLiveView() {
         </div>
         ${teacherMiniReport(players)}
       </aside>
+  </section>`;
+}
+
+function teacherKartLiveView() {
+  const players = sortedPlayers();
+  const clusters = new Map();
+  players.forEach((player, index) => {
+    const bucket = Math.floor(Number(player.kart?.distance || 0) / 35);
+    const group = clusters.get(bucket) || [];
+    group.push({ player, rank: index + 1 });
+    clusters.set(bucket, group);
+  });
+  const markers = [...clusters.values()].map((group) => {
+    const progress = Math.min(1, Math.max(0, Number(group[0].player.kart?.distance || 0) / 1800));
+    const angle = -Math.PI / 2 + progress * Math.PI * 2;
+    const ring = 37;
+    const x = 50 + ring * Math.cos(angle);
+    const y = 50 + (ring * .69) * Math.sin(angle);
+    const names = group.map(({ player }) => playerName(player)).join(', ');
+    const color = kartPaint[group[0].player.kart?.color] || kartPaint.cyan;
+    return `<span class="kart-marker ${group.some(({ player }) => player.kart?.finishedAt) ? "finished" : ""}" style="left:${x.toFixed(2)}%;top:${y.toFixed(2)}%;--kart-marker:${color}" title="${escapeHtml(names)} · ${Math.round(Number(group[0].player.kart?.distance || 0))}m">${group.length > 1 ? `${group.length}명` : group[0].rank}</span>`;
+  }).join("");
+  const rows = players.map((player, index) => `<li><b>${index + 1}위</b><span>${escapeHtml(playerName(player))}</span><strong>${player.kart?.finishedAt ? formatTime((Number(player.kart.finishedAt) - Number(state.room?.startedAt || 0)) / 1000) : `${Math.round(Number(player.kart?.distance || 0))}m`}</strong><small>정답 ${playerCorrect(player)}/${playerAnswered(player)}</small></li>`).join("");
+  const ended = roomStatus() === "finished";
+  return `<section class="screen kart-teacher" aria-labelledby="kart-live-title">
+    <div class="panel-header"><div><p class="eyebrow">GRAMMAR GRAND PRIX · ${ended ? "RESULT" : "LIVE"}</p><h1 id="kart-live-title">${ended ? "교실 레이스 결과" : "교실 레이스 트랙"}</h1><p>${players.length}명 레이싱${ended ? " · 경기 종료" : ` · 남은 시간 <strong id="game-timer">${formatTime(remainingSeconds())}</strong>`}</p></div>${ended ? "" : `<button class="danger-button" type="button" data-action="finish-room" ${state.busy ? "disabled" : ""}>게임 종료</button>`}</div>
+    <div class="kart-teacher-grid"><div class="kart-teacher-track"><div class="kart-oval"><div class="kart-infield"><span>NEON CIRCUIT</span><b>🏁</b><small>1,800 m</small></div>${markers}</div><div class="kart-track-key">숫자 = 현재 순위 · 위치 = 1,800 m 트랙 진행률</div></div>
+    <div class="kart-teacher-board"><h2>🏆 실시간 순위</h2><ol>${rows}</ol></div></div>
   </section>`;
 }
 
@@ -2123,6 +2277,11 @@ function resultStageHtml(entries, options = {}) {
 }
 
 function studentResultView() {
+  if (roomMode() === "grammar_kart") {
+    const me = currentPlayer() || {};
+    const rows = sortedPlayers().map((player, index) => `<li><b>${index + 1}위</b><span>${escapeHtml(playerName(player))}</span><strong>${player.kart?.finishedAt ? formatTime((Number(player.kart.finishedAt) - Number(state.room?.startedAt || 0)) / 1000) : `${Math.round(Number(player.kart?.distance || 0))}m`}</strong></li>`).join("");
+    return `<section class="screen kart-teacher"><div class="panel-header"><div><p class="eyebrow">RACE COMPLETE</p><h1>🏁 ${Number(me.rank) || "-"}위로 완주!</h1><p>정답 ${playerCorrect(me)}/${playerAnswered(me)} · 주행 ${Math.round(Number(me.kart?.distance || 0))}m</p></div><button class="secondary-button" type="button" data-action="back-role">다른 방 참가하기</button></div><div class="kart-teacher-board"><h2>최종 순위</h2><ol>${rows}</ol></div></section>`;
+  }
   if (roomMode() === "grammar_escape") return studentEscapeResultView();
   const me = currentPlayer() || state.room?.result || {};
   const rank = Number(me.rank) > 0 ? Number(me.rank) : "-";
@@ -2179,6 +2338,7 @@ function reportRows() {
 }
 
 function teacherReportView() {
+  if (roomMode() === "grammar_kart") return teacherKartLiveView();
   if (roomMode() === "grammar_escape") return teacherEscapeReportView();
   const players = reportRows();
   const teams = state.report?.teamLeaderboard || state.report?.team_leaderboard || state.room?.teamLeaderboard || [];
@@ -2293,6 +2453,14 @@ function render() {
     }
   }
   document.body.classList.toggle("entry-mode", !state.room && (!state.role || (state.role === "teacher" && !isTeacherAuthenticated())));
+  const kartPlaying = state.role === "student" && state.room && roomStatus() === "playing" && roomMode() === "grammar_kart";
+  if (kartPlaying) {
+    renderKartStudent();
+    ensureClock();
+    return;
+  }
+  kartFrame = null;
+  kartMovePending = false;
   const classroomPlaying = state.role === "student" && state.room && roomStatus() === "playing" && CLASSROOM_GAME_MODES.has(roomMode());
   if (classroomPlaying) {
     document.body.classList.remove("escape-active");
@@ -2381,7 +2549,20 @@ function bindEvents() {
   const codeInput = document.querySelector("#room-code");
   codeInput?.addEventListener("input", () => {
     codeInput.value = sanitizeCode(codeInput.value);
+    previewKartJoin(codeInput.value);
   });
+  if (codeInput?.value.length === 6 && kartJoinMode !== "grammar_kart") previewKartJoin(codeInput.value);
+  else if (kartJoinMode === "grammar_kart") paintKartJoinPreview();
+  app.querySelectorAll("[data-kart-design]").forEach(button => button.addEventListener("click", () => {
+    kartJoinDesign = button.dataset.kartDesign;
+    app.querySelectorAll("[data-kart-design]").forEach(item => item.setAttribute("aria-pressed", String(item === button)));
+    localStorage.setItem("grammar-kart-design", kartJoinDesign); paintKartJoinPreview();
+  }));
+  app.querySelectorAll("[data-kart-color]").forEach(button => button.addEventListener("click", () => {
+    kartJoinColor = button.dataset.kartColor;
+    app.querySelectorAll("[data-kart-color]").forEach(item => item.setAttribute("aria-pressed", String(item === button)));
+    localStorage.setItem("grammar-kart-color", kartJoinColor); paintKartJoinPreview();
+  }));
   const escapeCodeInput = document.querySelector("#escape-code");
   escapeCodeInput?.addEventListener("input", () => {
     state.escapeCode = sanitizeCode(escapeCodeInput.value).slice(0, 3);
@@ -2746,11 +2927,20 @@ async function joinRoom(event) {
     return;
   }
 
-  state.busy = true;
-  render();
-  setStatus("게임방을 찾고 있어요…");
   try {
-    const payload = await roomApi.joinRoom(code, nickname);
+    const roomPreview = kartJoinMode ? null : await roomApi.getRoomState(code);
+    const selectedMode = kartJoinMode || roomPreview?.mode || roomPreview?.state?.mode;
+    if (selectedMode === "grammar_kart" && kartJoinMode !== "grammar_kart") {
+      kartJoinMode = "grammar_kart";
+      document.querySelector("#kart-join-choice").hidden = false;
+      paintKartJoinPreview();
+      setStatus("카트 디자인과 색상을 고른 뒤 참가해 주세요.");
+      return;
+    }
+    state.busy = true;
+    render();
+    setStatus("게임방을 찾고 있어요…");
+    const payload = await roomApi.joinRoom(code, nickname, selectedMode === "grammar_kart" ? { kartDesign: kartJoinDesign, kartColor: kartJoinColor } : {});
     state.roomCode = code;
     state.playerId = payload.playerId;
     state.resumeToken = payload.resumeToken;

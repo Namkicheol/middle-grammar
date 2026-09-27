@@ -262,6 +262,9 @@ async function createRoom(request: Request, env: Env, origin: string): Promise<R
   if (playStyle !== "individual" && playStyle !== "team") {
     throw new HttpError(400, "INVALID_PLAY_STYLE", "Choose individual or team play.");
   }
+  if (mode === "grammar_kart" && playStyle !== "individual") {
+    throw new HttpError(400, "INVALID_PLAY_STYLE", "Kart races are individual.");
+  }
   if (playStyle === "team" && (!Number.isInteger(body.teamCount) || body.teamCount! < 2 || body.teamCount! > 4)) {
     throw new HttpError(400, "INVALID_TEAM_COUNT", "Team play requires 2 to 4 teams.");
   }

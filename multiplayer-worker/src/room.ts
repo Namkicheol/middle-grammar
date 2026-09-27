@@ -10,11 +10,14 @@ import {
   spaceAction,
   escapeAction,
   mazeMove,
+  kartAction,
+  settleKartRace,
   teacherRoomState,
   type RoomState,
 } from "./room-engine";
 import type { Env, RoomInitBody, RoomRecord, SocketAttachment } from "./types";
 import { getTeacherSessionByHash } from "./auth";
+import { advanceKart } from "./kart-game";
 
 const RECORD_KEY = "room";
 const MAX_PLAYERS = 60;
@@ -30,6 +33,7 @@ const SESSION_LOBBY_TTL_MS = 2 * 60 * 60_000;
 const SESSION_FINISHED_TTL_MS = 30 * 60_000;
 
 export class GameRoom implements DurableObject {
+  private lastKartBroadcastAt = 0;
   constructor(
     private readonly ctx: DurableObjectState,
     private readonly env: Env,
@@ -102,7 +106,19 @@ export class GameRoom implements DurableObject {
     if (record.state.status === "playing") {
       const deadline = record.state.startedAt! + record.state.durationSeconds * 1_000;
       if (now >= deadline) await this.finishRoom(record, now);
-      else await this.ctx.storage.setAlarm(this.nextAlarmAt(deadline));
+      else if (record.state.mode === "grammar_kart") {
+        record.state = settleKartRace(record.state, now);
+        await this.putRecord(record);
+        if (Object.values(record.state.players).length > 0 && Object.values(record.state.players).every((player) => Boolean(player.kart && advanceKart(player.kart, now).finishedAt))) {
+          record.state.players = Object.fromEntries(Object.entries(record.state.players).map(([id, player]) =>
+            [id, player.kart ? { ...player, kart: advanceKart(player.kart, now) } : player]));
+          await this.putRecord(record);
+          await this.finishRoom(record, now);
+        } else {
+          await this.broadcastState(record);
+          await this.ctx.storage.setAlarm(this.nextAlarmAt(Math.min(deadline, now + 1000)));
+        }
+      } else await this.ctx.storage.setAlarm(this.nextAlarmAt(deadline));
       return;
     }
     if (!record.reportStored) {
@@ -122,7 +138,7 @@ export class GameRoom implements DurableObject {
       return;
     }
     let record: RoomRecord | undefined;
-    let payload: { type?: string; questionId?: string; occurrenceIndex?: number; answer?: string; choiceId?: string; seq?: number; direction?: string; action?: string; hotspotId?: string; code?: string; planetId?: string; targetPlayerId?: string } = {};
+    let payload: { type?: string; questionId?: string; occurrenceIndex?: number; answer?: string; choiceId?: string; seq?: number; lane?: number; direction?: string; action?: string; hotspotId?: string; code?: string; planetId?: string; targetPlayerId?: string } = {};
     try {
       payload = JSON.parse(
         typeof message === "string" ? message : new TextDecoder().decode(message),
@@ -169,6 +185,30 @@ export class GameRoom implements DurableObject {
           state: studentView(record, attachment.playerId),
         }));
         await this.broadcastState(record);
+        return;
+      }
+      if (payload.type === "kart_move" || payload.type === "kart_item" || payload.type === "kart_weapon") {
+        const now = Date.now();
+        const moved = kartAction(record.state, {
+          playerId: attachment.playerId,
+          action: payload.type === "kart_move" ? "move" : payload.type === "kart_item" ? "item" : "weapon",
+          lane: payload.lane,
+          seq: payload.seq,
+          serverNow: now,
+        });
+        record.state = moved.state;
+        await this.putRecord(record);
+        socket.send(JSON.stringify({ type: "kart_result", result: moved.result, state: studentView(record, attachment.playerId) }));
+        if (now - this.lastKartBroadcastAt >= 1000 || payload.type !== "kart_move" || moved.result.finishedAt) {
+          this.lastKartBroadcastAt = now;
+          await this.broadcastState(record);
+        }
+        if (Object.values(record.state.players).every((player) => Boolean(player.kart && advanceKart(player.kart, now).finishedAt))) {
+          record.state.players = Object.fromEntries(Object.entries(record.state.players).map(([id, player]) =>
+            [id, player.kart ? { ...player, kart: advanceKart(player.kart, now) } : player]));
+          await this.putRecord(record);
+          await this.finishRoom(record, now);
+        }
         return;
       }
       if (payload.type === "space_action") {
@@ -244,6 +284,9 @@ export class GameRoom implements DurableObject {
       if (payload?.type === "escape_action" && record && attachment?.playerId) {
         response.room = studentView(record, attachment.playerId);
       }
+      if ((payload?.type === "kart_move" || payload?.type === "kart_item" || payload?.type === "kart_weapon") && record && attachment?.playerId) {
+        response.room = studentView(record, attachment.playerId);
+      }
       socket.send(JSON.stringify(response));
     }
   }
@@ -296,7 +339,7 @@ export class GameRoom implements DurableObject {
     return json({ state: teacherView(record) }, 201);
   }
 
-  private async join(body: { nickname: string }): Promise<Response> {
+  private async join(body: { nickname: string; kartDesign?: string; kartColor?: string }): Promise<Response> {
     if (typeof body.nickname !== "string") {
       throw new ResponseError(400, "INVALID_NICKNAME", "Enter a nickname.");
     }
@@ -314,6 +357,8 @@ export class GameRoom implements DurableObject {
     const joined = joinPlayer(record.state, {
       id: playerId,
       nickname,
+      kartDesign: body.kartDesign,
+      kartColor: body.kartColor,
       resumeTokenHash,
       joinedAt: Date.now(),
     });
@@ -374,7 +419,7 @@ export class GameRoom implements DurableObject {
     record.state = startRoom(record.state, startedAt);
     await this.ctx.storage.transaction(async (transaction) => {
       await transaction.put(RECORD_KEY, record);
-      await transaction.setAlarm(this.nextAlarmAt(startedAt + record.state.durationSeconds * 1_000));
+      await transaction.setAlarm(this.nextAlarmAt(record.state.mode === "grammar_kart" ? startedAt + 1000 : startedAt + record.state.durationSeconds * 1_000));
     });
     await this.broadcast("start", record);
     return json({ state: teacherView(record) });

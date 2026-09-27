@@ -125,10 +125,10 @@ export const roomApi = {
     });
   },
 
-  joinRoom(code, nickname) {
+  joinRoom(code, nickname, kartSelection = {}) {
     return request(`/rooms/${encodeURIComponent(code)}/join`, {
       method: "POST",
-      body: JSON.stringify({ nickname }),
+      body: JSON.stringify({ nickname, ...kartSelection }),
     });
   },
 

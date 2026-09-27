@@ -4,7 +4,7 @@
   const art = {};
   const KART_PAINT = { cyan: '#35d6dc', coral: '#f65b65', gold: '#ffd04e', violet: '#a879ed', lime: '#94db64', pink: '#ef8bc0' };
   if (typeof Image !== 'undefined') {
-    for (const [key, file] of Object.entries({ backdrop: 'neon-circuit-bg.webp', teal: 'kart-rear-teal.webp', red: 'kart-rear-red.webp', yellow: 'kart-rear-yellow.webp' })) {
+    for (const [key, file] of Object.entries({ backdrop: 'neon-circuit-bg.webp', roadside: 'roadside-atlas.webp', teal: 'kart-rear-teal.webp', red: 'kart-rear-red.webp', yellow: 'kart-rear-yellow.webp' })) {
       const img = new Image(); img.decoding = 'async'; img.src = `assets/art/${file}`; art[key] = img;
     }
     for (const design of ['teal', 'red', 'yellow']) for (const pose of ['left', 'right']) {
@@ -17,26 +17,22 @@
     }
     art.variants = new Map();
   }
-  if (typeof document !== 'undefined') {
-    art.trees = [0, 1].map(kind => {
-      const canvas = document.createElement('canvas'); canvas.width = 96; canvas.height = 132;
-      const c = canvas.getContext('2d');
-      c.fillStyle = '#39445055'; c.beginPath(); c.ellipse(48, 122, 34, 6, 0, 0, 7); c.fill();
-      c.fillStyle = '#64535c'; c.beginPath(); c.moveTo(41, 121); c.lineTo(39, 61); c.lineTo(55, 56); c.lineTo(53, 121); c.fill();
-      c.fillStyle = kind ? '#326a68' : '#337f6d';
-      for (const [x, y, r] of (kind ? [[33,58,27],[62,59,24],[48,38,29]] : [[29,65,24],[64,63,25],[46,43,30]])) {
-        c.beginPath(); c.arc(x, y, r, 0, 7); c.fill();
-      }
-      c.fillStyle = kind ? '#7fb59a' : '#94b897';
-      c.beginPath(); c.ellipse(kind ? 31 : 28, 42, 12, 6, -.45, 0, 7); c.fill();
-      c.fillStyle = '#ffd394'; c.beginPath(); c.arc(kind ? 70 : 68, 51, 3, 0, 7); c.fill();
-      return canvas;
-    });
-  }
   const TOTAL = 1800;
   const COLORS = ['#ffce51', '#f66a60', '#69def0', '#b79aff', '#8ee47e', '#ff9ccb'];
   const clamp = (n, lo, hi) => Math.max(lo, Math.min(hi, n));
   const norm = s => String(s).trim().toLowerCase().replace(/[.!?\s]+/g, '');
+  function surfacePattern(ctx, grass) {
+    const tile = document.createElement('canvas'); tile.width = tile.height = 96;
+    const ink = tile.getContext('2d');
+    let seed = grass ? 419 : 811;
+    const random = () => { seed = (seed * 1664525 + 1013904223) >>> 0; return seed / 4294967296; };
+    for (let i = 0; i < (grass ? 125 : 240); i++) {
+      const x = random() * 96, y = random() * 96;
+      ink.fillStyle = grass ? (i % 3 ? '#ded0a328' : '#203e3d35') : (i % 3 ? '#d9e1d323' : '#141f2a28');
+      ink.fillRect(x, y, grass ? 1 + random() * 5 : 1 + random() * 2, 1);
+    }
+    return ctx.createPattern(tile, 'repeat');
+  }
   function tinted(source, key, color) {
     if (!source?.complete || !source.naturalWidth) return null;
     if (art.variants.has(key)) return art.variants.get(key);
@@ -90,6 +86,7 @@
   function makeRace(options) {
     const { canvas, lesson, mode = 'solo', onProgress = () => {}, onAnswer = () => {}, onFinish = () => {}, onQuestion = () => {} } = options;
     const ctx = canvas.getContext('2d');
+    const asphaltGrain = surfacePattern(ctx, false), grassGrain = surfacePattern(ctx, true);
     const pool = ((typeof GAME_QUESTIONS !== 'undefined' && GAME_QUESTIONS[lesson]?.questions) || [])
       .filter(q => Array.isArray(q.opts) && q.opts.length === 4 && q.opts.some(o => norm(o) === norm(q.ans)));
     let deck = [];
@@ -126,12 +123,20 @@
     let effects = [];
     let progressAt = 0;
     let drawnAt = 0;
+    let size = { w: 0, h: 0, scale: 0 };
+    let destroyed = false;
     const ai = [
       { id: 'comet', name: '코멧', color: COLORS[1], design: 'red', kartColor: 'coral', base: 21.5, wobble: .19, distance: 0, lane: -.5 },
       { id: 'bolt', name: '볼트', color: COLORS[2], design: 'yellow', kartColor: 'gold', base: 22.7, wobble: .29, distance: 0, lane: .5 },
       { id: 'nova', name: '노바', color: COLORS[3], design: 'teal', kartColor: 'violet', base: 20.9, wobble: .37, distance: 0, lane: 0 }
     ];
     if (mode === 'solo') opponents = ai;
+    const playerDesign = options.kartDesign || 'teal', playerColor = options.kartColor || 'cyan';
+    for (const pose of ['rear', 'left', 'right']) {
+      const source = art[pose === 'rear' ? playerDesign : `${playerDesign}-${pose}`];
+      if (source?.complete && source.naturalWidth) spriteFor(playerDesign, playerColor, pose);
+      else source?.addEventListener('load', () => spriteFor(playerDesign, playerColor, pose), { once: true });
+    }
 
     function shuffle() {
       deck = [...pool];
@@ -219,13 +224,19 @@
     }
     function resize() {
       const rect = canvas.getBoundingClientRect();
+      if (!rect.width || !rect.height) return;
       const scale = Math.min(window.devicePixelRatio || 1, 1.25, Math.sqrt(700000 / Math.max(1, rect.width * rect.height)));
       const w = Math.max(300, Math.round(rect.width * scale));
       const h = Math.max(230, Math.round(rect.height * scale));
       if (canvas.width !== w || canvas.height !== h) { canvas.width = w; canvas.height = h; }
-      ctx.setTransform(scale, 0, 0, scale, 0, 0);
-      return { w: rect.width, h: rect.height };
+      if (size.scale !== scale || size.w !== rect.width || size.h !== rect.height) ctx.setTransform(scale, 0, 0, scale, 0, 0);
+      size = { w: rect.width, h: rect.height, scale };
     }
+    const observer = typeof ResizeObserver !== 'undefined' ? new ResizeObserver(() => { resize(); if (!document.hidden && !destroyed) draw(); }) : null;
+    observer?.observe(canvas);
+    window.addEventListener('resize', resize);
+    document.addEventListener('visibilitychange', onVisibilityChange);
+    function onVisibilityChange() { if (!document.hidden && !destroyed) { resize(); draw(); } }
     function roadX(y, h, w) {
       const horizon = h * .33;
       const t = clamp((y - horizon) / (h - horizon), 0, 1);
@@ -265,15 +276,22 @@
       if (label) { ctx.fillStyle = '#ffffff'; ctx.font = `900 ${player ? 13 : 11}px Nunito`; ctx.textAlign = 'center'; ctx.fillText(label, x, y - 43 * size); }
     }
     function draw() {
-      const { w, h } = resize();
+      if (document.hidden || destroyed) return;
+      if (!size.w || !size.h) resize();
+      const { w, h } = size;
+      if (!w || !h) return;
       const boosted = elapsed < boostUntil;
-      const horizon = h * (boosted ? .3 : .33);
+      const horizon = h * (boosted ? .3 : .345);
       const widen = boosted ? 1.09 : 1;
       const roadY = t => horizon + (h - horizon) * t * t + Math.sin(distance / 170 + (1 - t) * 5) * h * .028 * t * (1 - t);
       const roadHalf = t => (46 + t * t * w * .47) * widen;
       if (art.backdrop?.complete && art.backdrop.naturalWidth) {
         ctx.drawImage(art.backdrop, 0, 0, 1024, 230, -lane * w * .025, 0, w * 1.05, horizon);
-        ctx.fillStyle = '#417f73'; ctx.fillRect(0, horizon, w, h - horizon);
+        const ground = ctx.createLinearGradient(0, horizon, 0, h);
+        ground.addColorStop(0, '#82938a'); ground.addColorStop(.45, '#557d71'); ground.addColorStop(1, '#42675f');
+        ctx.fillStyle = ground; ctx.fillRect(0, horizon, w, h - horizon);
+        ctx.save(); ctx.globalAlpha = .75; ctx.translate(0, distance * 1.4 % 96);
+        ctx.fillStyle = grassGrain; ctx.fillRect(0, horizon - 96, w, h - horizon + 96); ctx.restore();
         const fog = ctx.createLinearGradient(0, horizon - 14, 0, horizon + 28);
         fog.addColorStop(0, '#e6b39a00'); fog.addColorStop(.36, '#e6b39a77'); fog.addColorStop(1, '#e6b39a00');
         ctx.fillStyle = fog; ctx.fillRect(0, horizon - 14, w, 42);
@@ -287,23 +305,90 @@
         for (let x = -40; x < w + 100; x += 90) { const peak = 20 + (Math.sin(x * .13) + 1) * 9; ctx.beginPath(); ctx.moveTo(x - 60, horizon); ctx.lineTo(x + 80, horizon); ctx.fill(); }
         ctx.fillStyle = '#258a71'; ctx.fillRect(0, horizon, w, h - horizon);
       }
-      for (let i = 0; i < 45; i++) {
-        const t = i / 44, y = roadY(t), half = roadHalf(t), cx = roadX(y, h, w);
-        const nextT = (i + 1) / 44, ny = roadY(nextT) + 2, nhalf = roadHalf(nextT), ncx = roadX(ny, h, w);
-        ctx.fillStyle = (Math.floor((distance / 3 + i) / 3) % 2) ? '#424b56' : '#48515b';
-        ctx.beginPath(); ctx.moveTo(cx - half, y); ctx.lineTo(cx + half, y); ctx.lineTo(ncx + nhalf, ny); ctx.lineTo(ncx - nhalf, ny); ctx.fill();
-        ctx.fillStyle = (Math.floor((distance / 3 + i) / 2) % 2) ? '#fff2cd' : '#e76c60';
-        const edge = Math.max(4, t * 13); ctx.fillRect(cx - half, y, edge, ny - y + 2); ctx.fillRect(cx + half - edge, y, edge, ny - y + 2);
-        if (Math.floor(distance / 3 + i) % 8 < 4) {
-          ctx.fillStyle = '#ffedab'; const ww = Math.max(2, t * 5); ctx.fillRect(cx - half / 3 - ww / 2, y, ww, ny - y + 2); ctx.fillRect(cx + half / 3 - ww / 2, y, ww, ny - y + 2);
+      const roadPoint = (t, offset = 0) => {
+        const y = roadY(t), half = roadHalf(t);
+        const bank = Math.sin(distance / 125 + (1 - t) * 2.7) * h * .013 * t;
+        return { x: roadX(y, h, w) + offset * half, y: y + offset * bank };
+      };
+      function ribbon(extra) {
+        ctx.beginPath();
+        for (let i = 0; i <= 32; i++) { const p = roadPoint(i / 32, -1 - extra); i ? ctx.lineTo(p.x, p.y) : ctx.moveTo(p.x, p.y); }
+        for (let i = 32; i >= 0; i--) { const p = roadPoint(i / 32, 1 + extra); ctx.lineTo(p.x, p.y); }
+        ctx.closePath();
+      }
+      const shoulder = ctx.createLinearGradient(0, horizon, 0, h);
+      shoulder.addColorStop(0, '#9b8b78'); shoulder.addColorStop(.6, '#777969'); shoulder.addColorStop(1, '#4c6965');
+      ribbon(.07); ctx.fillStyle = shoulder; ctx.fill();
+      const asphalt = ctx.createLinearGradient(0, horizon, 0, h);
+      asphalt.addColorStop(0, '#303e4a'); asphalt.addColorStop(.45, '#414b53'); asphalt.addColorStop(1, '#50545a');
+      ribbon(0); ctx.fillStyle = asphalt; ctx.fill();
+      ctx.save(); ribbon(0); ctx.clip();
+      ctx.translate(0, distance * 2.4 % 96); ctx.fillStyle = asphaltGrain;
+      ctx.fillRect(-w, horizon - 96, w * 3, h - horizon + 96);
+      ctx.restore();
+      ctx.save(); ribbon(0); ctx.clip();
+      const crown = ctx.createLinearGradient(0, 0, w, 0);
+      crown.addColorStop(0, '#101d2a44'); crown.addColorStop(.35, '#ffffff09');
+      crown.addColorStop(.65, '#ffffff0c'); crown.addColorStop(1, '#101d2a44');
+      ctx.fillStyle = crown; ctx.fillRect(0, horizon, w, h - horizon); ctx.restore();
+      for (const side of [-1, 1]) {
+        ctx.beginPath();
+        for (let i = 0; i <= 32; i++) { const p = roadPoint(i / 32, side); i ? ctx.lineTo(p.x, p.y) : ctx.moveTo(p.x, p.y); }
+        ctx.strokeStyle = '#e4c5a3'; ctx.lineWidth = 2; ctx.lineJoin = 'round'; ctx.stroke();
+      }
+      const markStart = Math.floor(distance / 24) * 24;
+      for (let mark = markStart; mark < distance + 350; mark += 24) {
+        const delta = mark - distance;
+        if (delta < 0 || delta > 340) continue;
+        const t1 = 1 - delta / 350, t2 = 1 - Math.min(350, delta + 11) / 350;
+        for (const side of [-1, 1]) {
+          const a = roadPoint(t1, side), b = roadPoint(t2, side);
+          ctx.strokeStyle = Math.floor(mark / 24) % 2 ? '#f3d4ac' : '#d5796e';
+          ctx.lineWidth = 2 + t1 * t1 * 8; ctx.lineCap = 'butt';
+          ctx.beginPath(); ctx.moveTo(a.x, a.y); ctx.lineTo(b.x, b.y); ctx.stroke();
+        }
+        if (Math.floor(mark / 24) % 2 === 0) for (const line of [-1 / 3, 1 / 3]) {
+          const a = roadPoint(t1, line), b = roadPoint(t2, line);
+          ctx.strokeStyle = '#f4e7c383'; ctx.lineWidth = 1 + t1 * t1 * 3;
+          ctx.beginPath(); ctx.moveTo(a.x, a.y); ctx.lineTo(b.x, b.y); ctx.stroke();
         }
       }
-      // Trees and lights advance with the road so speed remains visible.
-      for (let i = 0; i < 13; i++) {
-        const t = ((i * 89 + distance * 11) % 980) / 980, y = roadY(t), cx = roadX(y, h, w), half = roadHalf(t);
+      // Continuous rails follow the projected bends; sparse posts make speed visible.
+      for (const side of [-1, 1]) {
+        for (const [lift, shade, width] of [[7, '#243b45', 6], [12, '#c6c5ad', 3]]) {
+          ctx.beginPath();
+          for (let i = 0; i <= 32; i++) {
+            const t = i / 32, p = roadPoint(t, side * 1.12);
+            const y = p.y - lift * (.25 + t * 1.2);
+            i ? ctx.lineTo(p.x, y) : ctx.moveTo(p.x, y);
+          }
+          ctx.lineWidth = width; ctx.strokeStyle = shade; ctx.lineJoin = 'round'; ctx.stroke();
+        }
+      }
+      const postStart = Math.floor(distance / 32) * 32;
+      for (let at = postStart; at < distance + 340; at += 32) {
+        const delta = at - distance; if (delta < 0) continue;
+        const t = 1 - delta / 350;
         for (const side of [-1, 1]) {
-          const x = cx + side * (half + 14 + t * 28), tw = 10 + t * t * 78, th = tw * 1.38;
-          if (art.trees?.length) ctx.drawImage(art.trees[(i + (side > 0 ? 1 : 0)) % 2], x - tw / 2, y - th, tw, th);
+          const p = roadPoint(t, side * 1.12), tall = 3 + t * 15;
+          ctx.strokeStyle = '#283d45'; ctx.lineWidth = 1 + t * 3;
+          ctx.beginPath(); ctx.moveTo(p.x, p.y); ctx.lineTo(p.x, p.y - tall); ctx.stroke();
+        }
+      }
+      // Roadside props move through the same perspective as the road, far to near.
+      if (art.roadside?.complete && art.roadside.naturalWidth) {
+        const first = Math.floor((distance + 350) / 42) * 42;
+        for (let at = first; at >= distance - 15; at -= 42) {
+          const t = clamp(1 - (at - distance) / 350, 0, 1.05);
+          if (t <= 0 || t > 1.05) continue;
+          const p = roadPoint(t), half = roadHalf(t), slot = Math.floor(at / 42) % 6;
+          for (const side of [-1, 1]) {
+            const kind = slot === 0 ? 1 : slot === 1 ? 0 : slot === 2 ? (side < 0 ? 2 : 1) : slot === 3 ? 0 : slot === 4 ? (side > 0 ? 3 : 1) : 4;
+            const width = (kind === 0 ? 32 : kind === 1 ? 28 : 20) + t * t * (kind === 0 ? 112 : kind === 1 ? 105 : 78);
+            const height = width * (kind === 2 ? 1.3 : kind === 0 ? .72 : 1);
+            const x = p.x + side * (half + width * .38 + 7);
+            ctx.drawImage(art.roadside, kind * 256, 0, 256, 256, x - width / 2, p.y - height * .8, width, height);
+          }
         }
       }
       for (const event of COURSE) {
@@ -327,14 +412,12 @@
         const t = clamp((100 - (TOTAL - distance)) / 100, 0, 1), y = horizon + (h - horizon) * t * t;
         if (y < h) { ctx.fillStyle = '#fff'; ctx.fillRect(roadX(y,h,w) - (55 + t*w*.42), y, 110 + t*w*.84, Math.max(5,t*12)); ctx.fillStyle = '#17263a'; for(let x=0;x<12;x+=2)ctx.fillRect(roadX(y,h,w)-(55+t*w*.42)+x*(110+t*w*.84)/12,y,(110+t*w*.84)/12,Math.max(5,t*12)/2); }
       }
-      const visible = opponents.filter(o => o.distance >= distance - 8 && o.distance - distance < 280 &&
-        !(o.distance - distance < 25 && Math.abs(o.lane - lane) < .3))
-        .sort((a,b) => Math.abs(a.distance-distance) - Math.abs(b.distance-distance)).slice(0, 8)
+      const visible = opponents.filter(o => o.distance - distance > (w < 500 ? 42 : 30) && o.distance - distance < 280)
+        .sort((a,b) => Math.abs(a.distance-distance) - Math.abs(b.distance-distance)).slice(0, w < 500 ? 3 : 6)
         .sort((a,b) => b.distance - a.distance);
       for (const o of visible) {
-        const delta = o.distance - distance, t = clamp(1 - delta / 350, .12, 1.16), y = roadY(t), half = roadHalf(t);
-        const label = Math.abs(delta) < 28 && Math.abs(o.lane - lane) < .3 ? '' : o.name;
-        if (y > horizon + 10 && y < h + 30) kart(roadX(y,h,w) + o.lane * half * .65, y, .28 + t * .86, o.color, label, false, o.design, o.kartColor);
+        const delta = o.distance - distance, t = clamp(1 - delta / 350, .12, .9), y = roadY(t), half = roadHalf(t);
+        if (y > horizon + 10 && y < h * .82) kart(roadX(y,h,w) + o.lane * half * .75, y, .2 + t * .58, o.color, o.name, false, o.design, o.kartColor);
       }
       const py = h * .88, phalf = roadHalf(.88);
       const px = roadX(py,h,w) + lane * phalf * .65 + (elapsed < slipUntil ? Math.sin(elapsed * 22) * w * .016 : 0);
@@ -420,7 +503,7 @@
     }
     function start() { if (playing || finished) return; shuffle(); playing = true; previous = performance.now(); draw(); raf = requestAnimationFrame(frame); }
     function stop() { playing = false; cancelAnimationFrame(raf); }
-    function destroy() { stop(); }
+    function destroy() { stop(); destroyed = true; observer?.disconnect(); window.removeEventListener('resize', resize); document.removeEventListener('visibilitychange', onVisibilityChange); }
     function setSteer(value) { steer = clamp(value, -1, 1); }
     function setProgress(value) { distance = clamp(Number(value) || 0, 0, TOTAL); draw(); }
     function setRemoteState(kart) {

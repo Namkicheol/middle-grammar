@@ -61,6 +61,14 @@ describe("grammar kart authoritative race", () => {
     room.players.p1.kart = { ...room.players.p1.kart!, distance: 145, slowUntil: 0, hitUntil: 0 };
     room = kartAction(room, { playerId: "p0", action: "weapon", serverNow: startedAt + 1700 }).state;
     expect(room.players.p1.kart?.slowUntil).toBeGreaterThan(startedAt + 1700);
+    room.players.p1.kart = { ...room.players.p1.kart!, distance: 145, heldItem: "shield", itemReadyAt: 0, slowUntil: 0, hitUntil: 0 };
+    room = kartAction(room, { playerId: "p1", action: "weapon", serverNow: startedAt + 1800 }).state;
+    expect(room.players.p1.kart?.heldItem).toBeUndefined();
+    expect(room.players.p1.kart?.shieldUntil).toBeGreaterThan(startedAt + 1800);
+    room.players.p0.kart = { ...room.players.p0.kart!, distance: 100, heldItem: "missile", itemReadyAt: 0 };
+    room = kartAction(room, { playerId: "p0", action: "weapon", serverNow: startedAt + 1900 }).state;
+    expect(room.players.p0.kart?.heldItem).toBeUndefined();
+    expect(room.players.p1.kart?.slowUntil).toBe(0);
   });
 
   it("shares all 30 server-ranked racers with the teacher and each student", () => {

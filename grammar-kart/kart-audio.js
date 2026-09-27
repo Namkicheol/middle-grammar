@@ -90,8 +90,10 @@
     if (!state.engine) state.engine = makeAudio('kart-engine.ogg', true);
     if (!state.music && !state.engine) return false;
     state.musicStarted = true;
-    startElement(state.music, 0.23, true);
-    startElement(state.engine, 0.10, true);
+    if (!doc?.hidden) {
+      startElement(state.music, 0.23, true);
+      startElement(state.engine, 0.10, true);
+    }
     return true;
   }
 
@@ -190,7 +192,7 @@
 
   function play(name) {
     const cue = CUES[name];
-    if (!cue || state.destroyed) return false;
+    if (!cue || state.destroyed || doc?.hidden) return false;
     const now = Date.now();
     const previous = state.lastPlayed.get(name) || 0;
     if (now - previous < cue.cooldown) return false;
@@ -214,6 +216,17 @@
       if (result?.catch) result.catch(() => {});
     } catch (_) {}
   }
+
+  doc?.addEventListener('visibilitychange', () => {
+    if (doc.hidden) {
+      try { state.music?.pause(); state.engine?.pause(); } catch (_) {}
+      for (const audio of state.active) stopElement(audio);
+      state.active.clear();
+    } else if (state.musicStarted && !state.destroyed) {
+      startElement(state.music, 0.23, false);
+      startElement(state.engine, 0.10, false);
+    }
+  });
 
   root.KartAudio = Object.freeze({ unlock, startMusic, stopMusic, setMuted, play, destroy });
 })(window);

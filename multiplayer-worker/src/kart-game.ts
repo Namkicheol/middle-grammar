@@ -4,7 +4,7 @@ export const KART_DESIGNS = ["teal", "red", "yellow"] as const;
 export const KART_COLORS = ["cyan", "coral", "gold", "violet", "lime", "pink"] as const;
 export type KartEvent = "hit" | "pad" | "star" | "box" | "banana";
 export type KartWeapon = "banana" | "missile" | "shield";
-export const KART_QUESTION_MARKS = [550, 1100, 1650];
+export const KART_QUESTION_MARKS = [450, 900, 1350];
 export type KartCue = { kind: "reward_boost" | "reward_missile" | "reward_shield" | "boost" | "missile" | "missile_hit" | "shield_block" | "banana_hit" | "contact"; at: number; from?: string; target?: string };
 export interface KartState {
   design: string;
@@ -51,7 +51,7 @@ export const KART_COURSE: { at: number; lane: number; kind: KartEvent }[] = Arra
     { at: base + 68, lane: i % 2 ? .55 : -.55, kind: "box" },
     ...(i % 2 === 0 ? [{ at: base + 96, lane: i % 4 ? -.55 : .55, kind: "banana" as const }] : []),
   ];
-}).flat().filter(event => !(["hit", "banana"].includes(event.kind) && KART_QUESTION_MARKS.some(mark => event.at >= mark - 20 && event.at <= mark + 270)));
+}).flat().filter(event => !(["hit", "banana"].includes(event.kind) && KART_QUESTION_MARKS.some(mark => event.at >= mark - 20 && event.at <= mark + 335)));
 
 const limit = (value: number, low: number, high: number) => Math.max(low, Math.min(high, value));
 
@@ -73,7 +73,7 @@ export function advanceKart(source: KartState, now: number): KartState {
   while (at < now && !kart.finishedAt) {
     const step = Math.min(100, now - at);
     at += step;
-    const target = at < kart.slowUntil ? 11 : at < kart.boostUntil ? 32 : at < kart.draftUntil ? 25.5 : 23;
+    const target = at < kart.slowUntil ? 14 : at < kart.boostUntil ? 46 : at < kart.draftUntil ? 34 : 31;
     kart.speed += (target - kart.speed) * Math.min(1, step / 1000 * 2.3);
     const before = kart.distance;
     kart.distance = Math.min(KART_DISTANCE, kart.distance + kart.speed *

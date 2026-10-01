@@ -75,12 +75,12 @@ describe("grammar kart authoritative race", () => {
 
   it("shares all 30 server-ranked racers with the teacher and each student", () => {
     vi.useFakeTimers();
-    vi.setSystemTime(startedAt + 35_000);
+    vi.setSystemTime(startedAt + 24_000);
     let room = createRoomState({ code: "654321", teacherEmail: "teacher@example.com", durationSeconds: 300,
       mode: "grammar_kart", playStyle: "individual", questions: [question], createdAt: startedAt - 1000 });
     for (let i = 0; i < 30; i++) room = joinPlayer(room, { id: `p${i}`, nickname: `학생${i + 1}`, resumeTokenHash: `h${i}`, joinedAt: startedAt - 500 }).state;
     room = startRoom(room, startedAt);
-    room = kartAction(room, { playerId: "p0", action: "move", lane: 0, seq: 1, serverNow: startedAt + 35_000 }).state;
+    room = kartAction(room, { playerId: "p0", action: "move", lane: 0, seq: 1, serverNow: startedAt + 24_000 }).state;
     const current = publicRoomState(room, "p0");
     const teacher = teacherRoomState(room);
     expect(current.leaderboard).toHaveLength(30);
@@ -89,7 +89,7 @@ describe("grammar kart authoritative race", () => {
     const q = current.self?.currentQuestion;
     expect(q).toBeDefined();
     room = submitAnswer(room, { playerId: "p0", questionId: q!.id, occurrenceIndex: q!.occurrenceIndex,
-      answer: "am", serverNow: startedAt + 35_500 }).state;
+      answer: "am", serverNow: startedAt + 24_500 }).state;
     expect(room.players.p0.kart?.boostStock).toBe(1);
     expect(room.players.p1.kart?.boostStock).toBe(0);
     vi.useRealTimers();
@@ -111,10 +111,10 @@ describe("grammar kart authoritative race", () => {
     delete legacy.boostStock; delete legacy.missiles; delete legacy.shields;
     delete legacy.rewardsGiven; delete legacy.checkpointsAt;
     delete legacy.driftMs; delete legacy.draftMs; delete legacy.draftUntil; delete legacy.slipUntil;
-    const raced = advanceKart(legacy as ReturnType<typeof createKart>, startedAt + 35_000);
-    expect(raced.distance).toBeGreaterThan(550);
+    const raced = advanceKart(legacy as ReturnType<typeof createKart>, startedAt + 20_000);
+    expect(raced.distance).toBeGreaterThan(450);
     expect(raced.checkpointsAt).toHaveLength(1);
-    expect(rewardKart(raced, true, startedAt + 35_100).boostStock).toBe(1);
+    expect(rewardKart(raced, true, startedAt + 20_100).boostStock).toBe(1);
   });
 
   it("ignores overlapping start positions but detects a real sideways kart contact", () => {
@@ -151,10 +151,10 @@ describe("grammar kart authoritative race", () => {
   });
 
   it("makes the fixed track banana cause a timed slip and slowdown", () => {
-    const kart = advanceKart({ ...createKart(startedAt), lane: .55 }, startedAt + 14_000);
+    const kart = advanceKart({ ...createKart(startedAt), lane: .55 }, startedAt + 8_000);
     expect(kart.hits).toBeGreaterThan(0);
     expect(kart.lastCue?.kind).toBe("banana_hit");
-    expect(kart.slipUntil).toBeGreaterThan(startedAt);
-    expect(kart.slowUntil).toBeGreaterThan(startedAt);
+    expect(kart.slipUntil).toBeGreaterThan(startedAt + 8_000);
+    expect(kart.slowUntil).toBeGreaterThan(startedAt + 8_000);
   });
 });

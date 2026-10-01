@@ -41,7 +41,7 @@
   function showMenu() {
     app.race?.destroy(); app.race = null;
     window.KartAudio?.stopMusic?.();
-    shell(`<main class="garage"><section class="showroom" aria-label="선택한 카트 전시"><div class="showroom-label">GRAMMAR GRAND PRIX <span>NEON CIRCUIT</span></div><canvas id="showcase" width="512" height="512" aria-label="선택한 카트"></canvas><div class="showroom-caption">내 카트를 골라 출발!</div></section><div class="garage-design"><span>카트 디자인</span><div class="design-options" id="design-options"><button type="button" data-design="teal"><img src="assets/art/kart-rear-teal.webp" alt="">NEON</button><button type="button" data-design="red"><img src="assets/art/kart-rear-red.webp" alt="">BLAZE</button><button type="button" data-design="yellow"><img src="assets/art/kart-rear-yellow.webp" alt="">BOLT</button></div></div><section class="garage-panel"><div class="eyebrow">RACE SETUP</div><h1>출발 준비</h1><label>레이스 문법 단원<select id="lesson-select"></select></label><div class="garage-paint"><div><span class="custom-label">색상 선택</span><div class="color-options" id="color-options"><button type="button" data-color="cyan" aria-label="시안"></button><button type="button" data-color="coral" aria-label="코랄"></button><button type="button" data-color="gold" aria-label="골드"></button><button type="button" data-color="violet" aria-label="보라"></button><button type="button" data-color="lime" aria-label="라임"></button><button type="button" data-color="pink" aria-label="핑크"></button></div></div></div><button class="primary" id="solo-start">SOLO RACE ▶</button><a class="secondary multi-link" href="../multiplayer/">CLASS RACE · 반 친구들과 ▶</a><div class="best" id="best-time"></div><p class="garage-help">← → 조향 · 문법 정답으로 아이템 획득 · 직접 사용해 추월</p></section></main>`);
+    shell(`<main class="garage"><section class="showroom" aria-label="선택한 카트 전시"><div class="showroom-label">GRAMMAR GRAND PRIX <span>NEON CIRCUIT</span></div><canvas id="showcase" width="512" height="512" aria-label="선택한 카트"></canvas><div class="showroom-caption">내 카트를 골라 출발!</div></section><div class="garage-design"><span>카트 디자인</span><div class="design-options" id="design-options"><button type="button" data-design="teal"><img src="assets/art/clean-v2/kart-rear-teal.webp" alt="">NEON</button><button type="button" data-design="red"><img src="assets/art/clean-v2/kart-rear-red.webp" alt="">BLAZE</button><button type="button" data-design="yellow"><img src="assets/art/clean-v2/kart-rear-yellow.webp" alt="">BOLT</button></div></div><section class="garage-panel"><div class="eyebrow">RACE SETUP</div><h1>출발 준비</h1><label>레이스 문법 단원<select id="lesson-select"></select></label><div class="garage-paint"><div><span class="custom-label">색상 선택</span><div class="color-options" id="color-options"><button type="button" data-color="cyan" aria-label="시안"></button><button type="button" data-color="coral" aria-label="코랄"></button><button type="button" data-color="gold" aria-label="골드"></button><button type="button" data-color="violet" aria-label="보라"></button><button type="button" data-color="lime" aria-label="라임"></button><button type="button" data-color="pink" aria-label="핑크"></button></div></div></div><button class="primary" id="solo-start">SOLO RACE ▶</button><a class="secondary multi-link" href="../multiplayer/">CLASS RACE · 반 친구들과 ▶</a><div class="best" id="best-time"></div><p class="garage-help">← → 조향 · A–D 판정선 통과로 아이템 획득 · 직접 사용해 추월</p></section></main>`);
     bindSound();
     const select = document.getElementById('lesson-select');
     for (const [key, item] of allLessons) { const opt = new Option(item.label, key); select.add(opt); }
@@ -67,14 +67,14 @@
     app.race?.destroy();
     app.options = options; app.mode = options.mode || 'solo';
     const lesson = options.lesson || selectedLesson;
-    root.innerHTML = `<div class="shell race-shell"><header class="mast"><div class="brand">GRAMMAR <b>GRAND PRIX</b></div><button class="back" id="leave" type="button">← 나가기</button></header><main><div class="race-top"><div class="race-title">NEON CIRCUIT<small id="lesson-label"></small></div><div class="speed"><span id="speed">0</span><small>KM/H</small></div><div class="place" id="place">1ST</div></div><div class="track-wrap"><canvas id="track" aria-label="문법 레이싱 트랙"></canvas><div class="race-hud"><div class="hud-card">⏱ RACE TIME<strong id="time">0:00.0</strong></div><div class="hud-card">🏁 TRACK<strong id="meters">0 / 1800 m</strong></div></div><div id="toast-area" aria-live="polite"></div></div><div class="progress" aria-label="트랙 진행률"><i id="bar"></i></div><div class="race-bottom"><section class="question waiting" id="question" aria-live="polite"><div><div class="question-head">ITEM CHANCE</div><h2>레이스가 시작됩니다!</h2><p>정답으로 아이템을 얻어 원하는 순간 사용하세요.</p></div></section><div class="controls"><button type="button" class="control" id="left" aria-label="왼쪽으로 조향">◀</button><button type="button" class="control" id="right" aria-label="오른쪽으로 조향">▶</button><button type="button" class="control item" id="item">⚡ 0%</button><button type="button" class="control weapon" id="weapon" disabled>아이템 없음</button></div></div><p class="hint">← → 또는 A D로 조향 · 1~4로 답하기 · 스페이스바로 부스터 · X로 아이템</p></main></div>`;
+    root.innerHTML = `<div class="shell race-shell"><header class="mast"><div class="brand">GRAMMAR <b>GRAND PRIX</b></div><button class="back" id="leave" type="button">← 나가기</button></header><main><div class="race-top"><div class="race-title">NEON CIRCUIT<small id="lesson-label"></small></div><div class="speed"><span id="speed">0</span><small>KM/H</small></div><div class="place" id="place">1ST</div></div><div class="track-wrap"><canvas id="track" aria-label="문법 레이싱 트랙"></canvas><div class="race-hud"><div class="hud-card">⏱ RACE TIME<strong id="time">0:00.0</strong></div><div class="hud-card">🏁 TRACK<strong id="meters">0 / 1800 m</strong></div></div><div id="toast-area" aria-live="polite"></div></div><div class="progress" aria-label="트랙 진행률"><i id="bar"></i></div><div class="race-bottom"><section class="question waiting" id="question" aria-live="polite"><div><div class="question-head">ITEM CHANCE</div><h2>레이스가 시작됩니다!</h2><p>정답으로 아이템을 얻어 원하는 순간 사용하세요.</p></div></section><div class="controls"><button type="button" class="control" id="left" aria-label="왼쪽으로 조향">◀</button><button type="button" class="control" id="right" aria-label="오른쪽으로 조향">▶</button><button type="button" class="control item" id="item">⚡ 0%</button><button type="button" class="control weapon" id="weapon" disabled>아이템 없음</button></div></div><p class="hint">← → 또는 A D로 조향 · 1~4로 레인 선택 · 스페이스바로 부스터 · X로 아이템</p></main></div>`;
     bindSound();
     document.getElementById('lesson-label').textContent = lessonLabel(lesson);
     const ui = {
       speed: document.getElementById('speed'), place: document.getElementById('place'), time: document.getElementById('time'), meters: document.getElementById('meters'),
       bar: document.getElementById('bar'), question: document.getElementById('question'), item: document.getElementById('item'), weapon: document.getElementById('weapon'), toast: document.getElementById('toast-area')
     };
-    root.querySelector('.track-wrap').append(document.getElementById('left'), document.getElementById('right'));
+    root.querySelector('.track-wrap').append(document.getElementById('left'), document.getElementById('right'), ui.question);
     ui.question.hidden = true;
     ui.missile = $('button', 'control weapon', '미사일'); ui.missile.id = 'missile'; ui.missile.type = 'button'; ui.missile.disabled = true;
     ui.shield = $('button', 'control weapon', '방어막'); ui.shield.id = 'shield'; ui.shield.type = 'button'; ui.shield.disabled = true;
@@ -96,7 +96,8 @@
         ui.shield.textContent = `방어막 ${state.shields || 0}`; ui.shield.disabled = !state.shields;
         ui.item.classList.toggle('ready', state.boostStock > 0 || state.charge >= 3);
         const timer = ui.question.querySelector('.question-timer');
-        if (timer && state.questionRemaining != null) timer.textContent = `${state.questionRemaining}초`;
+        if (timer && state.gateRemaining != null) timer.textContent = `판정선 ${state.gateRemaining}초`;
+        ui.question.querySelectorAll('.choices button').forEach((button,index)=>button.classList.toggle('lane-selected',index===state.answerLane));
         options.onProgress?.(state);
         if (window.parent !== window && app.mode === 'multi') window.parent.postMessage({ type: 'grammar-kart-progress', state }, location.origin);
       },
@@ -105,12 +106,12 @@
         pendingAnswer = false;
         ui.question.hidden = false; root.querySelector('.race-shell')?.classList.add('question-active');
         ui.question.classList.remove('waiting'); ui.question.innerHTML = '';
-        const head = $('div', 'question-head'); head.append($('span', '', `Q${number} · ITEM CHANCE`), $('span', 'question-timer', '16초'));
+        const head = $('div', 'question-head'); head.append($('span', '', `Q${number} · 답안 레인으로 이동`), $('span', 'question-timer', '판정선 접근 중'));
         const kor = $('p', '', question.kor || '빈칸에 들어갈 알맞은 답을 고르세요.');
         const eng = $('h2', '', question.eng || question.question || question.prompt || '알맞은 답을 고르세요.');
         const choices = $('div', 'choices');
         question.opts.forEach((choice, i) => {
-          const button = $('button', '', `${i + 1}. ${choice}`); button.type = 'button'; button.dataset.answer = choice;
+          const button = $('button', '', `${'ABCD'[i]}. ${choice}`); button.type = 'button'; button.dataset.answer = choice;
           button.addEventListener('click', () => choose(choice)); choices.append(button);
         });
         ui.question.append(head, kor, eng, choices);
@@ -138,7 +139,7 @@
       }
     });
     app.race = race;
-    function choose(value) { if (pendingAnswer || !race.question) return; race.answer(value); }
+    function choose(value) { if (pendingAnswer || !race.question) return; race.selectGateLane(race.question.opts.indexOf(value)); }
     function useItem() { if (race.useItem()) { audio('boost'); toast('BOOST!'); } }
     function useWeapon(kind) { if (race.useWeapon(kind)) { audio(kind === 'missile' ? 'missile' : 'item'); toast(kind === 'missile' ? 'MISSILE!' : kind === 'shield' ? 'SHIELD!' : 'ITEM!'); }
       else if (kind === 'missile' && race.getState().missiles) toast('앞차가 있을 때 발사!'); }
@@ -180,18 +181,11 @@
     return race;
   }
   function showResult(state, lesson) {
-    const entries = state.standings;
-    root.innerHTML = `<div class="shell"><header class="mast"><div class="brand">GRAMMAR <b>GRAND PRIX</b></div><a class="back" href="../game/">게임 허브 ↗</a></header><main class="result"><div class="result-card"><div class="eyebrow">RACE COMPLETE</div><div class="result-rank" id="result-rank"></div><h1 id="result-title"></h1><div class="result-stats"><div>TIME<b id="result-time"></b></div><div>CORRECT<b id="result-correct"></b></div><div>BEST<b id="result-best"></b></div></div><div class="result-buttons"><button class="primary" id="again">다시 달리기 ↻</button><button class="secondary" id="menu">단원 선택</button></div></div><div class="leaderboard"><h2>🏁 결승 순위</h2><ol id="leaders"></ol><p class="hint">정답 부스트와 스타 터보를 활용해 기록을 줄여 보세요.</p></div></main></div>`;
-    bindSound();
-    document.getElementById('result-rank').textContent = `#${state.rank}`;
-    document.getElementById('result-title').textContent = state.rank === 1 ? '우승! 최고의 질주!' : '결승선 통과!';
-    document.getElementById('result-time').textContent = fmt(state.elapsed);
-    document.getElementById('result-correct').textContent = `${state.correct}/${state.asked}`;
-    document.getElementById('result-best').textContent = app.mode === 'solo' ? fmt(bestFor(lesson)) : 'CLASS';
-    const ol = document.getElementById('leaders');
-    entries.forEach((entry, i) => { const li = $('li', entry.me ? 'me' : ''); li.append($('span', '', `${i + 1}. ${entry.name}`), $('b', '', entry.me ? fmt(state.elapsed) : `${Math.round(entry.distance)} m`)); ol.append(li); });
-    document.getElementById('again').addEventListener('click', () => { window.KartAudio?.unlock?.(); window.KartAudio?.startMusic?.(); startRace(app.options); });
-    document.getElementById('menu').addEventListener('click', showMenu);
+    window.KartFinish.render(root, state, {
+      formatTime: fmt, bestTime: bestFor(lesson) || null, design: selectedDesign, color: selectedColor,
+      onAgain: () => { window.KartAudio?.unlock?.(); window.KartAudio?.startMusic?.(); startRace(app.options); },
+      onMenu: showMenu
+    });
   }
   window.GrammarKartApp = { mount: startRace, showMenu, get race() { return app.race; } };
   window.addEventListener('pagehide', () => window.KartAudio?.destroy?.());

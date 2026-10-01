@@ -23,21 +23,21 @@
   const audio = name => window.KartAudio?.play?.(name);
   function toast(message) { const t = document.createElement('div'); t.className = 'toast'; t.textContent = message; $('toast-area').replaceChildren(t); setTimeout(() => t.remove(), 760); }
   function renderQuestion(question) {
-    if (!question) { questionKey = ''; $('question').hidden = true; document.querySelector('.race-shell')?.classList.remove('question-active'); return; }
+    if (!question) { race?.setGateQuestion(null); questionKey = ''; $('question').hidden = true; document.querySelector('.race-shell')?.classList.remove('question-active'); return; }
     const key = `${question.occurrenceIndex}:${question.id}`;
     if (questionKey === key) return;
-    questionKey = key; pending = false; questionUntil = performance.now() + 16000;
+    questionKey = key; pending = false; race?.setGateQuestion(question); questionUntil = performance.now() + 16000;
     $('question').hidden = false; document.querySelector('.race-shell')?.classList.add('question-active');
     const box = $('question'); box.className = 'question'; box.replaceChildren();
     const head = document.createElement('div'); head.className = 'question-head';
-    head.innerHTML = `<span>Q${question.occurrenceIndex + 1} · ITEM CHANCE</span><span class="question-timer">16초</span>`;
+    head.innerHTML = `<span>Q${question.occurrenceIndex + 1} · 답안 레인으로 이동</span><span class="question-timer">판정선 접근 중</span>`;
     const kor = document.createElement('p'); kor.textContent = question.kor || '알맞은 답을 고르세요.';
     const eng = document.createElement('h2'); eng.textContent = question.eng || '';
     const choices = document.createElement('div'); choices.className = 'choices';
     question.opts.forEach((choice, i) => {
-      const button = document.createElement('button'); button.type = 'button'; button.textContent = `${i + 1}. ${choice}`;
+      const button = document.createElement('button'); button.type = 'button'; button.textContent = `${'ABCD'[i]}. ${choice}`;
       button.dataset.choice = choice;
-      button.addEventListener('click', () => choose(choice)); choices.append(button);
+      button.addEventListener('click', () => race?.selectGateLane(i)); choices.append(button);
     });
     box.append(head, kor, eng, choices);
   }
@@ -57,7 +57,7 @@
     if (!race) {
       race = window.GrammarKart.createRace({ canvas: $('track'), lesson: '', mode: 'multi', playerId,
         kartDesign: me.kart.design, kartColor: me.kart.color,
-        playerName: me.nickname || '나', onEvent: event => { if (['drift','offroad'].includes(event.kind)) audio('skid'); }, onProgress: state => {
+        playerName: me.nickname || '나', onGateChoice: choice => choose(choice), onEvent: event => { if (['drift','offroad'].includes(event.kind)) audio('skid'); }, onProgress: state => {
           window.KartAudio?.setEngineSpeed?.(state.speed, state.boosted);
           $('speed').textContent = state.speed;
           $('meters').textContent = `${state.distance} / 1800 m`;
@@ -66,8 +66,8 @@
           const now = performance.now();
           if (questionKey && !pending) {
             const seconds = Math.max(0, Math.ceil((questionUntil - now) / 1000));
-            const timer = document.querySelector('.question-timer'); if (timer && timer.textContent !== `${seconds}초`) timer.textContent = `${seconds}초`;
-            if (!seconds) choose('');
+            const timer = document.querySelector('.question-timer'); if (timer) timer.textContent = `판정선 ${state.gateRemaining ?? seconds}초`;
+            document.querySelectorAll('.choices button').forEach((button,index)=>button.classList.toggle('lane-selected',index===state.answerLane));
           }
           if (!state.finished && (now - sendAt > 900 || (Math.abs(state.lane - lastSentLane) > 0.03 && now - sendAt > 220))) {
             sendAt = now; lastSentLane = state.lane;
@@ -106,13 +106,13 @@
     $('shield').textContent = `방어막 ${me.kart.shields || 0}`; $('shield').disabled = !me.kart.shields;
     if (me.kart.finishedAt && !finishedShown) {
       finishedShown = true; questionKey = ''; pending = true;
-      $('question').hidden = false; document.querySelector('.race-shell')?.classList.add('question-active');
-      $('question').className = 'question waiting'; $('question').innerHTML = `<div><h2>🏁 결승선 통과! ${me.rank}위</h2><p>교사 화면에서 전체 순위를 확인하세요.</p></div>`;
+      $('question').hidden = true; document.querySelector('.race-shell')?.classList.remove('question-active');
+      window.KartFinish.overlay(document.querySelector('.track-wrap'), { rank: me.rank, elapsed: (me.kart.finishedAt - startedAt) / 1000 });
       window.KartAudio?.stopMusic?.(); audio('finish'); send({ type: 'grammar-kart-finished' });
     } else if (!me.kart.finishedAt) renderQuestion(me.currentQuestion);
   }
   function bindControls() {
-    document.querySelector('.track-wrap').append($('left'), $('right'));
+    document.querySelector('.track-wrap').append($('left'), $('right'), $('question'));
     const missile = document.createElement('button'); missile.id='missile'; missile.className='control weapon'; missile.type='button'; missile.textContent='미사일 0'; missile.disabled=true;
     const shield = document.createElement('button'); shield.id='shield'; shield.className='control weapon'; shield.type='button'; shield.textContent='방어막 0'; shield.disabled=true;
     document.querySelector('.controls').append(missile, shield);
@@ -155,6 +155,12 @@
     if (data.type === 'grammar-kart-error') {
       pending = false;
       for (const button of document.querySelectorAll('.choices button')) button.disabled = false;
+      if (race?.getState().gatePending && !$('gate-retry')) {
+        const retry = document.createElement('button'); retry.id = 'gate-retry'; retry.type = 'button';
+        retry.className = 'gate-retry'; retry.textContent = '답안 다시 보내기';
+        retry.addEventListener('click', () => { if (race.retryGate()) retry.remove(); });
+        $('question').append(retry);
+      }
       toast(data.message || '잠시 후 다시 시도해 주세요.');
     }
   });

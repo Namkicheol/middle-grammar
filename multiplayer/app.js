@@ -769,7 +769,7 @@ function paintKartJoinPreview() {
   if (!image) {
     image = new Image(); image.decoding = "async";
     image.onload = paintKartJoinPreview;
-    image.src = kartAssetUrl(`assets/art/kart-rear-${kartJoinDesign}.webp`);
+    image.src = kartAssetUrl(`assets/art/clean-v2/kart-rear-${kartJoinDesign}.webp`);
     kartJoinImages.set(kartJoinDesign, image);
   }
   if (!image.complete || !image.naturalWidth) return;

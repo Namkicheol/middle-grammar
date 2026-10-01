@@ -9,4 +9,6 @@
 - `missile-whoosh.ogg`: [Sci-Fi Sounds](https://kenney.nl/assets/sci-fi-sounds), Kenney, CC0. 원본 `thrusterFire_000.ogg`에서 0.04초부터 0.72초를 잘라 필터·fade를 적용해 미사일 발사 whoosh에 쓴다.
 - `kart-impact.ogg`: [Impact Sounds](https://kenney.nl/assets/impact-sounds), Kenney, CC0. 원본 `impactPunch_heavy_000.ogg`를 0.54초로 정리해 피격·장애물 충돌 thud에 쓴다.
 
-원본 팩의 CC0 표기와 파일 길이는 2026-09-27에 확인했다. `kart-audio.js`는 효과음 파일을 짧게 자르고 재생 속도·볼륨을 역할별로 조정하며, Web Audio API의 낮은 볼륨 음을 겹쳐서 단순 단일 삐 소리로 들리지 않게 한다.
+원본 팩의 CC0 표기와 파일 길이는 2026-09-27에 확인했다. `kart-audio.js`는 효과음 파일을 짧게 자르고 재생 속도·볼륨을 역할별로 조정하며, 파일 재생을 우선하고 파일을 사용할 수 없을 때만 Web Audio API 대체음을 사용한다.
+
+- `race-v2.mp3`: [Neon sign Circuit [Remake]](https://opengameart.org/content/neon-sign-circuit-remake), MintoDog, CC0. Racing synth track; source page marks it loopable and the source MP3 filename identifies 145 BPM. Re-encoded from the author-provided MP3 to stereo MP3 at 128 kbps; 99.31 seconds. Credit: MintoDog, “Neon sign Circuit [Remake]” (OpenGameArt, CC0).

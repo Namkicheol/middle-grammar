@@ -22,12 +22,12 @@
   const CUES = Object.freeze({
     countdown: { file: 'select.ogg', volume: 0.28, rate: 0.82, stopAfter: 230, cooldown: 130 },
     go: { file: 'reveal.ogg', volume: 0.40, rate: 1.08, stopAfter: 620, cooldown: 240 },
-    boost: { file: 'shield.ogg', volume: 0.46, rate: 1.16, stopAfter: 760, cooldown: 180 },
+    boost: { file: 'missile-whoosh.ogg', volume: 0.32, rate: 0.8, stopAfter: 900, cooldown: 180 },
     item: { file: 'shield.ogg', volume: 0.34, rate: 0.90, stopAfter: 760, cooldown: 200 },
     missile: { file: 'missile-whoosh.ogg', volume: 0.38, rate: 1, stopAfter: 720, cooldown: 350 },
     hit: { file: 'kart-impact.ogg', volume: 0.4, rate: 1, stopAfter: 540, cooldown: 300 },
     skid: { file: 'kart-skid.ogg', volume: 0.27, rate: 1, stopAfter: 650, cooldown: 900 },
-    correct: { file: 'angel.ogg', volume: 0.27, rate: 1.65, stopAfter: 920, cooldown: 180 },
+    correct: { file: 'select.ogg', volume: 0.22, rate: 1.12, stopAfter: 200, cooldown: 180 },
     wrong: { file: 'bomb.ogg', volume: 0.15, rate: 0.58, stopAfter: 680, cooldown: 220 },
     finish: { file: 'angel.ogg', volume: 0.48, rate: 1.00, stopAfter: 2650, cooldown: 900 }
   });
@@ -88,13 +88,13 @@
   function startMusic() {
     if (state.musicStarted) return true;
     unlock();
-    if (!state.music) state.music = makeAudio('kart-bgm.mp3', true);
+    if (!state.music) state.music = makeAudio('race-v2.mp3', true);
     if (!state.engine) state.engine = makeAudio('kart-engine.ogg', true);
     if (!state.music && !state.engine) return false;
     state.musicStarted = true;
     if (!doc?.hidden) {
-      startElement(state.music, 0.23, true);
-      startElement(state.engine, 0.10, true);
+      startElement(state.music, 0.28, true);
+      startElement(state.engine, 0.15, true);
     }
     return true;
   }
@@ -210,7 +210,7 @@
     if (now - previous < cue.cooldown) return false;
     state.lastPlayed.set(name, now);
     const played = playFile(cue);
-    playSynth(name);
+    if (!played) playSynth(name);
     return played;
   }
 
@@ -235,8 +235,8 @@
       for (const audio of state.active) stopElement(audio);
       state.active.clear();
     } else if (state.musicStarted && !state.destroyed) {
-      startElement(state.music, 0.23, false);
-      startElement(state.engine, 0.10, false);
+      startElement(state.music, 0.28, false);
+      startElement(state.engine, 0.15, false);
     }
   });
 

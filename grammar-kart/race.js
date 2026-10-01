@@ -4,41 +4,29 @@
   const art = {};
   const KART_PAINT = { cyan: '#35d6dc', coral: '#f65b65', gold: '#ffd04e', violet: '#a879ed', lime: '#94db64', pink: '#ef8bc0' };
   if (typeof Image !== 'undefined') {
-    for (const [key, file] of Object.entries({ backdrop: 'neon-circuit-bg.webp', roadside: 'roadside-atlas.webp', obstacles: 'race-obstacles-atlas.webp', items: 'race-items-atlas.webp', teal: 'kart-rear-teal.webp', red: 'kart-rear-red.webp', yellow: 'kart-rear-yellow.webp' })) {
-      const img = new Image(); img.decoding = 'async'; img.src = `assets/art/${file}`; art[key] = img;
+    for (const [key, file] of Object.entries({ backdrop: 'clean-v2/coastal-sky.webp', roadside: 'clean-v2/roadside.webp', obstacles: 'race-obstacles-atlas.webp', items: 'race-items-atlas.webp', teal: 'kart-rear-teal.webp', red: 'kart-rear-red.webp', yellow: 'kart-rear-yellow.webp' })) {
+      const img = new Image(); img.decoding = 'async'; img.src = `assets/art/${['teal','red','yellow'].includes(key) ? 'clean-v2/' : ''}${file}`; art[key] = img;
     }
     for (const design of ['teal', 'red', 'yellow']) for (const pose of ['left', 'right']) {
-      const img = new Image(); img.decoding = 'async'; img.src = `assets/art/kart-${pose}-${design}.webp`;
+      const img = new Image(); img.decoding = 'async'; img.src = `assets/art/clean-v2/kart-${pose}-${design}.webp`;
       art[`${design}-${pose}`] = img;
     }
     for (const design of ['teal', 'red', 'yellow']) {
-      const img = new Image(); img.decoding = 'async'; img.src = `assets/art/kart-showcase-${design}.webp`;
+      const img = new Image(); img.decoding = 'async'; img.src = `assets/art/clean-v2/kart-rear-${design}.webp`;
       art[`showcase-${design}`] = img;
     }
     art.variants = new Map();
   }
   const TOTAL = 1800;
-  const QUESTION_MARKS = [550, 1100, 1650];
+  const QUESTION_MARKS = [450, 900, 1350];
   const COLORS = ['#ffce51', '#f66a60', '#69def0', '#b79aff', '#8ee47e', '#ff9ccb'];
   const clamp = (n, lo, hi) => Math.max(lo, Math.min(hi, n));
   const norm = s => String(s).trim().toLowerCase().replace(/[.!?\s]+/g, '');
-  function surfacePattern(ctx, grass) {
-    const tile = document.createElement('canvas'); tile.width = tile.height = 96;
-    const ink = tile.getContext('2d');
-    let seed = grass ? 419 : 811;
-    const random = () => { seed = (seed * 1664525 + 1013904223) >>> 0; return seed / 4294967296; };
-    for (let i = 0; i < (grass ? 125 : 240); i++) {
-      const x = random() * 96, y = random() * 96;
-      ink.fillStyle = grass ? (i % 3 ? '#ded0a328' : '#203e3d35') : (i % 3 ? '#d9e1d323' : '#141f2a28');
-      ink.fillRect(x, y, grass ? 1 + random() * 5 : 1 + random() * 2, 1);
-    }
-    return ctx.createPattern(tile, 'repeat');
-  }
   function tinted(source, key, color) {
     if (!source?.complete || !source.naturalWidth) return null;
     if (art.variants.has(key)) return art.variants.get(key);
-    const canvas = document.createElement('canvas'); canvas.width = source.naturalWidth; canvas.height = source.naturalHeight;
-    const context = canvas.getContext('2d', { willReadFrequently: true }); context.drawImage(source, 0, 0);
+    const canvas = document.createElement('canvas'); canvas.width = Math.min(256, source.naturalWidth); canvas.height = Math.round(source.naturalHeight * canvas.width / source.naturalWidth);
+    const context = canvas.getContext('2d', { willReadFrequently: true }); context.drawImage(source, 0, 0, canvas.width, canvas.height);
     const pixels = context.getImageData(0, 0, canvas.width, canvas.height);
     const hex = KART_PAINT[color] || KART_PAINT.cyan;
     const target = [1,3,5].map(i => parseInt(hex.slice(i,i+2),16));
@@ -83,12 +71,11 @@
       { at: base + 68, lane: i % 2 ? .55 : -.55, kind: 'box' },
       ...(i % 2 === 0 ? [{ at: base + 96, lane: i % 4 ? -.55 : .55, kind: 'banana' }] : [])
     ];
-  }).flat().filter(event => !(['cone','banana'].includes(event.kind) && QUESTION_MARKS.some(mark => event.at >= mark - 20 && event.at <= mark + 270)));
+  }).flat().filter(event => !(['cone','banana'].includes(event.kind) && QUESTION_MARKS.some(mark => event.at >= mark - 20 && event.at <= mark + 335)));
 
   function makeRace(options) {
     const { canvas, lesson, mode = 'solo', onProgress = () => {}, onAnswer = () => {}, onFinish = () => {}, onQuestion = () => {} } = options;
     const ctx = canvas.getContext('2d');
-    const asphaltGrain = surfacePattern(ctx, false), grassGrain = surfacePattern(ctx, true);
     const pool = ((typeof GAME_QUESTIONS !== 'undefined' && GAME_QUESTIONS[lesson]?.questions) || [])
       .filter(q => Array.isArray(q.opts) && q.opts.length === 4 && q.opts.some(o => norm(o) === norm(q.ans)));
     let deck = [];
@@ -98,7 +85,35 @@
     let elapsed = 0;
     let questionIndex = 0;
     let question = null;
-    let questionDeadline = 0;
+    const answerLanes = [-.75,-.25,.25,.75];
+    let gate = null;
+    let completedGate = '';
+    let laneTarget = null;
+    function setGateQuestion(q, occurrence) {
+      if (!q) { gate = null; return; }
+      const key = `${q.id}:${occurrence ?? q.occurrenceIndex ?? 0}`;
+      if (gate?.key === key || completedGate === key) return;
+      const reading = (q.eng || '').length + q.opts.join(' ').length;
+      gate = { key, question: q, at: Math.min(TOTAL - 20, distance + (reading > 170 ? 320 : 260)) };
+    }
+    function selectGateLane(index) {
+      if (!gate || gate.submitted || index < 0 || index > 3) return;
+      steer = 0; laneTarget = answerLanes[index];
+    }
+    function crossGate() {
+      if (!gate || gate.submitted || distance < gate.at - 4) return;
+      const index = answerLanes.reduce((best,value,i)=>Math.abs(lane-value)<Math.abs(lane-answerLanes[best])?i:best,0);
+      const crossed = gate;
+      completedGate = crossed.key;
+      if (mode === 'solo') { gate = null; answer(crossed.question.opts[index]); }
+      else { crossed.submitted = true; crossed.index = index; options.onGateChoice?.(crossed.question.opts[index]); }
+    }
+    function retryGate() {
+      if (!gate?.submitted) return false;
+      options.onGateChoice?.(gate.question.opts[gate.index]);
+      return true;
+    }
+
     let playing = false;
     let finished = false;
     let steer = 0;
@@ -136,13 +151,16 @@
     let effects = [];
     let progressAt = 0;
     let drawnAt = 0;
+    let boostVisual = 0;
     let size = { w: 0, h: 0, scale: 0 };
     let destroyed = false;
     const ai = [
-      { id: 'comet', name: '코멧', color: COLORS[1], design: 'red', kartColor: 'coral', base: 23.3, wobble: .19, distance: 0, lane: -.5 },
-      { id: 'bolt', name: '볼트', color: COLORS[2], design: 'yellow', kartColor: 'gold', base: 24.2, wobble: .29, distance: 0, lane: .5 },
-      { id: 'nova', name: '노바', color: COLORS[3], design: 'teal', kartColor: 'violet', base: 22, wobble: .37, distance: 0, lane: 0 }
-    ];
+      ['comet','코멧','red','coral',31.5,-.62], ['bolt','볼트','yellow','gold',32,.52],
+      ['nova','노바','teal','violet',29.5,.06], ['ace','에이스','red','cyan',30,-.28],
+      ['spark','스파크','yellow','lime',31,.32], ['luna','루나','teal','pink',29,-.48],
+      ['dash','대시','yellow','coral',30.5,.68], ['pixel','픽셀','red','violet',32.5,-.08]
+    ].map(([id,name,design,kartColor,base,lane],i)=>({id,name,design,kartColor,base,lane,
+      color:COLORS[i%COLORS.length],wobble:.2+i*.025,distance:-i*3,slot:i,homeLane:lane}));
     if (mode === 'solo') opponents = ai;
     const playerDesign = options.kartDesign || 'teal', playerColor = options.kartColor || 'cyan';
     for (const pose of ['rear', 'left', 'right']) {
@@ -163,8 +181,8 @@
       if (!pool.length || question || finished) return;
       if (deckIndex >= deck.length) shuffle();
       question = deck[deckIndex++];
-      questionDeadline = elapsed + 16;
       asked++;
+      setGateQuestion(question, asked);
       onQuestion({ question, number: asked, seconds: 16 });
     }
     function answer(choice) {
@@ -172,6 +190,7 @@
       const q = question;
       const good = norm(choice) === norm(q.ans);
       question = null;
+      if (gate) completedGate = gate.key; gate = null; laneTarget = null;
       let reward = '';
       if (good) {
         correct++;
@@ -236,11 +255,11 @@
     }
     function getState() {
       const standings = [{ id: options.playerId || 'me', name: options.playerName || '나', distance, elapsed, me: true },
-        ...opponents.map(o => ({ id: o.id, name: o.name, distance: o.distance, elapsed: o.elapsed || 0, me: false }))]
-        .sort((a, b) => b.distance - a.distance || a.elapsed - b.elapsed);
+        ...opponents.map(o => ({ id: o.id, name: o.name, distance: o.distance, elapsed: o.finishedAt || null, me: false }))]
+        .sort((a, b) => b.distance - a.distance || (a.elapsed ?? Infinity) - (b.elapsed ?? Infinity));
       return { distance: Math.round(distance), total: TOTAL, speed: Math.round(speed * 3.6), lane: +lane.toFixed(2), obstaclesHit, padsTaken, starsTaken,
-        elapsed: +elapsed.toFixed(1), questionRemaining: question ? Math.max(0, Math.ceil(questionDeadline - elapsed)) : null,
-        charge, boostStock, missiles, shields, heldItem, correct, asked, rank: standings.findIndex(s => s.me) + 1,
+        elapsed: +elapsed.toFixed(1), questionRemaining: gate ? Math.max(0, Math.ceil((gate.at-distance)/Math.max(speed,14))) : null,
+        charge, boostStock, missiles, shields, heldItem, gatePending: !!gate?.submitted, answerLane: gate ? answerLanes.reduce((best,value,i)=>Math.abs(lane-value)<Math.abs(lane-answerLanes[best])?i:best,0) : null, gateRemaining: gate ? Math.max(0,Math.ceil((gate.at-distance)/Math.max(speed,14))) : null, correct, asked, rank: standings.findIndex(s => s.me) + 1,
         standings, boosted: elapsed < boostUntil, shielded: elapsed < shieldUntil, finished };
     }
     function resize() {
@@ -265,7 +284,7 @@
       const pose = player && lean < -.24 ? 'left' : player && lean > .24 ? 'right' : 'rear';
       const sprite = spriteFor(design, kartColor, pose);
       if (sprite) {
-        const width = 118 * size;
+        const width = 108 * size;
         ctx.save(); ctx.translate(x, y); ctx.rotate(player ? -lean * .2 : hit ? Math.sin(elapsed * 34) * .12 : 0);
         ctx.fillStyle = '#091b2a88'; ctx.beginPath(); ctx.ellipse(0, 2, width * .39, width * .11, 0, 0, 7); ctx.fill();
         if (player && elapsed < boostUntil) {
@@ -276,14 +295,14 @@
         if (player && speed > 4) for (const side of [-1, 1]) {
           const wheelX = side * width * .385, wheelY = width * .015, wheelW = width * .105, wheelH = width * .16;
           ctx.save(); ctx.beginPath(); ctx.roundRect(wheelX - wheelW/2, wheelY - wheelH/2, wheelW, wheelH, wheelW*.4); ctx.clip();
-          ctx.strokeStyle = '#b9d1d7aa'; ctx.lineWidth = Math.max(1, size * 1.4);
+          ctx.strokeStyle = '#45545b88'; ctx.lineWidth = Math.max(1, size * 1.4);
           const offset = distance * .45 % (wheelH / 3);
           for (let n = -1; n < 5; n++) { const yy = wheelY - wheelH/2 + n * wheelH/3 + offset; ctx.beginPath(); ctx.moveTo(wheelX-wheelW*.32, yy); ctx.lineTo(wheelX+wheelW*.32, yy+wheelH*.055); ctx.stroke(); }
           ctx.restore();
         }
         if (player && elapsed < shieldUntil) { ctx.strokeStyle = '#a0f9ff'; ctx.lineWidth = 3; ctx.beginPath(); ctx.ellipse(0, -width * .24, width * .43, width * .32, 0, 0, 7); ctx.stroke(); }
         ctx.restore();
-        if (label) { ctx.fillStyle = '#fff'; ctx.font = `900 ${player ? 13 : 11}px Nunito`; ctx.textAlign = 'center'; ctx.fillText(label, x, y - width * .53); }
+        if (label && !player) { ctx.fillStyle = '#fff'; ctx.font = `900 ${player ? 13 : 11}px Nunito`; ctx.textAlign = 'center'; ctx.fillText(label, x, y - width * .53); }
         return;
       }
       ctx.save(); ctx.translate(x, y); ctx.rotate(player ? -lean * .2 : 0); ctx.scale(size, size);
@@ -299,7 +318,7 @@
       }
       if (player && elapsed < shieldUntil) { ctx.strokeStyle = '#8df6ff'; ctx.lineWidth = 3; ctx.beginPath(); ctx.arc(0, -6, 37, 0, 7); ctx.stroke(); }
       ctx.restore();
-      if (label) { ctx.fillStyle = '#ffffff'; ctx.font = `900 ${player ? 13 : 11}px Nunito`; ctx.textAlign = 'center'; ctx.fillText(label, x, y - 43 * size); }
+      if (label && !player) { ctx.fillStyle = '#ffffff'; ctx.font = `900 ${player ? 13 : 11}px Nunito`; ctx.textAlign = 'center'; ctx.fillText(label, x, y - 43 * size); }
     }
     function draw() {
       if (document.hidden || destroyed) return;
@@ -307,118 +326,69 @@
       const { w, h } = size;
       if (!w || !h) return;
       const boosted = elapsed < boostUntil;
-      const horizon = h * (boosted ? .35 : .39);
-      const viewDepth = 500;
+      const horizon = h * .32;
+      const viewDepth = 360;
+      const lens = 13 - boostVisual * 3;
       const roadPoint = (t, offset = 0) => {
         const ahead = clamp(1 - t, 0, 1) * viewDepth;
-        const scale = (boosted ? 36 : 44) / ((boosted ? 36 : 44) + ahead);
+        const scale = lens / (lens + ahead);
         const bend = clamp(trackCenter(distance + ahead) - trackCenter(distance) - trackSlope(distance) * ahead * .4, -34, 34);
         const rise = trackHeight(distance + ahead) - trackHeight(distance);
         const bank = trackSlope(distance + ahead) * h * .05 * scale;
         return {
-          x: w * (.5 - lane * .38 * scale + bend * .035 * scale) + offset * (w * (boosted ? .72 : .65) * scale + 4),
-          y: horizon + (h - horizon) * scale * 1.05 - rise * h * .012 * (.35 + scale) + offset * bank,
+          x: w * (.5 - lane * .38 * scale + bend * .048 * scale) + offset * (w * (.68 + boostVisual * .035) * scale + 3),
+          y: horizon + (h - horizon) * scale * 1.05 - rise * h * .006 * (.25 + scale) + offset * bank,
           scale
         };
       };
+      const sky = ctx.createLinearGradient(0, 0, 0, horizon);
+      sky.addColorStop(0, '#5eb8e7'); sky.addColorStop(1, '#d5f2f2');
+      ctx.fillStyle = sky; ctx.fillRect(0, 0, w, h);
       if (art.backdrop?.complete && art.backdrop.naturalWidth) {
-        ctx.drawImage(art.backdrop, 0, 0, 1024, 230, -lane * w * .025, 0, w * 1.05, horizon);
-        const ground = ctx.createLinearGradient(0, horizon, 0, h);
-        ground.addColorStop(0, '#82938a'); ground.addColorStop(.45, '#557d71'); ground.addColorStop(1, '#42675f');
-        ctx.fillStyle = ground; ctx.fillRect(0, horizon, w, h - horizon);
-        ctx.save(); ctx.globalAlpha = .75; ctx.translate(0, distance * 1.4 % 96);
-        ctx.fillStyle = grassGrain; ctx.fillRect(0, horizon - 96, w, h - horizon + 96); ctx.restore();
-        const fog = ctx.createLinearGradient(0, horizon - 14, 0, horizon + 28);
-        fog.addColorStop(0, '#e6b39a00'); fog.addColorStop(.36, '#e6b39a77'); fog.addColorStop(1, '#e6b39a00');
-        ctx.fillStyle = fog; ctx.fillRect(0, horizon - 14, w, 42);
+        const panorama = art.backdrop;
+        const drift = -trackSlope(distance) * w * .22 - lane * w * .025;
+        ctx.drawImage(panorama, 0, panorama.naturalHeight * .28, panorama.naturalWidth, panorama.naturalHeight * .62,
+          -w * .15 + drift, 0, w * 1.3, horizon + 8);
       }
-      else {
-        const sky = ctx.createLinearGradient(0, 0, 0, horizon);
-        sky.addColorStop(0, '#214b83'); sky.addColorStop(1, '#79c9d5');
-        ctx.fillStyle = sky; ctx.fillRect(0, 0, w, horizon);
-        ctx.fillStyle = '#aee9cd'; ctx.beginPath(); ctx.arc(w * .79, h * .15, 20, 0, 7); ctx.fill();
-        ctx.fillStyle = '#3e8f82';
-        for (let x = -40; x < w + 100; x += 90) { const peak = 20 + (Math.sin(x * .13) + 1) * 9; ctx.beginPath(); ctx.moveTo(x - 60, horizon); ctx.lineTo(x + 80, horizon); ctx.fill(); }
-        ctx.fillStyle = '#258a71'; ctx.fillRect(0, horizon, w, h - horizon);
+      const turf = ctx.createLinearGradient(0,horizon,0,h);
+      turf.addColorStop(0,'#91c8ac'); turf.addColorStop(.55,'#62b095'); turf.addColorStop(1,'#439482');
+      ctx.fillStyle = turf; ctx.fillRect(0, horizon, w, h - horizon);
+      function strip(a, b, left, right, color) {
+        const p1 = roadPoint(a, left), p2 = roadPoint(b, left), p3 = roadPoint(b, right), p4 = roadPoint(a, right);
+        ctx.beginPath(); ctx.moveTo(p1.x,p1.y);ctx.lineTo(p2.x,p2.y);ctx.lineTo(p3.x,p3.y);ctx.lineTo(p4.x,p4.y);ctx.closePath();
+        ctx.fillStyle = color;ctx.fill();
       }
-      function ribbon(extra) {
+      // Draw world-space strips far-to-near. The near camera makes road markings
+      // and kerbs expand quickly instead of sliding a flat texture underneath.
+      const first = Math.floor((distance + viewDepth) / 9) * 9;
+      for (let at = first; at > distance - 9; at -= 9) {
+        const a = clamp(1 - (at - distance) / viewDepth, 0, 1);
+        const b = clamp(1 - (at + 9 - distance) / viewDepth, 0, 1);
+        const index = Math.floor(at / 9), even = index % 2 === 0;
+        strip(a,b,-1.09,1.09,even ? '#ecf6ec' : '#48ccbc');
+        strip(a,b,-1,1,even ? '#344358' : '#35455b');
+        strip(a,b,-1.005,-.98,'#ecf4ee'); strip(a,b,.98,1.005,'#ecf4ee');
+        if (even) for (const line of [-.325,0,.325]) strip(a,b,line-.008,line+.008,'#a6bac6');
+      }
+      // Simple dimensional safety rails and passing trees share road projection.
+      for (const side of [-1,1]) {
         ctx.beginPath();
-        for (let i = 0; i <= 36; i++) { const p = roadPoint(i / 36, -1 - extra); i ? ctx.lineTo(p.x, p.y) : ctx.moveTo(p.x, p.y); }
-        for (let i = 36; i >= 0; i--) { const p = roadPoint(i / 36, 1 + extra); ctx.lineTo(p.x, p.y); }
-        ctx.closePath();
+        for (let i=0;i<=40;i++) {const t=i/40,p=roadPoint(t,side*1.12),y=p.y-18*p.scale;i?ctx.lineTo(p.x,y):ctx.moveTo(p.x,y);}
+        ctx.strokeStyle='#ebf4f0';ctx.lineWidth=4;ctx.lineJoin='round';ctx.stroke();
+        ctx.strokeStyle='#407677';ctx.lineWidth=2;ctx.stroke();
       }
-      const shoulder = ctx.createLinearGradient(0, horizon, 0, h);
-      shoulder.addColorStop(0, '#9b8b78'); shoulder.addColorStop(.6, '#777969'); shoulder.addColorStop(1, '#4c6965');
-      ribbon(.07); ctx.fillStyle = shoulder; ctx.fill();
-      const asphalt = ctx.createLinearGradient(0, horizon, 0, h);
-      asphalt.addColorStop(0, '#303e4a'); asphalt.addColorStop(.45, '#414b53'); asphalt.addColorStop(1, '#50545a');
-      ribbon(0); ctx.fillStyle = asphalt; ctx.fill();
-      ctx.save(); ribbon(0); ctx.clip();
-      ctx.translate(0, distance * 2.4 % 96); ctx.fillStyle = asphaltGrain;
-      ctx.fillRect(-w, horizon - 96, w * 3, h - horizon + 96);
-      ctx.restore();
-      ctx.save(); ribbon(0); ctx.clip();
-      const crown = ctx.createLinearGradient(0, 0, w, 0);
-      crown.addColorStop(0, '#101d2a44'); crown.addColorStop(.35, '#ffffff09');
-      crown.addColorStop(.65, '#ffffff0c'); crown.addColorStop(1, '#101d2a44');
-      ctx.fillStyle = crown; ctx.fillRect(0, horizon, w, h - horizon); ctx.restore();
-      for (const side of [-1, 1]) {
-        ctx.beginPath();
-        for (let i = 0; i <= 36; i++) { const p = roadPoint(i / 36, side); i ? ctx.lineTo(p.x, p.y) : ctx.moveTo(p.x, p.y); }
-        ctx.strokeStyle = '#e4c5a3'; ctx.lineWidth = 2; ctx.lineJoin = 'round'; ctx.stroke();
-      }
-      const markStart = Math.floor(distance / 24) * 24;
-      for (let mark = markStart; mark < distance + viewDepth; mark += 24) {
-        const delta = mark - distance;
-        if (delta < 0 || delta > viewDepth) continue;
-        const t1 = 1 - delta / viewDepth, t2 = 1 - Math.min(viewDepth, delta + 11) / viewDepth;
-        for (const side of [-1, 1]) {
-          const a = roadPoint(t1, side), b = roadPoint(t2, side);
-          ctx.strokeStyle = Math.floor(mark / 24) % 2 ? '#f3d4ac' : '#d5796e';
-          ctx.lineWidth = 1 + a.scale * 9; ctx.lineCap = 'butt';
-          ctx.beginPath(); ctx.moveTo(a.x, a.y); ctx.lineTo(b.x, b.y); ctx.stroke();
-        }
-        if (Math.floor(mark / 24) % 2 === 0) for (const line of [-1 / 3, 1 / 3]) {
-          const a = roadPoint(t1, line), b = roadPoint(t2, line);
-          ctx.strokeStyle = '#f4e7c383'; ctx.lineWidth = .5 + a.scale * 3;
-          ctx.beginPath(); ctx.moveTo(a.x, a.y); ctx.lineTo(b.x, b.y); ctx.stroke();
-        }
-      }
-      // Continuous rails follow the projected bends; sparse posts make speed visible.
-      for (const side of [-1, 1]) {
-        for (const [lift, shade, width] of [[7, '#243b45', 6], [12, '#c6c5ad', 3]]) {
-          ctx.beginPath();
-          for (let i = 0; i <= 36; i++) {
-            const t = i / 36, p = roadPoint(t, side * 1.12);
-            const y = p.y - lift * (.2 + p.scale * 1.3);
-            i ? ctx.lineTo(p.x, y) : ctx.moveTo(p.x, y);
-          }
-          ctx.lineWidth = width; ctx.strokeStyle = shade; ctx.lineJoin = 'round'; ctx.stroke();
-        }
-      }
-      const postStart = Math.floor(distance / 32) * 32;
-      for (let at = postStart; at < distance + viewDepth; at += 32) {
-        const delta = at - distance; if (delta < 0) continue;
-        const t = 1 - delta / viewDepth;
-        for (const side of [-1, 1]) {
-          const p = roadPoint(t, side * 1.12), tall = 3 + p.scale * 15;
-          ctx.strokeStyle = '#283d45'; ctx.lineWidth = 1 + p.scale * 3;
-          ctx.beginPath(); ctx.moveTo(p.x, p.y); ctx.lineTo(p.x, p.y - tall); ctx.stroke();
-        }
-      }
-      // Roadside props move through the same perspective as the road, far to near.
-      if (art.roadside?.complete && art.roadside.naturalWidth) {
-        const first = Math.floor((distance + viewDepth) / 42) * 42;
-        for (let at = first; at >= distance - 15; at -= 42) {
-          const t = clamp(1 - (at - distance) / viewDepth, 0, 1.05);
-          if (t <= 0 || t > 1.05) continue;
-          const p = roadPoint(t), slot = Math.floor(at / 42) % 6;
-          for (const side of [-1, 1]) {
-            const kind = slot === 0 ? 1 : slot === 1 ? 0 : slot === 2 ? (side < 0 ? 2 : 1) : slot === 3 ? 0 : slot === 4 ? (side > 0 ? 3 : 1) : 4;
-            const width = (kind === 0 ? 150 : kind === 1 ? 130 : 105) * p.scale;
-            const height = width * (kind === 2 ? 1.3 : kind === 0 ? .72 : 1);
-            const x = roadPoint(t, side * 1.26).x + side * width * .35;
-            ctx.drawImage(art.roadside, kind * 256, 0, 256, 256, x - width / 2, p.y - height * .8, width, height);
+      for(let at=Math.floor((distance+viewDepth)/24)*24;at>=distance;at-=24){
+        const t=1-(at-distance)/viewDepth;
+        for(const side of [-1,1]){
+          const p=roadPoint(t,side*1.16),sc=p.scale;
+          ctx.fillStyle='#3d7675';ctx.fillRect(p.x-2*sc,p.y-18*sc,4*sc,19*sc);
+          if (art.roadside?.naturalWidth) {
+            const cell=(Math.floor(at/24)+(side>0?1:0))%4;
+            const tree=roadPoint(t,side*(cell===3?1.35:1.6));
+            const width=(cell===3?138:190)*sc;
+            ctx.fillStyle='#246d6555';ctx.beginPath();ctx.ellipse(tree.x,tree.y,width*.32,width*.06,0,0,7);ctx.fill();
+            ctx.drawImage(art.roadside,(cell%2)*512,Math.floor(cell/2)*512,512,512,
+              tree.x-width/2,tree.y-width*.96,width,width);
           }
         }
       }
@@ -428,17 +398,51 @@
         const t = clamp(1 - delta / viewDepth, 0, 1.04), p = roadPoint(t, event.lane * .65), y = p.y;
         if (y < horizon || y > h) continue;
         const x = p.x;
-        if (art.obstacles?.complete && art.obstacles.naturalWidth && ['cone','box','banana'].includes(event.kind)) {
-          const cell = event.kind === 'cone' ? 0 : event.kind === 'box' ? 1 : 2;
-          const width = (event.kind === 'box' ? 90 : event.kind === 'banana' ? 68 : 72) * p.scale;
-          ctx.fillStyle = '#081d2880'; ctx.beginPath(); ctx.ellipse(x, y, width*.4, width*.105, 0, 0, 7); ctx.fill();
-          ctx.drawImage(art.obstacles, cell*192, 0, 192, 192, x-width/2, y-width*([171,164,164][cell]/192), width, width);
-          continue;
+        const sc=p.scale;
+        if(event.kind==='cone'){
+          const r=25*sc, tall=48*sc;
+          ctx.fillStyle='#192d4666';ctx.beginPath();ctx.ellipse(x,y,r*1.12,r*.3,0,0,7);ctx.fill();
+          ctx.fillStyle='#25354a';ctx.beginPath();ctx.roundRect(x-r,y-r*.25,r*2,r*.55,3*sc);ctx.fill();
+          ctx.fillStyle='#ff8753';ctx.beginPath();ctx.moveTo(x,y-tall);ctx.lineTo(x-r*.68,y);ctx.lineTo(x+r*.68,y);ctx.closePath();ctx.fill();
+          ctx.fillStyle='#d8583a';ctx.beginPath();ctx.moveTo(x,y-tall);ctx.lineTo(x+r*.68,y);ctx.lineTo(x,y);ctx.closePath();ctx.fill();
+          ctx.fillStyle='#fff6db';ctx.beginPath();ctx.moveTo(x-r*.25,y-tall*.64);ctx.lineTo(x+r*.25,y-tall*.64);ctx.lineTo(x+r*.4,y-tall*.42);ctx.lineTo(x-r*.4,y-tall*.42);ctx.closePath();ctx.fill();
+        }else if(event.kind==='box'){
+          const r=25*sc;
+          ctx.fillStyle='#172a4566';ctx.beginPath();ctx.ellipse(x,y,r*1.15,r*.3,0,0,7);ctx.fill();
+          ctx.fillStyle='#49cddb';ctx.fillRect(x-r,y-r*1.8,r*1.6,r*1.6);
+          ctx.fillStyle='#278eae';ctx.beginPath();ctx.moveTo(x+r*.6,y-r*1.8);ctx.lineTo(x+r,y-r*2);ctx.lineTo(x+r,y-r*.4);ctx.lineTo(x+r*.6,y-r*.2);ctx.closePath();ctx.fill();
+          ctx.fillStyle='#aaf8ed';ctx.beginPath();ctx.moveTo(x-r,y-r*1.8);ctx.lineTo(x-r*.6,y-r*2);ctx.lineTo(x+r,y-r*2);ctx.lineTo(x+r*.6,y-r*1.8);ctx.closePath();ctx.fill();
+          ctx.fillStyle='#f5f7dc';ctx.font=`900 ${Math.max(5,30*sc)}px system-ui`;ctx.textAlign='center';ctx.fillText('?',x-r*.15,y-r*.65);
+        }else if(event.kind==='banana'&&art.obstacles?.naturalWidth){
+          const width=64*sc;ctx.drawImage(art.obstacles,384,0,192,192,x-width/2,y-width*164/192,width,width);
+        }else if(event.kind==='pad'){
+          const r=34*sc;ctx.fillStyle='#238d9e';ctx.fillRect(x-r,y-12*sc,r*2,18*sc);
+          for(let n=0;n<3;n++){const yy=y-(n*6-3)*sc;ctx.strokeStyle='#8affed';ctx.lineWidth=3*sc;ctx.beginPath();ctx.moveTo(x-r*.6,yy);ctx.lineTo(x,yy-5*sc);ctx.lineTo(x+r*.6,yy);ctx.stroke();}
+        }else{
+          const r=18*sc;ctx.fillStyle='#ffdc5c';ctx.beginPath();
+          for(let n=0;n<10;n++){const angle=-Math.PI/2+n*Math.PI/5,rr=n%2?r*.48:r;const xx=x+Math.cos(angle)*rr,yy=y-r+Math.sin(angle)*rr;n?ctx.lineTo(xx,yy):ctx.moveTo(xx,yy);}ctx.closePath();ctx.fill();
+          ctx.strokeStyle='#fff2b0';ctx.lineWidth=Math.max(1,sc*2);ctx.stroke();
         }
-        ctx.textAlign = 'center'; ctx.font = `${Math.max(10, 47 * p.scale)}px sans-serif`;
-        ctx.fillStyle = event.kind === 'cone' ? '#f66a60' : event.kind === 'pad' ? '#79edfc' : '#ffe673';
-        if (event.kind === 'pad') { ctx.fillRect(x - 18*p.scale, y - 5*p.scale, 36*p.scale, 10*p.scale); ctx.fillStyle = '#113c5b'; ctx.fillText('»', x, y + 3*p.scale); }
-        else ctx.fillText(event.kind === 'cone' ? '▲' : event.kind === 'box' ? '▣' : '★', x, y);
+      }
+      if(gate){
+        const delta=gate.at-distance,t=1-delta/viewDepth;
+        if(delta<viewDepth&&delta>=-8){
+          const colors=['#50c9ed','#ff925e','#9e84ef','#f8d564'];
+          const selected=answerLanes.reduce((best,value,i)=>Math.abs(lane-value)<Math.abs(lane-answerLanes[best])?i:best,0);
+          for(let i=0;i<4;i++){
+            const p=roadPoint(t,answerLanes[i]*.65),width=w*.18*p.scale,tall=96*p.scale;
+            ctx.fillStyle='#12284266';ctx.beginPath();ctx.ellipse(p.x,p.y,width*.55,9*p.scale,0,0,7);ctx.fill();
+            ctx.fillStyle=colors[i];ctx.fillRect(p.x-width/2,p.y-8*p.scale,width,8*p.scale);
+            ctx.fillStyle=selected===i?colors[i]:'#20364cdc';
+            ctx.beginPath();ctx.roundRect(p.x-width/2,p.y-tall,width,tall*.72,8*p.scale);ctx.fill();
+            ctx.strokeStyle=colors[i];ctx.lineWidth=(selected===i?4:2)*p.scale;ctx.stroke();
+            ctx.fillStyle=selected===i?'#152b42':'#fff';ctx.font=`900 ${Math.max(9,44*p.scale)}px system-ui`;
+            ctx.textAlign='center';ctx.fillText('ABCD'[i],p.x,p.y-tall*.48);
+            ctx.fillStyle=colors[i];ctx.fillRect(p.x-width*.45,p.y-tall*.27,3*p.scale,tall*.27);ctx.fillRect(p.x+width*.4,p.y-tall*.27,3*p.scale,tall*.27);
+          }
+          const p=roadPoint(t);ctx.strokeStyle='#ecffefcc';ctx.lineWidth=3*p.scale;
+          ctx.beginPath();const l=roadPoint(t,-.65),r=roadPoint(t,.65);ctx.moveTo(l.x,l.y);ctx.lineTo(r.x,r.y);ctx.stroke();
+        }
       }
       for (const banana of bananas) {
         const delta = banana.at - distance, t = clamp(1 - delta / viewDepth, 0, 1.04);
@@ -454,7 +458,7 @@
         const target = opponents.find(o => o.id === shot.targetId);
         if (!target) continue;
         const flight = clamp((elapsed-shot.start)/.72,0,1);
-        const ahead = 12 + (Math.max(45, target.distance-distance) - 12) * flight;
+        const ahead = 12 + (Math.max(12, target.distance-distance) - 12) * flight;
         const p = roadPoint(1-ahead/viewDepth, target.lane*.65*flight), width = (65+flight*20)*p.scale;
         ctx.save(); ctx.translate(p.x,p.y-width*.3); ctx.rotate(-Math.PI/2);
         if (art.items?.complete && art.items.naturalWidth) ctx.drawImage(art.items, 256,0,128,128,-width/2,-width/2,width,width);
@@ -463,7 +467,7 @@
         ctx.strokeStyle = '#ffda89aa'; ctx.lineWidth = Math.max(1,width*.13); ctx.beginPath(); ctx.moveTo(p.x,p.y+width*.1); ctx.lineTo(p.x,p.y+width*.9); ctx.stroke();
       }
       for (const impact of impacts) {
-        const delta = impact.targetId ? Math.max(45, impact.at-distance) : impact.at-distance;
+        const delta = impact.targetId ? Math.max(12, impact.at-distance) : impact.at-distance;
         const p=roadPoint(1-delta/viewDepth, impact.lane*.65), life=clamp((impact.until-elapsed)/.55,0,1), width=170*p.scale*(1.3-life*.3);
         if (delta < -10 || delta > viewDepth) continue;
         ctx.save(); ctx.globalAlpha=life;
@@ -478,13 +482,13 @@
         if (y < h) { ctx.fillStyle = '#fff'; ctx.fillRect(p.x - width / 2, y, width, Math.max(5,p.scale*12)); ctx.fillStyle = '#17263a'; for(let x=0;x<12;x+=2)ctx.fillRect(p.x-width/2+x*width/12,y,width/12,Math.max(5,p.scale*12)/2); }
       }
       const targetIds = new Set([...missilesInFlight.map(shot => shot.targetId), ...impacts.map(impact => impact.targetId)]);
-      const visible = opponents.filter(o => (o.distance - distance > (w < 500 ? 36 : 28) || targetIds.has(o.id)) && o.distance - distance < viewDepth)
-        .sort((a,b) => Math.abs(a.distance-distance) - Math.abs(b.distance-distance)).slice(0, w < 500 ? 3 : 6)
+      const visible = opponents.filter(o => (o.distance - distance > -8 || targetIds.has(o.id)) && o.distance - distance < viewDepth)
+        .sort((a,b) => Math.abs(a.distance-distance) - Math.abs(b.distance-distance)).slice(0, w < 500 ? 6 : 8)
         .sort((a,b) => b.distance - a.distance);
       for (const o of visible) {
-        const delta = targetIds.has(o.id) ? Math.max(45, o.distance-distance) : o.distance-distance;
+        const delta = Math.max(targetIds.has(o.id) ? 12 : 4, o.distance-distance);
         const p = roadPoint(1 - delta / viewDepth, o.lane * .65);
-        if (p.y > horizon + 10 && p.y < h * .82) kart(p.x, p.y, .12 + p.scale * .98, o.color, o.name,
+        if (p.y > horizon + 10 && p.y < h * .95) kart(p.x, p.y, .12 + p.scale * .98, o.color, delta > 10 ? o.name : '',
           false, o.design, o.kartColor, o.hit || elapsed < (o.hitUntil || 0));
       }
       const py = h * .88;
@@ -499,12 +503,14 @@
         for (const side of [-1, 1]) { ctx.beginPath(); ctx.arc(px + side * w * .04 - lean * w * .02, py + h * .08, 3 + (Math.sin(elapsed * 18 + side) + 1) * 2, 0, 7); ctx.fill(); }
       }
       kart(px, py, clamp(w / 600, 1.05, 2), COLORS[0], options.playerName || '나', true, options.kartDesign, options.kartColor);
-      if (boosted) {
-        ctx.strokeStyle = '#dbfaff99'; ctx.lineWidth = 2;
-        for (let i = 0; i < 10; i++) {
-          const side = i % 2 ? 1 : -1, phase = ((i * 131 + distance * 8) % 800) / 800;
-          const y = horizon + phase * phase * (h - horizon), x = w * .5 + side * (w * (.2 + phase * .32));
-          ctx.beginPath(); ctx.moveTo(x, y); ctx.lineTo(x + side * (4 + phase * 8), y + 12 + phase * 35); ctx.stroke();
+      if (speed > 12) {
+        const intensity=clamp((speed-12)/20,0,1), count=boosted?18:8;
+        ctx.lineWidth=boosted?2:1.2;
+        for(let i=0;i<count;i++){
+          const side=i%2?1:-1,phase=((i*.173+distance*.065)%1),near=phase*phase;
+          const y=horizon+near*(h-horizon),x=w*.5+side*w*(.3+near*.25);
+          ctx.strokeStyle=`rgba(220,252,255,${intensity*(boosted?.6:.25)})`;
+          ctx.beginPath();ctx.moveTo(x,y);ctx.lineTo(x+side*(4+near*12),y+8+near*(boosted?55:28));ctx.stroke();
         }
       }
       if (elapsed < hitUntil || elapsed < slipUntil) {
@@ -527,11 +533,16 @@
       if (!playing) return;
       if (now - drawnAt < 30) { raf = requestAnimationFrame(frame); return; }
       drawnAt = now;
-      const dt = Math.min(.05, (now - previous) / 1000 || 0); previous = now; elapsed += dt;
+      const dt = Math.min(.15, (now - previous) / 1000 || 0); previous = now; elapsed += dt;
+      boostVisual += ((elapsed < boostUntil ? 1 : 0) - boostVisual) * Math.min(1, dt * 4);
       const oldLane = lane;
-      lane = clamp(lane + steer * dt * 1.28 * (elapsed < slipUntil ? .45 : 1) +
-        (elapsed < slipUntil ? Math.sin(elapsed * 27) * dt * .28 : 0), -.88, .88);
-      lean += (steer - lean) * Math.min(1, dt * 7);
+      const step = dt * 1.28 * (elapsed < slipUntil ? .45 : 1);
+      const driveSteer = laneTarget == null ? steer : Math.sign(laneTarget - lane);
+      lane = clamp(laneTarget == null ? lane + driveSteer * step +
+        (elapsed < slipUntil ? Math.sin(elapsed * 27) * dt * .28 : 0)
+        : lane + clamp(laneTarget - lane, -step, step), -.88, .88);
+      if (laneTarget != null && Math.abs(laneTarget - lane) < .001) laneTarget = null;
+      lean += (driveSteer - lean) * Math.min(1, dt * 7);
       if (speed > 14 && Math.abs(steer) > .5 && elapsed >= slipUntil) {
         driftTime += dt;
         if (driftTime >= .45 && driftTime - dt < .45) options.onEvent?.({ kind: 'drift', distance: Math.round(distance) });
@@ -542,12 +553,12 @@
       wasOffRoad = offRoad;
       if (mode === 'multi') {
         if (!finished) distance = Math.min(TOTAL, distance + speed * dt);
-        updateProjectiles();
+        crossGate(); updateProjectiles();
         if (elapsed - progressAt > .2) { progressAt = elapsed; onProgress(getState()); }
         effects = effects.filter(fx => fx.until > elapsed);
         if (!document.hidden) draw(); raf = requestAnimationFrame(frame); return;
       }
-      const target = elapsed < slowUntil ? 11 : elapsed < boostUntil ? 32 : elapsed < draftUntil ? 25.5 : 23;
+      const target = elapsed < slowUntil ? 14 : elapsed < boostUntil ? 46 : elapsed < draftUntil ? 34 : 31;
       speed += (target - speed) * Math.min(1, dt * 2.3);
       if (speed > 14 && Math.abs(lean) > .3) charge = Math.min(3, charge + Math.abs(lane - oldLane) * .45);
       const before = distance;
@@ -575,7 +586,12 @@
       }
       if (mode === 'solo') for (const o of ai) {
         const old = o.distance;
-        o.distance = Math.min(TOTAL, o.distance + (elapsed < (o.slowUntil || 0) ? 10 : o.base + Math.sin(elapsed * o.wobble + o.base) * 1.2) * dt);
+        const catchup = clamp((distance - o.distance) / 85, -1.5, 2.2);
+        const comBoost = elapsed > 8 && ((elapsed + o.slot * 2.9) % 21) < 2.6 ? 6 : 0;
+        o.distance = Math.min(TOTAL, o.distance + (elapsed < (o.slowUntil || 0) ? 13 : o.base + catchup + comBoost) * dt);
+        if(o.distance>=TOTAL&&!o.finishedAt){o.finishedAt=elapsed;o.finished=true;}
+        const targetLane = clamp(o.homeLane + Math.sin(elapsed * .45 + o.slot * 1.7) * .23,-.72,.72);
+        o.lane += (targetLane-o.lane)*Math.min(1,dt*.8);
         for (const banana of bananas) if (banana.owner !== o.id && banana.at > old && banana.at <= o.distance && Math.abs(o.lane - banana.lane) < .3 && elapsed >= (o.hitUntil || 0)) {
           o.slowUntil = elapsed + 2.5; o.hitUntil = elapsed + 1.7; banana.until = 0;
           effects.push({ text: `${o.name} 미끄러짐!`, until: elapsed + .9, color: '#ffe36c' });
@@ -583,7 +599,8 @@
         for (const event of COURSE) if (event.kind === 'banana' && event.at > old && event.at <= o.distance && Math.abs(o.lane-event.lane)<.3 && elapsed >= (o.hitUntil||0)) {
           o.slowUntil=elapsed+2.5; o.hitUntil=elapsed+1.7;
         }
-        if (distance > 40 && Math.abs(o.distance-distance) < 3.5 && Math.abs(o.lane-lane) < .18 &&
+        const gateSafe = gate && gate.at-distance < 85 && gate.at-distance > -12;
+        if (!gateSafe && distance > 40 && Math.abs(o.distance-distance) < 3.5 && Math.abs(o.lane-lane) < .18 &&
           (Math.abs(o.distance-distance) >= .8 || Math.abs(lane-oldLane) > .015) && elapsed >= hitUntil && elapsed >= (o.hitUntil || 0)) {
           hitUntil=elapsed+1.1; slipUntil=elapsed+.7; slowUntil=Math.max(slowUntil,elapsed+1.1);
           lane=clamp(lane+(o.lane<=lane ? .11 : -.11),-.88,.88);
@@ -599,7 +616,7 @@
       if (!question && questionIndex < QUESTION_MARKS.length && distance >= QUESTION_MARKS[questionIndex]) {
         questionIndex++; nextQuestion();
       }
-      if (question && elapsed >= questionDeadline) answer('');
+      crossGate();
       if (elapsed - progressAt > .2) { progressAt = elapsed; onProgress(getState()); }
       effects = effects.filter(fx => fx.until > elapsed);
       if (!document.hidden) draw();
@@ -612,7 +629,7 @@
     function start() { if (playing || finished) return; shuffle(); playing = true; previous = performance.now(); draw(); raf = requestAnimationFrame(frame); }
     function stop() { playing = false; cancelAnimationFrame(raf); }
     function destroy() { stop(); destroyed = true; observer?.disconnect(); window.removeEventListener('resize', resize); document.removeEventListener('visibilitychange', onVisibilityChange); }
-    function setSteer(value) { steer = clamp(value, -1, 1); }
+    function setSteer(value) { steer = clamp(value, -1, 1); if (steer) laneTarget=null; }
     function setProgress(value) { distance = clamp(Number(value) || 0, 0, TOTAL); draw(); }
     function setRemoteState(kart) {
       if (!kart) return;
@@ -649,7 +666,7 @@
         if (cue.kind === 'banana_hit' || cue.kind === 'contact') slipUntil = Math.max(slipUntil, elapsed + .9);
       }
     }
-    return { start, stop, destroy, answer, useItem, useWeapon, setSteer, setOpponents, setProgress, setRemoteState, playCue, getState, draw, get question() { return question; } };
+    return { start, stop, destroy, answer, useItem, useWeapon, setSteer, setOpponents, setProgress, setRemoteState, setGateQuestion, selectGateLane, retryGate, playCue, getState, draw, get question() { return question; } };
   }
   window.GrammarKart = { createRace: makeRace, paintPreview, paintShowcase, distance: TOTAL, course: COURSE };
 })();

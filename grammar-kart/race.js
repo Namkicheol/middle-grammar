@@ -556,6 +556,7 @@
         const target=opponents.find(o=>o.id===shot.targetId);
         if (target) { if (!shot.visualOnly) { target.slowUntil=elapsed+2.5;target.hitUntil=elapsed+1.6; }
           impacts.push({at:target.distance,lane:target.lane,targetId:target.id,until:elapsed+.55});
+          if (!shot.visualOnly) options.onEvent?.({ kind: 'hit', targetId: target.id });
           effects.push({text:`${target.name} HIT!`,until:elapsed+.9,color:'#ffb693'}); }
       }
       missilesInFlight=missilesInFlight.filter(shot=>elapsed-shot.start<.72);

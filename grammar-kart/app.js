@@ -146,28 +146,58 @@
     ui.item.addEventListener('click', useItem); ui.weapon.addEventListener('click', () => useWeapon());
     ui.missile.addEventListener('click', () => useWeapon('missile')); ui.shield.addEventListener('click', () => useWeapon('shield'));
     document.getElementById('leave').addEventListener('click', () => { race.stop(); window.KartAudio?.stopMusic?.(); showMenu(); });
-    const held = { left: false, right: false };
-    const updateSteer = () => race.setSteer((held.right ? 1 : 0) - (held.left ? 1 : 0));
-    const setHeld = (dir, value) => { held[dir] = value; updateSteer(); };
+    const pointerDirections = new Map();
+    const keyHolds = { left: new Set(), right: new Set() };
+    const directionForKey = key => ['ArrowLeft', 'a', 'A'].includes(key) ? 'left' : ['ArrowRight', 'd', 'D'].includes(key) ? 'right' : '';
+    const isHeld = dir => keyHolds[dir].size > 0 || [...pointerDirections.values()].includes(dir);
+    const updateSteer = () => race.setSteer((isHeld('right') ? 1 : 0) - (isHeld('left') ? 1 : 0));
+    const clearHeld = () => {
+      pointerDirections.clear();
+      keyHolds.left.clear(); keyHolds.right.clear();
+      updateSteer();
+    };
+    const onPointerDown = dir => ev => {
+      ev.preventDefault();
+      pointerDirections.set(ev.pointerId, dir);
+      ev.currentTarget.setPointerCapture(ev.pointerId);
+      updateSteer();
+    };
+    const onPointerRelease = ev => {
+      if (pointerDirections.delete(ev.pointerId)) updateSteer();
+    };
     for (const dir of ['left', 'right']) {
       const button = document.getElementById(dir);
-      button.addEventListener('pointerdown', ev => { ev.preventDefault(); button.setPointerCapture(ev.pointerId); setHeld(dir, true); });
-      button.addEventListener('pointerup', () => setHeld(dir, false));
-      button.addEventListener('pointercancel', () => setHeld(dir, false));
-      button.addEventListener('lostpointercapture', () => setHeld(dir, false));
+      button.addEventListener('pointerdown', onPointerDown(dir));
+      button.addEventListener('lostpointercapture', onPointerRelease);
     }
     const keydown = ev => {
       if (app.race !== race) return;
-      if (['ArrowLeft','a','A'].includes(ev.key)) { ev.preventDefault(); setHeld('left', true); }
-      if (['ArrowRight','d','D'].includes(ev.key)) { ev.preventDefault(); setHeld('right', true); }
+      const direction = directionForKey(ev.key);
+      if (direction) { ev.preventDefault(); keyHolds[direction].add(ev.key); updateSteer(); }
       if ('1234'.includes(ev.key) && ev.key.length === 1 && race.question) { const choice = race.question.opts[Number(ev.key) - 1]; if (choice) choose(choice); }
       if (ev.code === 'Space') { ev.preventDefault(); useItem(); }
       if (ev.key === 'x' || ev.key === 'X') { ev.preventDefault(); useWeapon(); }
     };
-    const keyup = ev => { if (['ArrowLeft','a','A'].includes(ev.key)) setHeld('left', false); if (['ArrowRight','d','D'].includes(ev.key)) setHeld('right', false); };
+    const keyup = ev => {
+      const direction = directionForKey(ev.key);
+      if (direction && keyHolds[direction].delete(ev.key)) updateSteer();
+    };
+    const visibilityChange = () => { if (document.visibilityState === 'hidden') clearHeld(); };
+    window.addEventListener('pointerup', onPointerRelease);
+    window.addEventListener('pointercancel', onPointerRelease);
     window.addEventListener('keydown', keydown); window.addEventListener('keyup', keyup);
+    window.addEventListener('blur', clearHeld);
+    document.addEventListener('visibilitychange', visibilityChange);
     const destroy = race.destroy;
-    race.destroy = () => { window.removeEventListener('keydown', keydown); window.removeEventListener('keyup', keyup); destroy(); };
+    race.destroy = () => {
+      window.removeEventListener('pointerup', onPointerRelease);
+      window.removeEventListener('pointercancel', onPointerRelease);
+      window.removeEventListener('keydown', keydown); window.removeEventListener('keyup', keyup);
+      window.removeEventListener('blur', clearHeld);
+      document.removeEventListener('visibilitychange', visibilityChange);
+      clearHeld();
+      return destroy();
+    };
     if (options.autoStart !== false) {
       [3, 2, 1].forEach((count, index) => setTimeout(() => {
         if (app.race !== race) return;

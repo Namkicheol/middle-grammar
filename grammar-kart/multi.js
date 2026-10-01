@@ -116,25 +116,73 @@
     const missile = document.createElement('button'); missile.id='missile'; missile.className='control weapon'; missile.type='button'; missile.textContent='미사일 0'; missile.disabled=true;
     const shield = document.createElement('button'); shield.id='shield'; shield.className='control weapon'; shield.type='button'; shield.textContent='방어막 0'; shield.disabled=true;
     document.querySelector('.controls').append(missile, shield);
-    const held = { left: false, right: false };
-    const steer = () => race.setSteer((held.right ? 1 : 0) - (held.left ? 1 : 0));
+    const boundRace = race;
+    const pointerDirections = new Map();
+    const keyHolds = { left: new Set(), right: new Set() };
+    const directionForKey = key => ['ArrowLeft', 'a', 'A'].includes(key) ? 'left' : ['ArrowRight', 'd', 'D'].includes(key) ? 'right' : '';
+    const isHeld = dir => keyHolds[dir].size > 0 || [...pointerDirections.values()].includes(dir);
+    const steer = () => boundRace.setSteer((isHeld('right') ? 1 : 0) - (isHeld('left') ? 1 : 0));
+    const clearHeld = () => {
+      pointerDirections.clear();
+      keyHolds.left.clear(); keyHolds.right.clear();
+      steer();
+    };
+    const onPointerDown = dir => e => {
+      e.preventDefault();
+      pointerDirections.set(e.pointerId, dir);
+      e.currentTarget.setPointerCapture(e.pointerId);
+      steer();
+      window.KartAudio?.unlock?.(); window.KartAudio?.startMusic?.();
+    };
+    const onPointerRelease = e => {
+      if (pointerDirections.delete(e.pointerId)) steer();
+    };
+    const controls = [];
     for (const dir of ['left','right']) {
       const button = $(dir);
-      button.addEventListener('pointerdown', e => { e.preventDefault(); button.setPointerCapture(e.pointerId); held[dir] = true; steer(); window.KartAudio?.unlock?.(); window.KartAudio?.startMusic?.(); });
-      for (const name of ['pointerup','pointercancel','lostpointercapture']) button.addEventListener(name, () => { held[dir] = false; steer(); });
+      const pointerdown = onPointerDown(dir);
+      button.addEventListener('pointerdown', pointerdown);
+      button.addEventListener('lostpointercapture', onPointerRelease);
+      controls.push({ button, pointerdown });
     }
+    const keydown = e => {
+      if (race !== boundRace) return;
+      const direction = directionForKey(e.key);
+      if (direction) { e.preventDefault(); keyHolds[direction].add(e.key); steer(); }
+      if ('1234'.includes(e.key) && e.key.length === 1) document.querySelectorAll('.choices button')[Number(e.key)-1]?.click();
+      if (e.code === 'Space') { e.preventDefault(); $('item').click(); }
+      if (e.key === 'x' || e.key === 'X') { e.preventDefault(); (missile.disabled ? shield.disabled ? $('weapon') : shield : missile).click(); }
+    };
+    const keyup = e => {
+      const direction = directionForKey(e.key);
+      if (direction && keyHolds[direction].delete(e.key)) steer();
+    };
+    const visibilityChange = () => { if (document.visibilityState === 'hidden') clearHeld(); };
+    window.addEventListener('pointerup', onPointerRelease);
+    window.addEventListener('pointercancel', onPointerRelease);
+    window.addEventListener('keydown', keydown);
+    window.addEventListener('keyup', keyup);
+    window.addEventListener('blur', clearHeld);
+    document.addEventListener('visibilitychange', visibilityChange);
     $('item').addEventListener('click', () => { window.KartAudio?.unlock?.(); send({ type: 'grammar-kart-item-request' }); });
     $('weapon').addEventListener('click', () => { window.KartAudio?.unlock?.(); send({ type: 'grammar-kart-weapon-request', weapon: race.getState().heldItem }); });
     missile.addEventListener('click', () => { window.KartAudio?.unlock?.(); send({ type: 'grammar-kart-weapon-request', weapon: 'missile' }); });
     shield.addEventListener('click', () => { window.KartAudio?.unlock?.(); send({ type: 'grammar-kart-weapon-request', weapon: 'shield' }); });
-    window.addEventListener('keydown', e => {
-      if (['ArrowLeft','a','A'].includes(e.key)) { e.preventDefault(); held.left = true; steer(); }
-      if (['ArrowRight','d','D'].includes(e.key)) { e.preventDefault(); held.right = true; steer(); }
-      if ('1234'.includes(e.key) && e.key.length === 1) document.querySelectorAll('.choices button')[Number(e.key)-1]?.click();
-      if (e.code === 'Space') { e.preventDefault(); $('item').click(); }
-      if (e.key === 'x' || e.key === 'X') { e.preventDefault(); (missile.disabled ? shield.disabled ? $('weapon') : shield : missile).click(); }
-    });
-    window.addEventListener('keyup', e => { if (['ArrowLeft','a','A'].includes(e.key)) held.left = false; if (['ArrowRight','d','D'].includes(e.key)) held.right = false; steer(); });
+    const cleanup = () => {
+      window.removeEventListener('pointerup', onPointerRelease);
+      window.removeEventListener('pointercancel', onPointerRelease);
+      window.removeEventListener('keydown', keydown);
+      window.removeEventListener('keyup', keyup);
+      window.removeEventListener('blur', clearHeld);
+      document.removeEventListener('visibilitychange', visibilityChange);
+      controls.forEach(({ button, pointerdown }) => {
+        button.removeEventListener('pointerdown', pointerdown);
+        button.removeEventListener('lostpointercapture', onPointerRelease);
+      });
+      clearHeld();
+    };
+    const destroy = boundRace.destroy;
+    boundRace.destroy = () => { cleanup(); return destroy.call(boundRace); };
   }
   window.addEventListener('message', e => {
     if (e.origin !== origin) return;

@@ -88,7 +88,7 @@ export function advanceKart(source: KartState, now: number): KartState {
   while (at < now && !kart.finishedAt) {
     const step = Math.min(100, now - at);
     at += step;
-    const target = at < kart.slowUntil ? 14 : at < kart.boostUntil ? 46 : at < kart.draftUntil ? 34 : 31;
+    const target = at < kart.slowUntil ? 14 : at < kart.boostUntil ? 55 : at < kart.draftUntil ? 38 : 35;
     kart.speed += (target - kart.speed) * Math.min(1, step / 1000 * 2.3);
     const before = kart.distance;
     kart.distance = Math.min(KART_DISTANCE, kart.distance + kart.speed *

@@ -101,7 +101,7 @@
       const key = `${q.id}:${occurrence ?? q.occurrenceIndex ?? 0}`;
       if (gate?.key === key || completedGate === key) return;
       const reading = (q.eng || '').length + q.opts.join(' ').length;
-      gate = { key, question: q, at: Math.min(TOTAL - 20, distance + (reading > 170 ? 320 : 260)) };
+      gate = { key, question: q, at: Math.min(TOTAL - 20, distance + (reading > 170 ? 335 : 300)) };
     }
     function selectGateLane(index) {
       if (!gate || gate.submitted || index < 0 || index > 3) return;
@@ -166,7 +166,7 @@
       ['nova','노바','teal','violet',29.5,.06], ['ace','에이스','red','cyan',30,-.28],
       ['spark','스파크','yellow','lime',31,.32], ['luna','루나','teal','pink',29,-.48],
       ['dash','대시','yellow','coral',30.5,.68], ['pixel','픽셀','red','violet',32.5,-.08]
-    ].map(([id,name,design,kartColor,base,lane],i)=>({id,name,design,kartColor,base,lane,
+    ].map(([id,name,design,kartColor,base,lane],i)=>({id,name,design,kartColor,base:base*35/31,lane,
       color:COLORS[i%COLORS.length],wobble:.2+i*.025,distance:-i*3,slot:i,homeLane:lane}));
     if (mode === 'solo') opponents = ai;
     const playerDesign = options.kartDesign || 'teal', playerColor = options.kartColor || 'cyan';
@@ -339,7 +339,7 @@
       const boosted = elapsed < boostUntil;
       const horizon = h * .34;
       const viewDepth = 340;
-      const lens = 50 - boostVisual * 10;
+      const lens = 44 - boostVisual * 14;
       const farScale = lens / (lens + viewDepth);
       const roadPoint = (t, offset = 0) => {
         const ahead = clamp((1 - t) * viewDepth, -12, viewDepth);
@@ -537,13 +537,13 @@
       }
       kart(px, py, clamp(w / 470, 1.35, 2.65), COLORS[0], options.playerName || '나', true, options.kartDesign, options.kartColor);
       if (speed > 12) {
-        const intensity=clamp((speed-12)/20,0,1), count=boosted?22:10;
+        const intensity=clamp((speed-12)/20,0,1), count=boosted?26:14;
         ctx.lineWidth=boosted?2:1.2;
         for(let i=0;i<count;i++){
-          const side=i%2?1:-1,phase=((i*.173+distance*.079)%1),near=phase*phase;
+          const side=i%2?1:-1,phase=((i*.173+distance*.095)%1),near=phase*phase;
           const y=horizon+near*(h-horizon),x=w*.5+side*w*(.3+near*.25);
-          ctx.strokeStyle=`rgba(220,252,255,${intensity*(boosted?.65:.3)})`;
-          ctx.beginPath();ctx.moveTo(x,y);ctx.lineTo(x+side*(4+near*12),y+8+near*(boosted?65:36));ctx.stroke();
+          ctx.strokeStyle=`rgba(220,252,255,${intensity*(boosted?.72:.35)})`;
+          ctx.beginPath();ctx.moveTo(x,y);ctx.lineTo(x+side*(4+near*12),y+8+near*(boosted?82:46));ctx.stroke();
         }
       }
       if (elapsed < hitUntil || elapsed < slipUntil) {
@@ -591,7 +591,7 @@
         effects = effects.filter(fx => fx.until > elapsed);
         if (!document.hidden) draw(); raf = requestAnimationFrame(frame); return;
       }
-      const target = elapsed < slowUntil ? 14 : elapsed < boostUntil ? 46 : elapsed < draftUntil ? 34 : 31;
+      const target = elapsed < slowUntil ? 14 : elapsed < boostUntil ? 55 : elapsed < draftUntil ? 38 : 35;
       speed += (target - speed) * Math.min(1, dt * 2.3);
       if (speed > 14 && Math.abs(lean) > .3) charge = Math.min(3, charge + Math.abs(lane - oldLane) * .45);
       const before = distance;

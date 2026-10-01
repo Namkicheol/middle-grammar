@@ -96,7 +96,7 @@
     $('speed').textContent = me.kart.speed;
     $('meters').textContent = `${me.kart.distance} / 1800 m`;
     $('bar').style.width = `${me.kart.distance / 18}%`;
-    $('place').textContent = `#${me.rank}`;
+    $('place').textContent = `${me.rank} / ${(room.leaderboard || []).length}`;
     $('item').textContent = me.kart.boostStock ? `부스터 ×${me.kart.boostStock}` : me.kart.charge >= 3 ? '부스터 준비' : `${Math.round(me.kart.charge / 3 * 100)}%`;
     $('item').style.setProperty('--meter', `${Math.round(me.kart.charge / 3 * 100)}%`);
     $('item').classList.toggle('ready', me.kart.boostStock > 0 || me.kart.charge >= 3);

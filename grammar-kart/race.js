@@ -2,17 +2,17 @@
 (function () {
   'use strict';
   const art = {};
-  const KART_PAINT = { cyan: '#35d6dc', coral: '#f65b65', gold: '#ffd04e', violet: '#a879ed', lime: '#94db64', pink: '#ef8bc0' };
+  const KART_PAINT = { cyan: '#4b95df', coral: '#f65b65', gold: '#ffd04e', violet: '#a879ed', lime: '#94db64', pink: '#ef8bc0' };
   if (typeof Image !== 'undefined') {
-    for (const [key, file] of Object.entries({ backdrop: 'clean-v2/coastal-sky.webp', roadside: 'clean-v2/roadside.webp', obstacles: 'race-obstacles-atlas.webp', items: 'race-items-atlas.webp', teal: 'kart-rear-teal.webp', red: 'kart-rear-red.webp', yellow: 'kart-rear-yellow.webp' })) {
-      const img = new Image(); img.decoding = 'async'; img.src = `assets/art/${['teal','red','yellow'].includes(key) ? 'clean-v2/' : ''}${file}`; art[key] = img;
+    for (const [key, file] of Object.entries({ backdrop: 'coastal-v3/paddock.webp', roadside: 'coastal-v3/roadside.webp', obstacles: 'race-obstacles-atlas.webp', items: 'race-items-atlas.webp', teal: 'kart-rear-teal.webp', red: 'kart-rear-red.webp', yellow: 'kart-rear-yellow.webp' })) {
+      const img = new Image(); img.decoding = 'async'; img.src = `assets/art/${['teal','red','yellow'].includes(key) ? 'coastal-v3/' : ''}${file}`; art[key] = img;
     }
     for (const design of ['teal', 'red', 'yellow']) for (const pose of ['left', 'right']) {
-      const img = new Image(); img.decoding = 'async'; img.src = `assets/art/clean-v2/kart-${pose}-${design}.webp`;
+      const img = new Image(); img.decoding = 'async'; img.src = `assets/art/coastal-v3/kart-${pose}-${design}.webp`;
       art[`${design}-${pose}`] = img;
     }
     for (const design of ['teal', 'red', 'yellow']) {
-      const img = new Image(); img.decoding = 'async'; img.src = `assets/art/clean-v2/kart-rear-${design}.webp`;
+      const img = new Image(); img.decoding = 'async'; img.src = `assets/art/coastal-v3/kart-showcase-${design}.webp`;
       art[`showcase-${design}`] = img;
     }
     art.variants = new Map();
@@ -54,7 +54,7 @@
     context.drawImage(image, 0, 0, canvas.width, canvas.height);
   }
   function paintShowcase(canvas, design = 'teal', color = 'cyan') {
-    const source = art[`showcase-${design}`]?.naturalWidth ? art[`showcase-${design}`] : art[design];
+    const source = art[`showcase-${design}`] || art[design];
     const image = tinted(source, `showcase:${design}:${color}:${source === art[design] ? 'fallback' : 'full'}`, color);
     if (!image) { source?.addEventListener('load', () => paintShowcase(canvas, design, color), { once: true }); return; }
     const context = canvas.getContext('2d'); context.clearRect(0, 0, canvas.width, canvas.height);
@@ -259,7 +259,7 @@
         .sort((a, b) => b.distance - a.distance || (a.elapsed ?? Infinity) - (b.elapsed ?? Infinity));
       return { distance: Math.round(distance), total: TOTAL, speed: Math.round(speed * 3.6), lane: +lane.toFixed(2), obstaclesHit, padsTaken, starsTaken,
         elapsed: +elapsed.toFixed(1), questionRemaining: gate ? Math.max(0, Math.ceil((gate.at-distance)/Math.max(speed,14))) : null,
-        charge, boostStock, missiles, shields, heldItem, gatePending: !!gate?.submitted, answerLane: gate ? answerLanes.reduce((best,value,i)=>Math.abs(lane-value)<Math.abs(lane-answerLanes[best])?i:best,0) : null, gateRemaining: gate ? Math.max(0,Math.ceil((gate.at-distance)/Math.max(speed,14))) : null, correct, asked, rank: standings.findIndex(s => s.me) + 1,
+        charge, boostStock, missiles, shields, heldItem, gatePending: !!gate?.submitted, answerLane: gate ? gate.submitted ? gate.index : answerLanes.reduce((best,value,i)=>Math.abs(lane-value)<Math.abs(lane-answerLanes[best])?i:best,0) : null, gateRemaining: gate ? Math.max(0,Math.ceil((gate.at-distance)/Math.max(speed,14))) : null, correct, asked, rank: standings.findIndex(s => s.me) + 1,
         standings, boosted: elapsed < boostUntil, shielded: elapsed < shieldUntil, finished };
     }
     function resize() {
@@ -277,23 +277,27 @@
     window.addEventListener('resize', resize);
     document.addEventListener('visibilitychange', onVisibilityChange);
     function onVisibilityChange() { if (!document.hidden && !destroyed) { resize(); draw(); } }
-    function trackCenter(at) { return Math.sin(at / 145) * 30 + Math.sin(at / 310) * 18 + Math.sin(at / 68) * 4; }
-    function trackSlope(at) { return Math.cos(at / 145) * 30 / 145 + Math.cos(at / 310) * 18 / 310 + Math.cos(at / 68) * 4 / 68; }
+    function trackCenter(at) { return Math.sin(at / 190) * 65 + Math.sin(at / 360) * 40; }
+    function trackSlope(at) { return Math.cos(at / 190) * 65 / 190 + Math.cos(at / 360) * 40 / 360; }
     function trackHeight(at) { return Math.sin(at / 105) * 5 + Math.sin(at / 245) * 8; }
     function kart(x, y, size, color, label, player = false, design = 'teal', kartColor = 'cyan', hit = false) {
       const pose = player && lean < -.24 ? 'left' : player && lean > .24 ? 'right' : 'rear';
       const sprite = spriteFor(design, kartColor, pose);
       if (sprite) {
         const width = 108 * size;
-        ctx.save(); ctx.translate(x, y); ctx.rotate(player ? -lean * .2 : hit ? Math.sin(elapsed * 34) * .12 : 0);
+        ctx.save(); ctx.translate(x, y); ctx.rotate(player ? -lean * .10 : hit ? Math.sin(elapsed * 34) * .12 : 0);
         ctx.fillStyle = '#091b2a88'; ctx.beginPath(); ctx.ellipse(0, 2, width * .39, width * .11, 0, 0, 7); ctx.fill();
         if (player && elapsed < boostUntil) {
-          ctx.fillStyle = '#fff7b0';
-          for (const side of [-1, 1]) { ctx.beginPath(); ctx.moveTo(side * width * .16, -width * .07); ctx.lineTo(side * width * .1, width * .34 + Math.sin(elapsed * 29) * width * .06); ctx.lineTo(side * width * .23, -width * .07); ctx.fill(); }
+          for (const side of [-1, 1]) {
+            const flame=width*(.32+Math.sin(elapsed*29)*.05);
+            const fire=ctx.createLinearGradient(0,-width*.08,0,flame);
+            fire.addColorStop(0,'#e5fcff');fire.addColorStop(.35,'#76d7ff');fire.addColorStop(1,'#3d87f500');
+            ctx.fillStyle=fire;ctx.beginPath();ctx.moveTo(side*width*.17-width*.045,-width*.08);ctx.lineTo(side*width*.17,flame);ctx.lineTo(side*width*.17+width*.045,-width*.08);ctx.fill();
+          }
         }
-        ctx.drawImage(sprite, -width / 2, -width * .74 + (Math.sin(elapsed * 31) * Math.min(speed / 40, 1)), width, width);
+        ctx.drawImage(sprite, -width / 2, -width * .90 + (Math.sin(elapsed * 31) * Math.min(speed / 40, 1)), width, width);
         if (player && speed > 4) for (const side of [-1, 1]) {
-          const wheelX = side * width * .385, wheelY = width * .015, wheelW = width * .105, wheelH = width * .16;
+          const wheelX = side * width * .35, wheelY = -width * .13, wheelW = width * .105, wheelH = width * .16;
           ctx.save(); ctx.beginPath(); ctx.roundRect(wheelX - wheelW/2, wheelY - wheelH/2, wheelW, wheelH, wheelW*.4); ctx.clip();
           ctx.strokeStyle = '#45545b88'; ctx.lineWidth = Math.max(1, size * 1.4);
           const offset = distance * .45 % (wheelH / 3);
@@ -305,7 +309,7 @@
         if (label && !player) { ctx.fillStyle = '#fff'; ctx.font = `900 ${player ? 13 : 11}px Nunito`; ctx.textAlign = 'center'; ctx.fillText(label, x, y - width * .53); }
         return;
       }
-      ctx.save(); ctx.translate(x, y); ctx.rotate(player ? -lean * .2 : 0); ctx.scale(size, size);
+      ctx.save(); ctx.translate(x, y); ctx.rotate(player ? -lean * .10 : 0); ctx.scale(size, size);
       ctx.fillStyle = '#07122188'; ctx.beginPath(); ctx.ellipse(0, 8, 31, 10, 0, 0, 7); ctx.fill();
       ctx.fillStyle = '#162338'; ctx.fillRect(-30, -7, 9, 24); ctx.fillRect(21, -7, 9, 24);
       ctx.fillStyle = color; ctx.beginPath(); ctx.roundRect(-24, -29, 48, 42, 13); ctx.fill();
@@ -326,32 +330,33 @@
       const { w, h } = size;
       if (!w || !h) return;
       const boosted = elapsed < boostUntil;
-      const horizon = h * .32;
-      const viewDepth = 360;
-      const lens = 13 - boostVisual * 3;
+      const horizon = h * .34;
+      const viewDepth = 340;
+      const lens = 58 - boostVisual * 8;
+      const farScale = lens / (lens + viewDepth);
       const roadPoint = (t, offset = 0) => {
-        const ahead = clamp(1 - t, 0, 1) * viewDepth;
+        const ahead = clamp((1 - t) * viewDepth, -12, viewDepth);
         const scale = lens / (lens + ahead);
-        const bend = clamp(trackCenter(distance + ahead) - trackCenter(distance) - trackSlope(distance) * ahead * .4, -34, 34);
+        const bend = clamp(trackCenter(distance + ahead) - trackCenter(distance) - trackSlope(distance) * ahead * .6, -90, 90);
         const rise = trackHeight(distance + ahead) - trackHeight(distance);
         const bank = trackSlope(distance + ahead) * h * .05 * scale;
         return {
-          x: w * (.5 - lane * .38 * scale + bend * .048 * scale) + offset * (w * (.68 + boostVisual * .035) * scale + 3),
-          y: horizon + (h - horizon) * scale * 1.05 - rise * h * .006 * (.25 + scale) + offset * bank,
+          x: w * (.5 - lane * .42 * scale + bend * .022 * scale) + offset * w * (.68 + boostVisual * .025) * scale,
+          y: horizon + (h * .94 - horizon) * (scale - farScale) / (1 - farScale) - rise * h * .003 * (.25 + scale) + offset * bank,
           scale
         };
       };
       const sky = ctx.createLinearGradient(0, 0, 0, horizon);
-      sky.addColorStop(0, '#5eb8e7'); sky.addColorStop(1, '#d5f2f2');
+      sky.addColorStop(0, '#77b8e3'); sky.addColorStop(1, '#f9e6c2');
       ctx.fillStyle = sky; ctx.fillRect(0, 0, w, h);
       if (art.backdrop?.complete && art.backdrop.naturalWidth) {
         const panorama = art.backdrop;
         const drift = -trackSlope(distance) * w * .22 - lane * w * .025;
-        ctx.drawImage(panorama, 0, panorama.naturalHeight * .28, panorama.naturalWidth, panorama.naturalHeight * .62,
+        ctx.drawImage(panorama, 0, panorama.naturalHeight * .04, panorama.naturalWidth, panorama.naturalHeight * .65,
           -w * .15 + drift, 0, w * 1.3, horizon + 8);
       }
       const turf = ctx.createLinearGradient(0,horizon,0,h);
-      turf.addColorStop(0,'#91c8ac'); turf.addColorStop(.55,'#62b095'); turf.addColorStop(1,'#439482');
+      turf.addColorStop(0,'#dfd3b7'); turf.addColorStop(.55,'#c6b99a'); turf.addColorStop(1,'#ac9c83');
       ctx.fillStyle = turf; ctx.fillRect(0, horizon, w, h - horizon);
       function strip(a, b, left, right, color) {
         const p1 = roadPoint(a, left), p2 = roadPoint(b, left), p3 = roadPoint(b, right), p4 = roadPoint(a, right);
@@ -361,41 +366,41 @@
       // Draw world-space strips far-to-near. The near camera makes road markings
       // and kerbs expand quickly instead of sliding a flat texture underneath.
       const first = Math.floor((distance + viewDepth) / 9) * 9;
-      for (let at = first; at > distance - 9; at -= 9) {
-        const a = clamp(1 - (at - distance) / viewDepth, 0, 1);
-        const b = clamp(1 - (at + 9 - distance) / viewDepth, 0, 1);
+      for (let at = first; at > distance - 24; at -= 9) {
+        const a = clamp(1 - (at - distance) / viewDepth, 0, 1.04);
+        const b = clamp(1 - (at + 9 - distance) / viewDepth, 0, 1.04);
         const index = Math.floor(at / 9), even = index % 2 === 0;
-        strip(a,b,-1.09,1.09,even ? '#ecf6ec' : '#48ccbc');
-        strip(a,b,-1,1,even ? '#344358' : '#35455b');
-        strip(a,b,-1.005,-.98,'#ecf4ee'); strip(a,b,.98,1.005,'#ecf4ee');
-        if (even) for (const line of [-.325,0,.325]) strip(a,b,line-.008,line+.008,'#a6bac6');
+        strip(a,b,-1.3,1.3,even ? '#d3c6a7' : '#ccbe9f');
+        strip(a,b,-1.09,1.09,even ? '#fff0d4' : '#f36f54');
+        strip(a,b,-1,1,even ? '#394451' : '#3c4754');
+        strip(a,b,-1.005,-.98,'#f3dec2'); strip(a,b,.98,1.005,'#f3dec2');
+        if (even) for (const line of (gate ? [-.5,0,.5] : [0])) strip(a,b,line-.006,line+.006,'#9caaa9');
+        for (const side of [-1,1]) {
+          const n=roadPoint(a,side*1.3),f=roadPoint(b,side*1.3);
+          const nh=58*n.scale,fh=58*f.scale;
+          ctx.beginPath();ctx.moveTo(n.x,n.y);ctx.lineTo(f.x,f.y);ctx.lineTo(f.x,f.y-fh);ctx.lineTo(n.x,n.y-nh);ctx.closePath();
+          ctx.fillStyle=side<0?'#d7c9ac':'#c4b696';ctx.fill();
+          ctx.beginPath();ctx.moveTo(n.x,n.y-nh);ctx.lineTo(f.x,f.y-fh);
+          ctx.strokeStyle=even?'#fff3d9':'#3675a1';ctx.lineWidth=Math.max(1,6*n.scale);ctx.stroke();
+        }
       }
-      // Simple dimensional safety rails and passing trees share road projection.
-      for (const side of [-1,1]) {
-        ctx.beginPath();
-        for (let i=0;i<=40;i++) {const t=i/40,p=roadPoint(t,side*1.12),y=p.y-18*p.scale;i?ctx.lineTo(p.x,y):ctx.moveTo(p.x,y);}
-        ctx.strokeStyle='#ebf4f0';ctx.lineWidth=4;ctx.lineJoin='round';ctx.stroke();
-        ctx.strokeStyle='#407677';ctx.lineWidth=2;ctx.stroke();
-      }
-      for(let at=Math.floor((distance+viewDepth)/24)*24;at>=distance;at-=24){
+      // A few substantial props establish a paddock instead of rows of tiny trees.
+      for(let at=Math.floor((distance+viewDepth)/42)*42;at>=distance-6;at-=42){
         const t=1-(at-distance)/viewDepth;
         for(const side of [-1,1]){
-          const p=roadPoint(t,side*1.16),sc=p.scale;
-          ctx.fillStyle='#3d7675';ctx.fillRect(p.x-2*sc,p.y-18*sc,4*sc,19*sc);
-          if (art.roadside?.naturalWidth) {
-            const cell=(Math.floor(at/24)+(side>0?1:0))%4;
-            const tree=roadPoint(t,side*(cell===3?1.35:1.6));
-            const width=(cell===3?138:190)*sc;
-            ctx.fillStyle='#246d6555';ctx.beginPath();ctx.ellipse(tree.x,tree.y,width*.32,width*.06,0,0,7);ctx.fill();
-            ctx.drawImage(art.roadside,(cell%2)*512,Math.floor(cell/2)*512,512,512,
-              tree.x-width/2,tree.y-width*.96,width,width);
-          }
+          if (!art.roadside?.naturalWidth) continue;
+          const cell=(Math.floor(at/42)+(side>0?2:0))%4;
+          const prop=roadPoint(t,side*(cell===3?1.48:1.75));
+          const width=[240,330,300,155][cell]*prop.scale;
+          ctx.fillStyle='#414e4955';ctx.beginPath();ctx.ellipse(prop.x,prop.y,width*.35,width*.07,0,0,7);ctx.fill();
+          ctx.drawImage(art.roadside,(cell%2)*512,Math.floor(cell/2)*512,512,512,
+            prop.x-width/2,prop.y-width*.92,width,width);
         }
       }
       for (const event of COURSE) {
         const delta = event.at - distance;
         if (delta < -18 || delta > viewDepth) continue;
-        const t = clamp(1 - delta / viewDepth, 0, 1.04), p = roadPoint(t, event.lane * .65), y = p.y;
+        const t = clamp(1 - delta / viewDepth, 0, 1.04), p = roadPoint(t, event.lane), y = p.y;
         if (y < horizon || y > h) continue;
         const x = p.x;
         const sc=p.scale;
@@ -427,10 +432,15 @@
       if(gate){
         const delta=gate.at-distance,t=1-delta/viewDepth;
         if(delta<viewDepth&&delta>=-8){
-          const colors=['#50c9ed','#ff925e','#9e84ef','#f8d564'];
-          const selected=answerLanes.reduce((best,value,i)=>Math.abs(lane-value)<Math.abs(lane-answerLanes[best])?i:best,0);
+          const colors=['#71b1ff','#ff8b79','#f4ca67','#dce8f7'];
+          const selected=gate.submitted ? gate.index : answerLanes.reduce((best,value,i)=>Math.abs(lane-value)<Math.abs(lane-answerLanes[best])?i:best,0);
+          strip(clamp(t,0,1.04),1.035,answerLanes[selected]-.22,answerLanes[selected]+.22,colors[selected]+'24');
+          const marker=roadPoint(1-28/viewDepth,answerLanes[selected]);
+          const badge=Math.max(24,42*marker.scale);
+          ctx.fillStyle=colors[selected];ctx.beginPath();ctx.roundRect(marker.x-badge/2,marker.y-badge*.85,badge,badge,6);ctx.fill();
+          ctx.fillStyle='#142c47';ctx.font=`900 ${badge*.65}px system-ui`;ctx.textAlign='center';ctx.fillText('ABCD'[selected],marker.x,marker.y-badge*.1);
           for(let i=0;i<4;i++){
-            const p=roadPoint(t,answerLanes[i]*.65),width=w*.18*p.scale,tall=96*p.scale;
+            const p=roadPoint(t,answerLanes[i]),width=w*.27*p.scale,tall=120*p.scale;
             ctx.fillStyle='#12284266';ctx.beginPath();ctx.ellipse(p.x,p.y,width*.55,9*p.scale,0,0,7);ctx.fill();
             ctx.fillStyle=colors[i];ctx.fillRect(p.x-width/2,p.y-8*p.scale,width,8*p.scale);
             ctx.fillStyle=selected===i?colors[i]:'#20364cdc';
@@ -441,13 +451,13 @@
             ctx.fillStyle=colors[i];ctx.fillRect(p.x-width*.45,p.y-tall*.27,3*p.scale,tall*.27);ctx.fillRect(p.x+width*.4,p.y-tall*.27,3*p.scale,tall*.27);
           }
           const p=roadPoint(t);ctx.strokeStyle='#ecffefcc';ctx.lineWidth=3*p.scale;
-          ctx.beginPath();const l=roadPoint(t,-.65),r=roadPoint(t,.65);ctx.moveTo(l.x,l.y);ctx.lineTo(r.x,r.y);ctx.stroke();
+          ctx.beginPath();const l=roadPoint(t,-1),r=roadPoint(t,1);ctx.moveTo(l.x,l.y);ctx.lineTo(r.x,r.y);ctx.stroke();
         }
       }
       for (const banana of bananas) {
         const delta = banana.at - distance, t = clamp(1 - delta / viewDepth, 0, 1.04);
         if (delta < -20 || delta > viewDepth) continue;
-        const p = roadPoint(t, banana.lane * .65);
+        const p = roadPoint(t, banana.lane);
         if (art.obstacles?.complete && art.obstacles.naturalWidth) {
           const width = 68*p.scale;
           ctx.fillStyle = '#081d2880'; ctx.beginPath(); ctx.ellipse(p.x,p.y,width*.4,width*.1,0,0,7); ctx.fill();
@@ -459,7 +469,7 @@
         if (!target) continue;
         const flight = clamp((elapsed-shot.start)/.72,0,1);
         const ahead = 12 + (Math.max(12, target.distance-distance) - 12) * flight;
-        const p = roadPoint(1-ahead/viewDepth, target.lane*.65*flight), width = (65+flight*20)*p.scale;
+        const p = roadPoint(1-ahead/viewDepth, target.lane*flight), width = (65+flight*20)*p.scale;
         ctx.save(); ctx.translate(p.x,p.y-width*.3); ctx.rotate(-Math.PI/2);
         if (art.items?.complete && art.items.naturalWidth) ctx.drawImage(art.items, 256,0,128,128,-width/2,-width/2,width,width);
         else { ctx.fillStyle='#ffcf63'; ctx.fillRect(-width/2,-width/4,width,width/2); }
@@ -468,7 +478,7 @@
       }
       for (const impact of impacts) {
         const delta = impact.targetId ? Math.max(12, impact.at-distance) : impact.at-distance;
-        const p=roadPoint(1-delta/viewDepth, impact.lane*.65), life=clamp((impact.until-elapsed)/.55,0,1), width=170*p.scale*(1.3-life*.3);
+        const p=roadPoint(1-delta/viewDepth, impact.lane), life=clamp((impact.until-elapsed)/.55,0,1), width=170*p.scale*(1.3-life*.3);
         if (delta < -10 || delta > viewDepth) continue;
         ctx.save(); ctx.globalAlpha=life;
         if (art.items?.complete && art.items.naturalWidth) ctx.drawImage(art.items,512,0,128,128,p.x-width/2,p.y-width*.85,width,width);
@@ -487,12 +497,13 @@
         .sort((a,b) => b.distance - a.distance);
       for (const o of visible) {
         const delta = Math.max(targetIds.has(o.id) ? 12 : 4, o.distance-distance);
-        const p = roadPoint(1 - delta / viewDepth, o.lane * .65);
+        const p = roadPoint(1 - delta / viewDepth, o.lane);
         if (p.y > horizon + 10 && p.y < h * .95) kart(p.x, p.y, .12 + p.scale * .98, o.color, delta > 10 ? o.name : '',
           false, o.design, o.kartColor, o.hit || elapsed < (o.hitUntil || 0));
       }
-      const py = h * .88;
-      const px = roadPoint(1, lane * .65).x + (elapsed < slipUntil ? Math.sin(elapsed * 22) * w * .016 : 0);
+      const playerPoint = roadPoint(1-4/viewDepth, lane);
+      const py = playerPoint.y;
+      const px = playerPoint.x + (elapsed < slipUntil ? Math.sin(elapsed * 22) * w * .016 : 0);
       if (Math.abs(lean) > .3 && speed > 14) {
         ctx.strokeStyle = '#172b3199'; ctx.lineWidth = Math.max(2, w / 450);
         for (const side of [-1, 1]) {
@@ -502,7 +513,7 @@
         ctx.fillStyle = '#d9a89a88';
         for (const side of [-1, 1]) { ctx.beginPath(); ctx.arc(px + side * w * .04 - lean * w * .02, py + h * .08, 3 + (Math.sin(elapsed * 18 + side) + 1) * 2, 0, 7); ctx.fill(); }
       }
-      kart(px, py, clamp(w / 600, 1.05, 2), COLORS[0], options.playerName || '나', true, options.kartDesign, options.kartColor);
+      kart(px, py, clamp(w / 470, 1.35, 2.65), COLORS[0], options.playerName || '나', true, options.kartDesign, options.kartColor);
       if (speed > 12) {
         const intensity=clamp((speed-12)/20,0,1), count=boosted?18:8;
         ctx.lineWidth=boosted?2:1.2;

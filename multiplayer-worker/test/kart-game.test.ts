@@ -60,6 +60,23 @@ describe("grammar kart authoritative race", () => {
     expect(driver.finishedAt!).toBeLessThan(idle.finishedAt!);
   });
 
+  it("accepts honest steering across race ticks while retaining move and sequence limits", () => {
+    let room = createRoomState({ code: "654326", teacherEmail: "teacher@example.com", durationSeconds: 300,
+      mode: "grammar_kart", playStyle: "individual", questions: [question], createdAt: startedAt - 1000 });
+    room = joinPlayer(room, { id: "p0", nickname: "A", resumeTokenHash: "a", joinedAt: startedAt - 500 }).state;
+    room = startRoom(room, startedAt);
+    room = kartAction(room, { playerId: "p0", action: "move", lane: .2816, seq: 1, serverNow: startedAt + 220 }).state;
+    for (const tick of [270, 320, 370, 420]) room = settleKartRace(room, startedAt + tick);
+    expect(room.players.p0.kart).toMatchObject({ lane: .2816, updatedAt: startedAt + 420, lastSteeredAt: startedAt + 220 });
+
+    room = kartAction(room, { playerId: "p0", action: "move", lane: .5632, seq: 2, serverNow: startedAt + 440 }).state;
+    expect(room.players.p0.kart).toMatchObject({ lane: .5632, seq: 2, lastSteeredAt: startedAt + 440 });
+    expect(() => kartAction(room, { playerId: "p0", action: "move", lane: -.88, seq: 3, serverNow: startedAt + 660 }))
+      .toThrow("Invalid steering update.");
+    expect(() => kartAction(room, { playerId: "p0", action: "move", lane: .5632, seq: 2, serverNow: startedAt + 660 }))
+      .toThrow("Invalid steering update.");
+  });
+
   it("rejects forged lane jumps and duplicate packets, and only grants earned items", () => {
     const start = createKart(startedAt);
     expect(() => steerKart(start, .88, 1, startedAt + 100)).toThrow("INVALID_KART_MOVE");
@@ -146,6 +163,10 @@ describe("grammar kart authoritative race", () => {
     delete legacy.boostStock; delete legacy.missiles; delete legacy.shields;
     delete legacy.rewardsGiven; delete legacy.checkpointsAt;
     delete legacy.driftMs; delete legacy.draftMs; delete legacy.draftUntil; delete legacy.slipUntil;
+    delete legacy.lastSteeredAt;
+    const tickedLegacy = advanceKart(advanceKart(legacy as ReturnType<typeof createKart>, startedAt + 1000), startedAt + 2000);
+    expect(tickedLegacy.lastSteeredAt).toBe(startedAt);
+    expect(steerKart(tickedLegacy, .5, 1, startedAt + 2100).lane).toBe(.5);
     const raced = advanceKart(legacy as ReturnType<typeof createKart>, startedAt + 20_000);
     expect(raced.distance).toBeGreaterThan(450);
     expect(raced.checkpointsAt).toHaveLength(1);

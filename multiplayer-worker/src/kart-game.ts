@@ -13,6 +13,7 @@ export interface KartState {
   distance: number;
   speed: number;
   updatedAt: number;
+  lastSteeredAt?: number;
   boostUntil: number;
   slowUntil: number;
   shieldUntil: number;
@@ -69,7 +70,7 @@ export const KART_COURSE: { at: number; lane: number; kind: KartEvent }[] = [...
 const limit = (value: number, low: number, high: number) => Math.max(low, Math.min(high, value));
 
 export function createKart(now: number, design = "teal", color = "cyan"): KartState {
-  return { design, color, lane: 0, distance: 0, speed: 0, updatedAt: now, boostUntil: 0, slowUntil: 0,
+  return { design, color, lane: 0, distance: 0, speed: 0, updatedAt: now, lastSteeredAt: now, boostUntil: 0, slowUntil: 0,
     shieldUntil: 0, hitUntil: 0, charge: 0, boostStock: 0, missiles: 0, shields: 0, rewardsGiven: 0, checkpointsAt: [],
     boxes: 0, slipUntil: 0, driftMs: 0, draftMs: 0, draftUntil: 0,
     itemReadyAt: 0, nextEvent: 0, seq: 0, hits: 0, pads: 0, stars: 0 };
@@ -77,6 +78,7 @@ export function createKart(now: number, design = "teal", color = "cyan"): KartSt
 
 export function advanceKart(source: KartState, now: number): KartState {
   const kart = { ...source,
+    lastSteeredAt: source.lastSteeredAt ?? source.updatedAt,
     boostStock: source.boostStock ?? 0, missiles: source.missiles ?? 0, shields: source.shields ?? 0,
     rewardsGiven: source.rewardsGiven ?? 0, checkpointsAt: source.checkpointsAt ?? [],
     slipUntil: source.slipUntil ?? 0, driftMs: source.driftMs ?? 0, draftMs: source.draftMs ?? 0,
@@ -120,8 +122,9 @@ export function steerKart(source: KartState, lane: number, seq: number, now: num
     throw new Error("INVALID_KART_MOVE");
   }
   const elapsed = Math.max(0, now - source.updatedAt);
+  const steeringElapsed = Math.max(0, now - (source.lastSteeredAt ?? source.updatedAt));
   // The bound includes one packet of network/jitter tolerance. A forged teleport still fails.
-  if (Math.abs(lane - source.lane) > 1.28 * elapsed / 1000 + .16) throw new Error("INVALID_KART_MOVE");
+  if (Math.abs(lane - source.lane) > 1.28 * steeringElapsed / 1000 + .16) throw new Error("INVALID_KART_MOVE");
   let kart = { ...source };
   if (elapsed > 0) {
     while (kart.updatedAt < now && !kart.finishedAt) {
@@ -136,6 +139,7 @@ export function steerKart(source: KartState, lane: number, seq: number, now: num
     kart.charge = Math.min(3, kart.charge + Math.abs(lane - source.lane) * .45 + (kart.driftMs > 450 ? elapsed / 1000 * .22 : 0));
   } else kart.driftMs = 0;
   kart.seq = seq;
+  kart.lastSteeredAt = now;
   return kart;
 }
 

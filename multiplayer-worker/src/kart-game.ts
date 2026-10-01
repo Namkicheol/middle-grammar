@@ -40,7 +40,7 @@ export interface KartState {
   stars: number;
 }
 
-export const KART_COURSE: { at: number; lane: number; kind: KartEvent }[] = Array.from({ length: 13 }, (_, i): { at: number; lane: number; kind: KartEvent }[] => {
+const BASE_KART_COURSE: { at: number; lane: number; kind: KartEvent }[] = Array.from({ length: 13 }, (_, i): { at: number; lane: number; kind: KartEvent }[] => {
   const base = 115 + i * 125;
   const obstacle = [-.55, 0, .55, 0, .55, -.55][i % 6];
   const pad = obstacle === 0 ? (i % 2 ? -.55 : .55) : 0;
@@ -52,6 +52,19 @@ export const KART_COURSE: { at: number; lane: number; kind: KartEvent }[] = Arra
     ...(i % 2 === 0 ? [{ at: base + 96, lane: i % 4 ? -.55 : .55, kind: "banana" as const }] : []),
   ];
 }).flat().filter(event => !(["hit", "banana"].includes(event.kind) && KART_QUESTION_MARKS.some(mark => event.at >= mark - 20 && event.at <= mark + 335)));
+
+const coinChains = [
+  { base: 270, lane: -.55 },
+  { base: 810, lane: .55 },
+  { base: 1260, lane: 0 },
+];
+const EXTRA_KART_COURSE: { at: number; lane: number; kind: KartEvent }[] = [
+  ...coinChains.flatMap(({ base, lane }) => Array.from({ length: 3 }, (_, j) => ({ at: base + j * 12, lane, kind: "star" as const }))),
+  { at: 1250, lane: -.55, kind: "hit" },
+  { at: 1270, lane: .55, kind: "pad" },
+];
+export const KART_COURSE: { at: number; lane: number; kind: KartEvent }[] = [...BASE_KART_COURSE, ...EXTRA_KART_COURSE]
+  .sort((a, b) => a.at - b.at);
 
 const limit = (value: number, low: number, high: number) => Math.max(low, Math.min(high, value));
 

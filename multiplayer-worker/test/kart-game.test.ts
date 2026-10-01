@@ -1,11 +1,46 @@
 import { describe, expect, it, vi } from "vitest";
-import { advanceKart, createKart, KART_COURSE, rewardKart, steerKart, useKartItem } from "../src/kart-game";
+import { advanceKart, createKart, KART_COURSE, KART_QUESTION_MARKS, rewardKart, steerKart, useKartItem, useKartWeapon } from "../src/kart-game";
 import { createRoomState, joinPlayer, publicRoomState, startRoom, teacherRoomState, kartAction, settleKartRace, submitAnswer, type Question } from "../src/room-engine";
 
 const startedAt = 1_000_000;
 const question: Question = { id: "q1", kor: "나는 학생이다.", eng: "I ___ a student.", ans: "am", opts: ["am", "is", "are", "be"], level: 1 };
 
 describe("grammar kart authoritative race", () => {
+  it("sorts the added course events and leaves each question-gate approach clear", () => {
+    expect(KART_COURSE.map(event => event.at)).toEqual([...KART_COURSE.map(event => event.at)].sort((a, b) => a - b));
+    for (const { base, lane } of [{ base: 270, lane: -.55 }, { base: 810, lane: .55 }, { base: 1260, lane: 0 }]) {
+      for (let j = 0; j < 3; j++) expect(KART_COURSE).toContainEqual({ at: base + j * 12, lane, kind: "star" });
+    }
+    expect(KART_COURSE).toContainEqual({ at: 365, lane: .55, kind: "hit" });
+    expect(KART_COURSE).toContainEqual({ at: 385, lane: 0, kind: "pad" });
+    expect(KART_COURSE).toContainEqual({ at: 1250, lane: -.55, kind: "hit" });
+    expect(KART_COURSE).toContainEqual({ at: 1270, lane: .55, kind: "pad" });
+    for (const mark of KART_QUESTION_MARKS) {
+      expect(KART_COURSE.some(event => ["hit", "banana"].includes(event.kind) && event.at >= mark - 20 && event.at <= mark + 335)).toBe(false);
+    }
+  });
+
+  it("collects a three-star chain into charge for a manual boost", () => {
+    const chain = advanceKart({ ...createKart(startedAt), distance: 809, lane: .55, speed: 31 }, startedAt + 2000);
+    expect(chain).toMatchObject({ stars: 3, charge: 3 });
+    const boosted = useKartItem(chain, startedAt + 2000);
+    expect(boosted).toMatchObject({ charge: 0, boostUntil: startedAt + 7000 });
+    expect(boosted.lastCue?.kind).toBe("boost");
+  });
+
+  it("makes each tire barrier slow a matching racer unless shielded", () => {
+    for (const { distance, lane } of [{ distance: 364, lane: .55 }, { distance: 1249, lane: -.55 }]) {
+      const approach = { ...createKart(startedAt), distance, lane, speed: 31 };
+      const struck = advanceKart(approach, startedAt + 100);
+      expect(struck.hits).toBe(1);
+      expect(struck.slowUntil).toBeGreaterThan(startedAt);
+
+      const shielded = useKartWeapon({ ...approach, shields: 1 }, startedAt, "shield");
+      const protectedKart = advanceKart(shielded, startedAt + 100);
+      expect(protectedKart).toMatchObject({ hits: 0, slowUntil: 0 });
+    }
+  });
+
   it("makes steering around cones measurably faster than idling in the middle", () => {
     let idle = createKart(startedAt);
     let driver = createKart(startedAt);

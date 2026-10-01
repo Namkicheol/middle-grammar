@@ -65,13 +65,20 @@
     const obstacleLane = [-.55, 0, .55, 0, .55, -.55][i % 6];
     const padLane = obstacleLane === 0 ? (i % 2 ? -.55 : .55) : 0;
     return [
-      { at: base, lane: obstacleLane, kind: 'cone' },
+      { at: base, lane: obstacleLane, kind: i === 2 ? 'barrier' : 'cone' },
       { at: base + 20, lane: padLane, kind: 'pad' },
       { at: base + 43, lane: -padLane || -.55, kind: 'star' },
       { at: base + 68, lane: i % 2 ? .55 : -.55, kind: 'box' },
       ...(i % 2 === 0 ? [{ at: base + 96, lane: i % 4 ? -.55 : .55, kind: 'banana' }] : [])
     ];
-  }).flat().filter(event => !(['cone','banana'].includes(event.kind) && QUESTION_MARKS.some(mark => event.at >= mark - 20 && event.at <= mark + 335)));
+  }).flat().concat(
+    [[270,-.55],[810,.55],[1260,0]].flatMap(([at,lane]) =>
+      Array.from({length:3},(_,i) => ({at:at+i*12,lane,kind:'coin'}))),
+    [[1250,-.55]].flatMap(([at,lane]) => [
+      {at,lane,kind:'barrier'}, {at:at+20,lane:-lane,kind:'pad'}
+    ])
+  ).filter(event => !(['cone','banana','barrier'].includes(event.kind) && QUESTION_MARKS.some(mark => event.at >= mark - 20 && event.at <= mark + 335)))
+    .sort((a,b) => a.at-b.at);
 
   function makeRace(options) {
     const { canvas, lesson, mode = 'solo', onProgress = () => {}, onAnswer = () => {}, onFinish = () => {}, onQuestion = () => {} } = options;
@@ -215,7 +222,7 @@
       if ((!boostStock && charge < 3) || !playing || finished) return false;
       if (boostStock) boostStock--; else charge = 0;
       boostUntil = elapsed + 5;
-      effects.push({ text: 'STAR TURBO!', until: elapsed + 1.1, color: '#fff27a' });
+      effects = [];
       onProgress(getState());
       return true;
     }
@@ -289,7 +296,7 @@
         ctx.fillStyle = '#091b2a88'; ctx.beginPath(); ctx.ellipse(0, 2, width * .39, width * .11, 0, 0, 7); ctx.fill();
         if (player && elapsed < boostUntil) {
           for (const side of [-1, 1]) {
-            const flame=width*(.32+Math.sin(elapsed*29)*.05);
+            const flame=width*(.38+Math.sin(elapsed*29)*.05);
             const fire=ctx.createLinearGradient(0,-width*.08,0,flame);
             fire.addColorStop(0,'#e5fcff');fire.addColorStop(.35,'#76d7ff');fire.addColorStop(1,'#3d87f500');
             ctx.fillStyle=fire;ctx.beginPath();ctx.moveTo(side*width*.17-width*.045,-width*.08);ctx.lineTo(side*width*.17,flame);ctx.lineTo(side*width*.17+width*.045,-width*.08);ctx.fill();
@@ -300,7 +307,7 @@
           const wheelX = side * width * .35, wheelY = -width * .13, wheelW = width * .105, wheelH = width * .16;
           ctx.save(); ctx.beginPath(); ctx.roundRect(wheelX - wheelW/2, wheelY - wheelH/2, wheelW, wheelH, wheelW*.4); ctx.clip();
           ctx.strokeStyle = '#45545b88'; ctx.lineWidth = Math.max(1, size * 1.4);
-          const offset = distance * .45 % (wheelH / 3);
+          const offset = distance * .6 % (wheelH / 3);
           for (let n = -1; n < 5; n++) { const yy = wheelY - wheelH/2 + n * wheelH/3 + offset; ctx.beginPath(); ctx.moveTo(wheelX-wheelW*.32, yy); ctx.lineTo(wheelX+wheelW*.32, yy+wheelH*.055); ctx.stroke(); }
           ctx.restore();
         }
@@ -332,7 +339,7 @@
       const boosted = elapsed < boostUntil;
       const horizon = h * .34;
       const viewDepth = 340;
-      const lens = 58 - boostVisual * 8;
+      const lens = 50 - boostVisual * 10;
       const farScale = lens / (lens + viewDepth);
       const roadPoint = (t, offset = 0) => {
         const ahead = clamp((1 - t) * viewDepth, -12, viewDepth);
@@ -365,11 +372,11 @@
       }
       // Draw world-space strips far-to-near. The near camera makes road markings
       // and kerbs expand quickly instead of sliding a flat texture underneath.
-      const first = Math.floor((distance + viewDepth) / 9) * 9;
-      for (let at = first; at > distance - 24; at -= 9) {
+      const first = Math.floor((distance + viewDepth) / 8) * 8;
+      for (let at = first; at > distance - 24; at -= 8) {
         const a = clamp(1 - (at - distance) / viewDepth, 0, 1.04);
-        const b = clamp(1 - (at + 9 - distance) / viewDepth, 0, 1.04);
-        const index = Math.floor(at / 9), even = index % 2 === 0;
+        const b = clamp(1 - (at + 8 - distance) / viewDepth, 0, 1.04);
+        const index = Math.floor(at / 8), even = index % 2 === 0;
         strip(a,b,-1.3,1.3,even ? '#d3c6a7' : '#ccbe9f');
         strip(a,b,-1.09,1.09,even ? '#fff0d4' : '#f36f54');
         strip(a,b,-1,1,even ? '#394451' : '#3c4754');
@@ -397,7 +404,8 @@
             prop.x-width/2,prop.y-width*.92,width,width);
         }
       }
-      for (const event of COURSE) {
+      for (let eventIndex=COURSE.length-1;eventIndex>=0;eventIndex--) {
+        const event=COURSE[eventIndex];
         const delta = event.at - distance;
         if (delta < -18 || delta > viewDepth) continue;
         const t = clamp(1 - delta / viewDepth, 0, 1.04), p = roadPoint(t, event.lane), y = p.y;
@@ -411,6 +419,20 @@
           ctx.fillStyle='#ff8753';ctx.beginPath();ctx.moveTo(x,y-tall);ctx.lineTo(x-r*.68,y);ctx.lineTo(x+r*.68,y);ctx.closePath();ctx.fill();
           ctx.fillStyle='#d8583a';ctx.beginPath();ctx.moveTo(x,y-tall);ctx.lineTo(x+r*.68,y);ctx.lineTo(x,y);ctx.closePath();ctx.fill();
           ctx.fillStyle='#fff6db';ctx.beginPath();ctx.moveTo(x-r*.25,y-tall*.64);ctx.lineTo(x+r*.25,y-tall*.64);ctx.lineTo(x+r*.4,y-tall*.42);ctx.lineTo(x-r*.4,y-tall*.42);ctx.closePath();ctx.fill();
+        }else if(event.kind==='barrier'){
+          const width=92*sc;
+          ctx.fillStyle='#172a4555';ctx.beginPath();ctx.ellipse(x,y,width*.46,width*.1,0,0,7);ctx.fill();
+          if(art.roadside?.naturalWidth) ctx.drawImage(art.roadside,512,512,512,512,x-width/2,y-width*.92,width,width);
+        }else if(event.kind==='coin'){
+          const r=23*sc,cy=y-r*1.5+Math.sin(elapsed*4+event.at)*3*sc;
+          const turn=.45+Math.abs(Math.cos(elapsed*3+event.at))*.55;
+          ctx.fillStyle='#172a4544';ctx.beginPath();ctx.ellipse(x,y,r*.75,r*.22,0,0,7);ctx.fill();
+          ctx.save();ctx.translate(x,cy);ctx.scale(turn,1);
+          const gold=ctx.createLinearGradient(-r,-r,r,r);
+          gold.addColorStop(0,'#fff7c1');gold.addColorStop(.45,'#ffd568');gold.addColorStop(1,'#df8a23');
+          ctx.fillStyle=gold;ctx.strokeStyle='#e29a31';ctx.lineWidth=3*sc;ctx.beginPath();ctx.arc(0,0,r,0,7);ctx.fill();ctx.stroke();
+          ctx.strokeStyle='#fff1a5';ctx.lineWidth=2*sc;ctx.beginPath();ctx.arc(0,0,r*.7,0,7);ctx.stroke();
+          ctx.fillStyle='#b26d1c';ctx.beginPath();ctx.moveTo(r*.08,-r*.55);ctx.lineTo(-r*.3,r*.06);ctx.lineTo(0,r*.06);ctx.lineTo(-r*.08,r*.55);ctx.lineTo(r*.32,-r*.1);ctx.lineTo(r*.04,-r*.1);ctx.closePath();ctx.fill();ctx.restore();
         }else if(event.kind==='box'){
           const r=25*sc;
           ctx.fillStyle='#172a4566';ctx.beginPath();ctx.ellipse(x,y,r*1.15,r*.3,0,0,7);ctx.fill();
@@ -515,19 +537,19 @@
       }
       kart(px, py, clamp(w / 470, 1.35, 2.65), COLORS[0], options.playerName || '나', true, options.kartDesign, options.kartColor);
       if (speed > 12) {
-        const intensity=clamp((speed-12)/20,0,1), count=boosted?18:8;
+        const intensity=clamp((speed-12)/20,0,1), count=boosted?22:10;
         ctx.lineWidth=boosted?2:1.2;
         for(let i=0;i<count;i++){
-          const side=i%2?1:-1,phase=((i*.173+distance*.065)%1),near=phase*phase;
+          const side=i%2?1:-1,phase=((i*.173+distance*.079)%1),near=phase*phase;
           const y=horizon+near*(h-horizon),x=w*.5+side*w*(.3+near*.25);
-          ctx.strokeStyle=`rgba(220,252,255,${intensity*(boosted?.6:.25)})`;
-          ctx.beginPath();ctx.moveTo(x,y);ctx.lineTo(x+side*(4+near*12),y+8+near*(boosted?55:28));ctx.stroke();
+          ctx.strokeStyle=`rgba(220,252,255,${intensity*(boosted?.65:.3)})`;
+          ctx.beginPath();ctx.moveTo(x,y);ctx.lineTo(x+side*(4+near*12),y+8+near*(boosted?65:36));ctx.stroke();
         }
       }
       if (elapsed < hitUntil || elapsed < slipUntil) {
         ctx.fillStyle = elapsed < slipUntil ? '#ffe69a19' : '#ff706319'; ctx.fillRect(0,0,w,h);
       }
-      for (const fx of effects) { const life = (fx.until - elapsed) / .9; ctx.globalAlpha = clamp(life, 0, 1); ctx.fillStyle = fx.color; ctx.font = `900 ${Math.min(32,w/14)}px 'Black Han Sans'`; ctx.textAlign = 'center'; ctx.fillText(fx.text, w/2, h*.45 - (1-life)*35); ctx.globalAlpha = 1; }
+      for (const fx of effects.slice(-1)) { const life = (fx.until - elapsed) / .9; ctx.globalAlpha = clamp(life, 0, 1); ctx.fillStyle = fx.color; ctx.font = `900 ${Math.min(32,w/14)}px 'Black Han Sans'`; ctx.textAlign = 'center'; ctx.fillText(fx.text, w/2, h*.45 - (1-life)*35); ctx.globalAlpha = 1; }
     }
     function updateProjectiles() {
       for (const shot of missilesInFlight) if (elapsed-shot.start >= .72) {
@@ -576,7 +598,7 @@
       distance = Math.min(TOTAL, distance + speed * (offRoad ? .66 : 1) * dt);
       for (const event of COURSE) {
         if (event.at <= before || event.at > distance || Math.abs(lane - event.lane) > (event.kind === 'box' ? .36 : .28)) continue;
-        if ((event.kind === 'cone' || event.kind === 'banana') && elapsed >= hitUntil && elapsed >= shieldUntil) {
+        if (['cone','banana','barrier'].includes(event.kind) && elapsed >= hitUntil && elapsed >= shieldUntil) {
           obstaclesHit++; hitUntil = elapsed + 1.4; slowUntil = Math.max(slowUntil, elapsed + 2.1);
           if (event.kind === 'banana') slipUntil = elapsed + 1.7;
           effects.push({ text: event.kind === 'banana' ? '미끄러짐!' : '충돌! 속도 감소', until: elapsed + .9, color: '#ffaaa4' });
@@ -585,9 +607,9 @@
           padsTaken++; boostUntil = Math.max(boostUntil, elapsed) + 1.6;
           effects.push({ text: 'SPEED PAD!', until: elapsed + .9, color: '#8bf2ff' });
           options.onEvent?.({ kind: 'pad', distance: event.at });
-        } else if (event.kind === 'star') {
+        } else if (event.kind === 'star' || event.kind === 'coin') {
           starsTaken++; charge = Math.min(3, charge + 1);
-          effects.push({ text: 'STAR +1', until: elapsed + .9, color: '#ffe36c' });
+          effects.push({ text: event.kind === 'coin' ? (charge >= 3 ? 'BOOST READY!' : 'COIN +1') : 'STAR +1', until: elapsed + .9, color: '#ffe36c' });
           options.onEvent?.({ kind: 'star', distance: event.at });
         } else if (event.kind === 'box' && !heldItem) {
           heldItem = 'banana';

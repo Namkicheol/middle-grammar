@@ -381,7 +381,7 @@
         strip(a,b,-1.09,1.09,even ? '#fff0d4' : '#f36f54');
         strip(a,b,-1,1,even ? '#394451' : '#3c4754');
         strip(a,b,-1.005,-.98,'#f3dec2'); strip(a,b,.98,1.005,'#f3dec2');
-        if (even) for (const line of (gate ? [-.5,0,.5] : [0])) strip(a,b,line-.006,line+.006,'#9caaa9');
+        if (even) for (const line of [-.5,0,.5]) strip(a,b,line-.006,line+.006,'#b1bdbc');
         for (const side of [-1,1]) {
           const n=roadPoint(a,side*1.3),f=roadPoint(b,side*1.3);
           const nh=58*n.scale,fh=58*f.scale;
@@ -389,6 +389,29 @@
           ctx.fillStyle=side<0?'#d7c9ac':'#c4b696';ctx.fill();
           ctx.beginPath();ctx.moveTo(n.x,n.y-nh);ctx.lineTo(f.x,f.y-fh);
           ctx.strokeStyle=even?'#fff3d9':'#3675a1';ctx.lineWidth=Math.max(1,6*n.scale);ctx.stroke();
+        }
+      }
+      // Keep answer positions visible before a question, underneath every object.
+      const selectedLane = gate ? (gate.submitted ? gate.index : answerLanes.reduce((best,value,i)=>Math.abs(lane-value)<Math.abs(lane-answerLanes[best])?i:best,0)) : -1;
+      ctx.save(); ctx.textAlign='center'; ctx.textBaseline='middle';
+      for(let i=0;i<answerLanes.length;i++){
+        const p=roadPoint(1-36/viewDepth,answerLanes[i]),font=Math.max(23,42*p.scale);
+        ctx.fillStyle=gate && selectedLane===i ? '#142c4766' : '#172a442b';
+        ctx.beginPath();ctx.ellipse(p.x,p.y,font*.8,font*.6,0,0,7);ctx.fill();
+        ctx.fillStyle=gate && selectedLane===i ? '#fff5cde0' : gate ? '#ffffffb8' : '#ffffff80';
+        ctx.font=`900 ${font}px system-ui`;ctx.strokeStyle='#14283f99';ctx.lineWidth=1.5;ctx.strokeText('ABCD'[i],p.x,p.y);ctx.fillText('ABCD'[i],p.x,p.y);
+      }
+      ctx.restore();
+      // Short world-space edge marks rush past without covering the answer lanes.
+      if(speed>12){
+        const flow=clamp((speed-12)/23,0,1)*(gate ? .55 : 1);
+        for(let n=0;n<8;n++){
+          const ahead=((n*11-distance)%88+88)%88+3;
+          for(const side of [-1,1]){
+            const front=roadPoint(1-ahead/viewDepth,side*.94),back=roadPoint(1-(ahead+5+flow*5)/viewDepth,side*.94);
+            ctx.strokeStyle=`rgba(216,242,245,${flow*(.16+front.scale*.32)})`;ctx.lineWidth=Math.max(1,3*front.scale);
+            ctx.beginPath();ctx.moveTo(back.x,back.y);ctx.lineTo(front.x,front.y);ctx.stroke();
+          }
         }
       }
       // A few substantial props establish a paddock instead of rows of tiny trees.
@@ -411,7 +434,11 @@
         const t = clamp(1 - delta / viewDepth, 0, 1.04), p = roadPoint(t, event.lane), y = p.y;
         if (y < horizon || y > h) continue;
         const x = p.x;
-        const sc=p.scale;
+        const sc=Math.max(.25,p.scale*1.24);
+        if(event.kind!=='pad'){
+          const hazard=['cone','banana','barrier'].includes(event.kind),radius=(event.kind==='barrier'?48:30)*sc;
+          ctx.fillStyle=hazard?'#ff845429':'#ffdf642e';ctx.beginPath();ctx.ellipse(x,y,radius,radius*.32,0,0,7);ctx.fill();
+        }
         if(event.kind==='cone'){
           const r=25*sc, tall=48*sc;
           ctx.fillStyle='#192d4666';ctx.beginPath();ctx.ellipse(x,y,r*1.12,r*.3,0,0,7);ctx.fill();
@@ -441,13 +468,18 @@
           ctx.fillStyle='#aaf8ed';ctx.beginPath();ctx.moveTo(x-r,y-r*1.8);ctx.lineTo(x-r*.6,y-r*2);ctx.lineTo(x+r,y-r*2);ctx.lineTo(x+r*.6,y-r*1.8);ctx.closePath();ctx.fill();
           ctx.fillStyle='#f5f7dc';ctx.font=`900 ${Math.max(5,30*sc)}px system-ui`;ctx.textAlign='center';ctx.fillText('?',x-r*.15,y-r*.65);
         }else if(event.kind==='banana'&&art.obstacles?.naturalWidth){
-          const width=64*sc;ctx.drawImage(art.obstacles,384,0,192,192,x-width/2,y-width*164/192,width,width);
+          const width=64*sc;
+          ctx.fillStyle='#172a4566';ctx.beginPath();ctx.ellipse(x,y,width*.4,width*.1,0,0,7);ctx.fill();
+          ctx.drawImage(art.obstacles,384,0,192,192,x-width/2,y-width*164/192,width,width);
         }else if(event.kind==='pad'){
           const r=34*sc;ctx.fillStyle='#238d9e';ctx.fillRect(x-r,y-12*sc,r*2,18*sc);
           for(let n=0;n<3;n++){const yy=y-(n*6-3)*sc;ctx.strokeStyle='#8affed';ctx.lineWidth=3*sc;ctx.beginPath();ctx.moveTo(x-r*.6,yy);ctx.lineTo(x,yy-5*sc);ctx.lineTo(x+r*.6,yy);ctx.stroke();}
         }else{
-          const r=18*sc;ctx.fillStyle='#ffdc5c';ctx.beginPath();
-          for(let n=0;n<10;n++){const angle=-Math.PI/2+n*Math.PI/5,rr=n%2?r*.48:r;const xx=x+Math.cos(angle)*rr,yy=y-r+Math.sin(angle)*rr;n?ctx.lineTo(xx,yy):ctx.moveTo(xx,yy);}ctx.closePath();ctx.fill();
+          const r=23*sc,cy=y-r*1.6+Math.sin(elapsed*4+event.at)*3*sc;
+          ctx.fillStyle='#172a4555';ctx.beginPath();ctx.ellipse(x,y,r*.85,r*.22,0,0,7);ctx.fill();
+          ctx.fillStyle='#ffe98925';ctx.beginPath();ctx.arc(x,cy,r*1.35,0,7);ctx.fill();
+          ctx.fillStyle='#ffdc5c';ctx.beginPath();
+          for(let n=0;n<10;n++){const angle=-Math.PI/2+n*Math.PI/5,rr=n%2?r*.48:r;const xx=x+Math.cos(angle)*rr,yy=cy+Math.sin(angle)*rr;n?ctx.lineTo(xx,yy):ctx.moveTo(xx,yy);}ctx.closePath();ctx.fill();
           ctx.strokeStyle='#fff2b0';ctx.lineWidth=Math.max(1,sc*2);ctx.stroke();
         }
       }
@@ -481,7 +513,7 @@
         if (delta < -20 || delta > viewDepth) continue;
         const p = roadPoint(t, banana.lane);
         if (art.obstacles?.complete && art.obstacles.naturalWidth) {
-          const width = 68*p.scale;
+          const width = 68*Math.max(.25,p.scale*1.24);
           ctx.fillStyle = '#081d2880'; ctx.beginPath(); ctx.ellipse(p.x,p.y,width*.4,width*.1,0,0,7); ctx.fill();
           ctx.drawImage(art.obstacles, 384, 0, 192, 192, p.x-width/2,p.y-width*164/192,width,width);
         } else { ctx.textAlign = 'center'; ctx.font = `${Math.max(11, 38*p.scale)}px sans-serif`; ctx.fillText('🍌', p.x, p.y); }
@@ -535,15 +567,15 @@
         ctx.fillStyle = '#d9a89a88';
         for (const side of [-1, 1]) { ctx.beginPath(); ctx.arc(px + side * w * .04 - lean * w * .02, py + h * .08, 3 + (Math.sin(elapsed * 18 + side) + 1) * 2, 0, 7); ctx.fill(); }
       }
-      kart(px, py, clamp(w / 470, 1.35, 2.65), COLORS[0], options.playerName || '나', true, options.kartDesign, options.kartColor);
+      kart(px, py, clamp(w / 650, 1.05, 1.4), COLORS[0], options.playerName || '나', true, options.kartDesign, options.kartColor);
       if (speed > 12) {
-        const intensity=clamp((speed-12)/20,0,1), count=boosted?26:14;
+        const intensity=clamp((speed-12)/20,0,1)*(gate ? .55 : 1), count=boosted?26:14;
         ctx.lineWidth=boosted?2:1.2;
         for(let i=0;i<count;i++){
           const side=i%2?1:-1,phase=((i*.173+distance*.095)%1),near=phase*phase;
-          const y=horizon+near*(h-horizon),x=w*.5+side*w*(.3+near*.25);
-          ctx.strokeStyle=`rgba(220,252,255,${intensity*(boosted?.72:.35)})`;
-          ctx.beginPath();ctx.moveTo(x,y);ctx.lineTo(x+side*(4+near*12),y+8+near*(boosted?82:46));ctx.stroke();
+          const y=horizon+near*(h-horizon),x=w*.5+side*w*(.34+near*.25);
+          ctx.strokeStyle=`rgba(220,252,255,${intensity*(boosted?.72:.45)})`;
+          ctx.beginPath();ctx.moveTo(x,y);ctx.lineTo(x+side*(4+near*12),y+8+near*(boosted?96:62));ctx.stroke();
         }
       }
       if (elapsed < hitUntil || elapsed < slipUntil) {
@@ -610,7 +642,7 @@
           options.onEvent?.({ kind: 'pad', distance: event.at });
         } else if (event.kind === 'star' || event.kind === 'coin') {
           starsTaken++; charge = Math.min(3, charge + 1);
-          effects.push({ text: event.kind === 'coin' ? (charge >= 3 ? 'BOOST READY!' : 'COIN +1') : 'STAR +1', until: elapsed + .9, color: '#ffe36c' });
+          effects.push({ text: charge >= 3 ? '부스트 준비! 3/3' : `${event.kind === 'coin' ? '코인' : '스타'} · 부스트 +1 (${Math.floor(charge)}/3)`, until: elapsed + 1.2, color: '#ffe36c' });
           options.onEvent?.({ kind: 'star', distance: event.at });
         } else if (event.kind === 'box' && !heldItem) {
           heldItem = 'banana';

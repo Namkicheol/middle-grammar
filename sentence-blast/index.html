@@ -42,7 +42,7 @@ button:focus-visible{outline:3px solid var(--gold);outline-offset:3px}
 .challenge-head{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-bottom:10px}.challenge-head h2{font-family:'Jua','Noto Sans KR',sans-serif;font-weight:400;font-size:1.28rem;color:#064e3b}.challenge-time{display:grid;place-items:center;width:44px;height:44px;border-radius:50%;background:#07142d;color:#fde68a;font-weight:900;font-size:1.05rem}
 .challenge-eng{margin:-4px 0 10px;color:#123f78;font-size:.95rem;font-weight:900;line-height:1.4;overflow-wrap:anywhere}.challenge-eng[hidden]{display:none!important}
 .kor{background:#cffafe;color:#155e75;border-radius:12px;padding:8px 10px;font-size:.78rem;font-weight:800;line-height:1.45;margin-bottom:12px}.guide{font-size:.68rem;color:#64748b;font-weight:900;margin-bottom:7px}.answer-zone,.chips{display:flex;flex-wrap:wrap;gap:7px;min-height:49px;padding:8px;border-radius:13px}.answer-zone{background:#e2e8f0;border:2px dashed #94a3b8;margin-bottom:9px}.chips{background:rgba(255,255,255,.7);border:1px solid #dbeafe}.word{border:1px solid #bfdbfe;background:#fff;color:#1e3a8a;border-radius:10px;padding:8px 10px;font-weight:900;font-size:.84rem;cursor:pointer;box-shadow:0 3px 7px rgba(30,64,175,.08)}.word:disabled{opacity:.18;cursor:default}.answer-zone .word{background:#0f766e;color:#fff;border-color:#0f766e}.challenge-actions{display:grid;grid-template-columns:1fr auto;gap:8px;margin-top:12px}.check{border:0;border-radius:14px;background:linear-gradient(120deg,#10b981,#06b6d4);color:#fff;font-size:.92rem;font-weight:900;padding:12px;cursor:pointer;box-shadow:0 9px 20px rgba(16,185,129,.25)}.reset{border:1px solid #cbd5e1;background:#fff;color:#475569;border-radius:14px;padding:0 14px;font-weight:900;cursor:pointer}.feedback{min-height:42px;margin-top:10px;font-size:.76rem;font-weight:900;line-height:1.45;text-align:center}.feedback.ok{color:#047857}.feedback.ng{color:#be123c}
-.end-card{text-align:center}.end-emoji{font-size:3.2rem}.end-card h2{font-family:'Jua','Noto Sans KR',sans-serif;font-size:1.6rem;font-weight:400;color:#0f3b5e}.final-score{font-size:2.2rem;color:#7c3aed;font-weight:900;margin:9px}.end-sub{font-size:.8rem;color:#64748b;font-weight:800;line-height:1.6}.end-actions{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:16px}.end-actions button{border:0;border-radius:14px;padding:12px;font-weight:900;cursor:pointer}.again{background:#10b981;color:#fff}.home{background:#e2e8f0;color:#334155}
+.end-card{text-align:center}.end-emoji{font-size:3.2rem}.end-card h2{font-family:'Jua','Noto Sans KR',sans-serif;font-size:1.6rem;font-weight:400;color:#0f3b5e}.final-score{font-size:2.2rem;color:#7c3aed;font-weight:900;margin:9px}.end-record{display:inline-block;margin:-3px auto 7px;padding:4px 12px;border-radius:999px;background:#fef3c7;color:#92400e;font-size:.76rem;font-weight:900}#end-record[hidden]{display:none}.end-unit{font-size:.8rem;color:#475569;font-weight:900}.end-sub{margin-top:12px}.end-stats{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;text-align:center}.end-stat{display:grid;align-content:center;gap:2px;min-height:52px;padding:7px 5px;border-radius:12px;background:rgba(23,79,145,.08)}.end-stat span{font-size:.68rem;color:#64748b;font-weight:800}.end-stat b{font-size:1rem;color:#123f78;font-weight:900}.end-actions{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:14px}.end-actions button{min-height:48px;border:0;border-radius:14px;padding:10px 8px;font-size:.78rem;font-weight:900;cursor:pointer}.end-actions .again{background:#1f6fb2;color:#fff}.home{background:#e2e8f0;color:#334155}.end-actions.classroom-finished{grid-template-columns:1fr}.end-actions .again[hidden]{display:none}
 @media(max-width:560px){.word{min-height:44px;white-space:normal;line-height:1.25}.answer-zone,.chips{align-content:flex-start;overflow-y:auto}.answer-zone{max-height:28vh}.chips{max-height:34vh}.choice-mode .chips .word{flex:1 1 calc(50% - 7px);min-width:0;text-align:center;overflow-wrap:anywhere}}
 @media(max-width:360px){.stats{gap:3px}.stat b{font-size:.72rem}.board{gap:3px}.piece{min-height:78px}.mission span{display:none}}
 @media(prefers-reduced-motion:reduce){*,*::before,*::after{animation-duration:.01ms!important;transition-duration:.01ms!important}}
@@ -74,7 +74,7 @@ body{background:#0c2f5c;color:#fff;font-family:ui-rounded,'SF Pro Rounded','Aria
 @media(max-height:650px){.top{padding-top:5px}.top-row{min-height:56px}.score-head b{font-size:2rem}.stats{margin-top:2px}.mission{margin-top:7px;margin-bottom:6px}.mission span{display:none}.board-wrap{width:min(calc(100% - 24px),calc(100vh - 310px));min-width:238px;margin:auto;padding:0}.blast-flash{inset:0}.tray-title{padding-top:10px}.tray{min-height:78px}.piece{min-height:72px}.tip{padding-bottom:6px}}
 </style>
 <link rel="stylesheet" href="../game/question-surface.css">
-<link rel="stylesheet" href="./play.css">
+<link rel="stylesheet" href="./play.css?v=20261003a">
 <link rel="stylesheet" href="../multiplayer/game-type.css">
 </head>
 <body>
@@ -93,8 +93,8 @@ body{background:#0c2f5c;color:#fff;font-family:ui-rounded,'SF Pro Rounded','Aria
       <div class="stat"><b id="rescue-left">2</b><span>구조</span></div>
     </div>
   </header>
-  <div class="phase"><div class="phase-fill" id="phase-fill"></div><span class="phase-label" id="phase-label">문장 챌린지까지 15초</span></div>
-  <section class="mission"><div class="mission-copy"><strong id="unit-label">블록을 채워 줄을 지워요</strong><small class="effect-status" id="effect-status" role="status" aria-live="polite" aria-atomic="true"></small></div><span class="mission-hint">15초 집중 플레이<br>문제 시간은 차감되지 않아요</span></section>
+  <div class="phase"><div class="phase-fill" id="phase-fill"></div><span class="phase-label" id="phase-label">블록을 놓아 문법 챌린지를 열어요</span></div>
+  <section class="mission"><div class="mission-copy"><strong id="unit-label">블록을 채워 줄을 지워요</strong><small class="effect-status" id="effect-status" role="status" aria-live="polite" aria-atomic="true"></small></div><span class="mission-hint" id="mission-hint">블록을 놓아 점수를 모아요<br>문법 챌린지에서 보너스를 받아요</span></section>
   <section class="board-wrap"><div class="board" id="board" aria-label="8×8 블록 보드"></div><div class="impact-layer" id="impact-layer"></div><div class="blast-flash" id="blast-flash"></div></section>
   <div class="tray-title"><strong>블록 선택</strong><span>블록을 끌어 보드에 놓으세요</span></div>
   <section class="tray" id="tray"></section>
@@ -120,8 +120,10 @@ body{background:#0c2f5c;color:#fff;font-family:ui-rounded,'SF Pro Rounded','Aria
   <section class="card end-card">
     <div class="end-emoji">🏆</div><h2>Sentence Blast 완료!</h2>
     <div class="final-score" id="final-score">0점</div>
+    <div class="end-record" id="end-record" hidden>🎉 신기록!</div>
+    <div class="end-unit" id="end-unit"></div>
     <div class="end-sub" id="end-sub"></div>
-    <div class="end-actions"><button class="again" onclick="location.reload()">한 판 더</button><button class="home" onclick="location.href='../game/'">메뉴</button></div>
+    <div class="end-actions" id="end-actions"><button class="again" id="again-btn" onclick="location.reload()">같은 단원 다시</button><button class="home" onclick="location.href='../game/'">게임 허브</button></div>
   </section>
 </div>
 
@@ -132,7 +134,7 @@ body{background:#0c2f5c;color:#fff;font-family:ui-rounded,'SF Pro Rounded','Aria
 <script>
 'use strict';
 const classroomMode=!!window.ClassroomMatch?.enabled;
-const SIZE=8, PLAY_PHASE_SECONDS=15, CHALLENGE_SECONDS=10, FREE_RESCUES=2, EMERGENCY_RESCUE_PENALTY=300;
+const SIZE=8, PLAY_PHASE_SECONDS=25, CHALLENGE_SECONDS=10, FREE_RESCUES=2, EMERGENCY_RESCUE_PENALTY=300;
 const COLORS=[['#0891b2','#67e8f9'],['#2563eb','#93c5fd'],['#7c3aed','#c4b5fd'],['#db2777','#f9a8d4'],['#ea580c','#fdba74'],['#059669','#6ee7b7'],['#ca8a04','#fde047']];
 const SHAPES=[
   {n:'1',c:[[0,0]]},{n:'2',c:[[0,0],[0,1]]},{n:'3',c:[[0,0],[0,1],[0,2]]},{n:'4',c:[[0,0],[0,1],[0,2],[0,3]]},
@@ -286,8 +288,7 @@ function checkMoves(){
 }
 
 function reconcilePlayClock(now=performance.now()){
-  if(classroomMode){remainingMs=Math.max(0,ClassroomMatch.remainingMs());remaining=Math.ceil(remainingMs/1000);return}
-  remainingMs=Math.max(0,playDeadline-now);phaseRemainingMs=Math.max(0,phaseDeadline-now);
+  remainingMs=classroomMode?Math.max(0,ClassroomMatch.remainingMs()):Math.max(0,playDeadline-now);phaseRemainingMs=Math.max(0,phaseDeadline-now);
   remaining=Math.ceil(remainingMs/1000);phaseRemaining=Math.ceil(phaseRemainingMs/1000);
 }
 function resumePlayClocks(resetPhase=false){
@@ -297,12 +298,17 @@ function resumePlayClocks(resetPhase=false){
 }
 
 function updateHUD(){
-  const grammar=grammarCorrect+'/'+grammarTotal,time=formatTime(remaining),displayTime=duration===0&&!classroomMode?'∞':time,pct=phase==='challenge'?0:Math.max(0,phaseRemaining/PLAY_PHASE_SECONDS*100),label=phase==='challenge'?'문장 챌린지 진행 중 · 게임 시간 멈춤':`문장 챌린지까지 ${phaseRemaining}초`;
+  const grammar=grammarCorrect+'/'+grammarTotal,time=formatTime(remaining),displayTime=duration===0&&!classroomMode?'∞':time,pct=phase==='challenge'?0:Math.max(0,phaseRemaining/(classroomMode?8:PLAY_PHASE_SECONDS)*100),label=phase==='challenge'?(classroomMode?'문법 챌린지 · 교실 경기 타이머 진행 중':'문장 챌린지 · 경기 타이머 정지'):(classroomMode?'교실 경기 중 · 문법 문제 대기':`문장 챌린지까지 ${phaseRemaining}초`);
   const state=[score,lines,combo,grammar,rescuesRemaining,displayTime,remaining<=20,pct,label].join('|');
   if(state===lastHUDState)return;
   lastHUDState=state;$('score').textContent=score.toLocaleString();$('lines').textContent=lines;$('combo').textContent=combo;$('grammar').textContent=grammar;$('rescue-left').textContent=rescuesRemaining;$('time').textContent=displayTime;$('time').classList.toggle('crit',(classroomMode||duration>0)&&remaining<=20);$('phase-fill').style.width=pct+'%';$('phase-label').textContent=label;
 }
+function setModeHint(){$('mission-hint').innerHTML=classroomMode?'교실 경기 타이머는 계속 흘러요<br>문법 문제 정답이 보드에 반영돼요':`${PLAY_PHASE_SECONDS}초 블록 플레이<br>챌린지 중 경기 타이머 정지`}
 function tick(){
+  if(classroomMode&&phase==='challenge'){
+    reconcilePlayClock();updateHUD();
+    if(remainingMs<=0){finish();return}
+  }
   if(phase==='play'){
     reconcilePlayClock();updateHUD();
     if(remainingMs<=0){finish();return}
@@ -377,11 +383,11 @@ function applyGrammarBlast(superBlast=false){
   const flash=$('blast-flash');gameSfx.blast(superBlast);navigator.vibrate?.(superBlast?[25,25,45,25,70]:[25,25,45]);flash.classList.remove('on','super');void flash.offsetWidth;flash.classList.add('on');if(superBlast)flash.classList.add('super');renderBoard();const effectName=superBlast?'🔥 SUPER BLAST':'💥 문법 폭발',rowLabel=superBlast?'가로·세로 2줄씩':'가로·세로 1줄씩';setEffectStatus(removed?`${effectName} · ${rowLabel} 제거 · ${removed}칸 · +${superBlast?800:500}`:`${effectName} · ${rowLabel} 제거 · 완벽한 보드 · +${superBlast?800:500}`);
 }
 function closeChallenge(){if(classroomFinished||phase==='over')return;challengeRunId++;$('challenge').classList.remove('show');clearChallengeState();phase='play';phaseRemaining=classroomMode?8:PLAY_PHASE_SECONDS;phaseRemainingMs=phaseRemaining*1000;locked=false;resumePlayClocks();renderTray();checkMoves();updateHUD()}
-function finish(){if(phase==='over')return;challengeRunId++;cancelDrag();$('challenge').classList.remove('show');phase='over';classroomFinished=true;stopClassroomFinish?.();clearInterval(timerId);locked=true;clearChallengeState();gameSfx.finish();setTimeout(stopMusic,700);const key=`mg_sentence_blast_best_v1_${unitKey}_${duration}`;let best=0;try{const old=JSON.parse(localStorage.getItem(key)||'null');best=old&&old.score||0;if(!classroomMode&&score>best)localStorage.setItem(key,JSON.stringify({score,lines,correct:grammarCorrect,total:grammarTotal,combo:bestCombo,rescues:rescueUses,emergencyRescues,date:new Date().toLocaleDateString('ko-KR')}))}catch(e){}$('final-score').textContent=score.toLocaleString()+'점';$('end-sub').innerHTML=`완성한 줄 ${lines}개 · 문법 ${grammarCorrect}/${grammarTotal}<br>최고 콤보 ${bestCombo} · 구조대 ${rescueUses}회${emergencyRescues?` (긴급 ${emergencyRescues}회)`:''}`+(!classroomMode&&score>best?' · <strong>신기록!</strong>':'');$('gameover').classList.add('show')}
+function finish(){if(phase==='over')return;challengeRunId++;cancelDrag();$('challenge').classList.remove('show');phase='over';classroomFinished=true;stopClassroomFinish?.();clearInterval(timerId);locked=true;clearChallengeState();gameSfx.finish();setTimeout(stopMusic,700);const key=`mg_sentence_blast_best_v1_${unitKey}_${duration}`;let best=0;try{const old=JSON.parse(localStorage.getItem(key)||'null');best=old&&old.score||0;if(!classroomMode&&score>best)localStorage.setItem(key,JSON.stringify({score,lines,correct:grammarCorrect,total:grammarTotal,combo:bestCombo,rescues:rescueUses,emergencyRescues,date:new Date().toLocaleDateString('ko-KR')}))}catch(e){}$('final-score').textContent=score.toLocaleString()+'점';$('end-record').hidden=classroomMode||score<=best;$('end-unit').textContent='플레이 범위 · '+(classroomMode?'교실 경기':(unit&&unit.label?unit.label:'전체 랜덤'));$('again-btn').textContent=unitKey==='all'?'전 단원 모드 다시':'같은 단원 다시';$('again-btn').hidden=classroomMode;$('end-actions').classList.toggle('classroom-finished',classroomMode);$('end-sub').innerHTML=`<div class="end-stats"><div class="end-stat"><span>완성한 줄</span><b>${lines}</b></div><div class="end-stat"><span>문법 정답</span><b>${grammarCorrect}/${grammarTotal}</b></div><div class="end-stat"><span>최고 콤보</span><b>${bestCombo}</b></div><div class="end-stat"><span>구조 사용</span><b>${rescueUses}회</b></div>${emergencyRescues?`<div class="end-stat"><span>긴급 구조</span><b>${emergencyRescues}회</b></div>`:''}</div>`;$('gameover').classList.add('show')}
 
 $('check-btn').onclick=checkSentence;$('reset-btn').onclick=resetWords;
 $('unit-label').textContent=(unit&&unit.label?unit.label:'전체 랜덤')+' · 줄을 완성해요';
-async function boot(){if(classroomMode){stopClassroomFinish=ClassroomMatch.onFinish(finish);const cfg=await ClassroomMatch.ready;if(!ClassroomMatch.isActive()){finish();return}remainingMs=Math.max(0,cfg.deadlineAt-Date.now());remaining=Math.ceil(remainingMs/1000);phaseRemaining=0;phaseRemainingMs=0}renderBoard();newTray();resumePlayClocks();updateHUD();timerId=setInterval(tick,250)}
+async function boot(){if(classroomMode){stopClassroomFinish=ClassroomMatch.onFinish(finish);const cfg=await ClassroomMatch.ready;if(!ClassroomMatch.isActive()){finish();return}remainingMs=Math.max(0,cfg.deadlineAt-Date.now());remaining=Math.ceil(remainingMs/1000);phaseRemaining=0;phaseRemainingMs=0}setModeHint();renderBoard();newTray();resumePlayClocks();updateHUD();timerId=setInterval(tick,250)}
 boot().catch(()=>finish());
 </script>
 </body>

@@ -20,7 +20,7 @@ assert(css.includes('font-size:13px') && css.includes('.effect-status.super'), '
 assert(css.includes('blast-polish 1.3s') && css.includes('blast-sweep 1.3s'), 'blast visual should remain legible beyond a brief flash');
 assert(css.includes('.blast-flash.on::after') && css.includes('animation:none!important'), 'blast sweep must respect reduced motion');
 assert(css.includes('max-width:calc(100vw - 28px)') && css.includes('white-space:normal'), 'mobile announcements must wrap without horizontal overflow');
-assert(html.includes('PLAY_PHASE_SECONDS=15') && html.includes('CHALLENGE_SECONDS=10'), 'challenge timing contract changed');
+assert(html.includes('PLAY_PHASE_SECONDS=25') && html.includes('CHALLENGE_SECONDS=10'), 'solo challenge timing contract changed');
 assert(html.includes('usedSentenceIds.clear()'), 'stale sentence-id cleanup must remain intact');
 assert(html.includes("if(grammarTotal<2)") && html.includes('choiceQuestions'), 'challenge pool warm-up/filter contract changed');
 

@@ -13,6 +13,7 @@ assert.match(script,/location\.replace\('\.\.\/game\/\?mode=sentence'\)/,'invali
 assert.match(script,/requestedSeconds=params\.get\('seconds'\)/,'sentence launch must read the shared seconds query');
 assert.match(script,/requestedSeconds==='0'\?0/,'seconds=0 must remain unlimited');
 assert.match(script,/duration===0&&!classroomMode\?'∞':time/,'unlimited solo sentence blast must show an unlimited timer');
+assert.match(script,/PLAY_PHASE_SECONDS=25/,'solo block-play interval must be 25 seconds');
 
 function functionSource(name){
   const start=script.indexOf(`function ${name}(`);
@@ -90,13 +91,13 @@ function testUnlimitedClockAndChallengeCadence(){
   const elements={
     score:{textContent:''},lines:{textContent:''},combo:{textContent:''},grammar:{textContent:''},
     'rescue-left':{textContent:''},time:{textContent:'',classList:{toggle(name,value){if(name==='crit')critState=value;}}},
-    'phase-fill':{style:{}},'phase-label':{textContent:''},'challenge-time':{textContent:''}
+    'phase-fill':{style:{}},'phase-label':{textContent:''},'mission-hint':{innerHTML:''},'challenge-time':{textContent:''}
   };
   let now=100;
   const context={
     duration:0,classroomMode:false,remaining:Infinity,remainingMs:Infinity,phase:'play',phaseRemaining:0,
     phaseRemainingMs:0,playDeadline:Infinity,phaseDeadline:0,challengeDeadline:0,
-    PLAY_PHASE_SECONDS:15,
+    PLAY_PHASE_SECONDS:25,
     score:0,lines:0,combo:0,grammarCorrect:0,grammarTotal:0,rescuesRemaining:2,lastHUDState:'',
     challengeLeft:10,lastChallengeTime:-1,locked:false,performance:{now:()=>now},$:id=>elements[id],
     openChallenge(){opened++;context.phase='challenge';},finish(){throw new Error('unlimited clock must not finish');},
@@ -105,12 +106,17 @@ function testUnlimitedClockAndChallengeCadence(){
   vm.createContext(context);
   vm.runInContext([
     functionSource('formatTime'),functionSource('reconcilePlayClock'),
-    functionSource('updateHUD'),functionSource('tick')
+    functionSource('updateHUD'),functionSource('setModeHint'),functionSource('tick')
   ].join('\n'),context);
 
+  context.setModeHint();
   context.tick();
   assert.equal(opened,1,'seconds=0 must keep the play clock alive and reach the challenge cadence');
   assert.equal(elements.time.textContent,'∞','solo seconds=0 HUD must show the unlimited marker');
+  context.lastHUDState='';
+  context.updateHUD();
+  assert.equal(elements['phase-label'].textContent,'문장 챌린지 · 경기 타이머 정지','solo challenge copy must show the paused match clock');
+  assert.match(elements['mission-hint'].innerHTML,/25초 블록 플레이/,'solo play hint must derive from the 25-second phase constant');
 
   now=500;
   context.challengeDeadline=1000;
@@ -122,19 +128,42 @@ function testUnlimitedClockAndChallengeCadence(){
   assert.equal(resolved,true,'challenge timeout must still resolve during an unlimited run');
 
   context.classroomMode=true;
+  context.setModeHint();
   context.phase='play';
   context.remaining=42;
   context.lastHUDState='';
   context.updateHUD();
   assert.equal(elements.time.textContent,'0:42','classroom HUD must use its finite server clock');
   assert.notEqual(elements.time.textContent,'∞','classroom HUD must never show the solo unlimited marker');
+  assert.equal(elements['phase-label'].textContent,'교실 경기 중 · 문법 문제 대기','classroom HUD must not show a solo challenge countdown');
+  assert.match(elements['mission-hint'].innerHTML,/경기 타이머는 계속 흘러요/,'classroom copy must reflect the running server deadline');
+  context.phase='challenge';
+  context.lastHUDState='';
+  context.updateHUD();
+  assert.equal(elements['phase-label'].textContent,'문법 챌린지 · 교실 경기 타이머 진행 중','classroom challenge copy must show that the server deadline keeps running');
   context.remaining=12;
   context.lastHUDState='';
   context.updateHUD();
   assert.equal(critState,true,'classroom finite low-time HUD must retain its warning state');
 }
 
+function testChallengeIntervals(){
+  const close=functionSource('closeChallenge');
+  for(const [classroomMode,expected] of [[false,25],[true,8]]){
+    const context={
+      classroomFinished:false,phase:'challenge',challengeRunId:0,classroomMode,PLAY_PHASE_SECONDS:25,
+      phaseRemaining:0,phaseRemainingMs:0,locked:true,
+      $:()=>({classList:{remove(){}}}),clearChallengeState(){},resumePlayClocks(){},renderTray(){},checkMoves(){},updateHUD(){}
+    };
+    vm.createContext(context);
+    vm.runInContext(`${close};closeChallenge()`,context);
+    assert.equal(context.phaseRemaining,expected,`${classroomMode?'classroom':'solo'} play interval must be ${expected} seconds`);
+    assert.equal(context.phaseRemainingMs,expected*1000,`${classroomMode?'classroom':'solo'} phase deadline must match its interval`);
+  }
+}
+
 testLateRejection().then(()=>{
   testUnlimitedClockAndChallengeCadence();
+  testChallengeIntervals();
   console.log('Sentence Blast state regression checks passed.');
 });

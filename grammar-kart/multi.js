@@ -18,10 +18,52 @@
   let finishedShown = false;
   let wasHit = false;
   let lastCueAt = 0;
+  let lastRoadsideCounts = null;
   const fmt = seconds => `${Math.floor(seconds / 60)}:${String(Math.floor(seconds % 60)).padStart(2,'0')}.${Math.floor((seconds % 1) * 10)}`;
   const send = message => window.parent.postMessage(message, origin);
   const audio = name => window.KartAudio?.play?.(name);
-  function toast(message) { const t = document.createElement('div'); t.className = 'toast'; t.textContent = message; $('toast-area').replaceChildren(t); setTimeout(() => t.remove(), 760); }
+  function toast(message, duration = 760) { const t = document.createElement('div'); t.className = 'toast'; t.textContent = message; t.style.animationDuration = `${duration}ms`; $('toast-area').replaceChildren(t); setTimeout(() => t.remove(), duration); }
+  function itemGuide() {
+    const make = (tag, className, text) => { const node = document.createElement(tag); if (className) node.className = className; if (text != null) node.textContent = text; return node; };
+    const details = make('details', 'item-guide');
+    const summary = make('summary', '', '아이템 설명');
+    const panel = make('div', 'item-guide-panel');
+    panel.setAttribute('role', 'region'); panel.setAttribute('aria-label', '레이스 아이템 설명');
+    const header = make('div', 'item-guide-header');
+    header.append(make('h2', '', '아이템 안내'));
+    const close = make('button', 'item-guide-close', '닫기'); close.type = 'button';
+    close.addEventListener('click', () => { details.open = false; summary.focus(); });
+    header.append(close); panel.append(header);
+    const list = make('ul', '');
+    [
+      ['정답 보상', '정답을 맞히면 부스터·미사일·방어막 중 하나를 얻어요.'],
+      ['⚡ 부스터', '부스터 1개 또는 충전 3칸을 써서 5초 동안 가속해요. 버튼이나 스페이스바로 사용해요.'],
+      ['🚀 미사일', '앞쪽 220m 안에 상대가 있을 때 발사해요. 대상이 없으면 소모되지 않아요.'],
+      ['🛡 방어막', '5초 동안 코스 장애물과 상대가 놓은 바나나·미사일을 막아요.'],
+      ['🍌 바나나', '사용하면 내 뒤에 놓여요. 같은 레인을 지나는 상대를 느리게 해요.'],
+      ['⭐ 별 · 🪙 코인', '각각 충전 +1, 최대 3칸이에요. 코인은 점수가 아니에요.'],
+      ['SPEED PAD', '밟으면 부스트가 1.6초 더 이어져요.'],
+      ['❔ 상자', '손에 든 아이템이 없을 때 바나나를 줘요.']
+    ].forEach(([name, explanation]) => {
+      const row = make('li', ''); const label = make('strong', '', name);
+      row.append(label, document.createTextNode(` · ${explanation}`)); list.append(row);
+    });
+    panel.append(list); details.append(summary, panel);
+    summary.setAttribute('aria-label', '아이템 설명 열기 또는 닫기');
+    details.addEventListener('keydown', event => {
+      if (event.key !== 'Escape' || !details.open) return;
+      event.preventDefault(); details.open = false; summary.focus();
+    });
+    return details;
+  }
+  function setupRaceHint() {
+    const existing = document.querySelector('.hint');
+    if (!existing) return;
+    const hint = document.createElement('div'); hint.className = 'hint';
+    const keyboard = document.createElement('span'); keyboard.className = 'hint-keyboard'; keyboard.textContent = '← → 조향 · 1~4 답안 레인 · Space 부스터 · X 아이템';
+    const pickups = document.createElement('span'); pickups.className = 'hint-pickups'; pickups.textContent = '⭐/🪙 충전 +1 · PAD 부스트 +1.6초 · ? 바나나';
+    hint.append(keyboard, pickups, itemGuide()); existing.replaceWith(hint);
+  }
   function renderQuestion(question) {
     if (!question) { race?.setGateQuestion(null); questionKey = ''; $('question').hidden = true; document.querySelector('.race-shell')?.classList.remove('question-active'); return; }
     const key = `${question.occurrenceIndex}:${question.id}`;
@@ -52,6 +94,14 @@
     if (!room || room.mode !== 'grammar_kart') return;
     const me = room.self;
     if (!me?.kart) return;
+    const roadside = { stars: Number(me.kart.stars) || 0, pads: Number(me.kart.pads) || 0, heldItem: me.kart.heldItem || '' };
+    if (lastRoadsideCounts) {
+      const starsFound = roadside.stars - lastRoadsideCounts.stars;
+      if (starsFound > 0) toast(me.kart.charge >= 3 ? '부스트 준비! 3/3' : `⭐/🪙 충전 +${starsFound}`, 1400);
+      else if (roadside.pads > lastRoadsideCounts.pads) toast('SPEED PAD · 부스트 +1.6초', 1400);
+      else if (!lastRoadsideCounts.heldItem && roadside.heldItem === 'banana') toast('상자 · 🍌 바나나 획득', 1400);
+    }
+    lastRoadsideCounts = roadside;
     if (me.kart.hit && !wasHit && !me.kart.lastCue) { audio('hit'); toast(me.kart.slipping ? '🍌 미끄러짐!' : '🚀 미사일 피격!'); }
     wasHit = Boolean(me.kart.hit);
     if (!race) {
@@ -213,5 +263,6 @@
     }
   });
   window.addEventListener('pagehide', () => { race?.destroy(); window.KartAudio?.destroy?.(); });
+  setupRaceHint();
   send({ type: 'grammar-kart-ready' });
 })();

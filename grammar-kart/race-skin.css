@@ -821,3 +821,122 @@ body .race-shell.question-active .race-hud { visibility: hidden; }
 body .race-shell .question .choices button.lane-selected { background: #7de0c2; color: #122a31; border-color: #afffe4; }
 
 .gate-retry { padding: 9px 14px; margin-top: 8px; border: 0; border-radius: 7px; background: #7de0c2; color: #122a31; font-weight: 900; }
+
+/* A compact, tap-open guide stays in the reserved footer row and overlays the race. */
+body .race-shell main {
+  grid-template-rows: auto minmax(0, 1fr) 4px auto 42px;
+}
+body .race-shell .hint {
+  display: flex;
+  flex: 0 0 42px;
+  min-height: 42px;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  margin: 0;
+  overflow: visible;
+  white-space: normal;
+  font-size: 10px;
+  line-height: 1.2;
+}
+body .race-shell .hint::after { content: none; display: none; }
+body .race-shell .hint-keyboard,
+body .race-shell .hint-pickups {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+body .race-shell .hint-pickups { color: #d5e2ee; }
+body .item-guide { flex: 0 0 auto; color: #f4f2ea; }
+body .item-guide > summary {
+  display: flex;
+  min-height: 38px;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid #9cc5ff75;
+  border-radius: 8px;
+  background: #10294a;
+  color: #e8f2ff;
+  cursor: pointer;
+  font-size: 10px;
+  font-weight: 900;
+  list-style: none;
+  padding: 0 9px;
+  white-space: nowrap;
+  -webkit-tap-highlight-color: transparent;
+}
+body .item-guide > summary::-webkit-details-marker { display: none; }
+body .item-guide > summary::after { content: ' ⓘ'; color: #91bdff; }
+body .item-guide > summary:focus-visible { outline: 2px solid #fff0c5; outline-offset: 2px; }
+body .item-guide-panel {
+  position: fixed;
+  z-index: 40;
+  left: 50%;
+  bottom: calc(48px + env(safe-area-inset-bottom, 0px));
+  box-sizing: border-box;
+  width: min(470px, calc(100vw - 20px));
+  max-height: min(58dvh, 520px);
+  overflow: auto;
+  transform: translateX(-50%);
+  border: 1px solid #a9c8ec8c;
+  border-top: 3px solid #7de0c2;
+  border-radius: 12px;
+  background: #071a35f7;
+  box-shadow: 0 12px 34px #020a1bcc;
+  color: #f4f2ea;
+  padding: 12px 14px;
+}
+body .item-guide-panel h2 {
+  margin: 0;
+  color: #fff;
+  font-size: 15px;
+}
+body .item-guide-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 8px;
+}
+body .item-guide-close {
+  flex: 0 0 auto;
+  min-width: 72px;
+  min-height: 44px;
+  border: 1px solid #9cc5ff91;
+  border-radius: 8px;
+  background: #173b67;
+  color: #fff;
+  cursor: pointer;
+  font-size: 12px;
+  font-weight: 900;
+  padding: 0 12px;
+  touch-action: manipulation;
+}
+body .item-guide-close:focus-visible { outline: 2px solid #fff0c5; outline-offset: 2px; }
+body .item-guide-panel ul {
+  display: grid;
+  gap: 6px;
+  margin: 0;
+  padding-left: 18px;
+}
+body .item-guide-panel li {
+  color: #d5e2ee;
+  font-size: 12px;
+  line-height: 1.38;
+}
+body .item-guide-panel li strong { color: #91e6d8; }
+body .garage .garage-panel .garage-help {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 5px 8px;
+  line-height: 1.35;
+}
+body .garage .garage-help-pickups { color: #e2edf6; }
+@media (max-width: 760px) {
+  body .race-shell .hint-keyboard { display: none; }
+  body .race-shell .hint-pickups { flex: 1 1 auto; font-size: 10px; }
+  body .race-shell > .hint { flex: 0 0 42px; }
+  body .garage .garage-help-keyboard { display: none; }
+}

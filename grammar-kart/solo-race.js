@@ -20,7 +20,10 @@
     art.variants = new Map();
   }
   const TOTAL = 1800;
-  const courseCenter = (map, at) => map === 'hill' ? Math.sin(at / 130) * 90 + Math.sin(at / 280) * 35 : Math.sin(at / 190) * 65 + Math.sin(at / 360) * 40;
+  const courseCenter = (map, at) => {
+    const phase = at * 2 * Math.PI / TOTAL;
+    return map === 'neon' ? Math.sin(phase * 3) * 95 + Math.sin(phase) * 28 : map === 'snow' ? Math.sin(phase * 2) * 80 + Math.sin(phase) * 32 : map === 'hill' ? Math.sin(phase * 2) * 90 + Math.sin(phase) * 35 : Math.sin(phase * 2) * 65 + Math.sin(phase) * 40;
+  };
   const QUESTION_MARKS = [450, 900, 1350];
   const COLORS = ['#ffce51', '#f66a60', '#69def0', '#b79aff', '#8ee47e', '#ff9ccb'];
   const clamp = (n, lo, hi) => Math.max(lo, Math.min(hi, n));
@@ -73,7 +76,7 @@
     const obstacleLane = [-.55, 0, .55, 0, .55, -.55][i % 6];
     const padLane = obstacleLane === 0 ? (i % 2 ? -.55 : .55) : 0;
     return [
-      { at: base, lane: obstacleLane, kind: i === 2 ? 'barrier' : 'cone' },
+      { at: base, lane: obstacleLane, kind: i % 5 === 3 ? 'oil' : i % 5 === 4 ? 'roadblock' : i === 2 ? 'barrier' : 'cone' },
       { at: base + 20, lane: padLane, kind: 'pad' },
       { at: base + 43, lane: -padLane || -.55, kind: 'star' },
       { at: base + 68, lane: i % 2 ? .55 : -.55, kind: 'box' },
@@ -85,12 +88,13 @@
     [[1250,-.55]].flatMap(([at,lane]) => [
       {at,lane,kind:'barrier'}, {at:at+20,lane:-lane,kind:'pad'}
     ])
-  ).filter(event => !(['cone','banana','barrier'].includes(event.kind) && QUESTION_MARKS.some(mark => event.at >= mark - 20 && event.at <= mark + 335)))
-    .sort((a,b) => a.at-b.at);
+  ).sort((a,b) => a.at-b.at);
 
   function makeRace(options) {
     const { canvas, lesson, mode = 'solo', onProgress = () => {}, onAnswer = () => {}, onFinish = () => {}, onQuestion = () => {} } = options;
     const ctx = canvas.getContext('2d');
+    const laps = mode === 'solo' ? clamp(Math.floor(Number(options.laps) || 3), 1, 5) : 1;
+    const total = TOTAL * laps;
     const pool = ((typeof GAME_QUESTIONS !== 'undefined' && GAME_QUESTIONS[lesson]?.questions) || [])
       .filter(q => Array.isArray(q.opts) && q.opts.length === 4 && q.opts.some(o => norm(o) === norm(q.ans)));
     let deck = [];
@@ -102,6 +106,7 @@
     let question = null;
     const answerLanes = [-.75,-.25,.25,.75];
     let gate = null;
+    const gateZones = [];
     let completedGate = '';
     let laneTarget = null;
     function setGateQuestion(q, occurrence) {
@@ -109,7 +114,8 @@
       const key = `${q.id}:${occurrence ?? q.occurrenceIndex ?? 0}`;
       if (gate?.key === key || completedGate === key) return;
       const reading = (q.eng || '').length + q.opts.join(' ').length;
-      gate = { key, question: q, at: Math.min(TOTAL - 20, distance + (reading > 170 ? 380 : 360)) };
+      gate = { key, question: q, at: Math.min(total - 20, distance + (reading > 170 ? 380 : 360)) };
+      gateZones.push(gate.at);
     }
     function selectGateLane(index) {
       if (!gate || gate.submitted || index < 0 || index > 3) return;
@@ -144,10 +150,12 @@
     let slowUntil = 0;
     let shieldUntil = 0;
     let slipUntil = 0;
+    let frozenUntil = 0;
     let charge = 0;
     let boostStock = 0;
     let missiles = 0;
     let shields = 0;
+    let boxCount = 0;
     let rewardsGiven = 0;
     let heldItem = '';
     let bananas = [];
@@ -174,12 +182,14 @@
     const names = ['스프린트','폭스','로보','아울','라쿤','디거','펭귄','프로그','래빗'];
     const ai = roster.filter(design => design !== playerDesign).map((design, i) => ({
       id: `rival-${design}`, name: names[roster.indexOf(design)], design, kartColor: 'cyan',
-      base: (29.5 + (i % 5) * .75) * 40 / 31, lane: [-.62,.52,.06,-.28,.32,-.48,.68,-.08][i],
-      color: COLORS[i % COLORS.length], wobble: .2 + i * .025, distance: -i * 3, slot: i,
+      base: (29.5 + (i % 5) * .75) * 43 / 31, lane: [-.62,.52,.06,-.28,.32,-.48,.68,-.08][i],
+      color: COLORS[i % COLORS.length], wobble: .2 + i * .025, distance: i < 4 ? 35 * (i + 1) : -35 * (i - 3), slot: i,
       homeLane: [-.62,.52,.06,-.28,.32,-.48,.68,-.08][i]
     }));
     if (mode === 'solo') opponents = ai;
-    const course = options.map === 'hill' ? COURSE.map(event => ({ ...event, lane: -event.lane })) : COURSE;
+    const course = Array.from({ length: laps }, (_, lap) => COURSE.map(event => ({ ...event, at: event.at + lap * TOTAL, lane: ['hill','snow'].includes(options.map) ? -event.lane : event.lane }))).flat();
+    const hazard = event => ['cone','banana','barrier','oil','roadblock'].includes(event.kind);
+    const gateSafeEvent = event => hazard(event) && gateZones.some(at => Math.abs(event.at - at) <= 55);
     if (!['fox','robot','owl','raccoon','digger','penguin','frog','rabbit'].includes(playerDesign)) for (const pose of ['rear', 'left', 'right']) {
       const source = art[pose === 'rear' ? playerDesign : `${playerDesign}-${pose}`];
       if (source?.complete && source.naturalWidth) spriteFor(playerDesign, playerColor, pose);
@@ -240,11 +250,15 @@
       if (!playing || finished) return false;
       const item = requested || heldItem || (missiles ? 'missile' : shields ? 'shield' : '');
       if (!item || (item !== heldItem && !(item === 'missile' && missiles) && !(item === 'shield' && shields))) return false;
-      if (item === 'missile') {
+      if (item === 'missile' || item === 'ice') {
         const target = opponents.filter(o => o.distance > distance && o.distance - distance < 220 && !o.finished)
           .sort((a, b) => a.distance - b.distance)[0];
         if (!target) return false;
-        missilesInFlight.push({ targetId: target.id, start: elapsed, from: distance, to: target.distance });
+        if (item === 'ice') {
+          if (elapsed < (target.shieldUntil || 0)) target.shieldUntil = 0;
+          else { target.slowUntil = elapsed + 2.3; target.frozenUntil = elapsed + 2.3; }
+          effects.push({ text: `${target.name} ICE!`, until: elapsed + .9, color: '#9defff' });
+        } else missilesInFlight.push({ targetId: target.id, start: elapsed, from: distance, to: target.distance });
       } else if (item === 'banana') {
         bananas.push({ at: distance - 4, lane, owner: 'me', until: elapsed + 14 });
         effects.push({ text: 'BANANA DROP!', until: elapsed + .9, color: '#ffe36c' });
@@ -272,11 +286,11 @@
     }
     function getState() {
       const standings = [{ id: options.playerId || 'me', name: options.playerName || '나', distance, elapsed, me: true, design: playerDesign },
-        ...opponents.map(o => ({ id: o.id, name: o.name, distance: o.distance, elapsed: o.finishedAt || null, me: false, design: o.design }))]
+        ...opponents.map(o => ({ id: o.id, name: o.name, distance: o.distance, elapsed: o.finishedAt || null, me: false, design: o.design, frozen: elapsed < (o.frozenUntil || 0) }))]
         .sort((a, b) => b.distance - a.distance || (a.elapsed ?? Infinity) - (b.elapsed ?? Infinity));
-      return { distance: Math.round(distance), total: TOTAL, speed: Math.round(speed * 3.6), lane: +lane.toFixed(2), obstaclesHit, padsTaken, starsTaken,
+      return { distance: Math.round(distance), total, lap: Math.min(laps, Math.floor(distance / TOTAL) + 1), laps, lapDistance: Math.round(distance >= total ? TOTAL : distance % TOTAL), frozen: elapsed < frozenUntil, speed: Math.round(speed * 3.6), lane: +lane.toFixed(2), obstaclesHit, padsTaken, starsTaken,
         elapsed: +elapsed.toFixed(1), questionRemaining: gate ? Math.max(0, Math.ceil((gate.at-distance)/Math.max(speed,14))) : null,
-        charge, boostStock, missiles, shields, heldItem, gatePending: !!gate?.submitted, answerLane: gate ? gate.submitted ? gate.index : answerLanes.reduce((best,value,i)=>Math.abs(lane-value)<Math.abs(lane-answerLanes[best])?i:best,0) : null, gateRemaining: gate ? Math.max(0,Math.ceil((gate.at-distance)/Math.max(speed,14))) : null, correct, asked, rank: standings.findIndex(s => s.me) + 1,
+        charge, boostStock, missiles, shields, iceStocks: heldItem === 'ice' ? 1 : 0, heldItem, gatePending: !!gate?.submitted, answerLane: gate ? gate.submitted ? gate.index : answerLanes.reduce((best,value,i)=>Math.abs(lane-value)<Math.abs(lane-answerLanes[best])?i:best,0) : null, gateRemaining: gate ? Math.max(0,Math.ceil((gate.at-distance)/Math.max(speed,14))) : null, correct, asked, rank: standings.findIndex(s => s.me) + 1,
         standings, boosted: elapsed < boostUntil, shielded: elapsed < shieldUntil, finished };
     }
     function resize() {
@@ -295,9 +309,9 @@
     document.addEventListener('visibilitychange', onVisibilityChange);
     function onVisibilityChange() { previous = performance.now(); if (!document.hidden && !destroyed) { resize(); draw(); } }
     function trackCenter(at) { return courseCenter(options.map, at); }
-    function trackSlope(at) { return options.map === 'hill' ? Math.cos(at / 130) * 90 / 130 + Math.cos(at / 280) * 35 / 280 : Math.cos(at / 190) * 65 / 190 + Math.cos(at / 360) * 40 / 360; }
+    function trackSlope(at) { return (trackCenter(at + 1) - trackCenter(at - 1)) / 2; }
     function trackHeight(at) { return Math.sin(at / 105) * 5 + Math.sin(at / 245) * 8; }
-    function kart(x, y, size, color, label, player = false, design = 'teal', kartColor = 'cyan', hit = false) {
+    function kart(x, y, size, color, label, player = false, design = 'teal', kartColor = 'cyan', hit = false, frozen = false) {
       const pose = player && lean < -.24 ? 'left' : player && lean > .24 ? 'right' : 'rear';
       const atlasImage = design === 'teal' && kartColor === 'cyan' ? art.blueAtlas : ['fox','robot','owl','raccoon','digger','penguin','frog','rabbit'].includes(design) ? art[design] : null;
       const atlas = atlasImage?.complete && atlasImage.naturalWidth ? atlasImage : null;
@@ -325,6 +339,7 @@
           for (let n = -1; n < 5; n++) { const yy = wheelY - wheelH/2 + n * wheelH/3 + offset; ctx.beginPath(); ctx.moveTo(wheelX-wheelW*.32, yy); ctx.lineTo(wheelX+wheelW*.32, yy+wheelH*.055); ctx.stroke(); }
           ctx.restore();
         }
+        if (!player && frozen) { ctx.fillStyle = '#8edfff88'; ctx.fillRect(-width*.4,-width*.78,width*.8,width*.65); }
         if (player && elapsed < shieldUntil) { ctx.strokeStyle = '#a0f9ff'; ctx.lineWidth = 3; ctx.beginPath(); ctx.ellipse(0, -width * .24, width * .43, width * .32, 0, 0, 7); ctx.stroke(); }
         ctx.restore();
         if (label && !player) { ctx.fillStyle = '#fff'; ctx.font = `900 ${player ? 13 : 11}px Nunito`; ctx.textAlign = 'center'; ctx.fillText(label, x, y - width * .53); }
@@ -341,6 +356,7 @@
         ctx.fillStyle = '#ffe55b';
         for (const dx of [-11, 11]) { ctx.beginPath(); ctx.moveTo(dx - 5, 14); ctx.lineTo(dx, 34 + Math.random() * 14); ctx.lineTo(dx + 5, 14); ctx.fill(); }
       }
+      if (!player && frozen) { ctx.fillStyle = '#8edfff88'; ctx.fillRect(-25,-30,50,40); }
       if (player && elapsed < shieldUntil) { ctx.strokeStyle = '#8df6ff'; ctx.lineWidth = 3; ctx.beginPath(); ctx.arc(0, -6, 37, 0, 7); ctx.stroke(); }
       ctx.restore();
       if (label && !player) { ctx.fillStyle = '#ffffff'; ctx.font = `900 ${player ? 13 : 11}px Nunito`; ctx.textAlign = 'center'; ctx.fillText(label, x, y - 43 * size); }
@@ -373,16 +389,16 @@
         };
       };
       const sky = ctx.createLinearGradient(0, 0, 0, horizon);
-      sky.addColorStop(0, '#77b8e3'); sky.addColorStop(1, '#f9e6c2');
+      sky.addColorStop(0, options.map === 'neon' ? '#1b164e' : options.map === 'snow' ? '#a5d8f2' : '#77b8e3'); sky.addColorStop(1, options.map === 'neon' ? '#b06bb8' : options.map === 'snow' ? '#eaf9ff' : '#f9e6c2');
       ctx.fillStyle = sky; ctx.fillRect(0, 0, w, h);
       const panorama = options.map === 'hill' ? art.hillBackdrop : art.backdrop;
-      if (panorama?.complete && panorama.naturalWidth) {
+      if (!['neon','snow'].includes(options.map) && panorama?.complete && panorama.naturalWidth) {
         const drift = -trackSlope(distance) * w * .22 - lane * w * .025;
         ctx.drawImage(panorama, 0, panorama.naturalHeight * .04, panorama.naturalWidth, panorama.naturalHeight * .65,
           -w * .15 + drift, 0, w * 1.3, horizon + 8);
       }
       const turf = ctx.createLinearGradient(0,horizon,0,h);
-      if (options.map === 'hill') { turf.addColorStop(0,'#a9c598'); turf.addColorStop(.55,'#7ca278'); turf.addColorStop(1,'#547a59'); } else { turf.addColorStop(0,'#dfd3b7'); turf.addColorStop(.55,'#c6b99a'); turf.addColorStop(1,'#ac9c83'); }
+      if (options.map === 'neon') { turf.addColorStop(0,'#303466'); turf.addColorStop(.55,'#252450'); turf.addColorStop(1,'#191c3b'); } else if (options.map === 'snow') { turf.addColorStop(0,'#e6f8ff'); turf.addColorStop(.55,'#cce8f3'); turf.addColorStop(1,'#a4cedf'); } else if (options.map === 'hill') { turf.addColorStop(0,'#a9c598'); turf.addColorStop(.55,'#7ca278'); turf.addColorStop(1,'#547a59'); } else { turf.addColorStop(0,'#dfd3b7'); turf.addColorStop(.55,'#c6b99a'); turf.addColorStop(1,'#ac9c83'); }
       ctx.fillStyle = turf; ctx.fillRect(0, horizon, w, h - horizon);
       function strip(a, b, left, right, color) {
         const p1 = roadPoint(a, left), p2 = roadPoint(b, left), p3 = roadPoint(b, right), p4 = roadPoint(a, right);
@@ -396,7 +412,7 @@
         const a = clamp(1 - (at - distance) / viewDepth, 0, 1.04);
         const b = clamp(1 - (at + 8 - distance) / viewDepth, 0, 1.04);
         const index = Math.floor(at / 8), even = index % 2 === 0;
-        strip(a,b,-1.3,1.3, options.map === 'hill' ? (even ? '#88ad7e' : '#7ba173') : (even ? '#d3c6a7' : '#ccbe9f'));
+        strip(a,b,-1.3,1.3, options.map === 'neon' ? (even ? '#4c356d' : '#372c5d') : options.map === 'snow' ? (even ? '#e8f8ff' : '#cae7f5') : options.map === 'hill' ? (even ? '#88ad7e' : '#7ba173') : (even ? '#d3c6a7' : '#ccbe9f'));
         strip(a,b,-1.09,1.09,even ? '#fff0d4' : '#f36f54');
         strip(a,b,-1,1,even ? '#394451' : '#3c4754');
         strip(a,b,-1.005,-.98,'#f3dec2'); strip(a,b,.98,1.005,'#f3dec2');
@@ -438,8 +454,29 @@
       for(let at=Math.floor((distance+viewDepth)/42)*42;at>=distance-6;at-=42){
         const t=1-(at-distance)/viewDepth;
         for(const side of [-1,1]){
-          if (!art.roadside?.naturalWidth) continue;
           const index = Math.floor(at/42)+(side>0?2:0);
+          if (options.map === 'neon' || options.map === 'snow') {
+            const prop=roadPoint(t,side*1.65), unit=Math.max(.3,prop.scale);
+            ctx.save();ctx.translate(prop.x,prop.y);ctx.scale(unit,unit);
+            if (options.map === 'neon') {
+              const height=150+((index%3+3)%3)*45;
+              ctx.fillStyle='#161b3d';ctx.fillRect(-55,-height,110,height);
+              ctx.fillStyle='#33315d';ctx.fillRect(-48,-height+8,96,height-8);
+              ctx.fillStyle=index%2?'#ff78dc':'#65f5ff';ctx.fillRect(-54,-height,6,height);ctx.fillRect(48,-height,6,height);
+              for(let y=-height+22;y<-12;y+=26) for(let x=-32;x<=32;x+=32){ctx.fillStyle=(Math.floor(y/26)+x+index)%3?'#8defff':'#ff8fdd';ctx.fillRect(x-5,y,10,13);}
+              ctx.fillStyle='#e6faff';ctx.fillRect(-30,-height-8,60,8);
+            } else {
+              ctx.fillStyle='#f5fdff';ctx.beginPath();ctx.ellipse(0,0,85,22,0,0,7);ctx.fill();
+              ctx.fillStyle='#736c66';ctx.fillRect(-8,-42,16,42);
+              for(let layer=0;layer<3;layer++){
+                const y=-155+layer*35,w=35+layer*19;
+                ctx.fillStyle=layer%2?'#356c66':'#2a5d5a';ctx.beginPath();ctx.moveTo(0,y);ctx.lineTo(-w,y+65);ctx.lineTo(w,y+65);ctx.closePath();ctx.fill();
+                ctx.fillStyle='#f2fcff';ctx.beginPath();ctx.moveTo(0,y);ctx.lineTo(-w*.48,y+32);ctx.lineTo(-w*.12,y+27);ctx.lineTo(0,y+34);ctx.lineTo(w*.2,y+28);ctx.lineTo(w*.48,y+32);ctx.closePath();ctx.fill();
+              }
+            }
+            ctx.restore();continue;
+          }
+          if (!art.roadside?.naturalWidth) continue;
           const cell = options.map === 'hill' ? [1, 2, 3][((index % 3) + 3) % 3] : ((index % 4) + 4) % 4;
           const prop=roadPoint(t,side*(cell===3?1.48:1.75));
           const width=[240,330,300,155][cell]*prop.scale;
@@ -450,6 +487,7 @@
       }
       for (let eventIndex=course.length-1;eventIndex>=0;eventIndex--) {
         const event=course[eventIndex];
+        if (gateSafeEvent(event)) continue;
         const delta = event.at - distance;
         if (delta < -18 || delta > viewDepth) continue;
         const t = clamp(1 - delta / viewDepth, 0, 1.04), p = roadPoint(t, event.lane), y = p.y;
@@ -457,8 +495,8 @@
         const x = p.x;
         const sc=Math.max(.34,p.scale*1.4);
         if(event.kind!=='pad'){
-          const hazard=['cone','banana','barrier'].includes(event.kind),radius=(event.kind==='barrier'?48:30)*sc;
-          ctx.fillStyle='#071b2a88';ctx.beginPath();ctx.ellipse(x,y+2,radius*1.15,radius*.35,0,0,7);ctx.fill(); ctx.fillStyle=hazard?'#ff583b77':'#ffdf6455';ctx.beginPath();ctx.ellipse(x,y,radius,radius*.32,0,0,7);ctx.fill(); if(hazard){ctx.strokeStyle='#fff3cc';ctx.lineWidth=Math.max(1.5,3*sc);ctx.stroke();}
+          const isHazard=hazard(event),radius=(event.kind==='barrier'?48:30)*sc;
+          ctx.fillStyle='#071b2a88';ctx.beginPath();ctx.ellipse(x,y+2,radius*1.15,radius*.35,0,0,7);ctx.fill(); ctx.fillStyle=isHazard?'#ff583b77':'#ffdf6455';ctx.beginPath();ctx.ellipse(x,y,radius,radius*.32,0,0,7);ctx.fill(); if(isHazard){ctx.strokeStyle='#fff3cc';ctx.lineWidth=Math.max(1.5,3*sc);ctx.stroke();}
         }
         if(event.kind==='cone'){
           const r=25*sc, tall=48*sc;
@@ -471,6 +509,10 @@
           const width=92*sc;
           ctx.fillStyle='#172a4555';ctx.beginPath();ctx.ellipse(x,y,width*.46,width*.1,0,0,7);ctx.fill();
           if(art.roadside?.naturalWidth) ctx.drawImage(art.roadside,512,512,512,512,x-width/2,y-width*.92,width,width);
+        }else if(event.kind==='oil'){
+          ctx.fillStyle='#182032';ctx.beginPath();ctx.ellipse(x,y,36*sc,13*sc,0,0,7);ctx.fill();ctx.strokeStyle='#a67cf3';ctx.lineWidth=3*sc;ctx.stroke();
+        }else if(event.kind==='roadblock'){
+          ctx.fillStyle='#ffca4a';ctx.fillRect(x-40*sc,y-36*sc,80*sc,29*sc);ctx.strokeStyle='#272d3d';ctx.lineWidth=6*sc;for(let n=-2;n<3;n++){ctx.beginPath();ctx.moveTo(x+n*18*sc,y-36*sc);ctx.lineTo(x+(n+1)*18*sc,y-7*sc);ctx.stroke();}
         }else if(event.kind==='coin'){
           const r=23*sc,cy=y-r*1.5+Math.sin(elapsed*4+event.at)*3*sc;
           const turn=.45+Math.abs(Math.cos(elapsed*3+event.at))*.55;
@@ -562,8 +604,8 @@
         ctx.ellipse(p.x,p.y-width*.33,width*(.22+(1-life)*.13),width*(.16+(1-life)*.08),0,0,7);ctx.stroke();
         ctx.restore();
       }
-      if (distance > TOTAL - 100) {
-        const p = roadPoint(1 - (TOTAL - distance) / viewDepth), y = p.y, width = w * p.scale * 1.3;
+      if (distance > total - 100) {
+        const p = roadPoint(1 - (total - distance) / viewDepth), y = p.y, width = w * p.scale * 1.3;
         if (y < h) { ctx.fillStyle = '#fff'; ctx.fillRect(p.x - width / 2, y, width, Math.max(5,p.scale*12)); ctx.fillStyle = '#17263a'; for(let x=0;x<12;x+=2)ctx.fillRect(p.x-width/2+x*width/12,y,width/12,Math.max(5,p.scale*12)/2); }
       }
       const targetIds = new Set([...missilesInFlight.map(shot => shot.targetId), ...impacts.map(impact => impact.targetId)]);
@@ -574,7 +616,7 @@
         const delta = Math.max(targetIds.has(o.id) ? 12 : 4, o.distance-distance);
         const p = roadPoint(1 - delta / viewDepth, o.lane);
         if (p.y > horizon + 10 && p.y < h * .95) kart(p.x, p.y, .12 + p.scale * .98, o.color, delta > 10 ? o.name : '',
-          false, o.design, o.kartColor, o.hit || elapsed < (o.hitUntil || 0));
+          false, o.design, o.kartColor, o.hit || elapsed < (o.hitUntil || 0), elapsed < (o.frozenUntil || 0));
       }
       const playerPoint = roadPoint(1-4/viewDepth, lane);
       const py = playerPoint.y;
@@ -607,7 +649,7 @@
     function updateProjectiles() {
       for (const shot of missilesInFlight) if (elapsed-shot.start >= .72) {
         const target=opponents.find(o=>o.id===shot.targetId);
-        if (target) { if (!shot.visualOnly) { target.slowUntil=elapsed+2.5;target.hitUntil=elapsed+1.6; }
+        if (target) { if (!shot.visualOnly) { if (elapsed < (target.shieldUntil || 0)) target.shieldUntil=0; else { target.slowUntil=elapsed+2.5;target.hitUntil=elapsed+1.6; } }
           impacts.push({at:target.distance,lane:target.lane,targetId:target.id,until:elapsed+.55});
           if (!shot.visualOnly) options.onEvent?.({ kind: 'hit', targetId: target.id });
           effects.push({text:`${target.name} HIT!`,until:elapsed+.9,color:'#ffb693'}); }
@@ -652,22 +694,22 @@
       if (offRoad && !wasOffRoad) { effects.push({ text: '노견! 감속', until: elapsed + .8, color: '#ffda9b' }); options.onEvent?.({ kind: 'offroad', distance: Math.round(distance) }); }
       wasOffRoad = offRoad;
       if (mode === 'multi') {
-        if (!finished) distance = Math.min(TOTAL, distance + speed * dt);
+        if (!finished) distance = Math.min(total, distance + speed * dt);
         crossGate(); updateProjectiles();
         if (elapsed - progressAt > .2) { progressAt = elapsed; onProgress(getState()); }
         effects = effects.filter(fx => fx.until > elapsed);
         return;
       }
-      const target = elapsed < slowUntil ? 14 : gate ? 40 : elapsed < boostUntil ? 59 : elapsed < draftUntil ? 43 : 40;
+      const target = elapsed < slowUntil ? 14 : gate ? 43 : elapsed < boostUntil ? 63 : elapsed < draftUntil ? 46 : 43;
       speed += (target - speed) * Math.min(1, dt * 2.8);
       if (speed > 14 && Math.abs(lean) > .3) charge = Math.min(3, charge + Math.abs(lane - oldLane) * .45);
       const before = distance;
-      distance = Math.min(TOTAL, distance + speed * (offRoad ? .66 : 1) * dt);
+      distance = Math.min(total, distance + speed * (offRoad ? .66 : 1) * dt);
       for (const event of course) {
-        if (event.at <= before || event.at > distance || Math.abs(lane - event.lane) > (event.kind === 'box' ? .36 : .28)) continue;
-        if (['cone','banana','barrier'].includes(event.kind) && elapsed >= hitUntil && elapsed >= shieldUntil) {
+        if (gateSafeEvent(event) || event.at <= before || event.at > distance || Math.abs(lane - event.lane) > (event.kind === 'box' ? .36 : .28)) continue;
+        if (hazard(event) && elapsed >= hitUntil && elapsed >= shieldUntil) {
           obstaclesHit++; hitUntil = elapsed + 1.4; slowUntil = Math.max(slowUntil, elapsed + 2.1);
-          if (event.kind === 'banana') slipUntil = elapsed + 1.7;
+          if (event.kind === 'banana' || event.kind === 'oil') slipUntil = elapsed + 1.7;
           effects.push({ text: event.kind === 'banana' ? '미끄러짐!' : '충돌! 속도 감소', until: elapsed + .9, color: '#ffaaa4' });
           options.onEvent?.({ kind: event.kind === 'banana' ? 'banana_hit' : 'hit', distance: event.at });
         } else if (event.kind === 'pad') {
@@ -679,7 +721,7 @@
           effects.push({ text: charge >= 3 ? '부스트 준비! 3/3' : `${event.kind === 'coin' ? '코인' : '스타'} · 부스트 +1 (${Math.floor(charge)}/3)`, until: elapsed + 1.2, color: '#ffe36c' });
           options.onEvent?.({ kind: 'star', distance: event.at });
         } else if (event.kind === 'box' && !heldItem) {
-          heldItem = 'banana';
+          heldItem = ['banana','missile','ice','shield'][boxCount++ % 4];
           effects.push({ text: `${heldItem.toUpperCase()}!`, until: elapsed + .9, color: '#ffe36c' });
           options.onEvent?.({ kind: 'box', item: heldItem, distance: event.at });
         }
@@ -688,8 +730,8 @@
         const old = o.distance;
         const catchup = clamp((distance - o.distance) / 85, -1.5, 2.2);
         const comBoost = elapsed > 8 && ((elapsed + o.slot * 2.9) % 21) < 2.6 ? 6 : 0;
-        o.distance = Math.min(TOTAL, o.distance + (elapsed < (o.slowUntil || 0) ? 13 : o.base + catchup + comBoost) * dt);
-        if(o.distance>=TOTAL&&!o.finishedAt){o.finishedAt=elapsed;o.finished=true;}
+        o.distance = Math.min(total, o.distance + (elapsed < (o.slowUntil || 0) ? 13 : o.base + catchup + comBoost) * dt);
+        if(o.distance>=total&&!o.finishedAt){o.finishedAt=elapsed;o.finished=true;}
         const targetLane = clamp(o.homeLane + Math.sin(elapsed * .45 + o.slot * 1.7) * .23,-.72,.72);
         o.lane += (targetLane-o.lane)*Math.min(1,dt*.8);
         for (const banana of bananas) if (banana.owner !== o.id && banana.at > old && banana.at <= o.distance && Math.abs(o.lane - banana.lane) < .3 && elapsed >= (o.hitUntil || 0)) {
@@ -699,8 +741,7 @@
         for (const event of course) if (event.kind === 'banana' && event.at > old && event.at <= o.distance && Math.abs(o.lane-event.lane)<.3 && elapsed >= (o.hitUntil||0)) {
           o.slowUntil=elapsed+2.5; o.hitUntil=elapsed+1.7;
         }
-        const gateSafe = gate && gate.at-distance < 85 && gate.at-distance > -12;
-        if (!gateSafe && distance > 40 && Math.abs(o.distance-distance) < 3.5 && Math.abs(o.lane-lane) < .18 &&
+        if (distance > 40 && Math.abs(o.distance-distance) < 3.5 && Math.abs(o.lane-lane) < .18 &&
           (Math.abs(o.distance-distance) >= .8 || Math.abs(lane-oldLane) > .015) && elapsed >= hitUntil && elapsed >= (o.hitUntil || 0)) {
           hitUntil=elapsed+1.1; slipUntil=elapsed+.7; slowUntil=Math.max(slowUntil,elapsed+1.1);
           lane=clamp(lane+(o.lane<=lane ? .11 : -.11),-.88,.88);
@@ -713,13 +754,13 @@
       draftTime = slipstream ? draftTime + dt : 0;
       if (draftTime > 1.5) draftUntil = elapsed + .5;
       updateProjectiles();
-      if (!question && questionIndex < QUESTION_MARKS.length && distance >= QUESTION_MARKS[questionIndex]) {
+      if (!question && questionIndex < QUESTION_MARKS.length * laps && distance >= Math.floor(questionIndex / QUESTION_MARKS.length) * TOTAL + QUESTION_MARKS[questionIndex % QUESTION_MARKS.length]) {
         questionIndex++; nextQuestion();
       }
       crossGate();
       if (elapsed - progressAt > .2) { progressAt = elapsed; onProgress(getState()); }
       effects = effects.filter(fx => fx.until > elapsed);
-      if (distance >= TOTAL) {
+      if (distance >= total) {
         finished = true; playing = false;
         const state = getState(); onFinish(state); return;
       }
@@ -728,7 +769,7 @@
     function stop() { playing = false; cancelAnimationFrame(raf); }
     function destroy() { stop(); destroyed = true; observer?.disconnect(); window.removeEventListener('resize', resize); document.removeEventListener('visibilitychange', onVisibilityChange); }
     function setSteer(value) { steer = clamp(value, -1, 1); if (steer) laneTarget=null; }
-    function setProgress(value) { distance = clamp(Number(value) || 0, 0, TOTAL); draw(); }
+    function setProgress(value) { distance = clamp(Number(value) || 0, 0, total); draw(); }
     function setRemoteState(kart) {
       if (!kart) return;
       if (!remoteInitialized) { lane = clamp(Number(kart.lane) || 0, -.88, .88); remoteInitialized = true; }

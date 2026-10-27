@@ -49,3 +49,11 @@
 .map-widget .minimap span{position:static;display:block;transform:none;text-align:center;font-size:10px;color:#d5ecf5;text-shadow:none}
 .map-widget .minimap:after{content:none}
 @media(max-width:600px){.map-widget .minimap{width:78px;height:125px}.map-widget .minimap svg{height:98px}}
+/* Race setup: distinct course cards and lap length. */
+.map-cards{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:5px}
+.map-cards button{min-height:47px;text-align:left;border:2px solid transparent;border-radius:9px;padding:5px 8px;color:#fff;background:var(--map-color);line-height:1.15}
+.map-cards strong,.map-cards small{display:block}.map-cards strong{font-size:12px}.map-cards small{font-size:10px;margin-top:3px;color:#ffffffdc}
+.map-cards [data-map=coastal]{--map-color:#087c85}.map-cards [data-map=hill]{--map-color:#397a42}.map-cards [data-map=neon]{--map-color:#70419c}.map-cards [data-map=snow]{--map-color:#337baf}
+.map-cards button[aria-pressed=true]{border-color:#ffe36c;box-shadow:0 0 0 2px #ffe36c55}.map-cards button[aria-pressed=true] strong::after{content:' ✓'}
+.lap-selection>div{display:flex;gap:5px}.lap-selection button{flex:1;min-height:44px;border:1px solid #7db4cc;border-radius:8px;background:#193956;color:#fff;font-weight:800}.lap-selection button[aria-pressed=true]{border:2px solid #ffe36c;background:#624f27;color:#fff3a0}
+@media(max-width:760px){.garage{height:auto;min-height:0}.garage-panel{justify-content:flex-start}}

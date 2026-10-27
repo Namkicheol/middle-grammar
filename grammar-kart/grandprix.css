@@ -144,3 +144,9 @@ body .garage .garage-panel h1 { font-size: 22px; text-shadow: none; }
 body .garage .garage-design .design-options canvas { width: 48px; height: 48px; object-fit: contain; }
 body .garage .color-options button:disabled { opacity: .25; }
 @media (max-width: 600px) { body .garage .garage-design .design-options canvas { width: 38px; height: 38px; } }
+/* Fixed character designs: a compact three-by-three roster, not color variants. */
+body .garage .garage-design { align-items: start; }
+body .garage .garage-design .design-options { display: grid; grid-template-columns: repeat(3,minmax(0,1fr)); gap: 5px; }
+body .garage .garage-design .design-options button { min-height: 44px; padding: 3px; font-size: 10px; }
+body .garage .garage-design .design-options canvas { width: 36px; height: 36px; }
+body .garage .garage-paint { display: none; }

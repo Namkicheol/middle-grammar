@@ -16,7 +16,7 @@
       art[`showcase-${design}`] = img;
     }
     const atlas = new Image(); atlas.decoding = 'async'; atlas.src = 'assets/art/kart-blue-atlas-v1.png'; art.blueAtlas = atlas;
-    for (const name of ['fox','robot','owl']) { const img = new Image(); img.decoding = 'async'; img.src = `assets/art/kart-${name}-v1.png`; art[name] = img; }
+    for (const name of ['fox','robot','owl','raccoon','digger','penguin','frog','rabbit']) { const img = new Image(); img.decoding = 'async'; img.src = `assets/art/kart-${name}-v1.webp`; art[name] = img; }
     art.variants = new Map();
   }
   const TOTAL = 1800;
@@ -58,9 +58,9 @@
   }
   function paintShowcase(canvas, design = 'teal', color = 'cyan') {
     const atlas = design === 'teal' && color === 'cyan' ? art.blueAtlas : art[design];
-    if ((['fox','robot','owl'].includes(design) || (design === 'teal' && color === 'cyan')) && atlas) {
+    if ((['fox','robot','owl','raccoon','digger','penguin','frog','rabbit'].includes(design) || (design === 'teal' && color === 'cyan')) && atlas) {
       if (!atlas.complete || !atlas.naturalWidth) { atlas.addEventListener('load', () => paintShowcase(canvas, design, color), { once: true }); return; }
-      const context = canvas.getContext('2d'); context.clearRect(0, 0, canvas.width, canvas.height); context.drawImage(atlas, 0, 0, atlas.naturalWidth/3, atlas.naturalHeight, 0, 0, canvas.width, canvas.height); return;
+      const context = canvas.getContext('2d'); context.clearRect(0, 0, canvas.width, canvas.height); context.drawImage(atlas, design === 'frog' ? atlas.naturalWidth/3 : 0, 0, atlas.naturalWidth/3, atlas.naturalHeight, 0, 0, canvas.width, canvas.height); return;
     }
     const source = art[`showcase-${design}`] || art[design];
     const image = tinted(source, `showcase:${design}:${color}:${source === art[design] ? 'fallback' : 'full'}`, color);
@@ -169,17 +169,18 @@
     let boostVisual = 0;
     let size = { w: 0, h: 0, scale: 0 };
     let destroyed = false;
-    const ai = [
-      ['comet','코멧','fox','coral',31.5,-.62], ['bolt','볼트','robot','gold',32,.52],
-      ['nova','노바','owl','violet',29.5,.06], ['ace','에이스','red','cyan',30,-.28],
-      ['spark','스파크','robot','lime',31,.32], ['luna','루나','owl','pink',29,-.48],
-      ['dash','대시','fox','coral',30.5,.68], ['pixel','픽셀','red','violet',32.5,-.08]
-    ].map(([id,name,design,kartColor,base,lane],i)=>({id,name,design,kartColor,base:base*40/31,lane,
-      color:COLORS[i%COLORS.length],wobble:.2+i*.025,distance:-i*3,slot:i,homeLane:lane}));
+    const playerDesign = options.kartDesign || 'teal', playerColor = options.kartColor || 'cyan';
+    const roster = ['teal','fox','robot','owl','raccoon','digger','penguin','frog','rabbit'];
+    const names = ['스프린트','폭스','로보','아울','라쿤','디거','펭귄','프로그','래빗'];
+    const ai = roster.filter(design => design !== playerDesign).map((design, i) => ({
+      id: `rival-${design}`, name: names[roster.indexOf(design)], design, kartColor: 'cyan',
+      base: (29.5 + (i % 5) * .75) * 40 / 31, lane: [-.62,.52,.06,-.28,.32,-.48,.68,-.08][i],
+      color: COLORS[i % COLORS.length], wobble: .2 + i * .025, distance: -i * 3, slot: i,
+      homeLane: [-.62,.52,.06,-.28,.32,-.48,.68,-.08][i]
+    }));
     if (mode === 'solo') opponents = ai;
     const course = options.map === 'hill' ? COURSE.map(event => ({ ...event, lane: -event.lane })) : COURSE;
-    const playerDesign = options.kartDesign || 'teal', playerColor = options.kartColor || 'cyan';
-    if (!['fox','robot','owl'].includes(playerDesign)) for (const pose of ['rear', 'left', 'right']) {
+    if (!['fox','robot','owl','raccoon','digger','penguin','frog','rabbit'].includes(playerDesign)) for (const pose of ['rear', 'left', 'right']) {
       const source = art[pose === 'rear' ? playerDesign : `${playerDesign}-${pose}`];
       if (source?.complete && source.naturalWidth) spriteFor(playerDesign, playerColor, pose);
       else source?.addEventListener('load', () => spriteFor(playerDesign, playerColor, pose), { once: true });
@@ -270,8 +271,8 @@
       for (const row of rows) if (row.lastCue?.kind === 'missile') playCue(row.lastCue);
     }
     function getState() {
-      const standings = [{ id: options.playerId || 'me', name: options.playerName || '나', distance, elapsed, me: true },
-        ...opponents.map(o => ({ id: o.id, name: o.name, distance: o.distance, elapsed: o.finishedAt || null, me: false }))]
+      const standings = [{ id: options.playerId || 'me', name: options.playerName || '나', distance, elapsed, me: true, design: playerDesign },
+        ...opponents.map(o => ({ id: o.id, name: o.name, distance: o.distance, elapsed: o.finishedAt || null, me: false, design: o.design }))]
         .sort((a, b) => b.distance - a.distance || (a.elapsed ?? Infinity) - (b.elapsed ?? Infinity));
       return { distance: Math.round(distance), total: TOTAL, speed: Math.round(speed * 3.6), lane: +lane.toFixed(2), obstaclesHit, padsTaken, starsTaken,
         elapsed: +elapsed.toFixed(1), questionRemaining: gate ? Math.max(0, Math.ceil((gate.at-distance)/Math.max(speed,14))) : null,
@@ -298,7 +299,7 @@
     function trackHeight(at) { return Math.sin(at / 105) * 5 + Math.sin(at / 245) * 8; }
     function kart(x, y, size, color, label, player = false, design = 'teal', kartColor = 'cyan', hit = false) {
       const pose = player && lean < -.24 ? 'left' : player && lean > .24 ? 'right' : 'rear';
-      const atlasImage = design === 'teal' && kartColor === 'cyan' && player ? art.blueAtlas : ['fox','robot','owl'].includes(design) ? art[design] : null;
+      const atlasImage = design === 'teal' && kartColor === 'cyan' ? art.blueAtlas : ['fox','robot','owl','raccoon','digger','penguin','frog','rabbit'].includes(design) ? art[design] : null;
       const atlas = atlasImage?.complete && atlasImage.naturalWidth ? atlasImage : null;
       const sprite = atlasImage ? null : spriteFor(design, kartColor, pose);
       if (sprite || atlas) {
@@ -314,7 +315,7 @@
           }
         }
         const bob = Math.sin(elapsed * 31) * Math.min(speed / 40, 1);
-        if (atlas) { const cell = atlas.naturalWidth / 3, frame = pose === 'rear' ? 0 : 1; ctx.save(); if (pose === 'right') ctx.scale(-1, 1); ctx.drawImage(atlas, frame * cell, 0, cell, atlas.naturalHeight, -width / 2, -width * .90 + bob, width, width); ctx.restore(); }
+        if (atlas) { const cell = atlas.naturalWidth / 3, frame = design === 'frog' ? (pose === 'rear' ? 1 : 0) : (pose === 'rear' ? 0 : 1); ctx.save(); if (pose === 'right') ctx.scale(-1, 1); ctx.drawImage(atlas, frame * cell, 0, cell, atlas.naturalHeight, -width / 2, -width * .90 + bob, width, width); ctx.restore(); }
         else ctx.drawImage(sprite, -width / 2, -width * .90 + bob, width, width);
         if (player && !atlas && speed > 4) for (const side of [-1, 1]) {
           const wheelX = side * width * .35, wheelY = -width * .13, wheelW = width * .105, wheelH = width * .16;
@@ -567,7 +568,7 @@
       }
       const targetIds = new Set([...missilesInFlight.map(shot => shot.targetId), ...impacts.map(impact => impact.targetId)]);
       const visible = opponents.filter(o => (o.distance - distance > -8 || targetIds.has(o.id)) && o.distance - distance < viewDepth)
-        .sort((a,b) => Math.abs(a.distance-distance) - Math.abs(b.distance-distance)).slice(0, w < 500 ? 6 : 8)
+        .sort((a,b) => Math.abs(a.distance-distance) - Math.abs(b.distance-distance)).slice(0, 8)
         .sort((a,b) => b.distance - a.distance);
       for (const o of visible) {
         const delta = Math.max(targetIds.has(o.id) ? 12 : 4, o.distance-distance);

@@ -81,7 +81,7 @@
     if (!audio) return Promise.resolve(false);
     try {
       if (reset) audio.currentTime = 0;
-      audio.volume = state.muted ? 0 : volume;
+      audio.volume = volume;
       setElementMute(audio);
       const result = audio.play();
       return result?.then ? result.then(() => true, () => false) : Promise.resolve(true);
@@ -152,7 +152,7 @@
       const oldest = state.active.values().next().value;
       stopElement(oldest); state.active.delete(oldest);
     }
-    audio.volume = state.muted ? 0 : cue.volume;
+    audio.volume = cue.volume;
     audio.playbackRate = cue.rate;
     setElementMute(audio);
     state.active.add(audio);

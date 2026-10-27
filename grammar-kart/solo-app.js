@@ -159,7 +159,7 @@
         options.onProgress?.(state);
         if (window.parent !== window && app.mode === 'multi') window.parent.postMessage({ type: 'grammar-kart-progress', state }, location.origin);
       },
-      onEvent: event => { audio(['banana_hit','drift','offroad'].includes(event.kind) ? 'skid' : ['hit','contact'].includes(event.kind) ? 'hit' : event.kind === 'pad' ? 'boost' : 'item'); options.onEvent?.(event); },
+      onEvent: event => { if (!['banana','missile','shield'].includes(event.kind)) audio(['banana_hit','drift','offroad'].includes(event.kind) ? 'skid' : ['hit','contact'].includes(event.kind) ? 'hit' : event.kind === 'pad' ? 'boost' : 'item'); options.onEvent?.(event); },
       onQuestion: ({ question, number }) => {
         pendingAnswer = false;
         ui.question.hidden = false; root.querySelector('.race-shell')?.classList.add('question-active');

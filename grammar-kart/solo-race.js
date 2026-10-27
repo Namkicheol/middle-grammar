@@ -16,6 +16,7 @@
       art[`showcase-${design}`] = img;
     }
     const atlas = new Image(); atlas.decoding = 'async'; atlas.src = 'assets/art/kart-blue-atlas-v1.png'; art.blueAtlas = atlas;
+    for (const name of ['fox','robot','owl']) { const img = new Image(); img.decoding = 'async'; img.src = `assets/art/kart-${name}-v1.png`; art[name] = img; }
     art.variants = new Map();
   }
   const TOTAL = 1800;
@@ -56,6 +57,11 @@
     context.drawImage(image, 0, 0, canvas.width, canvas.height);
   }
   function paintShowcase(canvas, design = 'teal', color = 'cyan') {
+    const atlas = design === 'teal' && color === 'cyan' ? art.blueAtlas : art[design];
+    if ((['fox','robot','owl'].includes(design) || (design === 'teal' && color === 'cyan')) && atlas) {
+      if (!atlas.complete || !atlas.naturalWidth) { atlas.addEventListener('load', () => paintShowcase(canvas, design, color), { once: true }); return; }
+      const context = canvas.getContext('2d'); context.clearRect(0, 0, canvas.width, canvas.height); context.drawImage(atlas, 0, 0, atlas.naturalWidth/3, atlas.naturalHeight, 0, 0, canvas.width, canvas.height); return;
+    }
     const source = art[`showcase-${design}`] || art[design];
     const image = tinted(source, `showcase:${design}:${color}:${source === art[design] ? 'fallback' : 'full'}`, color);
     if (!image) { source?.addEventListener('load', () => paintShowcase(canvas, design, color), { once: true }); return; }
@@ -164,16 +170,16 @@
     let size = { w: 0, h: 0, scale: 0 };
     let destroyed = false;
     const ai = [
-      ['comet','코멧','red','coral',31.5,-.62], ['bolt','볼트','yellow','gold',32,.52],
-      ['nova','노바','teal','violet',29.5,.06], ['ace','에이스','red','cyan',30,-.28],
-      ['spark','스파크','yellow','lime',31,.32], ['luna','루나','teal','pink',29,-.48],
-      ['dash','대시','yellow','coral',30.5,.68], ['pixel','픽셀','red','violet',32.5,-.08]
+      ['comet','코멧','fox','coral',31.5,-.62], ['bolt','볼트','robot','gold',32,.52],
+      ['nova','노바','owl','violet',29.5,.06], ['ace','에이스','red','cyan',30,-.28],
+      ['spark','스파크','robot','lime',31,.32], ['luna','루나','owl','pink',29,-.48],
+      ['dash','대시','fox','coral',30.5,.68], ['pixel','픽셀','red','violet',32.5,-.08]
     ].map(([id,name,design,kartColor,base,lane],i)=>({id,name,design,kartColor,base:base*40/31,lane,
       color:COLORS[i%COLORS.length],wobble:.2+i*.025,distance:-i*3,slot:i,homeLane:lane}));
     if (mode === 'solo') opponents = ai;
     const course = options.map === 'hill' ? COURSE.map(event => ({ ...event, lane: -event.lane })) : COURSE;
     const playerDesign = options.kartDesign || 'teal', playerColor = options.kartColor || 'cyan';
-    for (const pose of ['rear', 'left', 'right']) {
+    if (!['fox','robot','owl'].includes(playerDesign)) for (const pose of ['rear', 'left', 'right']) {
       const source = art[pose === 'rear' ? playerDesign : `${playerDesign}-${pose}`];
       if (source?.complete && source.naturalWidth) spriteFor(playerDesign, playerColor, pose);
       else source?.addEventListener('load', () => spriteFor(playerDesign, playerColor, pose), { once: true });
@@ -292,8 +298,9 @@
     function trackHeight(at) { return Math.sin(at / 105) * 5 + Math.sin(at / 245) * 8; }
     function kart(x, y, size, color, label, player = false, design = 'teal', kartColor = 'cyan', hit = false) {
       const pose = player && lean < -.24 ? 'left' : player && lean > .24 ? 'right' : 'rear';
-      const sprite = spriteFor(design, kartColor, pose);
-      const atlas = player && design === 'teal' && kartColor === 'cyan' && art.blueAtlas?.complete && art.blueAtlas.naturalWidth ? art.blueAtlas : null;
+      const atlasImage = design === 'teal' && kartColor === 'cyan' && player ? art.blueAtlas : ['fox','robot','owl'].includes(design) ? art[design] : null;
+      const atlas = atlasImage?.complete && atlasImage.naturalWidth ? atlasImage : null;
+      const sprite = atlasImage ? null : spriteFor(design, kartColor, pose);
       if (sprite || atlas) {
         const width = 108 * size;
         ctx.save(); ctx.translate(x, y); ctx.rotate(player ? -lean * .10 : hit ? Math.sin(elapsed * 34) * .12 : 0);
@@ -307,7 +314,7 @@
           }
         }
         const bob = Math.sin(elapsed * 31) * Math.min(speed / 40, 1);
-        if (atlas) { const cell = atlas.naturalWidth / 3, frame = pose === 'left' ? 1 : pose === 'right' ? 2 : 0; ctx.drawImage(atlas, frame * cell, 0, cell, atlas.naturalHeight, -width / 2, -width * .90 + bob, width, width); }
+        if (atlas) { const cell = atlas.naturalWidth / 3, frame = pose === 'rear' ? 0 : 1; ctx.save(); if (pose === 'right') ctx.scale(-1, 1); ctx.drawImage(atlas, frame * cell, 0, cell, atlas.naturalHeight, -width / 2, -width * .90 + bob, width, width); ctx.restore(); }
         else ctx.drawImage(sprite, -width / 2, -width * .90 + bob, width, width);
         if (player && !atlas && speed > 4) for (const side of [-1, 1]) {
           const wheelX = side * width * .35, wheelY = -width * .13, wheelW = width * .105, wheelH = width * .16;
@@ -383,16 +390,16 @@
       }
       // Draw world-space strips far-to-near. The near camera makes road markings
       // and kerbs expand quickly instead of sliding a flat texture underneath.
-      const first = Math.floor((distance + viewDepth) / 6) * 6;
-      for (let at = first; at > distance - 24; at -= 6) {
+      const first = Math.floor((distance + viewDepth) / 8) * 8;
+      for (let at = first; at > distance - 24; at -= 8) {
         const a = clamp(1 - (at - distance) / viewDepth, 0, 1.04);
-        const b = clamp(1 - (at + 6 - distance) / viewDepth, 0, 1.04);
-        const index = Math.floor(at / 6), even = index % 2 === 0;
+        const b = clamp(1 - (at + 8 - distance) / viewDepth, 0, 1.04);
+        const index = Math.floor(at / 8), even = index % 2 === 0;
         strip(a,b,-1.3,1.3, options.map === 'hill' ? (even ? '#88ad7e' : '#7ba173') : (even ? '#d3c6a7' : '#ccbe9f'));
         strip(a,b,-1.09,1.09,even ? '#fff0d4' : '#f36f54');
         strip(a,b,-1,1,even ? '#394451' : '#3c4754');
         strip(a,b,-1.005,-.98,'#f3dec2'); strip(a,b,.98,1.005,'#f3dec2');
-        if (even) for (const line of [-.5,0,.5]) strip(a,b,line-.006,line+.006,'#b1bdbc');
+        if (even) for (const line of [-.5,0,.5]) strip(a,b,line-.006,line+.006,'#8c9ba0');
         for (const side of [-1,1]) {
           const n=roadPoint(a,side*1.3),f=roadPoint(b,side*1.3);
           const nh=58*n.scale,fh=58*f.scale;

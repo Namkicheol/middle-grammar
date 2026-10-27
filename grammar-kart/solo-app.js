@@ -15,9 +15,9 @@
   let selectedColor = 'cyan';
   let soundMuted = false;
   try { selectedLesson = localStorage.getItem('grammar-kart-lesson') || selectedLesson; } catch (_) {}
-  try { selectedDesign = localStorage.getItem('grammar-kart-design') || selectedDesign; } catch (_) {}
+  try { selectedDesign = localStorage.getItem('grammar-kart-solo-design-v2') || selectedDesign; } catch (_) {}
   try { selectedColor = localStorage.getItem('grammar-kart-color') || selectedColor; } catch (_) {}
-  if (!['teal','red','yellow'].includes(selectedDesign)) selectedDesign = 'teal';
+  if (!['teal','fox','robot','owl'].includes(selectedDesign)) selectedDesign = 'teal';
   if (!['cyan','coral','gold','violet','lime','pink'].includes(selectedColor)) selectedColor = 'cyan';
   try { soundMuted = localStorage.getItem('grammar-kart-muted') === '1'; } catch (_) {}
   window.KartAudio?.setMuted?.(soundMuted);
@@ -86,7 +86,7 @@
   function showMenu() {
     app.race?.destroy(); app.race = null;
     window.KartAudio?.stopMusic?.();
-    shell(`<main class="garage"><section class="showroom" aria-label="선택한 카트 전시"><div class="showroom-label">GRAMMAR GRAND PRIX <span>COASTAL CIRCUIT</span></div><canvas id="showcase" width="512" height="512" aria-label="선택한 카트"></canvas><div class="showroom-caption">내 카트를 골라 출발!</div></section><div class="garage-design"><span>카트 디자인</span><div class="design-options" id="design-options"><button type="button" data-design="teal"><img src="assets/art/coastal-v3/kart-showcase-teal.webp" alt="">SPRINT</button><button type="button" data-design="red"><img src="assets/art/coastal-v3/kart-showcase-red.webp" alt="">BLAZE</button><button type="button" data-design="yellow"><img src="assets/art/coastal-v3/kart-showcase-yellow.webp" alt="">BOLT</button></div></div><section class="garage-panel"><div class="eyebrow">RACE SETUP</div><h1>출발 준비</h1><label>레이스 문법 단원<select id="lesson-select"></select></label><label>맵 선택<select id="map-select"><option value="coastal">코스탈 서킷</option><option value="hill">힐 코스</option></select></label><div class="garage-paint"><div><span class="custom-label">색상 선택</span><div class="color-options" id="color-options"><button type="button" data-color="cyan" aria-label="블루"></button><button type="button" data-color="coral" aria-label="코랄"></button><button type="button" data-color="gold" aria-label="골드"></button><button type="button" data-color="violet" aria-label="보라"></button><button type="button" data-color="lime" aria-label="라임"></button><button type="button" data-color="pink" aria-label="핑크"></button></div></div></div><button class="primary" id="solo-start">혼자 달리기 ▶</button><a class="secondary multi-link" href="../multiplayer/">친구와 달리기 ▶</a><div class="best" id="best-time"></div><div class="garage-help"></div></section></main>`);
+    shell(`<main class="garage"><section class="showroom" aria-label="선택한 카트 전시"><div class="showroom-label">GRAMMAR GRAND PRIX <span>COASTAL CIRCUIT</span></div><canvas id="showcase" width="512" height="512" aria-label="선택한 카트"></canvas><div class="showroom-caption">내 카트를 골라 출발!</div></section><div class="garage-design"><span>카트 디자인</span><div class="design-options" id="design-options"><button type="button" data-design="teal"><canvas width="100" height="100" aria-hidden="true"></canvas>SPRINT</button><button type="button" data-design="fox"><canvas width="100" height="100" aria-hidden="true"></canvas>FOX</button><button type="button" data-design="robot"><canvas width="100" height="100" aria-hidden="true"></canvas>ROBO</button><button type="button" data-design="owl"><canvas width="100" height="100" aria-hidden="true"></canvas>OWL</button></div></div><section class="garage-panel"><div class="eyebrow">RACE SETUP</div><h1>출발 준비</h1><label>레이스 문법 단원<select id="lesson-select"></select></label><label>맵 선택<select id="map-select"><option value="coastal">코스탈 서킷</option><option value="hill">힐 코스</option></select></label><div class="garage-paint"><div><span class="custom-label">색상 선택</span><div class="color-options" id="color-options"><button type="button" data-color="cyan" aria-label="블루"></button><button type="button" data-color="coral" aria-label="코랄"></button><button type="button" data-color="gold" aria-label="골드"></button><button type="button" data-color="violet" aria-label="보라"></button><button type="button" data-color="lime" aria-label="라임"></button><button type="button" data-color="pink" aria-label="핑크"></button></div></div></div><button class="primary" id="solo-start">혼자 달리기 ▶</button><a class="secondary multi-link" href="../multiplayer/">친구와 달리기 ▶</a><div class="best" id="best-time"></div><div class="garage-help"></div></section></main>`);
     setGarageHint(root.querySelector('.garage-help'));
     bindSound();
     const select = document.getElementById('lesson-select');
@@ -99,9 +99,10 @@
     select.addEventListener('change', () => { selectedLesson = select.value; try { localStorage.setItem('grammar-kart-lesson', selectedLesson); } catch (_) {} updateBest(); });
     const updateKart = () => {
       root.querySelectorAll('[data-design]').forEach(b => b.setAttribute('aria-pressed', String(b.dataset.design === selectedDesign)));
-      root.querySelectorAll('[data-color]').forEach(b => b.setAttribute('aria-pressed', String(b.dataset.color === selectedColor)));
+      root.querySelectorAll('[data-color]').forEach(b => { b.disabled = selectedDesign !== 'teal'; b.setAttribute('aria-pressed', String(b.dataset.color === selectedColor)); });
+      root.querySelectorAll('[data-design] canvas').forEach(canvas => window.GrammarKart.paintShowcase(canvas, canvas.parentElement.dataset.design, 'cyan'));
       window.GrammarKart.paintShowcase(document.getElementById('showcase'), selectedDesign, selectedColor);
-      try { localStorage.setItem('grammar-kart-design', selectedDesign); localStorage.setItem('grammar-kart-color', selectedColor); } catch (_) {}
+      try { localStorage.setItem('grammar-kart-solo-design-v2', selectedDesign); localStorage.setItem('grammar-kart-color', selectedColor); } catch (_) {}
     };
     root.querySelectorAll('[data-design]').forEach(b => b.addEventListener('click', () => { selectedDesign = b.dataset.design; updateKart(); }));
     root.querySelectorAll('[data-color]').forEach(b => b.addEventListener('click', () => { selectedColor = b.dataset.color; updateKart(); }));

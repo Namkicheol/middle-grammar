@@ -140,3 +140,7 @@ body .garage .garage-panel h1 { font-size: 22px; text-shadow: none; }
 .kf-fact { background:#22476c; color:#d7e8ff; }
 .kf-again { background:linear-gradient(140deg,#ff8977,#f35f58); color:#1b1e2e; box-shadow:0 4px 0 #a43e43; }
 .kf-menu,.kf-hub-link { background:#0c2545bc; border-color:#b4cbe555; }
+/* Character cards use the same rear frame as the race and finish screen. */
+body .garage .garage-design .design-options canvas { width: 48px; height: 48px; object-fit: contain; }
+body .garage .color-options button:disabled { opacity: .25; }
+@media (max-width: 600px) { body .garage .garage-design .design-options canvas { width: 38px; height: 38px; } }

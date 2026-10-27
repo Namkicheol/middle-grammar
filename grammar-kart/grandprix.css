@@ -1,0 +1,142 @@
+/* Coastal arcade treatment for the existing garage, race, and finish UI. */
+:root { --race-ink: #f4f2ea; --race-muted: #b2c1d2; --race-night: #07172e; --race-panel: #0d2341; --race-line: #90a9c54a; --race-cyan: #65a9ff; --race-orange: #ff7867; --race-green: #72aaff; }
+body { color: var(--race-ink); background: radial-gradient(ellipse at 82% 12%, #285caa57, transparent 38%), radial-gradient(ellipse at 8% 92%, #c3554930, transparent 35%), var(--race-night); }
+body .shell:not(.race-shell) .mast { min-height: 38px; }
+body .shell:not(.race-shell) .brand { color: var(--race-ink); font-family: "Black Han Sans", Nunito, system-ui, sans-serif; font-size: clamp(19px, 3vw, 27px); letter-spacing: .03em; text-shadow: 2px 3px 0 #173d77; }
+body .shell:not(.race-shell) .brand b { color: var(--race-orange); }
+body .shell:not(.race-shell) .back, body .shell:not(.race-shell) .sound { border-color: #c2d3e33d; border-radius: 9px; background: #07172e9c; color: #e1e8ef; }
+body .garage { grid-template-columns: minmax(0, 1fr) minmax(300px, 360px); gap: 12px 16px; }
+body .garage .showroom { border: 1px solid #e3edf075; border-radius: 22px; background-color: #143863; background-image: linear-gradient(180deg, #07172e12 45%, #07172e79 100%), url("assets/art/coastal-v3/paddock.webp"); background-position: center; background-size: cover; box-shadow: inset 0 0 0 1px #ffffff14, 0 18px 44px #020a1b70; }
+body .garage .showroom::before { content: ""; position: absolute; z-index: 0; left: 20%; bottom: 10%; width: 60%; height: 16%; border: 2px solid #dce8f47a; border-radius: 50%; background: radial-gradient(ellipse, #23579b66, #07172e12 70%); box-shadow: 0 0 30px #397fe044; pointer-events: none; }
+body .garage .showroom::after { inset: 38% 0 0; background: linear-gradient(transparent, #07172e8a); }
+body .garage .showroom > canvas { left: 50%; bottom: 7%; width: min(72%, 560px); transform: translateX(-50%); filter: drop-shadow(0 17px 14px #03112bd1); }
+body .garage .showroom-label, body .garage .showroom-caption { color: #fff; text-shadow: 0 2px 8px #06152e, 0 1px 2px #06152e; }
+body .garage .showroom-label { letter-spacing: .14em; }
+body .garage .showroom-label span { color: #c6dcff; }
+body .garage .showroom-caption { bottom: 13px; font-size: 14px; }
+body .garage .garage-design, body .garage .garage-panel { border: 1px solid #d8e7f04a; border-radius: 17px; background: #081c38ed; box-shadow: 0 12px 28px #020a1b52; }
+body .garage .garage-design { padding: 9px 12px; }
+body .garage .garage-design > span, body .garage .garage-panel label, body .garage .garage-panel .custom-label { color: #c2d0e2; font-weight: 800; }
+body .garage .garage-design .design-options button { min-height: 66px; border: 1px solid #c0d2e24a; border-radius: 11px; background: #102a4b; color: var(--race-ink); transition: border-color .15s, background-color .15s, transform .15s; }
+body .garage .garage-design .design-options button:hover { transform: translateY(-1px); }
+body .garage .garage-design .design-options button[aria-pressed="true"] { border-color: #a9caff; background: #24569a; color: #fff; box-shadow: inset 0 0 0 1px #ffffff32, 0 0 0 2px #74aaff42; }
+body .garage .garage-design .design-options img { width: 52px; height: 52px; }
+body .garage .garage-panel { gap: 11px; padding: 19px; background: #071a35ed; }
+body .garage .garage-panel .eyebrow { color: #9dc5ff; font-size: 11px; font-weight: 900; letter-spacing: .17em; }
+body .garage .garage-panel h1 { color: var(--race-ink); font-family: "Black Han Sans", Nunito, system-ui, sans-serif; font-size: 31px; text-shadow: 2px 2px 0 #17427e; }
+body .garage .garage-panel select { border: 1px solid #a8c3e35c; border-radius: 10px; background: #102b4c; color: #fff; padding: 11px; }
+body .garage .garage-panel select:focus-visible, body .garage .design-options button:focus-visible, body .garage .color-options button:focus-visible { outline: 3px solid #fff0c5; outline-offset: 3px; }
+body .garage .garage-panel .color-options { gap: 10px; }
+body .garage .garage-panel .color-options button { width: 32px; height: 32px; border: 2px solid #ffffff88; box-shadow: 0 2px 6px #020a1b88; transition: transform .15s, outline-color .15s; }
+body .garage .garage-panel .color-options button:hover { transform: scale(1.08); }
+body .garage .garage-panel .color-options button[aria-pressed="true"] { outline: 3px solid #fff; outline-offset: 2px; }
+body .garage .color-options [data-color="cyan"] { --paint: #57a7e8; }
+body .garage .color-options [data-color="coral"] { --paint: #ff7066; }
+body .garage .color-options [data-color="gold"] { --paint: #f5c75f; }
+body .garage .color-options [data-color="violet"] { --paint: #9a92ef; }
+body .garage .color-options [data-color="lime"] { --paint: #a4cc78; }
+body .garage .color-options [data-color="pink"] { --paint: #e78cb7; }
+body .garage .garage-panel .primary, body .garage .garage-panel .multi-link { min-height: 49px; border-radius: 12px; font-size: 15px; font-weight: 1000; text-decoration: none; }
+body .garage .garage-panel .primary { border: 0; background: linear-gradient(140deg, #ff8977, #f35f58); color: #241a20; box-shadow: 0 4px 0 #a43e43, 0 8px 18px #020a1b55; }
+body .garage .garage-panel .primary:hover { filter: brightness(1.06); }
+body .garage .garage-panel .multi-link { display: grid; place-items: center; border: 1px solid #9cc5ff89; background: #174987; color: #fff; }
+body .garage .garage-panel .best { color: #f4d48b; font-size: 12px; }
+body .garage .garage-panel .garage-help { color: #b5c4d8; font-size: 11px; line-height: 1.45; }
+body .race-shell .mast .brand { color: #f4f2ea; }
+body .race-shell .mast .brand b { color: var(--race-orange); }
+body .race-shell .mast .back, body .race-shell .mast .sound { border-color: #d7e3f13d; border-radius: 9px; background: #0a1b35b8; color: #e1e8ef; }
+body .race-shell .race-title { color: #fff; }
+body .race-shell .race-title small { color: #bdd0e5; }
+body .race-shell .speed { border-left-color: #71b0ff; color: #9bc5ff; }
+body .race-shell .speed small { color: #b2c2d5; }
+body .race-shell .place { color: #ff8a78; }
+body .race-shell .track-wrap { border: 2px solid #d8e5f48c; border-radius: 19px; background: #102950; box-shadow: 0 14px 36px #020a1b80, inset 0 0 0 1px #ffffff16; }
+body .race-shell .track-wrap::after { border-color: #e8f1ff1c; border-radius: inherit; }
+body .race-shell .race-hud .hud-card { border-left-color: #ff8977; border-radius: 7px; background: #081a33e8; color: #c0cee0; }
+body .race-shell .race-hud .hud-card strong { color: #fff; }
+body .race-shell .progress { background: #203d67; }
+body .race-shell .progress i { background: linear-gradient(90deg, #65a9ff, #ff8772); box-shadow: 0 0 10px #65a9ff70; }
+body .race-shell .track-wrap > #left, body .race-shell .track-wrap > #right { width: 68px; height: 68px; border: 2px solid #dce9f5c7; border-radius: 50%; background: #071a3555; box-shadow: 0 4px 14px #020a1b70, inset 0 0 0 2px #75aaff33; color: #fff; font-size: 27px; }
+body .race-shell .track-wrap > #left:active, body .race-shell .track-wrap > #right:active { background: #24589ccc; transform: scale(.96); }
+body .race-shell .track-wrap > .question { top: clamp(10px, 3.8vh, 38px); left: 50%; right: auto; width: min(500px, calc(100% - 28px)); max-height: calc(100% - 112px); overflow: auto; transform: translateX(-50%); border: 1px solid #d5e4f27a; border-top: 3px solid #ff8571; border-radius: 15px; background: #071a35ed; box-shadow: 0 14px 30px #020a1b88, inset 0 0 0 1px #ffffff0c; padding: 13px 15px; animation: none; }
+body .race-shell .question-head { color: #bbcadd; }
+body .race-shell .question-head span:first-child { color: #a9ccff; }
+body .race-shell .question .question-timer { color: #ffb09f; font-weight: 900; }
+body .race-shell .question p { margin: 4px 0 6px; color: #b6c4d6; font-size: 12px; line-height: 1.35; }
+body .race-shell .question h2 { margin: 0 0 10px; color: #fff; font-size: clamp(17px, 2vw, 21px); line-height: 1.23; }
+body .race-shell .question .choices { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 7px; }
+body .race-shell .question .choices button { --lane-color: #71b1ff; min-width: 0; min-height: 44px; border: 1px solid #ffffff27; border-left: 4px solid var(--lane-color); border-radius: 9px; background: #122b4c; box-shadow: inset 0 -2px #020a1b55; color: #f4f2ea; font-size: clamp(12px, 1.4vw, 15px); line-height: 1.2; overflow-wrap: anywhere; text-align: left; }
+body .race-shell .question .choices button:nth-child(2) { --lane-color: #ff8b79; }
+body .race-shell .question .choices button:nth-child(3) { --lane-color: #f4ca67; }
+body .race-shell .question .choices button:nth-child(4) { --lane-color: #dce8f7; }
+body .race-shell .question .choices button:hover, body .race-shell .question .choices button:focus-visible { border-color: #fff; background-color: #1d3c66; outline: 2px solid #ffffffa8; outline-offset: 1px; }
+body .race-shell .question .choices button.correct { border-color: #91bdff; background: #285fa7; color: #fff; }
+body .race-shell .question .choices button.wrong { border-color: #ff9a89; background: #b74748; color: #fff; }
+body .race-shell .question .choices button.lane-selected { border-color: var(--lane-color); background: var(--lane-color); box-shadow: 0 0 0 3px #fff9, 0 5px 14px #020a1b88; color: #07172e; font-weight: 1000; outline: 2px solid #07172e; outline-offset: 2px; }
+body .race-shell .controls { gap: 7px; }
+body .race-shell .controls .control { min-height: 54px; border: 1px solid #c4d7ec52; border-radius: 11px; background-color: #10294a; color: #f4f2ea; }
+body .race-shell .controls #item, body .race-shell .controls #weapon, body .race-shell .controls #missile, body .race-shell .controls #shield { border-color: #a9c8ec61; background-color: #10294a; }
+body .race-shell .controls #item { color: #ffd991; }
+body .race-shell .controls #item.ready { border-color: #ff927d; background-color: #433044; color: #fff1cf; }
+body .race-shell .controls .control.weapon:not(:disabled) { border-color: #80b5ff; background-color: #194278; color: #fff; }
+body .race-shell .controls .control.weapon:disabled { border-color: #ffffff20; background-color: #0b1c34; color: #8493a8; }
+body .race-shell .controls .control.weapon:disabled::before { opacity: .25; filter: grayscale(1); }
+body .race-shell .hint { color: #b5c6da; }
+.kf-overlay { --kf-ink: #f4f2ea; --kf-muted: #b2c1d2; --kf-line: #90a9c54a; --kf-panel: #0b2040; --kf-mint: #91bdff; --kf-orange: #ff8875; border-color: #b9d1ef87; background: #071a35f2; box-shadow: 0 14px 34px #020a1b99; }
+@media (max-width: 760px) {
+  body .garage { grid-template-columns: 1fr; }
+  body .garage .showroom > canvas { width: min(64%, 250px); bottom: 7%; }
+  body .garage .garage-panel { gap: 9px; padding: 14px; }
+  body .garage .garage-design .design-options button { min-height: 60px; }
+  body .race-shell .track-wrap > .question { top: 10px; width: calc(100% - 24px); max-height: calc(100% - 108px); padding: 11px 12px; }
+  body .race-shell .question h2 { font-size: 17px; margin-bottom: 8px; }
+  body .race-shell .question .choices { gap: 6px; }
+  body .race-shell .question .choices button { min-height: 43px; font-size: 13px; }
+  body .race-shell .track-wrap > #left, body .race-shell .track-wrap > #right { width: 59px; height: 59px; bottom: 9px; }
+  body .race-shell .controls .control { min-height: 51px; }
+}
+@media (max-width: 430px) {
+  body .garage { gap: 7px; padding-top: 4px; }
+  body .garage .showroom { height: 218px; }
+  body .garage .showroom > canvas { width: 185px; bottom: 5%; }
+  body .garage .garage-design { padding: 6px; }
+  body .garage .garage-design .design-options button { min-height: 57px; font-size: 11px; }
+  body .garage .garage-design .design-options img { width: 42px; height: 42px; }
+  body .garage .garage-panel { gap: 8px; padding: 12px; }
+  body .garage .garage-panel h1 { font-size: 26px; }
+  body .garage .garage-panel .primary, body .garage .garage-panel .multi-link { min-height: 47px; }
+  body .race-shell .question p { font-size: 11px; }
+  body .race-shell .question .choices button { min-height: 42px; font-size: 12px; }
+  body .race-shell .controls { gap: 5px; }
+}
+@media (max-height: 520px) and (min-width: 700px) {
+  body .race-shell .track-wrap > .question { top: 48px; left: auto; right: 12px; width: min(390px, 46%); max-height: calc(100% - 60px); transform: none; padding: 9px 11px; }
+  body .race-shell .question h2 { font-size: 15px; margin-bottom: 6px; }
+  body .race-shell .question p { font-size: 11px; margin: 3px 0 5px; }
+  body .race-shell .question .choices { gap: 5px; }
+  body .race-shell .question .choices button { min-height: 35px; font-size: 12px; }
+  body .race-shell .track-wrap > #left, body .race-shell .track-wrap > #right { width: 52px; height: 52px; bottom: 7px; }
+  body .race-shell .controls .control { min-height: 46px; }
+}
+
+/* Let the paddock fill the entry screen behind the functional pit controls. */
+body .shell:not(.race-shell) { min-height: 100dvh; background: linear-gradient(180deg,#07172e33 25%,#07172ec9 80%),url("assets/art/coastal-v3/paddock.webp") center/cover; }
+body .garage .showroom { background: url("assets/art/coastal-v3/paddock.webp") center bottom/cover; border: 1px solid #d8e7f066; box-shadow:0 12px 25px #030b2244; }
+body .garage .showroom::after { display: none; }
+body .garage .showroom-label { display: none; }
+body .garage .garage-panel { background: #071a35e6; }
+body .garage .garage-panel h1 { font-size: 22px; text-shadow: none; }
+@media(max-width:760px) {
+  body .garage .showroom { height: clamp(280px,38dvh,360px); }
+  body .garage .showroom > canvas { width: min(82%,310px); bottom: 2%; }
+  body .garage .showroom-caption { bottom: 0; }
+}
+
+/* Finish uses the same paddock, paint colors, and pit-panel materials. */
+.kf-page { --kf-ink:#fff3dc; --kf-muted:#c3d0e0; --kf-line:#c2d3e350; --kf-panel:#0b2242ed; --kf-mint:#91bdff; --kf-orange:#ff8875; background:linear-gradient(#071a35a6,#071a35df),url("assets/art/coastal-v3/paddock.webp") center/cover; }
+.kf-brand { color:#fff3dc; font-size:14px; letter-spacing:.08em; }
+.kf-summary,.kf-board { border-radius:18px; box-shadow:0 12px 28px #030d2055; }
+.kf-preview { width:clamp(110px,18vw,175px); border:1px solid #b0c4df33; background:radial-gradient(ellipse,#376fa04d,#08182e55); }
+.kf-fact { background:#22476c; color:#d7e8ff; }
+.kf-again { background:linear-gradient(140deg,#ff8977,#f35f58); color:#1b1e2e; box-shadow:0 4px 0 #a43e43; }
+.kf-menu,.kf-hub-link { background:#0c2545bc; border-color:#b4cbe555; }

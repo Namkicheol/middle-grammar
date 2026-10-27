@@ -1,0 +1,942 @@
+/*
+ * Grammar Grand Prix surface skin.
+ * Loaded after style.css by solo and classroom race pages.
+ * Layout and event handlers stay in their existing files; this file only
+ * changes the visual hierarchy around the race canvas and its live HUD.
+ */
+:root {
+  --race-ink: #f4f0e6;
+  --race-muted: #9aa9a8;
+  --race-night: #090d0f;
+  --race-panel: #101719;
+  --race-line: #26383a;
+  --race-cyan: #35d6d1;
+  --race-orange: #ff9148;
+  --race-green: #a6e86e;
+}
+
+body {
+  color: var(--race-ink);
+  background: var(--race-night);
+}
+
+body button,
+body select {
+  font-family: Nunito, system-ui, sans-serif;
+}
+
+body .shell {
+  width: min(1180px, 100%);
+  padding: 8px clamp(10px, 2.4vw, 24px) 18px;
+}
+
+body .race-shell .mast {
+  min-height: 30px;
+  gap: 8px;
+}
+
+body .race-shell .brand {
+  color: var(--race-ink);
+  font-family: Nunito, system-ui, sans-serif;
+  font-size: clamp(13px, 2.2vw, 18px);
+  font-weight: 900;
+  letter-spacing: .08em;
+  line-height: 1;
+  text-shadow: none;
+}
+
+body .race-shell .brand b {
+  color: var(--race-orange);
+}
+
+body .race-shell .back,
+body .race-shell .sound {
+  border: 1px solid var(--race-line);
+  border-radius: 6px;
+  background: transparent;
+  color: var(--race-muted);
+  font-size: 11px;
+  padding: 5px 8px;
+}
+
+body .race-shell .race-top {
+  grid-template-columns: minmax(0, 1fr) auto auto;
+  gap: 12px;
+  margin: 5px 0 8px;
+}
+
+body .race-shell .race-title {
+  color: var(--race-ink);
+  font-family: Nunito, system-ui, sans-serif;
+  font-size: clamp(14px, 2vw, 19px);
+  font-weight: 900;
+  letter-spacing: .08em;
+  line-height: 1;
+}
+
+body .race-shell .race-title small {
+  color: var(--race-muted);
+  font-family: Nunito, system-ui, sans-serif;
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: .08em;
+  margin-top: 3px;
+}
+
+body .race-shell .speed {
+  min-width: 78px;
+  padding: 0 10px;
+  border: 0;
+  border-left: 2px solid var(--race-cyan);
+  border-radius: 0;
+  background: transparent;
+  color: var(--race-cyan);
+  font-size: 24px;
+  line-height: .85;
+}
+
+body .race-shell .speed small {
+  color: var(--race-muted);
+  font-size: 9px;
+  letter-spacing: .1em;
+  margin-top: 4px;
+}
+
+body .race-shell .place {
+  color: var(--race-orange);
+  font-family: Nunito, system-ui, sans-serif;
+  font-size: clamp(22px, 4vw, 31px);
+  font-weight: 900;
+  letter-spacing: -.04em;
+  text-shadow: none;
+}
+
+body .race-shell .track-wrap {
+  border: 1px solid var(--race-line);
+  border-radius: 14px;
+  background: #0d1517;
+  box-shadow: 0 12px 30px #0008;
+}
+
+body .race-shell .track-wrap::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border: 1px solid #f4f0e614;
+  border-radius: inherit;
+  pointer-events: none;
+}
+
+body .race-shell .race-hud {
+  left: 12px;
+  top: 12px;
+  right: 12px;
+  align-items: flex-start;
+}
+
+body .race-shell .hud-card {
+  border: 0;
+  border-left: 2px solid var(--race-orange);
+  border-radius: 2px;
+  background: #090d0edb;
+  box-shadow: none;
+  color: var(--race-muted);
+  font-size: 10px;
+  letter-spacing: .04em;
+  padding: 5px 8px;
+}
+
+body .race-shell .hud-card strong {
+  color: var(--race-ink);
+  font-size: 16px;
+  letter-spacing: -.02em;
+  line-height: 1.05;
+}
+
+body .race-shell .progress {
+  height: 4px;
+  margin: 8px 0;
+  border: 0;
+  border-radius: 0;
+  background: #253234;
+}
+
+body .race-shell .progress i {
+  position: relative;
+  border-radius: 0;
+  background: var(--race-cyan);
+  box-shadow: 0 0 8px #35d6d155;
+}
+
+body .race-shell .race-bottom {
+  gap: 10px;
+}
+
+body .race-shell.question-active .race-bottom {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(260px, 340px);
+  align-items: end;
+}
+
+body .race-shell .question {
+  min-height: 0;
+  border: 1px solid var(--race-line);
+  border-left: 3px solid var(--race-cyan);
+  border-radius: 10px;
+  background: #101719f5;
+  box-shadow: none;
+  padding: 12px 13px;
+}
+
+body .race-shell .question-head {
+  justify-content: flex-end;
+  min-height: 14px;
+  color: var(--race-muted);
+  font-size: 10px;
+  letter-spacing: .05em;
+}
+
+body .race-shell .question-head span:first-child {
+  display: none;
+}
+
+body .race-shell .question .question-timer {
+  color: var(--race-orange);
+  font-size: 11px;
+}
+
+body .race-shell .question p {
+  color: var(--race-muted);
+  font-size: 13px;
+  margin: 4px 0;
+}
+
+body .race-shell .question h2 {
+  color: var(--race-ink);
+  font-size: clamp(16px, 2vw, 21px);
+  line-height: 1.2;
+  margin: 0 0 10px;
+}
+
+body .race-shell .choices {
+  gap: 6px;
+}
+
+body .race-shell .choices button {
+  min-height: 48px;
+  border: 1px solid #d9e0d9;
+  border-radius: 8px;
+  background: #f4f0e6;
+  box-shadow: inset 0 -2px #c8ccc5;
+  color: #172123;
+  font-size: clamp(12px, 1.5vw, 15px);
+  padding: 7px;
+}
+
+body .race-shell .choices button:hover,
+body .race-shell .choices button:focus-visible {
+  border-color: var(--race-cyan);
+  background: #e8fbf7;
+}
+
+body .race-shell .choices button.correct {
+  border-color: var(--race-green);
+  background: var(--race-green);
+}
+
+body .race-shell .choices button.wrong {
+  border-color: #f08069;
+  background: #f6b19d;
+}
+
+body .race-shell .controls {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 6px;
+  align-items: stretch;
+  padding: 2px 0;
+}
+
+body .race-shell .control {
+  position: relative;
+  min-height: 54px;
+  overflow: hidden;
+  border: 1px solid var(--race-line);
+  border-radius: 8px;
+  background: var(--race-panel);
+  color: var(--race-ink);
+  font-size: 11px;
+  line-height: 1.1;
+  padding: 6px 4px 5px;
+  touch-action: manipulation;
+}
+
+body .race-shell .control::after {
+  position: absolute;
+  right: 7px;
+  bottom: 5px;
+  color: var(--race-muted);
+  font-size: 9px;
+  font-weight: 800;
+}
+
+body .race-shell .control.item {
+  grid-column: auto;
+  border-color: #7d5a34;
+  background-color: var(--race-panel);
+  background-image: none;
+  color: var(--race-orange);
+  font-size: 11px;
+  padding-left: 8px;
+  text-align: left;
+}
+
+body .race-shell .control.item::before {
+  content: "";
+  position: absolute;
+  z-index: 1;
+  left: 4px;
+  top: 50%;
+  width: 23px;
+  height: 23px;
+  border-radius: 50%;
+  background: var(--race-panel) url("assets/art/hud-boost.webp") center/23px 23px no-repeat;
+  transform: translateY(-50%);
+}
+
+body .race-shell .control.item::after {
+  content: "";
+  z-index: 2;
+  left: 0;
+  right: auto;
+  bottom: 0;
+  width: var(--meter, 0%);
+  height: 3px;
+  background: var(--race-orange);
+}
+
+body .race-shell .control.item.ready {
+  border-color: var(--race-orange);
+  background-color: #201a14;
+  animation: none;
+}
+
+body .race-shell .control.weapon {
+  border-color: var(--race-line);
+  background-color: var(--race-panel);
+  background-image: none;
+  background-repeat: no-repeat;
+  background-size: 136px 27px;
+  color: var(--race-ink);
+  font-size: 11px;
+  padding-left: 8px;
+  text-align: left;
+}
+
+body .race-shell .control.weapon::before {
+  content: "";
+  position: absolute;
+  z-index: 1;
+  left: 4px;
+  top: 50%;
+  width: 23px;
+  height: 23px;
+  border-radius: 50%;
+  background-color: var(--race-panel);
+  background-repeat: no-repeat;
+  background-size: 115px 23px;
+  transform: translateY(-50%);
+}
+
+body .race-shell #weapon::before,
+body .race-shell #kart-weapon::before,
+body .race-shell .controls .control:nth-child(2)::before {
+  background-image: url("assets/art/race-items-atlas.webp");
+  background-position: 0 center;
+}
+
+body .race-shell #missile::before,
+body .race-shell #kart-missile::before,
+body .race-shell .controls .control:nth-child(3)::before {
+  background-image: url("assets/art/race-items-atlas.webp");
+  background-position: -46px center;
+}
+
+body .race-shell #shield::before,
+body .race-shell #kart-shield::before,
+body .race-shell .controls .control:nth-child(4)::before {
+  background-image: url("assets/art/hud-shield.webp");
+  background-size: 23px 23px;
+  background-position: center;
+}
+
+body .race-shell .control.weapon:disabled {
+  border-color: #1e2a2c;
+  color: #697878;
+  opacity: 1;
+  padding-left: 8px;
+  text-align: center;
+}
+
+body .race-shell #shield,
+body .race-shell #kart-shield,
+body .race-shell .controls .control:nth-child(4) {
+  background-image: none;
+  padding-left: 8px;
+  text-align: left;
+}
+
+body .race-shell .control.weapon:disabled::before {
+  filter: grayscale(1);
+  opacity: .42;
+}
+
+body .race-shell #weapon:disabled::before,
+body .race-shell #kart-weapon:disabled::before,
+body .race-shell .controls .control:nth-child(2):disabled::before {
+  width: 0;
+  background-image: none;
+}
+
+body .race-shell .track-wrap > #left,
+body .race-shell .track-wrap > #right {
+  width: 62px;
+  height: 62px;
+  border: 1px solid #b4eeeb8c;
+  border-radius: 11px;
+  background: #09121466;
+  box-shadow: none;
+  color: var(--race-ink);
+  font-size: 22px;
+  backdrop-filter: none;
+}
+
+body .race-shell .track-wrap > #left:active,
+body .race-shell .track-wrap > #right:active {
+  background: #35d6d177;
+  transform: scale(.96);
+}
+
+body .race-shell .hint {
+  color: #758483;
+  font-size: 10px;
+  letter-spacing: .01em;
+  margin: 7px 0 0;
+}
+
+/* The menu is intentionally quieter so the selected cart owns the first view. */
+body .garage {
+  gap: 12px;
+  padding-top: 5px;
+}
+
+body .garage .showroom {
+  border: 1px solid var(--race-line);
+  border-radius: 14px;
+  box-shadow: 0 12px 30px #0008;
+}
+
+body .garage .showroom-label {
+  display: none;
+}
+
+body .garage .showroom-caption {
+  color: var(--race-ink);
+  font-size: 12px;
+  text-shadow: none;
+}
+
+body .garage .garage-design {
+  border: 1px solid var(--race-line);
+  border-radius: 9px;
+  background: var(--race-panel);
+  padding: 6px 8px;
+}
+
+body .garage .garage-design > span {
+  display: none;
+}
+
+body .garage .design-options {
+  gap: 6px;
+}
+
+body .garage .design-options button {
+  min-height: 56px;
+  border: 1px solid var(--race-line);
+  border-radius: 7px;
+  background: transparent;
+  color: var(--race-muted);
+  font-size: 10px;
+  padding: 3px;
+}
+
+body .garage .design-options button[aria-pressed="true"] {
+  border-color: var(--race-cyan);
+  background: #102225;
+  color: var(--race-ink);
+}
+
+body .garage .design-options img {
+  width: 42px;
+  height: 42px;
+}
+
+body .garage .garage-panel {
+  gap: 8px;
+  border: 0;
+  border-left: 1px solid var(--race-line);
+  border-radius: 0;
+  background: transparent;
+  box-shadow: none;
+  padding: 12px 0 12px 14px;
+}
+
+body .garage .garage-panel .eyebrow {
+  display: none;
+}
+
+body .garage .garage-panel h1 {
+  color: var(--race-ink);
+  font-family: Nunito, system-ui, sans-serif;
+  font-size: 23px;
+  letter-spacing: .03em;
+}
+
+body .garage .garage-panel label,
+body .garage .custom-label {
+  color: var(--race-muted);
+}
+
+body .garage .garage-panel select {
+  border: 1px solid var(--race-line);
+  border-radius: 7px;
+  background: var(--race-panel);
+  color: var(--race-ink);
+  padding: 9px;
+}
+
+body .garage .garage-panel .primary,
+body .garage .garage-panel .multi-link {
+  border-radius: 7px;
+  box-shadow: none;
+  font-size: 13px;
+  padding: 11px;
+}
+
+body .garage .garage-panel .primary {
+  background: var(--race-orange);
+  color: #191512;
+}
+
+body .garage .garage-panel .multi-link {
+  border: 1px solid var(--race-cyan);
+  background: transparent;
+  color: var(--race-cyan);
+}
+
+body .garage .garage-help,
+body .garage .best {
+  color: var(--race-muted);
+  font-size: 10px;
+}
+
+@media (max-width: 760px) {
+  body .race-shell.question-active .race-bottom {
+    display: block;
+  }
+
+  body .race-shell .controls {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    margin-top: 8px;
+  }
+
+  body .race-shell:not(.question-active) .controls {
+    margin-top: 8px;
+  }
+
+  body .race-shell:not(.question-active) .track-wrap canvas {
+    height: 53dvh;
+    min-height: 330px;
+    max-height: 560px;
+  }
+
+  body .race-shell.question-active .track-wrap canvas {
+    height: 32dvh;
+    min-height: 230px;
+  }
+
+  body .garage .garage-panel {
+    border-left: 0;
+    border-top: 1px solid var(--race-line);
+    padding: 12px 0 0;
+  }
+}
+
+@media (max-width: 430px) {
+  body .shell {
+    padding: 6px 8px 12px;
+  }
+
+  body .race-shell .race-top {
+    gap: 7px;
+    margin: 4px 0 7px;
+  }
+
+  body .race-shell .race-title small {
+    font-size: 9px;
+  }
+
+  body .race-shell .speed {
+    min-width: 68px;
+    font-size: 21px;
+    padding: 0 7px;
+  }
+
+  body .race-shell .place {
+    font-size: 24px;
+  }
+
+  body .race-shell .track-wrap > #left,
+  body .race-shell .track-wrap > #right {
+    width: 57px;
+    height: 57px;
+    bottom: 8px;
+  }
+
+  body .race-shell .question {
+    padding: 10px 11px;
+  }
+
+  body .race-shell .question h2 {
+    font-size: 16px;
+    margin-bottom: 8px;
+  }
+
+  body .race-shell .choices button {
+    min-height: 48px;
+  }
+
+  body .race-shell .controls {
+    gap: 5px;
+  }
+
+  body .race-shell .control {
+    min-height: 51px;
+    font-size: 10px;
+  }
+
+  body .race-shell .control.item {
+    padding-left: 8px;
+  }
+
+  body .race-shell .control.weapon {
+    padding-left: 8px;
+  }
+
+  body .race-shell #weapon:not(:disabled),
+  body .race-shell #kart-weapon:not(:disabled),
+  body .race-shell .controls .control:nth-child(2):not(:disabled) {
+    background-position: 4px center;
+  }
+
+  body .race-shell #missile:not(:disabled),
+  body .race-shell #kart-missile:not(:disabled),
+  body .race-shell .controls .control:nth-child(3):not(:disabled) {
+    background-position: -46px center;
+  }
+
+  body .race-shell #shield,
+  body .race-shell #kart-shield,
+  body .race-shell .controls .control:nth-child(4) {
+    padding-left: 8px;
+  }
+
+  body .race-shell .hint {
+    font-size: 0;
+    line-height: 1.35;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  body .race-shell .hint::after {
+    content: "좌우 버튼으로 조향 · 아이템을 눌러 사용";
+    color: #758483;
+    font-size: 11px;
+  }
+
+  body .garage .showroom {
+    height: 220px;
+  }
+
+  body .garage .showroom > canvas {
+    width: 170px;
+  }
+}
+
+body .shell:not(.race-shell) .mast {
+  min-height: 30px;
+}
+
+body .shell:not(.race-shell) .brand {
+  color: var(--race-ink);
+  font-family: Nunito, system-ui, sans-serif;
+  font-size: 18px;
+  letter-spacing: .08em;
+  line-height: 1;
+  text-shadow: none;
+}
+
+body .shell:not(.race-shell) .brand b {
+  color: var(--race-orange);
+}
+
+body .shell:not(.race-shell) .back,
+body .shell:not(.race-shell) .sound {
+  border: 1px solid var(--race-line);
+  border-radius: 6px;
+  background: transparent;
+  color: var(--race-muted);
+  font-size: 11px;
+  padding: 5px 8px;
+}
+
+/* Keep the generated art above live labels, including stock counts. */
+body .race-shell .controls #item,
+body .race-shell .controls #weapon,
+body .race-shell .controls #missile,
+body .race-shell .controls #shield {
+  padding: 29px 3px 6px;
+  text-align: center;
+  font-size: 11px;
+}
+body .race-shell .controls .control::before {
+  left: 50%;
+  top: 4px;
+  transform: translateX(-50%);
+}
+
+/* Fixed race viewport: a question overlays scenery without resizing the camera. */
+body .shell.race-shell {
+  height: 100dvh;
+  max-height: 100dvh;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  padding-bottom: 6px;
+}
+body .race-shell main {
+  min-height: 0;
+  flex: 1;
+  display: grid;
+  grid-template-rows: auto minmax(0, 1fr) 4px auto 18px;
+}
+body .race-shell > .race-top { flex: 0 0 auto; }
+body .race-shell > .track-wrap { flex: 1; }
+body .race-shell .track-wrap { min-height: 0; border-radius: 16px; }
+body .race-shell .track-wrap canvas,
+body .race-shell:not(.question-active) .track-wrap canvas,
+body .race-shell.question-active .track-wrap canvas {
+  height: 100%; min-height: 0; max-height: none;
+}
+body .race-shell .race-bottom,
+body .race-shell.question-active .race-bottom { display: block; }
+body .race-shell .track-wrap .question {
+  position: absolute;
+  z-index: 4;
+  top: 72px;
+  right: 14px;
+  width: min(480px, calc(100% - 28px));
+  max-height: calc(100% - 190px);
+  overflow: auto;
+  margin: 0;
+  padding: 13px;
+  background: #11243df5;
+  color: #f3f8ff;
+  border: 1px solid #9cddf688;
+  border-top: 3px solid #60ded2;
+  border-radius: 14px;
+  box-shadow: 0 8px 28px #041b3b55;
+  animation: question-in .16s ease-out;
+}
+@keyframes question-in { from { opacity: 0; transform: translateY(-8px); } to { opacity: 1; transform: translateY(0); } }
+body .race-shell .question-head { justify-content: space-between; }
+body .race-shell .question-head span:first-child { display: block; color: #6ae5d8; }
+body .race-shell .controls { margin: 4px 0 0; }
+body .race-shell .progress { margin: 2px 0; }
+body .race-shell .hint { margin: 3px 0 0; }
+body .race-shell .track-wrap > #left,
+body .race-shell .track-wrap > #right {
+  border: 1px solid #ffffff4d;
+  background: #132e4333;
+  color: #fff;
+  width: 66px;
+  height: 62px;
+  bottom: 13px;
+  border-radius: 16px;
+}
+body .race-shell .track-wrap > #left:active,
+body .race-shell .track-wrap > #right:active { background: #4be1d785; }
+body .garage .showroom {
+  background: radial-gradient(ellipse at 38% 40%, #326379, #132637 66%);
+}
+body .garage .showroom::before {
+  content: ''; position: absolute; left: 8%; right: 8%; bottom: 12%; height: 18%;
+  border-radius: 50%; border: 2px solid #50d5c676;
+  background: #326b7755; box-shadow: 0 0 28px #60e8d42b;
+}
+body .garage .showroom > canvas { width: min(65%, 390px); bottom: 8%; }
+@media(max-width:760px) {
+  body .race-shell .track-wrap .question { top: 62px; right: 12px; width: calc(100% - 24px); padding: 11px; }
+  body .race-shell .question h2 { font-size: 16px; line-height: 1.25; }
+  body .race-shell .question p { font-size: 12px; }
+  body .race-shell .choices button { min-height: 45px; font-size: 13px; }
+  body .race-shell .track-wrap > #left, body .race-shell .track-wrap > #right { width: 61px; height: 59px; }
+}
+@media(max-height:520px) and (min-width:700px) {
+  body .race-shell .track-wrap .question { top: 52px; right: 12px; width: 43%; max-height: calc(100% - 62px); }
+  body .race-shell .question h2 { font-size: 14px; margin-bottom: 5px; }
+  body .race-shell .question p { font-size: 11px; }
+  body .race-shell .choices button { min-height: 36px; }
+}
+
+/* Answer text stays above the track; gates carry only their letters. */
+.race-shell .question .choices { grid-template-columns: repeat(2,minmax(0,1fr)); gap: 6px; }
+.race-shell .question .choices button { min-height: 42px; font-size: 13px; text-align: left; border-width: 2px; }
+.race-shell .choices button.lane-selected { border-color: #7de0c2; background: #244942; color: #fff; box-shadow: inset 0 0 0 1px #7de0c244; }
+.race-shell .question .choices button:nth-child(1) { border-left-color: #68dfef; }
+.race-shell .question .choices button:nth-child(2) { border-left-color: #ff937d; }
+.race-shell .question .choices button:nth-child(3) { border-left-color: #b7a0ff; }
+.race-shell .question .choices button:nth-child(4) { border-left-color: #ffe183; }
+body .race-shell:not(.question-active) .controls,
+body .race-shell.question-active .controls { margin: 4px 0 0; }
+body .race-shell.question-active .race-hud { visibility: hidden; }
+@media (max-width: 760px) {
+  body .race-shell .track-wrap .question { top: 10px; padding: 10px; }
+  body .race-shell .question h2 { font-size: 17px; line-height: 1.25; margin-bottom: 8px; }
+  body .race-shell .question p { font-size: 12px; margin: 5px 0; }
+}
+
+body .race-shell .question .choices button.lane-selected { background: #7de0c2; color: #122a31; border-color: #afffe4; }
+
+.gate-retry { padding: 9px 14px; margin-top: 8px; border: 0; border-radius: 7px; background: #7de0c2; color: #122a31; font-weight: 900; }
+
+/* A compact, tap-open guide stays in the reserved footer row and overlays the race. */
+body .race-shell main {
+  grid-template-rows: auto minmax(0, 1fr) 4px auto 42px;
+}
+body .race-shell .hint {
+  display: flex;
+  flex: 0 0 42px;
+  min-height: 42px;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  margin: 0;
+  overflow: visible;
+  white-space: normal;
+  font-size: 10px;
+  line-height: 1.2;
+}
+body .race-shell .hint::after { content: none; display: none; }
+body .race-shell .hint-keyboard,
+body .race-shell .hint-pickups {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+body .race-shell .hint-pickups { color: #d5e2ee; }
+body .item-guide { flex: 0 0 auto; color: #f4f2ea; }
+body .item-guide > summary {
+  display: flex;
+  min-height: 38px;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid #9cc5ff75;
+  border-radius: 8px;
+  background: #10294a;
+  color: #e8f2ff;
+  cursor: pointer;
+  font-size: 10px;
+  font-weight: 900;
+  list-style: none;
+  padding: 0 9px;
+  white-space: nowrap;
+  -webkit-tap-highlight-color: transparent;
+}
+body .item-guide > summary::-webkit-details-marker { display: none; }
+body .item-guide > summary::after { content: ' ⓘ'; color: #91bdff; }
+body .item-guide > summary:focus-visible { outline: 2px solid #fff0c5; outline-offset: 2px; }
+body .item-guide-panel {
+  position: fixed;
+  z-index: 40;
+  left: 50%;
+  bottom: calc(48px + env(safe-area-inset-bottom, 0px));
+  box-sizing: border-box;
+  width: min(470px, calc(100vw - 20px));
+  max-height: min(58dvh, 520px);
+  overflow: auto;
+  transform: translateX(-50%);
+  border: 1px solid #a9c8ec8c;
+  border-top: 3px solid #7de0c2;
+  border-radius: 12px;
+  background: #071a35f7;
+  box-shadow: 0 12px 34px #020a1bcc;
+  color: #f4f2ea;
+  padding: 12px 14px;
+}
+body .item-guide-panel h2 {
+  margin: 0;
+  color: #fff;
+  font-size: 15px;
+}
+body .item-guide-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 8px;
+}
+body .item-guide-close {
+  flex: 0 0 auto;
+  min-width: 72px;
+  min-height: 44px;
+  border: 1px solid #9cc5ff91;
+  border-radius: 8px;
+  background: #173b67;
+  color: #fff;
+  cursor: pointer;
+  font-size: 12px;
+  font-weight: 900;
+  padding: 0 12px;
+  touch-action: manipulation;
+}
+body .item-guide-close:focus-visible { outline: 2px solid #fff0c5; outline-offset: 2px; }
+body .item-guide-panel ul {
+  display: grid;
+  gap: 6px;
+  margin: 0;
+  padding-left: 18px;
+}
+body .item-guide-panel li {
+  color: #d5e2ee;
+  font-size: 12px;
+  line-height: 1.38;
+}
+body .item-guide-panel li strong { color: #91e6d8; }
+body .garage .garage-panel .garage-help {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 5px 8px;
+  line-height: 1.35;
+}
+body .garage .garage-help-pickups { color: #e2edf6; }
+@media (max-width: 760px) {
+  body .race-shell .hint-keyboard { display: none; }
+  body .race-shell .hint-pickups { flex: 1 1 auto; font-size: 10px; }
+  body .race-shell > .hint { flex: 0 0 42px; }
+  body .garage .garage-help-keyboard { display: none; }
+}

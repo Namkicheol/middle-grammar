@@ -1,0 +1,282 @@
+(function (root) {
+  'use strict';
+
+  const doc = root.document;
+  const scriptUrl = doc?.currentScript?.src || root.location?.href || '';
+  let audioBase = './assets/audio/';
+  try { audioBase = new URL('./assets/audio/', scriptUrl).href; } catch (_) {}
+
+  const AudioCtor = root.Audio;
+  const state = {
+    context: null,
+    contextResume: null,
+    destroyed: false,
+    muted: false,
+    music: null,
+    engine: null,
+    musicStarted: false,
+    musicRequested: false,
+    musicStartPromise: null,
+    musicAttempt: 0,
+    active: new Set(),
+    timers: new Set(),
+    lastPlayed: new Map()
+  };
+
+  const CUES = Object.freeze({
+    countdown: { file: 'select.mp3', volume: 0.28, rate: 0.82, stopAfter: 230, cooldown: 130 },
+    go: { file: 'reveal.mp3', volume: 0.40, rate: 1.08, stopAfter: 620, cooldown: 240 },
+    boost: { file: 'missile-whoosh.mp3', volume: 0.38, rate: 0.8, stopAfter: 900, cooldown: 180 },
+    item: { file: 'shield.mp3', volume: 0.34, rate: 0.90, stopAfter: 760, cooldown: 200 },
+    missile: { file: 'missile-whoosh.mp3', volume: 0.38, rate: 1, stopAfter: 720, cooldown: 350 },
+    hit: { file: 'kart-impact.mp3', volume: 0.4, rate: 1, stopAfter: 540, cooldown: 300 },
+    skid: { file: 'kart-skid.mp3', volume: 0.27, rate: 1, stopAfter: 650, cooldown: 900 },
+    correct: { file: 'select.mp3', volume: 0.22, rate: 1.12, stopAfter: 200, cooldown: 180 },
+    wrong: { file: 'bomb.mp3', volume: 0.15, rate: 0.58, stopAfter: 680, cooldown: 220 },
+    finish: { file: 'angel.mp3', volume: 0.48, rate: 1.00, stopAfter: 2650, cooldown: 900 }
+  });
+
+  function fileUrl(file) {
+    try { return new URL(file, audioBase).href; } catch (_) { return `${audioBase}${file}`; }
+  }
+
+  function ensureContext() {
+    if (state.context || state.destroyed) {
+      if (state.destroyed) state.destroyed = false;
+      else return state.context;
+    }
+    const Context = root.AudioContext || root.webkitAudioContext;
+    if (!Context) return null;
+    try { state.context = new Context(); } catch (_) { state.context = null; }
+    return state.context;
+  }
+
+  function unlock() {
+    const context = ensureContext();
+    if (!context) return Promise.resolve(false);
+    try {
+      const result = context.resume?.();
+      state.contextResume = Promise.resolve(result).then(() => !context.state || context.state === 'running', () => false);
+    } catch (_) { state.contextResume = Promise.resolve(false); }
+    return state.contextResume;
+  }
+
+  function makeAudio(file, loop) {
+    if (!AudioCtor) return null;
+    try {
+      const audio = new AudioCtor(fileUrl(file));
+      audio.preload = 'auto';
+      audio.loop = !!loop;
+      audio.setAttribute?.('aria-hidden', 'true');
+      return audio;
+    } catch (_) { return null; }
+  }
+
+  function setElementMute(audio) {
+    if (!audio) return;
+    audio.muted = state.muted;
+  }
+
+  function startElement(audio, volume, reset) {
+    if (!audio) return Promise.resolve(false);
+    try {
+      if (reset) audio.currentTime = 0;
+      audio.volume = state.muted ? 0 : volume;
+      setElementMute(audio);
+      const result = audio.play();
+      return result?.then ? result.then(() => true, () => false) : Promise.resolve(true);
+    } catch (_) { return Promise.resolve(false); }
+  }
+
+  function startMusic() {
+    state.musicRequested = true;
+    if (state.musicStarted) return Promise.resolve(true);
+    if (state.musicStartPromise) return state.musicStartPromise;
+    unlock();
+    if (!state.music) state.music = makeAudio('kart-race.mp3', true);
+    if (!state.engine) state.engine = makeAudio('kart-engine.mp3', true);
+    if (doc?.hidden || (!state.music && !state.engine)) return Promise.resolve(false);
+    const attempt = ++state.musicAttempt;
+    const music = startElement(state.music, 0.32, true);
+    startElement(state.engine, 0.14, true);
+    state.musicStartPromise = music.then(playing => {
+      if (attempt !== state.musicAttempt) return false;
+      state.musicStarted = playing;
+      return playing;
+    }).finally(() => {
+      if (attempt === state.musicAttempt) state.musicStartPromise = null;
+    });
+    return state.musicStartPromise;
+  }
+
+  function stopElement(audio) {
+    if (!audio) return;
+    try { audio.pause(); audio.currentTime = 0; } catch (_) {}
+  }
+
+  function stopMusic() {
+    state.musicAttempt++;
+    state.musicStartPromise = null;
+    state.musicRequested = false;
+    state.musicStarted = false;
+    stopElement(state.music);
+    stopElement(state.engine);
+  }
+
+  function setMuted(muted) {
+    state.muted = !!muted;
+    setElementMute(state.music);
+    setElementMute(state.engine);
+    for (const audio of state.active) setElementMute(audio);
+  }
+
+  function setEngineSpeed(speed, boosted) {
+    if (!state.engine) return;
+    state.engine.playbackRate = Math.max(0.78, Math.min(1.55, 0.78 + (Number(speed) || 0) / 190 + (boosted ? 0.18 : 0)));
+  }
+
+  function scheduleCleanup(audio, delay) {
+    if (!delay || !root.setTimeout) return;
+    const timer = root.setTimeout(() => {
+      state.timers.delete(timer);
+      try { audio.pause(); audio.currentTime = 0; } catch (_) {}
+      state.active.delete(audio);
+    }, delay);
+    state.timers.add(timer);
+  }
+
+  function playFile(cue) {
+    const audio = makeAudio(cue.file, false);
+    if (!audio) return Promise.resolve(false);
+    if (state.active.size >= 3) {
+      const oldest = state.active.values().next().value;
+      stopElement(oldest); state.active.delete(oldest);
+    }
+    audio.volume = state.muted ? 0 : cue.volume;
+    audio.playbackRate = cue.rate;
+    setElementMute(audio);
+    state.active.add(audio);
+    const cleanup = () => state.active.delete(audio);
+    audio.addEventListener?.('ended', cleanup, { once: true });
+    return startElement(audio, cue.volume, true).then(playing => {
+      if (!playing) {
+        stopElement(audio);
+        cleanup();
+        return false;
+      }
+      scheduleCleanup(audio, cue.stopAfter);
+      return true;
+    });
+  }
+
+  function tone(context, frequency, at, duration, type, volume, endFrequency) {
+    try {
+      const oscillator = context.createOscillator();
+      const gain = context.createGain();
+      oscillator.type = type;
+      oscillator.frequency.setValueAtTime(frequency, at);
+      if (endFrequency && oscillator.frequency.linearRampToValueAtTime) oscillator.frequency.linearRampToValueAtTime(endFrequency, at + duration);
+      gain.gain.setValueAtTime(0.0001, at);
+      gain.gain.exponentialRampToValueAtTime(volume, at + 0.025);
+      gain.gain.exponentialRampToValueAtTime(0.0001, at + duration);
+      oscillator.connect(gain);
+      gain.connect(context.destination);
+      oscillator.start(at);
+      oscillator.stop(at + duration + 0.04);
+      oscillator.addEventListener?.('ended', () => { oscillator.disconnect?.(); gain.disconnect?.(); }, { once: true });
+      return true;
+    } catch (_) { return false; }
+  }
+
+  function playSynth(name) {
+    if (state.muted) return Promise.resolve(false);
+    const context = ensureContext();
+    if (!context) return Promise.resolve(false);
+    return unlock().then(running => {
+      if (!running || state.muted || state.destroyed || doc?.hidden) return false;
+      const now = context.currentTime;
+      let scheduled = 0;
+      const addTone = (...args) => { if (tone(...args)) scheduled++; };
+      if (name === 'countdown') addTone(context, 392, now, 0.13, 'triangle', 0.045);
+      if (name === 'go') {
+        addTone(context, 523, now, 0.16, 'triangle', 0.055);
+        addTone(context, 659, now + 0.08, 0.22, 'triangle', 0.05);
+        addTone(context, 784, now + 0.16, 0.28, 'sine', 0.04);
+      }
+      if (name === 'boost') addTone(context, 180, now, 0.32, 'sawtooth', 0.045, 700);
+      if (name === 'item') {
+        addTone(context, 660, now, 0.10, 'sine', 0.04);
+        addTone(context, 880, now + 0.08, 0.14, 'sine', 0.035);
+      }
+      if (name === 'hit') addTone(context, 130, now, 0.20, 'sawtooth', 0.05, 58);
+      if (name === 'missile') addTone(context, 330, now, 0.26, 'sawtooth', 0.04, 850);
+      if (name === 'correct') {
+        addTone(context, 659, now, 0.13, 'sine', 0.04);
+        addTone(context, 831, now + 0.09, 0.19, 'sine', 0.04);
+      }
+      if (name === 'wrong') {
+        addTone(context, 220, now, 0.16, 'triangle', 0.035);
+        addTone(context, 165, now + 0.10, 0.22, 'triangle', 0.03);
+      }
+      if (name === 'finish') {
+        [523, 659, 784, 1047].forEach((frequency, index) => addTone(context, frequency, now + index * 0.10, 0.34, 'sine', 0.045));
+      }
+      return scheduled > 0;
+    });
+  }
+
+  function play(name) {
+    const cue = CUES[name];
+    if (!cue || state.destroyed || doc?.hidden) return false;
+    const now = Date.now();
+    const previous = state.lastPlayed.get(name) || 0;
+    if (now - previous < cue.cooldown) return false;
+    state.lastPlayed.set(name, now);
+    unlock();
+    return playFile(cue).then(played => {
+      if (played || state.destroyed || state.muted || doc?.hidden) return played;
+      return playSynth(name);
+    });
+  }
+
+  function destroy() {
+    stopMusic();
+    for (const timer of state.timers) root.clearTimeout?.(timer);
+    state.timers.clear();
+    for (const audio of state.active) stopElement(audio);
+    state.active.clear();
+    const context = state.context;
+    state.context = null;
+    state.destroyed = true;
+    try {
+      const result = context?.close?.();
+      if (result?.catch) result.catch(() => {});
+    } catch (_) {}
+  }
+
+  doc?.addEventListener('visibilitychange', () => {
+    if (doc.hidden) {
+      state.musicAttempt++;
+      state.musicStartPromise = null;
+      state.musicStarted = false;
+      try { state.music?.pause(); state.engine?.pause(); } catch (_) {}
+      for (const audio of state.active) stopElement(audio);
+      state.active.clear();
+    } else if (state.musicRequested && !state.destroyed) {
+      if (!state.music) state.music = makeAudio('kart-race.mp3', true);
+      if (!state.engine) state.engine = makeAudio('kart-engine.mp3', true);
+      const attempt = ++state.musicAttempt;
+      const music = startElement(state.music, 0.32, false);
+      startElement(state.engine, 0.14, false);
+      state.musicStartPromise = music.then(playing => {
+        if (attempt !== state.musicAttempt) return false;
+        state.musicStarted = playing;
+        return playing;
+      }).finally(() => {
+        if (attempt === state.musicAttempt) state.musicStartPromise = null;
+      });
+    }
+  });
+
+  root.KartAudio = Object.freeze({ unlock, startMusic, stopMusic, setMuted, setEngineSpeed, play, destroy });
+})(window);

@@ -48,7 +48,10 @@ for (const file of files) {
   assert(!equal('The value is 3.14', 'The value is 314'), `${file}: decimal changed`);
   assert(!equal('She made us sad.', 'She made us happy'), `${file}: wrong sentence`);
   assert(!equal('a-b', 'ab'), `${file}: internal punctuation`);
-  if (match[0].includes('Treat a final sentence')) {
+  assert(equal('happy.', 'happy'), `${file}: single answer`);
+  {
+    assert(!equal('Inc.', 'Inc'), `${file}: company abbreviation`);
+    assert(!equal('3.', '3'), `${file}: integer dot`);
     assert(!equal('Dr.', 'Dr'), `${file}: standalone abbreviation`);
     assert(!equal('Meet Dr.', 'Meet Dr'), `${file}: abbreviation`);
     assert(!equal('I live in the U.S.', 'I live in the U.S'), `${file}: acronym`);

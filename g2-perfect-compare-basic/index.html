@@ -557,6 +557,11 @@ var TOTAL=40,SECTOTALS={a:20,b:12,c:8},secC={a:0,b:0,c:0},secW={a:0,b:0,c:0};
 var placed={"c1":[],"c2":[],"c3":[],"c4":[],"c5":[],"c6":[],"c7":[],"c8":[]},answered={},correct=0,wrong=0;
 
 function norm(s){
+  // Preserve abbreviation and integer dots while allowing a final sentence period.
+  s = String(s || '').trim();
+  if (/(?:^|\s)(?:(?:mr|mrs|ms|dr|prof|sr|jr|st|etc|vs|inc|ltd|corp|co|dept|fig|e\.g|i\.e)|(?:[a-z]\.)+[a-z]|[a-z]|\d+)\.$/i.test(s)) s = s.slice(0, -1) + '\uE000';
+  else s = s.replace(/\.$/, '');
+
   s=s.trim().toLowerCase().replace(/\s+/g,' ');
   s=s.replace(/[.!?]$/,'');
   s=s.replace(/isn't/g,'is not').replace(/aren't/g,'are not')

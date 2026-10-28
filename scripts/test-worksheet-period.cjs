@@ -50,6 +50,7 @@ for (const file of files) {
   assert(!equal('a-b', 'ab'), `${file}: internal punctuation`);
   assert(equal('happy.', 'happy'), `${file}: single answer`);
   {
+    assert(!equal('A.', 'A'), `${file}: initial`);
     assert(!equal('Inc.', 'Inc'), `${file}: company abbreviation`);
     assert(!equal('3.', '3'), `${file}: integer dot`);
     assert(!equal('Dr.', 'Dr'), `${file}: standalone abbreviation`);

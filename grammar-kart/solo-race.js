@@ -93,7 +93,7 @@
   function makeRace(options) {
     const { canvas, lesson, mode = 'solo', onProgress = () => {}, onAnswer = () => {}, onFinish = () => {}, onQuestion = () => {} } = options;
     const ctx = canvas.getContext('2d');
-    const laps = mode === 'solo' ? clamp(Math.floor(Number(options.laps) || 3), 1, 5) : 1;
+    const laps = mode === 'solo' ? clamp(Math.floor(Number(options.laps) || 5), 1, 7) : 1;
     const total = TOTAL * laps;
     const pool = ((typeof GAME_QUESTIONS !== 'undefined' && GAME_QUESTIONS[lesson]?.questions) || [])
       .filter(q => Array.isArray(q.opts) && q.opts.length === 4 && q.opts.some(o => norm(o) === norm(q.ans)));
@@ -151,6 +151,7 @@
     let shieldUntil = 0;
     let slipUntil = 0;
     let frozenUntil = 0;
+    let recoilUntil = 0;
     let charge = 0;
     let boostStock = 0;
     let missiles = 0;
@@ -241,7 +242,7 @@
     function useItem() {
       if ((!boostStock && charge < 3) || !playing || finished) return false;
       if (boostStock) boostStock--; else charge = 0;
-      boostUntil = elapsed + 5;
+      boostUntil = elapsed + 6;
       effects = [];
       onProgress(getState());
       return true;
@@ -250,7 +251,7 @@
       if (!playing || finished) return false;
       const item = requested || heldItem || (missiles ? 'missile' : shields ? 'shield' : '');
       if (!item || (item !== heldItem && !(item === 'missile' && missiles) && !(item === 'shield' && shields))) return false;
-      if (item === 'missile' || item === 'ice') {
+      if (item === 'missile' || item === 'ice' || item === 'cannon') {
         const target = opponents.filter(o => o.distance > distance && o.distance - distance < 220 && !o.finished)
           .sort((a, b) => a.distance - b.distance)[0];
         if (!target) return false;
@@ -258,7 +259,7 @@
           if (elapsed < (target.shieldUntil || 0)) target.shieldUntil = 0;
           else { target.slowUntil = elapsed + 2.3; target.frozenUntil = elapsed + 2.3; }
           effects.push({ text: `${target.name} ICE!`, until: elapsed + .9, color: '#9defff' });
-        } else missilesInFlight.push({ targetId: target.id, start: elapsed, from: distance, to: target.distance });
+        } else { missilesInFlight.push({ targetId: target.id, start: elapsed, from: distance, to: target.distance, kind: item }); if (item === 'cannon') { recoilUntil = elapsed + .3; effects.push({ text: '💥 FIRE!', until: elapsed + .5, color: '#ffdc79' }); } }
       } else if (item === 'banana') {
         bananas.push({ at: distance - 4, lane, owner: 'me', until: elapsed + 14 });
         effects.push({ text: 'BANANA DROP!', until: elapsed + .9, color: '#ffe36c' });
@@ -290,7 +291,7 @@
         .sort((a, b) => b.distance - a.distance || (a.elapsed ?? Infinity) - (b.elapsed ?? Infinity));
       return { distance: Math.round(distance), total, lap: Math.min(laps, Math.floor(distance / TOTAL) + 1), laps, lapDistance: Math.round(distance >= total ? TOTAL : distance % TOTAL), frozen: elapsed < frozenUntil, speed: Math.round(speed * 3.6), lane: +lane.toFixed(2), obstaclesHit, padsTaken, starsTaken,
         elapsed: +elapsed.toFixed(1), questionRemaining: gate ? Math.max(0, Math.ceil((gate.at-distance)/Math.max(speed,14))) : null,
-        charge, boostStock, missiles, shields, iceStocks: heldItem === 'ice' ? 1 : 0, heldItem, gatePending: !!gate?.submitted, answerLane: gate ? gate.submitted ? gate.index : answerLanes.reduce((best,value,i)=>Math.abs(lane-value)<Math.abs(lane-answerLanes[best])?i:best,0) : null, gateRemaining: gate ? Math.max(0,Math.ceil((gate.at-distance)/Math.max(speed,14))) : null, correct, asked, rank: standings.findIndex(s => s.me) + 1,
+        charge, boostStock, missiles, shields, iceStocks: heldItem === 'ice' ? 1 : 0, cannonStocks: heldItem === 'cannon' ? 1 : 0, slipping: elapsed < slipUntil, heldItem, gatePending: !!gate?.submitted, answerLane: gate ? gate.submitted ? gate.index : answerLanes.reduce((best,value,i)=>Math.abs(lane-value)<Math.abs(lane-answerLanes[best])?i:best,0) : null, gateRemaining: gate ? Math.max(0,Math.ceil((gate.at-distance)/Math.max(speed,14))) : null, correct, asked, rank: standings.findIndex(s => s.me) + 1,
         standings, boosted: elapsed < boostUntil, shielded: elapsed < shieldUntil, finished };
     }
     function resize() {
@@ -318,7 +319,7 @@
       const sprite = atlasImage ? null : spriteFor(design, kartColor, pose);
       if (sprite || atlas) {
         const width = 108 * size;
-        ctx.save(); ctx.translate(x, y); ctx.rotate(player ? -lean * .10 : hit ? Math.sin(elapsed * 34) * .12 : 0);
+        ctx.save(); ctx.translate(x, y); ctx.rotate(player ? -lean * .10 + (elapsed < slipUntil ? Math.sin(elapsed*18)*.18 : 0) : hit ? Math.sin(elapsed * 34) * .12 : 0);
         ctx.fillStyle = '#091b2a88'; ctx.beginPath(); ctx.ellipse(0, 2, width * .39, width * .11, 0, 0, 7); ctx.fill();
         if (player && elapsed < boostUntil) {
           for (const side of [-1, 1]) {
@@ -339,13 +340,13 @@
           for (let n = -1; n < 5; n++) { const yy = wheelY - wheelH/2 + n * wheelH/3 + offset; ctx.beginPath(); ctx.moveTo(wheelX-wheelW*.32, yy); ctx.lineTo(wheelX+wheelW*.32, yy+wheelH*.055); ctx.stroke(); }
           ctx.restore();
         }
-        if (!player && frozen) { ctx.fillStyle = '#8edfff88'; ctx.fillRect(-width*.4,-width*.78,width*.8,width*.65); }
+        if (!player && frozen) { ctx.fillStyle='#9deaffaa';ctx.strokeStyle='#e7ffff';ctx.lineWidth=3;ctx.beginPath();ctx.moveTo(-width*.45,-width*.25);ctx.lineTo(-width*.35,-width*.8);ctx.lineTo(0,-width*.98);ctx.lineTo(width*.4,-width*.78);ctx.lineTo(width*.45,-width*.25);ctx.closePath();ctx.fill();ctx.stroke();for(let i=0;i<4;i++){ctx.fillStyle='#e2ffff';ctx.beginPath();ctx.arc(Math.sin(elapsed*5+i*2)*width*.5,-width*(.4+i*.14),width*.04,0,7);ctx.fill();} }
         if (player && elapsed < shieldUntil) { ctx.strokeStyle = '#a0f9ff'; ctx.lineWidth = 3; ctx.beginPath(); ctx.ellipse(0, -width * .24, width * .43, width * .32, 0, 0, 7); ctx.stroke(); }
         ctx.restore();
         if (label && !player) { ctx.fillStyle = '#fff'; ctx.font = `900 ${player ? 13 : 11}px Nunito`; ctx.textAlign = 'center'; ctx.fillText(label, x, y - width * .53); }
         return;
       }
-      ctx.save(); ctx.translate(x, y); ctx.rotate(player ? -lean * .10 : 0); ctx.scale(size, size);
+      ctx.save(); ctx.translate(x, y); ctx.rotate(player ? -lean * .10 + (elapsed < slipUntil ? Math.sin(elapsed*18)*.18 : 0) : 0); ctx.scale(size, size);
       ctx.fillStyle = '#07122188'; ctx.beginPath(); ctx.ellipse(0, 8, 31, 10, 0, 0, 7); ctx.fill();
       ctx.fillStyle = '#162338'; ctx.fillRect(-30, -7, 9, 24); ctx.fillRect(21, -7, 9, 24);
       ctx.fillStyle = color; ctx.beginPath(); ctx.roundRect(-24, -29, 48, 42, 13); ctx.fill();
@@ -588,7 +589,7 @@
         const ahead = 12 + (Math.max(12, target.distance-distance) - 12) * flight;
         const p = roadPoint(1-ahead/viewDepth, target.lane*flight), width = (65+flight*20)*p.scale;
         ctx.save(); ctx.translate(p.x,p.y-width*.3); ctx.rotate(-Math.PI/2);
-        if (art.items?.complete && art.items.naturalWidth) ctx.drawImage(art.items, 256,0,128,128,-width/2,-width/2,width,width);
+        if (shot.kind === 'cannon') { ctx.fillStyle='#313844';ctx.beginPath();ctx.arc(0,0,width*.27,0,7);ctx.fill();ctx.fillStyle='#ffad4d';ctx.beginPath();ctx.arc(-width*.26,0,width*.12,0,7);ctx.fill(); } else if (art.items?.complete && art.items.naturalWidth) ctx.drawImage(art.items, 256,0,128,128,-width/2,-width/2,width,width);
         else { ctx.fillStyle='#ffcf63'; ctx.fillRect(-width/2,-width/4,width,width/2); }
         ctx.restore();
         ctx.strokeStyle = '#ffda89aa'; ctx.lineWidth = Math.max(1,width*.13); ctx.beginPath(); ctx.moveTo(p.x,p.y+width*.1); ctx.lineTo(p.x,p.y+width*.9); ctx.stroke();
@@ -619,9 +620,9 @@
           false, o.design, o.kartColor, o.hit || elapsed < (o.hitUntil || 0), elapsed < (o.frozenUntil || 0));
       }
       const playerPoint = roadPoint(1-4/viewDepth, lane);
-      const py = playerPoint.y;
+      const py = playerPoint.y + (elapsed < recoilUntil ? 8 * (recoilUntil - elapsed) / .3 : 0);
       const px = playerPoint.x + lean * w * .012 + (elapsed < slipUntil ? Math.sin(elapsed * 22) * w * .016 : 0);
-      if (Math.abs(lean) > .3 && speed > 14) {
+      if ((Math.abs(lean) > .3 || elapsed < slipUntil) && speed > 14) {
         ctx.strokeStyle = driftTime >= .45 ? '#322d25cc' : '#172b3199'; ctx.lineWidth = Math.max(2, w / 450);
         for (const side of [-1, 1]) {
           ctx.beginPath(); ctx.moveTo(px + side * w * .024, py + h * .012);
@@ -649,7 +650,7 @@
     function updateProjectiles() {
       for (const shot of missilesInFlight) if (elapsed-shot.start >= .72) {
         const target=opponents.find(o=>o.id===shot.targetId);
-        if (target) { if (!shot.visualOnly) { if (elapsed < (target.shieldUntil || 0)) target.shieldUntil=0; else { target.slowUntil=elapsed+2.5;target.hitUntil=elapsed+1.6; } }
+        if (target) { if (!shot.visualOnly) { if (elapsed < (target.shieldUntil || 0)) target.shieldUntil=0; else { if (shot.kind === 'cannon') target.skidUntil=elapsed+1.1; else target.slowUntil=elapsed+2.5;target.hitUntil=elapsed+1.6; } }
           impacts.push({at:target.distance,lane:target.lane,targetId:target.id,until:elapsed+.55});
           if (!shot.visualOnly) options.onEvent?.({ kind: 'hit', targetId: target.id });
           effects.push({text:`${target.name} HIT!`,until:elapsed+.9,color:'#ffb693'}); }
@@ -700,7 +701,8 @@
         effects = effects.filter(fx => fx.until > elapsed);
         return;
       }
-      const target = elapsed < slowUntil ? 14 : gate ? 43 : elapsed < boostUntil ? 63 : elapsed < draftUntil ? 46 : 43;
+      const normalTarget = gate ? 43 : elapsed < boostUntil ? 63 : elapsed < draftUntil ? 46 : 43;
+      const target = elapsed < slowUntil ? 14 : elapsed < slipUntil ? Math.min(normalTarget, 34.5) : normalTarget;
       speed += (target - speed) * Math.min(1, dt * 2.8);
       if (speed > 14 && Math.abs(lean) > .3) charge = Math.min(3, charge + Math.abs(lane - oldLane) * .45);
       const before = distance;
@@ -708,9 +710,8 @@
       for (const event of course) {
         if (gateSafeEvent(event) || event.at <= before || event.at > distance || Math.abs(lane - event.lane) > (event.kind === 'box' ? .36 : .28)) continue;
         if (hazard(event) && elapsed >= hitUntil && elapsed >= shieldUntil) {
-          obstaclesHit++; hitUntil = elapsed + 1.4; slowUntil = Math.max(slowUntil, elapsed + 2.1);
-          if (event.kind === 'banana' || event.kind === 'oil') slipUntil = elapsed + 1.7;
-          effects.push({ text: event.kind === 'banana' ? '미끄러짐!' : '충돌! 속도 감소', until: elapsed + .9, color: '#ffaaa4' });
+          obstaclesHit++; hitUntil = elapsed + 1.1; slipUntil = Math.max(slipUntil, elapsed + 1);
+          effects.push({ text: '끼이익! 미끄러짐', until: elapsed + .9, color: '#ffaaa4' });
           options.onEvent?.({ kind: event.kind === 'banana' ? 'banana_hit' : 'hit', distance: event.at });
         } else if (event.kind === 'pad') {
           padsTaken++; boostUntil = Math.max(boostUntil, elapsed) + 1.6;
@@ -721,32 +722,33 @@
           effects.push({ text: charge >= 3 ? '부스트 준비! 3/3' : `${event.kind === 'coin' ? '코인' : '스타'} · 부스트 +1 (${Math.floor(charge)}/3)`, until: elapsed + 1.2, color: '#ffe36c' });
           options.onEvent?.({ kind: 'star', distance: event.at });
         } else if (event.kind === 'box' && !heldItem) {
-          heldItem = ['banana','missile','ice','shield'][boxCount++ % 4];
+          heldItem = ['banana','missile','ice','shield','cannon'][boxCount++ % 5];
           effects.push({ text: `${heldItem.toUpperCase()}!`, until: elapsed + .9, color: '#ffe36c' });
           options.onEvent?.({ kind: 'box', item: heldItem, distance: event.at });
         }
       }
       if (mode === 'solo') for (const o of ai) {
         const old = o.distance;
+        if (o.frozenUntil && elapsed >= o.frozenUntil) { o.frozenUntil = 0; effects.push({ text: `${o.name} 해동!`, until: elapsed + .8, color: '#c4f6ff' }); }
         const catchup = clamp((distance - o.distance) / 85, -1.5, 2.2);
         const comBoost = elapsed > 8 && ((elapsed + o.slot * 2.9) % 21) < 2.6 ? 6 : 0;
-        o.distance = Math.min(total, o.distance + (elapsed < (o.slowUntil || 0) ? 13 : o.base + catchup + comBoost) * dt);
+        o.distance = Math.min(total, o.distance + (elapsed < (o.slowUntil || 0) ? 13 : (o.base + catchup + comBoost) * (elapsed < (o.skidUntil || 0) ? .8 : 1)) * dt);
         if(o.distance>=total&&!o.finishedAt){o.finishedAt=elapsed;o.finished=true;}
         const targetLane = clamp(o.homeLane + Math.sin(elapsed * .45 + o.slot * 1.7) * .23,-.72,.72);
         o.lane += (targetLane-o.lane)*Math.min(1,dt*.8);
         for (const banana of bananas) if (banana.owner !== o.id && banana.at > old && banana.at <= o.distance && Math.abs(o.lane - banana.lane) < .3 && elapsed >= (o.hitUntil || 0)) {
-          o.slowUntil = elapsed + 2.5; o.hitUntil = elapsed + 1.7; banana.until = 0;
+          o.skidUntil = elapsed + 1; o.hitUntil = elapsed + 1.1; banana.until = 0;
           effects.push({ text: `${o.name} 미끄러짐!`, until: elapsed + .9, color: '#ffe36c' });
         }
         for (const event of course) if (event.kind === 'banana' && event.at > old && event.at <= o.distance && Math.abs(o.lane-event.lane)<.3 && elapsed >= (o.hitUntil||0)) {
-          o.slowUntil=elapsed+2.5; o.hitUntil=elapsed+1.7;
+          o.skidUntil=elapsed+1; o.hitUntil=elapsed+1.1;
         }
         if (distance > 40 && Math.abs(o.distance-distance) < 3.5 && Math.abs(o.lane-lane) < .18 &&
           (Math.abs(o.distance-distance) >= .8 || Math.abs(lane-oldLane) > .015) && elapsed >= hitUntil && elapsed >= (o.hitUntil || 0)) {
-          hitUntil=elapsed+1.1; slipUntil=elapsed+.7; slowUntil=Math.max(slowUntil,elapsed+1.1);
+          hitUntil=elapsed+1.1; slipUntil=elapsed+1;
           lane=clamp(lane+(o.lane<=lane ? .11 : -.11),-.88,.88);
-          o.hitUntil=elapsed+1.1; o.slowUntil=elapsed+1.1;
-          effects.push({text:'카트 충돌!',until:elapsed+.9,color:'#ffb69c'});
+          o.hitUntil=elapsed+1.1; o.skidUntil=elapsed+1;
+          effects.push({text:'끼이익! 미끄러짐',until:elapsed+.9,color:'#ffb69c'});
           options.onEvent?.({kind:'contact',distance:Math.round(distance),target:o.id});
         }
       }

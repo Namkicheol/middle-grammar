@@ -150,3 +150,27 @@ body .garage .garage-design .design-options { display: grid; grid-template-colum
 body .garage .garage-design .design-options button { min-height: 44px; padding: 3px; font-size: 10px; }
 body .garage .garage-design .design-options canvas { width: 36px; height: 36px; }
 body .garage .garage-paint { display: none; }
+/* Setup steps make the selectable character and course visible. */
+body .garage .garage-design > .setup-step, body .garage .setup-step { display:block; color:#ffe36c; font-weight:900; font-size:14px; }
+body .garage .setup-step small { color:#a6f3ea; font-size:11px; }
+body .garage .garage-design .design-options button { min-height:44px; border:2px solid #80c8df88; background:#173959; }
+body .garage .garage-design .design-options button[aria-pressed=true] { border-color:#ffe36c; background:#72541e; color:#fff9cc; box-shadow:0 0 0 2px #ffe36c66; }
+body .garage .garage-design .design-options button[aria-pressed=true]::after { content:' ✓'; color:#ffe36c; }
+body .garage .map-selection { border:1px solid #62d9df66; border-radius:10px; padding:6px; }
+@media(max-width:760px) {
+  body .garage .garage-design { grid-row:1; display:block; }
+  body .garage .garage-design > .setup-step { display:block; margin-bottom:5px; }
+  body .garage .showroom { grid-row:2; height:clamp(125px,22dvh,170px); }
+  body .garage .garage-panel { grid-row:3; }
+  body .garage .showroom > canvas { width:min(40%,150px); }
+}
+@media (min-width:761px) and (max-height:520px) {
+  body .garage { height:auto; min-height:0; grid-template-rows:auto auto; }
+  body .garage .garage-design { grid-row:1; }
+  body .garage .showroom { grid-row:2; min-height:150px; }
+  body .garage .garage-panel { grid-row:1 / 3; }
+}
+body .garage .garage-design { border:2px solid #67e6df; box-shadow:0 0 0 2px #35d7d235,0 12px 28px #020a1b52; }
+body .garage .step-arrow { font-style:normal; }
+body .garage .step-arrow::after { content:'→'; }
+@media(max-width:760px) { body .garage .step-arrow::after { content:'↓'; } }

@@ -12,7 +12,7 @@ vm.runInNewContext(source, sandbox);
 function race(extra = {}) { now = 0; next = null; const events=[]; const r=sandbox.window.GrammarKart.createRace({canvas, lesson:'test', onEvent: e=>events.push(e), ...extra}); r.start(); return {r,events}; }
 function tick(seconds) { for (let i=0;i<seconds*10;i++) { now+=100; const cb=next; if (cb) cb(now); } }
 {
- const {r,events}=race(); assert.equal(r.getState().total,5400); assert(r.getState().standings.some(o=>!o.me && o.distance>0)); tick(5); assert(!events.some(e=>e.kind==='contact')); r.setProgress(1799); tick(1); assert.equal(r.getState().lap,2); assert(r.getState().lapDistance < 100); r.setProgress(5399); tick(1); assert(r.getState().finished); assert.equal(r.getState().distance,5400); r.destroy();
+ const {r,events}=race({laps:3}); assert.equal(r.getState().total,5400); assert(r.getState().standings.some(o=>!o.me && o.distance>0)); tick(5); assert(!events.some(e=>e.kind==='contact')); r.setProgress(1799); tick(1); assert.equal(r.getState().lap,2); assert(r.getState().lapDistance < 100); r.setProgress(5399); tick(1); assert(r.getState().finished); assert.equal(r.getState().distance,5400); r.destroy();
 }
 {
  const {r,events}=race({laps:1}); assert.equal(r.getState().total,1800); r.setProgress(449); tick(1); assert(r.question); r.fixture.setLane(-.55); r.setProgress(739); tick(.2); assert(events.some(e=>e.kind==='hit' && e.distance===740), 'reading section retains hazards'); tick(2); const before=events.length; r.setProgress(790); r.fixture.setOpponent(0,792,0); r.fixture.setLane(0); tick(.2); assert(events.slice(before).some(e=>e.kind==='contact'), 'kart contact remains active during gate'); tick(2); assert(!events.slice(before).some(e=>['hit','banana_hit'].includes(e.kind) && Math.abs(e.distance-810)<56)); r.destroy();
@@ -32,7 +32,7 @@ function tick(seconds) { for (let i=0;i<seconds*10;i++) { now+=100; const cb=nex
  r.fixture.setLane(-.55); r.setProgress(182); tick(.2);
  assert.equal(r.getState().heldItem,'shield'); assert(r.useWeapon('shield'));
  // Box rotation starts banana, missile, ice, shield: repeat to reach ice.
- for (let i=0;i<2;i++) { r.fixture.setLane(-.55); r.setProgress(182); tick(.2); const item=r.getState().heldItem; if(item==='missile') r.fixture.setOpponent(0,r.getState().distance+60,0); assert(r.useWeapon(item)); }
+ for (let i=0;i<3;i++) { r.fixture.setLane(-.55); r.setProgress(182); tick(.2); const item=r.getState().heldItem; if(item==='missile' || item==='cannon') r.fixture.setOpponent(0,r.getState().distance+60,0); assert(r.useWeapon(item)); }
  r.fixture.setLane(-.55); r.setProgress(182); tick(.2); assert.equal(r.getState().heldItem,'ice');
  r.fixture.setOpponent(0,r.getState().distance+60,0); assert(r.useWeapon('ice')); assert(r.getState().standings.some(o=>o.frozen)); r.destroy();
 }
@@ -65,7 +65,7 @@ function tick(seconds) { for (let i=0;i<seconds*10;i++) { now+=100; const cb=nex
  r.fixture.setOpponent(0,r.getState().distance+50,0); r.fixture.setShield(0,5); assert(r.useWeapon('ice'));
  assert.equal(r.fixture.ai(0).frozenUntil||0,0, 'shield blocks ice'); assert.equal(r.fixture.ai(0).shieldUntil,0);
  // Rotate boxes to a second missile and verify its impact consumes shield without slowing.
- for (const expected of ['shield','banana','missile']) { r.fixture.setLane(-.55); r.setProgress(182); tick(.2); assert.equal(r.getState().heldItem,expected); if(expected !== 'missile') assert(r.useWeapon(expected)); }
+ for (const expected of ['shield','cannon','banana','missile']) { r.fixture.setLane(-.55); r.setProgress(182); tick(.2); assert.equal(r.getState().heldItem,expected); if(expected === 'cannon') r.fixture.setOpponent(0,r.getState().distance+50,0); if(expected !== 'missile') { assert(r.useWeapon(expected)); if(expected === 'cannon') tick(1); } }
  r.fixture.ai(0).slowUntil=0; r.fixture.setOpponent(0,r.getState().distance+50,0); r.fixture.setShield(0,5); assert(r.useWeapon('missile')); tick(1); assert.equal(r.fixture.ai(0).shieldUntil,0); assert.equal(r.fixture.ai(0).slowUntil,0, 'shield blocks missile'); r.destroy();
 }
 {
@@ -79,5 +79,27 @@ function tick(seconds) { for (let i=0;i<seconds*10;i++) { now+=100; const cb=nex
    assert(Math.abs(center(map,1800-0.001)-center(map,1800+0.001))<.01, `${map} boundary position`);
    assert(Math.abs(slope(1800-0.001)-slope(1800+0.001))<.0001, `${map} boundary slope`);
  }
+}
+{
+ let count=0; const {r}=race({laps:7,onQuestion:()=>count++}); assert.equal(r.getState().total,12600);
+ for(let lap=0;lap<7;lap++) for(const mark of [450,900,1350]) { r.setProgress(lap*1800+mark-1); tick(.2); assert(r.question); r.answer('A'); }
+ assert.equal(count,21); r.destroy();
+}
+{
+ const {r,events}=race(); tick(5); r.fixture.setLane(0); r.setProgress(300); tick(1); const before=r.getState(); r.fixture.addCourse({at:before.distance+4,lane:0,kind:'cone'}); tick(.2); const hit=r.getState(); assert(events.some(e=>e.kind==='hit')); assert(hit.slipping); assert(!hit.frozen); assert(hit.distance>before.distance); assert(hit.speed>before.speed*.7); tick(1.3); assert(!r.getState().slipping); assert(r.getState().speed>hit.speed); r.destroy();
+}
+{
+ const {r}=race();
+ for(const item of ['banana','missile','ice','shield','cannon']) { r.fixture.setLane(-.55); r.setProgress(182); tick(.2); assert.equal(r.getState().heldItem,item); if(item==='cannon') break; if(item==='missile'||item==='ice') r.fixture.setOpponent(0,r.getState().distance+50,0); assert(r.useWeapon(item)); tick(1); }
+ for(let i=0;i<8;i++) r.fixture.setOpponent(i,-1000,0); assert(!r.useWeapon('cannon')); assert.equal(r.getState().cannonStocks,1);
+ r.fixture.setOpponent(0,r.getState().distance+50,0); assert(r.useWeapon('cannon')); tick(1); assert(r.fixture.ai(0).skidUntil>0); r.destroy();
+}
+{
+ const {r,events}=race(); tick(5); r.setProgress(300); r.fixture.setLane(0); tick(1); const before=r.getState(); r.fixture.setOpponent(0,before.distance+2,0); tick(.2); const after=r.getState(); assert(events.some(e=>e.kind==='contact')); assert(after.slipping && !after.frozen); assert(after.distance>before.distance && after.speed>before.speed*.7); tick(1.3); assert(!r.getState().slipping); r.destroy();
+}
+{
+ const {r}=race();
+ for(const item of ['banana','missile','ice','shield','cannon']) { r.fixture.setLane(-.55); r.setProgress(182); tick(.2); if(item==='cannon') break; if(item==='missile'||item==='ice') r.fixture.setOpponent(0,r.getState().distance+50,0); assert(r.useWeapon(item)); tick(1); }
+ r.fixture.ai(0).skidUntil=0; for(let i=1;i<8;i++) r.fixture.setOpponent(i,-1000,0); r.fixture.setOpponent(0,r.getState().distance+50,0); r.fixture.setShield(0,5); assert(r.useWeapon('cannon')); tick(1); assert.equal(r.fixture.ai(0).shieldUntil,0); assert.equal(r.fixture.ai(0).skidUntil,0); r.destroy();
 }
 console.log('kart engine regression: passed');

@@ -48,6 +48,9 @@ for (const file of files) {
   assert(!equal('The value is 3.14', 'The value is 314'), `${file}: decimal changed`);
   assert(!equal('She made us sad.', 'She made us happy'), `${file}: wrong sentence`);
   assert(!equal('a-b', 'ab'), `${file}: internal punctuation`);
+  assert(equal('have lived in this town since 2020.', 'have lived in this town since 2020'), `${file}: year 2020`);
+  assert(equal('was built in 1950.', 'was built in 1950'), `${file}: year 1950`);
+  assert(!equal('was built in 1950', 'was built in 1951'), `${file}: wrong year`);
   assert(equal('happy.', 'happy'), `${file}: single answer`);
   {
     assert(!equal('A.', 'A'), `${file}: initial`);

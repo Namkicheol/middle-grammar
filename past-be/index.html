@@ -487,6 +487,10 @@ var TOTAL=52,SECTOTALS={a:15,b:15,c:12,d:10},secC={a:0,b:0,c:0,d:0},secW={a:0,b:
 var placed={"d1":[],"d2":[],"d3":[],"d4":[],"d5":[],"d6":[],"d7":[],"d8":[],"d9":[],"d10":[]},answered={},correct=0,wrong=0;
 
 function norm(s){
+  // Treat a final sentence period as optional; leave single words, numbers and abbreviations intact.
+  s = String(s || '').trim();
+  if (/\s/.test(s) && !/(?:^|\s)(?:(?:mr|mrs|ms|dr|prof|sr|jr|st|etc|vs|e\.g|i\.e)|(?:[a-z]\.)+[a-z]|\d+)\.$/i.test(s)) s = s.replace(/\.$/, '');
+
   s=s.trim().toLowerCase().replace(/\s+/g,' ');
   s=s.replace(/isn't/g,'is not').replace(/aren't/g,'are not')
      .replace(/wasn't/g,'was not').replace(/weren't/g,'were not')

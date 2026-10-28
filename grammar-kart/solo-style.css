@@ -57,3 +57,4 @@
 .map-cards button[aria-pressed=true]{border-color:#ffe36c;box-shadow:0 0 0 2px #ffe36c55}.map-cards button[aria-pressed=true] strong::after{content:' ✓'}
 .lap-selection>div{display:flex;gap:5px}.lap-selection button{flex:1;min-height:44px;border:1px solid #7db4cc;border-radius:8px;background:#193956;color:#fff;font-weight:800}.lap-selection button[aria-pressed=true]{border:2px solid #ffe36c;background:#624f27;color:#fff3a0}
 @media(max-width:760px){.garage{height:auto;min-height:0}.garage-panel{justify-content:flex-start}}
+.lap-selection button small{display:block;font-size:10px;font-weight:700;line-height:1.2}

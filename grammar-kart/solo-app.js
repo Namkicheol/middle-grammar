@@ -5,6 +5,13 @@
   const $ = (tag, className, text) => { const el = document.createElement(tag); if (className) el.className = className; if (text != null) el.textContent = text; return el; };
   const fmt = seconds => `${Math.floor(seconds / 60)}:${String(Math.floor(seconds % 60)).padStart(2, '0')}.${Math.floor((seconds % 1) * 10)}`;
   const audio = (name) => window.KartAudio?.play?.(name);
+  function tryFullscreen() {
+    const element = document.documentElement;
+    if (document.fullscreenElement || document.webkitFullscreenElement) return;
+    const request = element.requestFullscreen || element.webkitRequestFullscreen;
+    if (!request) return;
+    try { Promise.resolve(request.call(element)).catch(() => {}); } catch (_) {}
+  }
   const allLessons = Object.entries(typeof GAME_QUESTIONS !== 'undefined' ? GAME_QUESTIONS : {})
     .filter(([key, item]) => /^g[12]-l\d+$/.test(key) && item.questions?.some(q => q.opts?.length === 4));
   let selectedLesson = allLessons[0]?.[0] || 'g1-l1';
@@ -38,7 +45,7 @@
     const list = $('ul', '');
     [
       ['정답 보상', '정답을 맞히면 부스터·미사일·방어막 중 하나를 얻어요.'],
-      ['⚡ 부스터', '부스터 1개 또는 충전 3칸을 써서 5초 동안 가속해요. 버튼이나 스페이스바로 사용해요.'],
+      ['⚡ 부스터', '부스터 1개 또는 충전 3칸을 써서 6초 동안 가속해요. 버튼이나 스페이스바로 사용해요.'],
       ['🚀 미사일', '앞쪽 220m 안에 상대가 있을 때 발사해요. 대상이 없으면 소모되지 않아요.'],
       ['🛡 방어막', '5초 동안 코스 장애물과 상대가 놓은 바나나·미사일을 막아요.'],
       ['🍌 바나나', '사용하면 내 뒤에 놓여요. 같은 레인을 지나는 상대를 느리게 해요.'],
@@ -108,6 +115,7 @@
     root.querySelectorAll('[data-color]').forEach(b => b.addEventListener('click', () => { selectedColor = b.dataset.color; updateKart(); }));
     updateKart();
     document.getElementById('solo-start').addEventListener('click', () => {
+      tryFullscreen();
       window.KartAudio?.unlock?.(); window.KartAudio?.startMusic?.();
       startRace({ mode: 'solo', lesson: select.value, playerName: '나', kartDesign: selectedDesign, kartColor: selectedColor, map: selectedMap });
     });
@@ -131,8 +139,11 @@
       speed: document.getElementById('speed'), place: document.getElementById('place'), time: document.getElementById('time'), meters: document.getElementById('meters'),
       bar: document.getElementById('bar'), question: document.getElementById('question'), item: document.getElementById('item'), weapon: document.getElementById('weapon'), toast: document.getElementById('toast-area')
     };
-    root.querySelector('.track-wrap').append(document.getElementById('left'), document.getElementById('right'), ui.question);
+    root.querySelector('.track-wrap').append(document.getElementById('left'), document.getElementById('right'));
+    root.querySelector('main').insertBefore(ui.question, root.querySelector('.track-wrap'));
     ui.question.hidden = true;
+    const questionObserver = typeof ResizeObserver !== 'undefined' ? new ResizeObserver(() => { if (!ui.question.hidden) ui.question.classList.toggle('has-overflow', ui.question.scrollHeight > ui.question.clientHeight + 1); }) : null;
+    questionObserver?.observe(ui.question);
     ui.missile = $('button', 'control weapon', '미사일'); ui.missile.id = 'missile'; ui.missile.type = 'button'; ui.missile.disabled = true;
     ui.shield = $('button', 'control weapon', '방어막'); ui.shield.id = 'shield'; ui.shield.type = 'button'; ui.shield.disabled = true;
     root.querySelector('.controls').append(ui.missile, ui.shield);
@@ -173,6 +184,7 @@
           button.addEventListener('click', () => choose(choice)); choices.append(button);
         });
         ui.question.append(head, kor, eng, choices);
+        requestAnimationFrame(() => ui.question.classList.toggle('has-overflow', ui.question.scrollHeight > ui.question.clientHeight + 1));
         options.onQuestion?.(question);
       },
       onAnswer: result => {
@@ -248,6 +260,7 @@
     document.addEventListener('visibilitychange', visibilityChange);
     const destroy = race.destroy;
     race.destroy = () => {
+      questionObserver?.disconnect();
       window.removeEventListener('pointerup', onPointerRelease);
       window.removeEventListener('pointercancel', onPointerRelease);
       window.removeEventListener('keydown', keydown); window.removeEventListener('keyup', keyup);
@@ -271,7 +284,7 @@
   function showResult(state, lesson) {
     window.KartFinish.render(root, state, {
       formatTime: fmt, bestTime: bestFor(lesson, app.options?.map || 'coastal') || null, design: selectedDesign, color: selectedColor,
-      onAgain: () => { window.KartAudio?.unlock?.(); window.KartAudio?.startMusic?.(); startRace(app.options); },
+      onAgain: () => { tryFullscreen(); window.KartAudio?.unlock?.(); window.KartAudio?.startMusic?.(); startRace(app.options); },
       onMenu: showMenu
     });
   }

@@ -2940,6 +2940,12 @@ async function joinRoom(event) {
     return;
   }
 
+  // A fullscreen request must remain inside the student's join gesture.
+  if (kartJoinMode === "grammar_kart" && !document.fullscreenElement && !document.webkitFullscreenElement) {
+    const target = document.documentElement;
+    const request = target.requestFullscreen || target.webkitRequestFullscreen;
+    if (request) { try { Promise.resolve(request.call(target)).catch(() => {}); } catch (_) {} }
+  }
   state.busy = true;
   const submitButton = event.currentTarget.querySelector("button[type=\"submit\"]");
   if (submitButton) {

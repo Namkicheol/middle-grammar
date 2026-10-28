@@ -5,3 +5,6 @@
 @media(max-width:470px){.kart-oval{border-width:21px}.kart-oval:before{inset:-14px}.kart-marker{width:19px;height:19px;font-size:10px}.kart-teacher .panel-header{align-items:flex-start}.kart-teacher .panel-header .danger-button{font-size:12px;padding:9px}}
 .kart-marker{width:auto;min-width:25px;padding:0 3px;white-space:nowrap}
 .kart-marker{background:var(--kart-marker,#ffe16b)}
+
+/* Keep the embedded game within the visible browser viewport in either orientation. */
+.kart-student-shell iframe { min-height: 0; height: calc(100vh - 75px); height: calc(100dvh - 75px); }

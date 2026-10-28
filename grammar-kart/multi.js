@@ -40,6 +40,7 @@
       button.addEventListener('click', () => choose(choice)); choices.append(button);
     });
     box.append(head, kor, eng, choices);
+    requestAnimationFrame(() => box.classList.toggle('has-overflow', box.scrollHeight > box.clientHeight + 1));
   }
   function choose(choice) {
     if (pending || !questionKey || !race) return;
@@ -112,7 +113,12 @@
     } else if (!me.kart.finishedAt) renderQuestion(me.currentQuestion);
   }
   function bindControls() {
-    document.querySelector('.track-wrap').append($('left'), $('right'));
+    const track = document.querySelector('.track-wrap');
+    track.append($('left'), $('right'));
+    track.parentNode.insertBefore($('question'), track);
+    const questionObserver = typeof ResizeObserver !== 'undefined' ? new ResizeObserver(() => { const box = $('question'); if (!box.hidden) box.classList.toggle('has-overflow', box.scrollHeight > box.clientHeight + 1); }) : null;
+    questionObserver?.observe($('question'));
+    window.addEventListener('pagehide', () => questionObserver?.disconnect(), { once: true });
     const missile = document.createElement('button'); missile.id='missile'; missile.className='control weapon'; missile.type='button'; missile.textContent='미사일 0'; missile.disabled=true;
     const shield = document.createElement('button'); shield.id='shield'; shield.className='control weapon'; shield.type='button'; shield.textContent='방어막 0'; shield.disabled=true;
     document.querySelector('.controls').append(missile, shield);

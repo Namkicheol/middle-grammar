@@ -231,7 +231,7 @@
     function useItem() {
       if ((!boostStock && charge < 3) || !playing || finished) return false;
       if (boostStock) boostStock--; else charge = 0;
-      boostUntil = elapsed + 5;
+      boostUntil = elapsed + 6;
       effects = [];
       onProgress(getState());
       return true;
@@ -666,7 +666,7 @@
       for (const event of course) {
         if (event.at <= before || event.at > distance || Math.abs(lane - event.lane) > (event.kind === 'box' ? .36 : .28)) continue;
         if (['cone','banana','barrier'].includes(event.kind) && elapsed >= hitUntil && elapsed >= shieldUntil) {
-          obstaclesHit++; hitUntil = elapsed + 1.4; slowUntil = Math.max(slowUntil, elapsed + 2.1);
+          obstaclesHit++; hitUntil = elapsed + 1.4; slowUntil = Math.max(slowUntil, elapsed + 1.6);
           if (event.kind === 'banana') slipUntil = elapsed + 1.7;
           effects.push({ text: event.kind === 'banana' ? '미끄러짐!' : '충돌! 속도 감소', until: elapsed + .9, color: '#ffaaa4' });
           options.onEvent?.({ kind: event.kind === 'banana' ? 'banana_hit' : 'hit', distance: event.at });

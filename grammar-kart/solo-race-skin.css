@@ -940,3 +940,96 @@ body .garage .garage-help-pickups { color: #e2edf6; }
   body .race-shell > .hint { flex: 0 0 42px; }
   body .garage .garage-help-keyboard { display: none; }
 }
+
+body .shell.race-shell { height: 100dvh; max-height: 100dvh; display: flex; flex-direction: column; overflow: hidden; padding-bottom: 6px; }
+body .race-shell main { min-height: 0; flex: 1; }
+body .race-shell .track-wrap { min-height: 0; border-radius: 16px; }
+body .race-shell .track-wrap canvas, body .race-shell:not(.question-active) .track-wrap canvas, body .race-shell.question-active .track-wrap canvas { height: 100%; min-height: 0; max-height: none; }
+body .race-shell .race-bottom, body .race-shell.question-active .race-bottom { display: block; }
+/* Reserve a separate panel throughout the race so the canvas stays fixed. */
+body .race-shell main,
+body .race-shell.classroom-race {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(260px, 360px);
+  grid-template-rows: auto minmax(0, 1fr) 4px auto 42px;
+  grid-template-areas: "top top" "track question" "progress progress" "bottom bottom" "hint hint";
+  column-gap: 8px;
+}
+body .race-shell .race-top { grid-area: top; }
+body .race-shell .track-wrap { grid-area: track; }
+body .race-shell .progress { grid-area: progress; }
+body .race-shell .race-bottom { grid-area: bottom; }
+body .race-shell .hint { grid-area: hint; }
+body .race-shell .question:not([hidden]) {
+  grid-area: question;
+  position: static;
+  width: auto;
+  min-width: 0;
+  min-height: 0;
+  max-height: none;
+  overflow: auto;
+  margin: 0;
+  padding: 13px;
+  background: #11243df5;
+  color: #f3f8ff;
+  border: 1px solid #9cddf688;
+  border-top: 3px solid #60ded2;
+  border-radius: 14px;
+  box-shadow: 0 8px 28px #041b3b55;
+}
+body .race-shell:not(.question-active) main::after,
+body .race-shell.classroom-race:not(.question-active)::after {
+  content: "다음 문제를 준비하고 있어요";
+  grid-area: question;
+  display: grid;
+  place-items: center;
+  padding: 12px;
+  border: 1px solid #9cddf633;
+  border-radius: 14px;
+  background: #11243d80;
+  color: #b6c4d6;
+  font-size: 13px;
+  text-align: center;
+}
+body .race-shell .question:not([hidden]) { scrollbar-width: thin; scrollbar-color: #9cddf6 #11243d; }
+body .race-shell .question:not([hidden])::-webkit-scrollbar { width: 6px; }
+body .race-shell .question:not([hidden])::-webkit-scrollbar-thumb { background: #9cddf6; border-radius: 6px; }
+body .race-shell.question-active .race-hud { visibility: visible; }
+body .race-shell .question:not([hidden]) .choices button { min-height: 44px; }
+@media (max-width: 760px) {
+  body .race-shell main,
+  body .race-shell.classroom-race {
+    grid-template-columns: minmax(0, 1fr);
+    grid-template-rows: auto min(31dvh, 240px) minmax(100px, 1fr) 4px auto 42px;
+    grid-template-areas: "top" "question" "track" "progress" "bottom" "hint";
+    row-gap: 4px;
+  }
+  body .race-shell .question:not([hidden]) { padding: 8px; }
+}
+@media (max-height: 520px) {
+  body .race-shell .map-widget { top: 72px; }
+  body .race-shell .map-widget .minimap { width: 55px; height: 72px; padding: 3px; }
+  body .race-shell .map-widget .minimap svg { height: 48px; }
+  body .race-shell .track-wrap > #left,
+  body .race-shell .track-wrap > #right { z-index: 5; }
+}
+body .race-shell .track-wrap > #left,
+body .race-shell .track-wrap > #right { z-index: 5; }
+
+body .race-shell .question.has-overflow .question-head::after {
+  content: '↕ 밀어서 보기';
+  color: #ffe183;
+  font-size: 11px;
+  white-space: nowrap;
+}
+
+/* Fallback for browsers without dynamic viewport units. */
+@supports not (height: 100dvh) { body .shell.race-shell { height: 100vh; max-height: 100vh; } }
+
+@supports not (height: 100dvh) {
+  @media (max-width: 760px) {
+    body .race-shell main, body .race-shell.classroom-race {
+      grid-template-rows: auto min(31vh, 240px) minmax(100px, 1fr) 4px auto 42px;
+    }
+  }
+}

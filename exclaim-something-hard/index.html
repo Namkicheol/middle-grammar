@@ -553,7 +553,7 @@ var answered={},correct=0,wrong=0;
 function norm(s){
   // Preserve abbreviation and integer dots while allowing a final sentence period.
   s = String(s || '').trim();
-  if (/(?:^|\s)(?:(?:mr|mrs|ms|dr|prof|sr|jr|st|etc|vs|inc|ltd|corp|co|dept|fig|e\.g|i\.e)|(?:[a-z]\.)+[a-z]|[a-z]|\d+)\.$/i.test(s)) s = s.slice(0, -1) + '\uE000';
+  if (/(?:^|\s)(?:(?:mr|mrs|ms|dr|prof|sr|jr|st|etc|vs|inc|ltd|corp|co|dept|fig|e\.g|i\.e)|(?:[a-z]\.)+[a-z]|[a-z])\.$/i.test(s) || /^\d+\.$/.test(s)) s = s.slice(0, -1) + '\uE000';
   else s = s.replace(/\.$/, '');
 
   s=s.trim().toLowerCase().replace(/\s+/g,' ');

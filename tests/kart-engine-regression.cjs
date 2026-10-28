@@ -6,8 +6,8 @@ const grad = { addColorStop: noop };
 const ctx = new Proxy({}, { get: (_, key) => key === 'createLinearGradient' ? () => grad : noop, set: () => true });
 const canvas = { getContext: () => ctx, getBoundingClientRect: () => ({ width: 600, height: 400 }) };
 let now = 0, next;
-const sandbox = { console, Math, window: { addEventListener: noop, removeEventListener: noop }, document: { hidden: false, addEventListener: noop, removeEventListener: noop }, performance: { now: () => now }, requestAnimationFrame: cb => (next = cb, 1), cancelAnimationFrame: noop, GAME_QUESTIONS: { test: { questions: [{ id:'q', eng:'A', opts:['A','B','C','D'], ans:'A' }] } } };
-const source = fs.readFileSync('grammar-kart/solo-race.js','utf8').replace('return { start, stop, destroy, answer, useItem,', 'return { fixture: { setLane: value => lane = value, setOpponent: (i, d, l) => { ai[i].distance = d; ai[i].lane = l; }, gateAt: () => gate?.at, setShield: (i, seconds) => ai[i].shieldUntil = elapsed + seconds, ai: i => ai[i], addCourse: event => course.push(event) }, start, stop, destroy, answer, useItem,');
+const sandbox = { console, Math, window: { addEventListener: noop, removeEventListener: noop }, document: { hidden: false, addEventListener: noop, removeEventListener: noop }, performance: { now: () => now }, requestAnimationFrame: cb => (next = cb, 1), cancelAnimationFrame: noop, GAME_QUESTIONS: { test: { questions: Array.from({length:30}, (_, i) => ({ id:'q'+i, eng:'A', opts:['A','B','C','D'], ans:'A' })) } } };
+const source = fs.readFileSync('grammar-kart/solo-race.js','utf8').replace('function draw() {', 'function draw() { return;').replace('return { start, stop, destroy, answer, useItem,', 'return { fixture: { setLane: value => lane = value, clearShield: () => shieldUntil = 0, setOpponent: (i, d, l) => { ai[i].distance = d; ai[i].lane = l; }, gateAt: () => gate?.at, setShield: (i, seconds) => ai[i].shieldUntil = elapsed + seconds, ai: i => ai[i], addCourse: event => course.push(event) }, start, stop, destroy, answer, useItem,');
 vm.runInNewContext(source, sandbox);
 function race(extra = {}) { now = 0; next = null; const events=[]; const r=sandbox.window.GrammarKart.createRace({canvas, lesson:'test', onEvent: e=>events.push(e), ...extra}); r.start(); return {r,events}; }
 function tick(seconds) { for (let i=0;i<seconds*10;i++) { now+=100; const cb=next; if (cb) cb(now); } }
@@ -101,5 +101,47 @@ function tick(seconds) { for (let i=0;i<seconds*10;i++) { now+=100; const cb=nex
  const {r}=race();
  for(const item of ['banana','missile','ice','shield','cannon']) { r.fixture.setLane(-.55); r.setProgress(182); tick(.2); if(item==='cannon') break; if(item==='missile'||item==='ice') r.fixture.setOpponent(0,r.getState().distance+50,0); assert(r.useWeapon(item)); tick(1); }
  r.fixture.ai(0).skidUntil=0; for(let i=1;i<8;i++) r.fixture.setOpponent(i,-1000,0); r.fixture.setOpponent(0,r.getState().distance+50,0); r.fixture.setShield(0,5); assert(r.useWeapon('cannon')); tick(1); assert.equal(r.fixture.ai(0).shieldUntil,0); assert.equal(r.fixture.ai(0).skidUntil,0); r.destroy();
+}
+{
+ const actual={}; vm.runInNewContext(fs.readFileSync('game/questions.js','utf8')+'\nthis.data = GAME_QUESTIONS;',actual); sandbox.GAME_QUESTIONS=actual.data;
+ for (const lesson of Object.keys(actual.data).filter(key=>/^g[12]-l[1-8]$/.test(key))) {
+   const all=sandbox.window.GrammarKart.getLessonQuestionIds(lesson), seen=new Set(); assert(all.length>=15,lesson);
+   for(let round=0;seen.size<all.length && round<10;round++) {
+     const old=new Set(seen), questions=[]; const {r}=race({lesson,seenQuestionIds:[...seen],onQuestion: e=>questions.push(e)});
+     for(let i=0;i<15;i++) {r.setProgress(Math.floor(i/3)*1800+[450,900,1350][i%3]-1);tick(.2);assert(r.question,`${lesson} ${i}`);r.answer('A');}
+     assert.equal(new Set(questions.map(q=>q.question.id)).size,15); assert(questions.every(q=>q.total===15));
+     const unseen=all.filter(id=>!old.has(id)).length;
+     questions.forEach((q,i)=>{if(i<unseen) assert(!old.has(q.question.id),`${lesson} unseen priority`); seen.add(q.question.id);}); r.destroy();
+   }
+   assert.equal(seen.size,all.length,`${lesson} coverage`);
+ }
+}
+{
+ sandbox.GAME_QUESTIONS={small:{questions:Array.from({length:4},(_,i)=>({id:'s'+i,opts:['A','B','C','D'],ans:'A'}))}};
+ const delivered=[];const {r}=race({lesson:'small',onQuestion:e=>delivered.push(e.question.id)});
+ for(let i=0;i<15;i++){r.setProgress(Math.floor(i/3)*1800+[450,900,1350][i%3]-1);tick(.2);if(r.question)r.answer('B');}
+ assert.equal(delivered.length,4); assert.equal(r.getState().answeredCount,4); assert.equal(r.getState().questionLimit,4); assert.equal(r.getState().lessonQuestionCount,4); r.destroy();
+}
+{
+ sandbox.GAME_QUESTIONS={test:{questions:Array.from({length:40},(_,i)=>({id:'n'+i,opts:['A','B','C','D'],ans:'A'}))}};
+ const answered=[];let pending; const first=race({onQuestion:e=>pending=e.question.id,onAnswer:e=>answered.push(e.questionId)}).r; first.setProgress(449);tick(.2);first.answer('B'); first.setProgress(899);tick(.2); const skipped=pending; first.destroy();
+ const nextRace=race({seenQuestionIds:answered}).r; let ids=[]; for(let i=0;i<15;i++){nextRace.setProgress(Math.floor(i/3)*1800+[450,900,1350][i%3]-1);tick(.2);ids.push(nextRace.question.id);nextRace.answer('A');} assert(!ids.includes(answered[0])); assert.equal(nextRace.getState().answeredCount,15); nextRace.destroy();
+ const skippedRace=race({seenQuestionIds:sandbox.window.GrammarKart.getLessonQuestionIds('test').filter(id=>id!==skipped)}).r; skippedRace.setProgress(449); tick(.2); assert.equal(skippedRace.question.id,skipped,'unanswered question remains priority'); skippedRace.destroy();
+ const nine=race({laps:9}).r; assert.equal(nine.getState().total,16200); const nineIds=[];for(let i=0;i<27;i++){nine.setProgress(Math.floor(i/3)*1800+[450,900,1350][i%3]-1);tick(.2);nineIds.push(nine.question.id);nine.answer('A');}assert.equal(new Set(nineIds).size,27);nine.destroy();
+}
+{
+ sandbox.GAME_QUESTIONS={test:{questions:Array.from({length:40},(_,i)=>({id:'rocket'+i,opts:['A','B','C','D'],ans:'A'}))}};
+ const {r,events}=race();
+ for(let i=0;i<10;i++) {
+   r.fixture.setLane(-.55);r.setProgress(182);tick(.2);const item=r.getState().heldItem;assert(item,`box ${i+1}`);
+   if(i===9){assert.equal(item,'skyrocket');break;}
+   if(item==='missile'||item==='ice'||item==='cannon') r.fixture.setOpponent(0,r.getState().distance+50,0);
+   assert(r.useWeapon(item),item);tick(1);
+ }
+ assert.equal(r.getState().rocketStocks,1);assert(r.useWeapon('skyrocket'));assert(r.getState().flying);assert.equal(r.getState().rocketStocks,0);
+ r.fixture.setLane(0);r.setProgress(449);tick(.2);assert(r.question,'question while flying');r.selectGateLane(0); r.fixture.setLane(-.75); r.setProgress(r.fixture.gateAt()-1); tick(.2); assert.equal(r.getState().answeredCount,1,'answer gate during flight');
+ r.fixture.clearShield(); r.fixture.setLane(0); const before=r.getState();r.fixture.addCourse({at:before.distance+6,lane:0,kind:'cone'});r.fixture.setOpponent(0,before.distance+3,0);const ev=events.length;tick(1.5);
+ assert(r.getState().speed>63*3.6,'rocket faster than boost');assert(!events.slice(ev).some(e=>e.kind==='contact'||e.kind==='hit'),'flying avoids fixed and kart collisions');
+ tick(3);assert(!r.getState().flying);assert.equal(r.getState().flightRemaining,0);tick(1);assert(r.getState().speed<63*3.6,'landing returns to normal speed');r.setProgress(1100);r.fixture.setLane(0);const landed=r.getState();r.fixture.addCourse({at:landed.distance+5,lane:0,kind:'cone'});const ev2=events.length;tick(.3);assert(events.slice(ev2).some(e=>e.kind==='hit'),'hazard hits after landing');r.destroy();
 }
 console.log('kart engine regression: passed');

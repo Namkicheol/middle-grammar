@@ -19,8 +19,8 @@
   try { selectedMap = localStorage.getItem('grammar-kart-map') || selectedMap; } catch (_) {}
   if (!['coastal','hill','neon','snow'].includes(selectedMap)) selectedMap = 'coastal';
   let selectedLaps = 5;
-  try { selectedLaps = Number(localStorage.getItem('grammar-kart-laps-v2')) || 5; } catch (_) {}
-  if (![3, 5, 7].includes(selectedLaps)) selectedLaps = 5;
+  try { selectedLaps = Number(localStorage.getItem('grammar-kart-laps-v3') ?? localStorage.getItem('grammar-kart-laps-v2')) || 5; } catch (_) {}
+  if (![5, 7, 9].includes(selectedLaps)) selectedLaps = 5;
   const mapNames = { coastal: 'COASTAL CIRCUIT', hill: 'HILL COURSE', neon: 'NEON CITY', snow: 'SNOW TRACK' };
   let selectedDesign = 'teal';
   let selectedColor = 'cyan';
@@ -35,6 +35,15 @@
 
   function bestFor(lesson, map = 'coastal', laps = 3) { try { const scoped = localStorage.getItem(`grammar-kart-best-${map}-${lesson}-${laps}lap`); const legacy = laps === 1 ? localStorage.getItem(`grammar-kart-best-${map}-${lesson}`) ?? (map === 'coastal' ? localStorage.getItem(`grammar-kart-best-${lesson}`) : null) : null; return Number(scoped ?? legacy) || 0; } catch (_) { return 0; } }
   function saveBest(lesson, map, laps, seconds) { try { localStorage.setItem(`grammar-kart-best-${map}-${lesson}-${laps}lap`, String(seconds)); } catch (_) {} }
+  function lessonProgress(lesson) {
+    const ids = window.GrammarKart.getLessonQuestionIds(lesson);
+    let saved = [];
+    try { saved = JSON.parse(localStorage.getItem(`grammar-kart-seen-${lesson}`) || '[]'); } catch (_) {}
+    return { ids, seen: new Set((Array.isArray(saved) ? saved : []).filter(id => ids.includes(id))) };
+  }
+  function saveLessonProgress(lesson, seen) {
+    try { localStorage.setItem(`grammar-kart-seen-${lesson}`, JSON.stringify([...seen])); } catch (_) {}
+  }
   function lessonLabel(lesson) { return GAME_QUESTIONS[lesson]?.label || '문법 그랑프리'; }
   function itemGuide() {
     const details = $('details', 'item-guide');
@@ -49,6 +58,7 @@
     const list = $('ul', '');
     [
       ['정답 보상', '정답을 맞히면 부스터·미사일·방어막 중 하나를 얻어요.'],
+      ['🚀 로켓 비행', '드물게 상자에서 얻어요. 4초 동안 부스터보다 빠르게 날며 장애물을 넘어요.'],
       ['💥 대포', '앞차를 공격해요. 앞차가 없으면 소모되지 않아요.'],
       ['❄️ 빙결', '아이템 상자에서 얻어요. 앞차를 잠시 얼려 속도를 늦춰요. C 키나 빙결 버튼으로 사용해요.'],
       ['⚡ 부스터', '부스터 1개 또는 충전 3칸을 써서 6초 동안 가속해요. 버튼이나 스페이스바로 사용해요.'],
@@ -57,7 +67,7 @@
       ['🍌 바나나', '사용하면 내 뒤에 놓여요. 같은 레인을 지나는 상대를 느리게 해요.'],
       ['⭐ 별 · 🪙 코인', '각각 충전 +1, 최대 3칸이에요. 코인은 점수가 아니에요.'],
       ['SPEED PAD', '밟으면 부스트가 1.6초 더 이어져요.'],
-      ['❔ 상자', '손에 든 아이템이 없을 때 바나나·미사일·방어막·빙결·대포 중 하나를 줘요.']
+      ['❔ 상자', '손에 든 아이템이 없을 때 바나나·미사일·방어막·빙결·대포·희귀 로켓 중 하나를 줘요.']
     ].forEach(([name, explanation]) => {
       const row = $('li', ''); row.append($('strong', '', name), document.createTextNode(` · ${explanation}`)); list.append(row);
     });
@@ -99,7 +109,7 @@
   function showMenu() {
     app.race?.destroy(); app.race = null;
     window.KartAudio?.stopMusic?.();
-    shell(`<main class="garage"><section class="showroom" aria-label="선택한 카트 전시"><div class="showroom-label">GRAMMAR GRAND PRIX <span>COASTAL CIRCUIT</span></div><canvas id="showcase" width="512" height="512" aria-label="선택한 카트"></canvas><div class="showroom-caption">내 카트를 골라 출발!</div></section><div class="garage-design"><span class="setup-step">① 캐릭터 고르기<br><small>카드를 누르세요 <i class="step-arrow" aria-hidden="true"></i></small></span><div class="design-options" id="design-options"><button type="button" data-design="teal"><canvas width="100" height="100" aria-hidden="true"></canvas>SPRINT</button><button type="button" data-design="fox"><canvas width="100" height="100" aria-hidden="true"></canvas>FOX</button><button type="button" data-design="robot"><canvas width="100" height="100" aria-hidden="true"></canvas>ROBO</button><button type="button" data-design="owl"><canvas width="100" height="100" aria-hidden="true"></canvas>OWL</button><button type="button" data-design="raccoon"><canvas width="100" height="100" aria-hidden="true"></canvas>RACCOON</button><button type="button" data-design="digger"><canvas width="100" height="100" aria-hidden="true"></canvas>DIGGY</button><button type="button" data-design="penguin"><canvas width="100" height="100" aria-hidden="true"></canvas>PENGU</button><button type="button" data-design="frog"><canvas width="100" height="100" aria-hidden="true"></canvas>FROG</button><button type="button" data-design="rabbit"><canvas width="100" height="100" aria-hidden="true"></canvas>BUNNY</button></div></div><section class="garage-panel"><div class="eyebrow">RACE SETUP</div><h1>출발 준비</h1><label>레이스 문법 단원<select id="lesson-select"></select></label><div class="map-selection"><span class="custom-label setup-step">② 맵 고르기 ↓</span><div class="map-cards" role="group" aria-label="맵 선택"><button type="button" data-map="coastal"><strong>코스탈 서킷</strong><small>푸른 바다 코스</small></button><button type="button" data-map="hill"><strong>힐 코스</strong><small>초록 언덕 코스</small></button><button type="button" data-map="neon"><strong>네온 시티</strong><small>빛나는 도시 코스</small></button><button type="button" data-map="snow"><strong>스노우 트랙</strong><small>하얀 눈길 코스</small></button></div></div><div class="lap-selection"><span class="custom-label setup-step">③ 랩 수 선택 ↓</span><div role="group" aria-label="랩 수"><button type="button" data-laps="3">3랩 <small>5.4km</small></button><button type="button" data-laps="5">5랩 <small>기본 · 9.0km</small></button><button type="button" data-laps="7">7랩 <small>12.6km</small></button></div></div><div class="garage-paint"><div><span class="custom-label">색상 선택</span><div class="color-options" id="color-options"><button type="button" data-color="cyan" aria-label="블루"></button><button type="button" data-color="coral" aria-label="코랄"></button><button type="button" data-color="gold" aria-label="골드"></button><button type="button" data-color="violet" aria-label="보라"></button><button type="button" data-color="lime" aria-label="라임"></button><button type="button" data-color="pink" aria-label="핑크"></button></div></div></div><button class="primary" id="solo-start">혼자 달리기 ▶</button><a class="secondary multi-link" href="../multiplayer/">친구와 달리기 ▶</a><div class="best" id="best-time"></div><div class="garage-help"></div></section></main>`);
+    shell(`<main class="garage"><section class="showroom" aria-label="선택한 카트 전시"><div class="showroom-label">GRAMMAR GRAND PRIX <span>COASTAL CIRCUIT</span></div><canvas id="showcase" width="512" height="512" aria-label="선택한 카트"></canvas><div class="showroom-caption">내 카트를 골라 출발!</div></section><div class="garage-design"><span class="setup-step">① 캐릭터 고르기<br><small>카드를 누르세요 <i class="step-arrow" aria-hidden="true"></i></small></span><div class="design-options" id="design-options"><button type="button" data-design="teal"><canvas width="100" height="100" aria-hidden="true"></canvas>SPRINT</button><button type="button" data-design="fox"><canvas width="100" height="100" aria-hidden="true"></canvas>FOX</button><button type="button" data-design="robot"><canvas width="100" height="100" aria-hidden="true"></canvas>ROBO</button><button type="button" data-design="owl"><canvas width="100" height="100" aria-hidden="true"></canvas>OWL</button><button type="button" data-design="raccoon"><canvas width="100" height="100" aria-hidden="true"></canvas>RACCOON</button><button type="button" data-design="digger"><canvas width="100" height="100" aria-hidden="true"></canvas>DIGGY</button><button type="button" data-design="penguin"><canvas width="100" height="100" aria-hidden="true"></canvas>PENGU</button><button type="button" data-design="frog"><canvas width="100" height="100" aria-hidden="true"></canvas>FROG</button><button type="button" data-design="rabbit"><canvas width="100" height="100" aria-hidden="true"></canvas>BUNNY</button></div></div><section class="garage-panel"><div class="eyebrow">RACE SETUP</div><h1>출발 준비</h1><label>레이스 문법 단원<select id="lesson-select"></select></label><div class="map-selection"><span class="custom-label setup-step">② 맵 고르기 ↓</span><div class="map-cards" role="group" aria-label="맵 선택"><button type="button" data-map="coastal"><strong>코스탈 서킷</strong><small>푸른 바다 코스</small></button><button type="button" data-map="hill"><strong>힐 코스</strong><small>초록 언덕 코스</small></button><button type="button" data-map="neon"><strong>네온 시티</strong><small>빛나는 도시 코스</small></button><button type="button" data-map="snow"><strong>스노우 트랙</strong><small>하얀 눈길 코스</small></button></div></div><div class="lap-selection"><span class="custom-label setup-step">③ 랩 수 선택 ↓</span><div role="group" aria-label="랩 수"><button type="button" data-laps="5">5랩 <small>기본 · 15문제 · 9.0km</small></button><button type="button" data-laps="7">7랩 <small>21문제 · 12.6km</small></button><button type="button" data-laps="9">9랩 <small>27문제 · 16.2km</small></button></div></div><div class="garage-paint"><div><span class="custom-label">색상 선택</span><div class="color-options" id="color-options"><button type="button" data-color="cyan" aria-label="블루"></button><button type="button" data-color="coral" aria-label="코랄"></button><button type="button" data-color="gold" aria-label="골드"></button><button type="button" data-color="violet" aria-label="보라"></button><button type="button" data-color="lime" aria-label="라임"></button><button type="button" data-color="pink" aria-label="핑크"></button></div></div></div><button class="primary" id="solo-start">혼자 달리기 ▶</button><a class="secondary multi-link" href="../multiplayer/">친구와 달리기 ▶</a><div class="best" id="best-time"></div><div class="garage-help"></div></section></main>`);
     setGarageHint(root.querySelector('.garage-help'));
     bindSound();
     const select = document.getElementById('lesson-select');
@@ -113,7 +123,7 @@
       updateBest();
     };
     root.querySelectorAll('[data-map]').forEach(button => button.addEventListener('click', () => { selectedMap = button.dataset.map; try { localStorage.setItem('grammar-kart-map', selectedMap); } catch (_) {} updateSelections(); }));
-    root.querySelectorAll('[data-laps]').forEach(button => button.addEventListener('click', () => { selectedLaps = Number(button.dataset.laps); try { localStorage.setItem('grammar-kart-laps-v2', String(selectedLaps)); } catch (_) {} updateSelections(); }));
+    root.querySelectorAll('[data-laps]').forEach(button => button.addEventListener('click', () => { selectedLaps = Number(button.dataset.laps); try { localStorage.setItem('grammar-kart-laps-v3', String(selectedLaps)); } catch (_) {} updateSelections(); }));
     updateSelections();
     updateBest();
     select.addEventListener('change', () => { selectedLesson = select.value; try { localStorage.setItem('grammar-kart-lesson', selectedLesson); } catch (_) {} updateBest(); });
@@ -137,8 +147,14 @@
     app.race?.destroy();
     app.options = options; app.mode = options.mode || 'solo';
     const lesson = options.lesson || selectedLesson;
-    root.innerHTML = `<div class="shell race-shell"><header class="mast"><div class="brand">GRAMMAR <b>GP</b></div><button class="back" id="leave" type="button">← 나가기</button></header><main><div class="race-top"><div class="race-title">${mapNames[options.map] || mapNames.coastal}<small id="lesson-label"></small></div><div class="speed"><span id="speed">0</span><small>KM/H</small></div><div class="place" id="place">1ST</div></div><div class="track-wrap"><canvas id="track" aria-label="문법 레이싱 트랙"></canvas><div class="race-hud"><div class="hud-card">⏱ RACE TIME<strong id="time">0:00.0</strong></div><div class="hud-card">🏁 <span id="lap">LAP 1 / ${options.laps || 5}</span><strong id="meters">0 / ${GrammarKart.distance * (options.laps || 5)} m</strong></div></div><div class="map-widget"><button type="button" id="map-toggle" aria-expanded="true" aria-controls="minimap">미니맵 닫기</button><div id="minimap" class="minimap" role="img" aria-label="코스와 현재 위치"><svg viewBox="0 0 120 180" aria-hidden="true"><path id="map-road"/><path id="map-line"/><circle id="map-start" r="3"/><circle id="map-finish" r="3"/><circle id="map-player" r="5"/></svg><span>출발 → 도착</span></div></div><div id="toast-area" aria-live="polite"></div></div><div class="progress" aria-label="트랙 진행률"><i id="bar"></i></div><div class="race-bottom"><section class="question waiting" id="question" aria-live="polite"><div><div class="question-head">ITEM CHANCE</div><h2>레이스가 시작됩니다!</h2><p>정답으로 아이템을 얻어 원하는 순간 사용하세요.</p></div></section><div class="controls"><button type="button" class="control" id="left" aria-label="왼쪽으로 조향">◀</button><button type="button" class="control" id="right" aria-label="오른쪽으로 조향">▶</button><button type="button" class="control item" id="item">⚡ 0%</button><button type="button" class="control weapon" id="weapon" disabled>아이템 없음</button></div></div><div class="hint"></div></main></div>`;
+    const progress = lessonProgress(lesson);
+    let answeredThisRace = 0;
+    let completedCycle = false;
+    const questionLimit = Math.min((options.laps || 5) * 3, progress.ids.length);
+    const updateQuestionProgress = () => { const node = document.getElementById('question-progress'); if (node) node.textContent = `이번 판 ${answeredThisRace}/${questionLimit} · ${completedCycle ? "단원 한 바퀴 완료 · 새 순환" : "단원"} ${progress.seen.size}/${progress.ids.length}`; };
+    root.innerHTML = `<div class="shell race-shell"><header class="mast"><div class="brand">GRAMMAR <b>GP</b></div><button class="back" id="leave" type="button">← 나가기</button></header><main><div class="race-top"><div class="race-title">${mapNames[options.map] || mapNames.coastal}<small id="lesson-label"></small><small id="question-progress"></small></div><div class="speed"><span id="speed">0</span><small>KM/H</small></div><div class="place" id="place">1ST</div></div><div class="track-wrap"><canvas id="track" aria-label="문법 레이싱 트랙"></canvas><div class="race-hud"><div class="hud-card">⏱ RACE TIME<strong id="time">0:00.0</strong></div><div class="hud-card">🏁 <span id="lap">LAP 1 / ${options.laps || 5}</span><strong id="meters">0 / ${GrammarKart.distance * (options.laps || 5)} m</strong></div></div><div class="map-widget"><button type="button" id="map-toggle" aria-expanded="true" aria-controls="minimap">미니맵 닫기</button><div id="minimap" class="minimap" role="img" aria-label="코스와 현재 위치"><svg viewBox="0 0 120 180" aria-hidden="true"><path id="map-road"/><path id="map-line"/><circle id="map-start" r="3"/><circle id="map-finish" r="3"/><circle id="map-player" r="5"/></svg><span>출발 → 도착</span></div></div><div id="toast-area" aria-live="polite"></div></div><div class="progress" aria-label="트랙 진행률"><i id="bar"></i></div><div class="race-bottom"><section class="question waiting" id="question" aria-live="polite"><div><div class="question-head">ITEM CHANCE</div><h2>레이스가 시작됩니다!</h2><p>정답으로 아이템을 얻어 원하는 순간 사용하세요.</p></div></section><div class="controls"><button type="button" class="control" id="left" aria-label="왼쪽으로 조향">◀</button><button type="button" class="control" id="right" aria-label="오른쪽으로 조향">▶</button><button type="button" class="control item" id="item">⚡ 0%</button><button type="button" class="control weapon" id="weapon" disabled>아이템 없음</button></div></div><div class="hint"></div></main></div>`;
     setRaceHint(root.querySelector('.hint'));
+    updateQuestionProgress();
     const mapToggle = document.getElementById('map-toggle'), minimap = document.getElementById('minimap');
     const mapPoint = distance => ({ x: 60 + GrammarKart.courseCenter(options.map, distance) * .35, y: 165 - distance / GrammarKart.distance * 150 });
     const path = Array.from({ length: 101 }, (_, i) => { const p = mapPoint(GrammarKart.distance * i / 100); return `${i ? 'L' : 'M'}${p.x.toFixed(1)} ${p.y.toFixed(1)}`; }).join(' ');
@@ -159,14 +175,15 @@
     ui.shield = $('button', 'control weapon', '방어막'); ui.shield.id = 'shield'; ui.shield.type = 'button'; ui.shield.disabled = true;
     ui.ice = $('button', 'control weapon', '빙결 0'); ui.ice.id = 'ice'; ui.ice.type = 'button'; ui.ice.disabled = true;
     ui.cannon = $('button', 'control weapon', '대포 0'); ui.cannon.id = 'cannon'; ui.cannon.type = 'button'; ui.cannon.disabled = true;
-    root.querySelector('.controls').append(ui.missile, ui.shield, ui.ice, ui.cannon);
+    ui.rocket = $('button', 'control weapon', '비행 0'); ui.rocket.id = 'rocket'; ui.rocket.type = 'button'; ui.rocket.disabled = true;
+    root.querySelector('.controls').append(ui.missile, ui.shield, ui.ice, ui.cannon, ui.rocket);
     const targetHint = $('div', 'target-hint', '앞차 없음'); root.querySelector('.hint').append(targetHint);
     let pendingAnswer = false;
     let lastLap = 0;
     const toast = text => { ui.toast.innerHTML = ''; const t = $('div', 'toast', text); ui.toast.append(t); setTimeout(() => t.remove(), 750); };
     const race = window.GrammarKart.createRace({
       canvas: document.getElementById('track'), lesson, mode: app.mode, playerId: options.playerId || 'me', playerName: options.playerName || '나',
-      kartDesign: options.kartDesign, kartColor: options.kartColor, map: options.map, laps: options.laps || 5,
+      kartDesign: options.kartDesign, kartColor: options.kartColor, map: options.map, laps: options.laps || 5, seenQuestionIds: [...progress.seen],
       onProgress: state => {
         window.KartAudio?.setEngineSpeed?.(state.speed, state.boosted);
         const point = mapPoint(state.lapDistance ?? (state.distance % GrammarKart.distance)), marker = document.getElementById('map-player'); marker.setAttribute('cx', point.x); marker.setAttribute('cy', point.y); minimap.setAttribute('aria-label', `코스 현재 위치 ${state.distance} / ${state.total}미터`);
@@ -176,7 +193,7 @@
         ui.time.textContent = fmt(state.elapsed); ui.meters.textContent = `${state.distance} / ${state.total} m`; ui.bar.style.width = `${state.distance / state.total * 100}%`;
         ui.item.textContent = state.boostStock ? `부스터 ×${state.boostStock}` : state.charge >= 3 ? '부스터 준비' : `${Math.round(state.charge / 3 * 100)}%`;
         ui.item.style.setProperty('--meter', `${Math.round(state.charge / 3 * 100)}%`);
-        ui.weapon.textContent = state.heldItem ? ({ banana: '바나나', missile: '미사일', shield: '방어막', ice: '빙결', cannon: '대포' }[state.heldItem]) : '아이템 없음';
+        ui.weapon.textContent = state.heldItem ? ({ banana: '바나나', missile: '미사일', shield: '방어막', ice: '빙결', cannon: '대포', skyrocket: '로켓 비행' }[state.heldItem]) : '아이템 없음';
         ui.weapon.disabled = !state.heldItem;
         const missileCount = (state.missiles || 0) + (state.heldItem === 'missile' ? 1 : 0);
         ui.missile.textContent = `미사일 ${missileCount}`; ui.missile.disabled = !missileCount;
@@ -184,6 +201,7 @@
         ui.shield.textContent = `방어막 ${shieldCount}`; ui.shield.disabled = !shieldCount;
         ui.ice.textContent = `❄ 빙결 ${state.iceStocks || 0}`; ui.ice.disabled = !state.iceStocks;
         ui.cannon.textContent = `💥 대포 ${state.cannonStocks || 0}`; ui.cannon.disabled = !state.cannonStocks;
+        ui.rocket.textContent = state.flying ? `🚀 비행 ${Math.ceil(state.flightRemaining)}초` : `🚀 비행 ${state.rocketStocks || 0}`; ui.rocket.disabled = !state.rocketStocks || state.flying;
         const target = state.standings.filter(row => !row.me && row.distance > state.distance && row.distance - state.distance < 220).sort((a,b) => a.distance-b.distance)[0];
         targetHint.textContent = target ? `🎯 앞차: ${target.name}` : '🎯 앞차 없음 · 공격 아이템은 소모되지 않아요';
         ui.item.classList.toggle('ready', state.boostStock > 0 || state.charge >= 3);
@@ -193,12 +211,12 @@
         options.onProgress?.(state);
         if (window.parent !== window && app.mode === 'multi') window.parent.postMessage({ type: 'grammar-kart-progress', state }, location.origin);
       },
-      onEvent: event => { if (!['banana','missile','shield'].includes(event.kind)) audio(['banana_hit','hit','contact','drift','offroad'].includes(event.kind) ? 'skid' : ['ice','cannon'].includes(event.kind) ? event.kind : event.kind === 'pad' ? 'boost' : 'item'); options.onEvent?.(event); },
-      onQuestion: ({ question, number }) => {
+      onEvent: event => { if (!['banana','missile','shield'].includes(event.kind)) audio(['banana_hit','hit','contact','drift','offroad'].includes(event.kind) ? 'skid' : ['ice','cannon'].includes(event.kind) ? event.kind : event.kind === 'skyrocket' ? 'boost' : event.kind === 'pad' ? 'boost' : 'item'); options.onEvent?.(event); },
+      onQuestion: ({ question, number, total }) => {
         pendingAnswer = false;
         ui.question.hidden = false; root.querySelector('.race-shell')?.classList.add('question-active');
         ui.question.classList.remove('waiting'); ui.question.innerHTML = '';
-        const head = $('div', 'question-head'); head.append($('span', '', `Q${number} · 답안 레인으로 이동`), $('span', 'question-timer', '판정선 접근 중'));
+        const head = $('div', 'question-head'); head.append($('span', '', `Q${number}/${total || questionLimit} · 답안 레인으로 이동`), $('span', 'question-timer', '판정선 접근 중'));
         const kor = $('p', '', question.kor || '빈칸에 들어갈 알맞은 답을 고르세요.');
         const eng = $('h2', '', question.eng || question.question || question.prompt || '알맞은 답을 고르세요.');
         const choices = $('div', 'choices');
@@ -212,32 +230,38 @@
       },
       onAnswer: result => {
         pendingAnswer = true;
+        answeredThisRace++;
+        if (progress.ids.includes(result.questionId)) progress.seen.add(result.questionId);
+        const cycleComplete = progress.ids.length > 0 && progress.seen.size === progress.ids.length;
+        if (cycleComplete) { completedCycle = true; progress.seen.clear(); }
+        saveLessonProgress(lesson, progress.seen);
+        updateQuestionProgress();
         for (const button of ui.question.querySelectorAll('.choices button')) {
           button.disabled = true;
           if (button.dataset.answer === result.answer) button.classList.add('correct');
           else if (button.dataset.answer === result.choice) button.classList.add('wrong');
         }
         audio(result.correct ? 'correct' : 'wrong');
-        toast(result.correct ? (result.reward ? `정답! ${({ boost: '부스터', missile: '미사일', shield: '방어막', ice: '빙결' })[result.reward]} 획득` : '정답! 아이템이 이미 가득해요') : '계속 달려!');
+        toast(cycleComplete ? '단원 문제 한 바퀴 완료!' : result.correct ? (result.reward ? `정답! ${({ boost: '부스터', missile: '미사일', shield: '방어막', ice: '빙결' })[result.reward]} 획득` : '정답! 아이템이 이미 가득해요') : '계속 달려!');
         options.onAnswer?.(result);
         if (window.parent !== window && app.mode === 'multi') window.parent.postMessage({ type: 'grammar-kart-answer', result }, location.origin);
-        setTimeout(() => { if (app.race === race && !race.question) { ui.question.hidden = true; root.querySelector('.race-shell')?.classList.remove('question-active'); } }, 1500);
+        setTimeout(() => { if (app.race === race && !race.question) { if (answeredThisRace >= questionLimit) { ui.question.hidden = false; ui.question.classList.add('waiting'); ui.question.innerHTML = '<div><h2>이번 판 문제 완료!</h2><p>결승까지 달려요.</p></div>'; } else { ui.question.hidden = true; root.querySelector('.race-shell')?.classList.remove('question-active'); } } }, 1500);
       },
       onFinish: state => {
         race.destroy(); app.race = null;
         audio('finish'); window.KartAudio?.stopMusic?.(); options.onFinish?.(state);
         if (window.parent !== window && app.mode === 'multi') window.parent.postMessage({ type: 'grammar-kart-finish', state }, location.origin);
         if (app.mode === 'solo') { const map = options.map || 'coastal', best = bestFor(lesson, map, options.laps || 5); if (!best || state.elapsed < best) saveBest(lesson, map, options.laps || 5, state.elapsed); }
-        showResult(state, lesson);
+        showResult(state, lesson, completedCycle);
       }
     });
     app.race = race;
     function choose(value) { if (pendingAnswer || !race.question) return; race.selectGateLane(race.question.opts.indexOf(value)); }
     function useItem() { if (race.useItem()) { audio('boost'); toast('BOOST!'); } }
-    function useWeapon(kind) { const item = kind || race.getState().heldItem; if (race.useWeapon(kind)) { if (!['ice','cannon'].includes(item)) audio(item === 'missile' ? 'missile' : 'item'); toast(kind === 'missile' ? 'MISSILE!' : kind === 'shield' ? 'SHIELD!' : kind === 'ice' ? 'FREEZE!' : kind === 'cannon' ? 'CANNON!' : 'ITEM!'); }
+    function useWeapon(kind) { const item = kind || race.getState().heldItem; if (race.useWeapon(kind)) { if (!['ice','cannon','skyrocket'].includes(item)) audio(item === 'missile' ? 'missile' : 'item'); toast(kind === 'missile' ? 'MISSILE!' : kind === 'shield' ? 'SHIELD!' : kind === 'ice' ? 'FREEZE!' : kind === 'cannon' ? 'CANNON!' : kind === 'skyrocket' ? 'FLY!' : 'ITEM!'); }
       else if ((['missile','ice','cannon'].includes(kind)) && (race.getState().heldItem === kind || (kind === 'missile' && race.getState().missiles))) toast('앞차가 있을 때 발사!'); }
     ui.item.addEventListener('click', useItem); ui.weapon.addEventListener('click', () => useWeapon());
-    ui.missile.addEventListener('click', () => useWeapon('missile')); ui.shield.addEventListener('click', () => useWeapon('shield')); ui.ice.addEventListener('click', () => useWeapon('ice')); ui.cannon.addEventListener('click', () => useWeapon('cannon'));
+    ui.missile.addEventListener('click', () => useWeapon('missile')); ui.shield.addEventListener('click', () => useWeapon('shield')); ui.ice.addEventListener('click', () => useWeapon('ice')); ui.cannon.addEventListener('click', () => useWeapon('cannon')); ui.rocket.addEventListener('click', () => useWeapon('skyrocket'));
     document.getElementById('leave').addEventListener('click', () => { race.stop(); window.KartAudio?.stopMusic?.(); showMenu(); });
     const pointerDirections = new Map();
     const keyHolds = { left: new Set(), right: new Set() };
@@ -304,12 +328,28 @@
     }
     return race;
   }
-  function showResult(state, lesson) {
-    window.KartFinish.render(root, state, {
-      formatTime: fmt, bestTime: bestFor(lesson, app.options?.map || 'coastal', app.options?.laps || 5) || null, design: selectedDesign, color: selectedColor,
-      onAgain: () => { tryFullscreen(); window.KartAudio?.unlock?.(); window.KartAudio?.startMusic?.(); startRace(app.options); },
+  function showResult(state, lesson, completedCycle) {
+    const raceOptions = app.options;
+    const solo = app.mode === 'solo';
+    const maps = ['coastal', 'hill', 'neon', 'snow'];
+    const mapLabels = { coastal: '코스탈 서킷', hill: '힐 코스', neon: '네온 시티', snow: '스노우 트랙' };
+    const nextMap = maps[(maps.indexOf(raceOptions?.map || 'coastal') + 1) % maps.length];
+    const page = window.KartFinish.render(root, state, {
+      formatTime: fmt, bestTime: bestFor(lesson, raceOptions?.map || 'coastal', raceOptions?.laps || 5) || null, design: raceOptions?.kartDesign || selectedDesign, color: raceOptions?.kartColor || selectedColor,
+      onAgain: () => {
+        const nextOptions = solo ? { ...raceOptions, map: nextMap } : raceOptions;
+        if (solo) { selectedMap = nextMap; try { localStorage.setItem('grammar-kart-map', nextMap); } catch (_) {} }
+        tryFullscreen(); window.KartAudio?.unlock?.(); window.KartAudio?.startMusic?.(); startRace(nextOptions);
+      },
       onMenu: showMenu
     });
+    if (solo && page) {
+      page.querySelector('.kf-again').textContent = `${mapLabels[nextMap]}에서 이어 달리기 →`;
+      const progress = lessonProgress(lesson);
+      const remaining = progress.ids.length - progress.seen.size;
+      const message = completedCycle ? `단원 한 바퀴 완료! 새 순환 ${progress.seen.size}/${progress.ids.length} · ${remaining}문제 남음` : `단원 ${progress.seen.size}/${progress.ids.length} · ${remaining}문제 남음`;
+      page.querySelector('.kf-facts')?.append($('span', 'kf-fact kart-finish-progress', message));
+    }
   }
   window.GrammarKartApp = { mount: startRace, showMenu, get race() { return app.race; } };
   window.addEventListener('pagehide', () => window.KartAudio?.destroy?.());

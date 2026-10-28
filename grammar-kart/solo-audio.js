@@ -32,7 +32,7 @@
     cannon: { file: 'bomb.mp3', volume: 0.34, rate: 0.85, stopAfter: 750, cooldown: 350 },
     ice: { file: 'shield.mp3', volume: 0.32, rate: 1.3, stopAfter: 700, cooldown: 350 },
     hit: { file: 'kart-impact.mp3', volume: 0.4, rate: 1, stopAfter: 540, cooldown: 300 },
-    skid: { file: 'kart-skid.mp3', volume: 0.27, rate: 1, stopAfter: 900, cooldown: 900 },
+    skid: { file: 'kart-tire-squeal-v2.mp3', volume: 0.27, rate: 1, stopAfter: 1400, cooldown: 1400 },
     correct: { file: 'select.mp3', volume: 0.22, rate: 1.12, stopAfter: 200, cooldown: 180 },
     wrong: { file: 'bomb.mp3', volume: 0.15, rate: 0.58, stopAfter: 680, cooldown: 220 },
     finish: { file: 'angel.mp3', volume: 0.48, rate: 1.00, stopAfter: 2650, cooldown: 900 }

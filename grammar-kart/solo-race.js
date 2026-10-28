@@ -90,13 +90,22 @@
     ])
   ).sort((a,b) => a.at-b.at);
 
+  function lessonQuestions(lesson) {
+    const seen = new Set();
+    return ((typeof GAME_QUESTIONS !== 'undefined' && GAME_QUESTIONS[lesson]?.questions) || []).filter(q => {
+      if (!q.id || seen.has(q.id) || !Array.isArray(q.opts) || q.opts.length !== 4 || !q.opts.some(o => norm(o) === norm(q.ans))) return false;
+      seen.add(q.id); return true;
+    });
+  }
+
   function makeRace(options) {
     const { canvas, lesson, mode = 'solo', onProgress = () => {}, onAnswer = () => {}, onFinish = () => {}, onQuestion = () => {} } = options;
     const ctx = canvas.getContext('2d');
-    const laps = mode === 'solo' ? clamp(Math.floor(Number(options.laps) || 5), 1, 7) : 1;
+    const laps = mode === 'solo' ? clamp(Math.floor(Number(options.laps) || 5), 1, 9) : 1;
     const total = TOTAL * laps;
-    const pool = ((typeof GAME_QUESTIONS !== 'undefined' && GAME_QUESTIONS[lesson]?.questions) || [])
-      .filter(q => Array.isArray(q.opts) && q.opts.length === 4 && q.opts.some(o => norm(o) === norm(q.ans)));
+    const pool = lessonQuestions(lesson);
+    const questionLimit = Math.min(pool.length, laps * QUESTION_MARKS.length);
+    let answeredCount = 0;
     let deck = [];
     let deckIndex = 0;
     let raf = 0;
@@ -150,6 +159,8 @@
     let slowUntil = 0;
     let shieldUntil = 0;
     let slipUntil = 0;
+    let flightStart = 0;
+    let flightUntil = 0;
     let frozenUntil = 0;
     let recoilUntil = 0;
     let charge = 0;
@@ -198,25 +209,25 @@
     }
 
     function shuffle() {
-      deck = [...pool];
-      for (let i = deck.length - 1; i > 0; i--) {
-        const j = Math.floor(Math.random() * (i + 1));
-        [deck[i], deck[j]] = [deck[j], deck[i]];
-      }
-      deckIndex = 0;
+      const seen = new Set(Array.isArray(options.seenQuestionIds) ? options.seenQuestionIds : []);
+      const mix = rows => {
+        for (let i = rows.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [rows[i], rows[j]] = [rows[j], rows[i]]; }
+        return rows;
+      };
+      deck = [...mix(pool.filter(q => !seen.has(q.id))), ...mix(pool.filter(q => seen.has(q.id)))].slice(0, questionLimit);
     }
     function nextQuestion() {
-      if (!pool.length || question || finished) return;
-      if (deckIndex >= deck.length) shuffle();
+      if (deckIndex >= deck.length || question || finished) return;
       question = deck[deckIndex++];
       asked++;
       setGateQuestion(question, asked);
-      onQuestion({ question, number: asked, seconds: 16 });
+      onQuestion({ question, number: asked, total: questionLimit, seconds: 16 });
     }
     function answer(choice) {
       if (!question || finished) return false;
       const q = question;
       const good = norm(choice) === norm(q.ans);
+      answeredCount++;
       question = null;
       if (gate) completedGate = gate.key; gate = null; laneTarget = null;
       let reward = '';
@@ -236,7 +247,7 @@
         combos = 0;
         effects.push({ text: '계속 달려!', until: elapsed + .9, color: '#ffafaa' });
       }
-      onAnswer({ questionId: q.id, choice, correct: good, answer: q.ans, charge, boostStock, missiles, shields, reward, correctCount: correct, asked, distance: Math.round(distance) });
+      onAnswer({ questionId: q.id, choice, correct: good, answer: q.ans, charge, boostStock, missiles, shields, reward, correctCount: correct, asked, answeredCount, questionLimit, distance: Math.round(distance) });
       return good;
     }
     function useItem() {
@@ -260,6 +271,9 @@
           else { target.slowUntil = elapsed + 2.3; target.frozenUntil = elapsed + 2.3; }
           effects.push({ text: `${target.name} ICE!`, until: elapsed + .9, color: '#9defff' });
         } else { missilesInFlight.push({ targetId: target.id, start: elapsed, from: distance, to: target.distance, kind: item }); if (item === 'cannon') { recoilUntil = elapsed + .3; effects.push({ text: '💥 FIRE!', until: elapsed + .5, color: '#ffdc79' }); } }
+      } else if (item === 'skyrocket') {
+        flightStart = elapsed; flightUntil = elapsed + 4; slowUntil = 0; frozenUntil = 0; slipUntil = 0;
+        effects.push({ text: '🚀 SKY ROCKET!', until: elapsed + 1, color: '#bcecff' });
       } else if (item === 'banana') {
         bananas.push({ at: distance - 4, lane, owner: 'me', until: elapsed + 14 });
         effects.push({ text: 'BANANA DROP!', until: elapsed + .9, color: '#ffe36c' });
@@ -291,7 +305,7 @@
         .sort((a, b) => b.distance - a.distance || (a.elapsed ?? Infinity) - (b.elapsed ?? Infinity));
       return { distance: Math.round(distance), total, lap: Math.min(laps, Math.floor(distance / TOTAL) + 1), laps, lapDistance: Math.round(distance >= total ? TOTAL : distance % TOTAL), frozen: elapsed < frozenUntil, speed: Math.round(speed * 3.6), lane: +lane.toFixed(2), obstaclesHit, padsTaken, starsTaken,
         elapsed: +elapsed.toFixed(1), questionRemaining: gate ? Math.max(0, Math.ceil((gate.at-distance)/Math.max(speed,14))) : null,
-        charge, boostStock, missiles, shields, iceStocks: heldItem === 'ice' ? 1 : 0, cannonStocks: heldItem === 'cannon' ? 1 : 0, slipping: elapsed < slipUntil, heldItem, gatePending: !!gate?.submitted, answerLane: gate ? gate.submitted ? gate.index : answerLanes.reduce((best,value,i)=>Math.abs(lane-value)<Math.abs(lane-answerLanes[best])?i:best,0) : null, gateRemaining: gate ? Math.max(0,Math.ceil((gate.at-distance)/Math.max(speed,14))) : null, correct, asked, rank: standings.findIndex(s => s.me) + 1,
+        charge, boostStock, missiles, shields, iceStocks: heldItem === 'ice' ? 1 : 0, cannonStocks: heldItem === 'cannon' ? 1 : 0, rocketStocks: heldItem === 'skyrocket' ? 1 : 0, flying: elapsed < flightUntil, flightRemaining: Math.max(0, +(flightUntil - elapsed).toFixed(1)), slipping: elapsed < slipUntil, heldItem, gatePending: !!gate?.submitted, answerLane: gate ? gate.submitted ? gate.index : answerLanes.reduce((best,value,i)=>Math.abs(lane-value)<Math.abs(lane-answerLanes[best])?i:best,0) : null, gateRemaining: gate ? Math.max(0,Math.ceil((gate.at-distance)/Math.max(speed,14))) : null, correct, asked, answeredCount, questionLimit, lessonQuestionCount: pool.length, rank: standings.findIndex(s => s.me) + 1,
         standings, boosted: elapsed < boostUntil, shielded: elapsed < shieldUntil, finished };
     }
     function resize() {
@@ -320,12 +334,12 @@
       if (sprite || atlas) {
         const width = 108 * size;
         ctx.save(); ctx.translate(x, y); ctx.rotate(player ? -lean * .10 + (elapsed < slipUntil ? Math.sin(elapsed*18)*.18 : 0) : hit ? Math.sin(elapsed * 34) * .12 : 0);
-        ctx.fillStyle = '#091b2a88'; ctx.beginPath(); ctx.ellipse(0, 2, width * .39, width * .11, 0, 0, 7); ctx.fill();
-        if (player && elapsed < boostUntil) {
+        if (!player || elapsed >= flightUntil) { ctx.fillStyle = '#091b2a88'; ctx.beginPath(); ctx.ellipse(0, 2, width * .39, width * .11, 0, 0, 7); ctx.fill(); }
+        if (player && elapsed < boostUntil && elapsed >= flightUntil) {
           for (const side of [-1, 1]) {
-            const flame=width*(.38+Math.sin(elapsed*29)*.05);
+            const flame=width*(.55+Math.sin(elapsed*29)*.07);
             const fire=ctx.createLinearGradient(0,-width*.08,0,flame);
-            fire.addColorStop(0,'#e5fcff');fire.addColorStop(.35,'#76d7ff');fire.addColorStop(1,'#3d87f500');
+            fire.addColorStop(0,'#fff6a0');fire.addColorStop(.35,'#ffb42d');fire.addColorStop(1,'#ff5d1600');
             ctx.fillStyle=fire;ctx.beginPath();ctx.moveTo(side*width*.17-width*.045,-width*.08);ctx.lineTo(side*width*.17,flame);ctx.lineTo(side*width*.17+width*.045,-width*.08);ctx.fill();
           }
         }
@@ -347,7 +361,7 @@
         return;
       }
       ctx.save(); ctx.translate(x, y); ctx.rotate(player ? -lean * .10 + (elapsed < slipUntil ? Math.sin(elapsed*18)*.18 : 0) : 0); ctx.scale(size, size);
-      ctx.fillStyle = '#07122188'; ctx.beginPath(); ctx.ellipse(0, 8, 31, 10, 0, 0, 7); ctx.fill();
+      if (!player || elapsed >= flightUntil) { ctx.fillStyle = '#07122188'; ctx.beginPath(); ctx.ellipse(0, 8, 31, 10, 0, 0, 7); ctx.fill(); }
       ctx.fillStyle = '#162338'; ctx.fillRect(-30, -7, 9, 24); ctx.fillRect(21, -7, 9, 24);
       ctx.fillStyle = color; ctx.beginPath(); ctx.roundRect(-24, -29, 48, 42, 13); ctx.fill();
       ctx.fillStyle = '#ffffff83'; ctx.beginPath(); ctx.roundRect(-18, -22, 36, 12, 6); ctx.fill();
@@ -620,7 +634,8 @@
           false, o.design, o.kartColor, o.hit || elapsed < (o.hitUntil || 0), elapsed < (o.frozenUntil || 0));
       }
       const playerPoint = roadPoint(1-4/viewDepth, lane);
-      const py = playerPoint.y + (elapsed < recoilUntil ? 8 * (recoilUntil - elapsed) / .3 : 0);
+      const flightLift = elapsed < flightUntil ? Math.min(1, (elapsed-flightStart)/.55, (flightUntil-elapsed)/.65) : 0;
+      const py = playerPoint.y - h * .20 * flightLift + (elapsed < recoilUntil ? 8 * (recoilUntil - elapsed) / .3 : 0);
       const px = playerPoint.x + lean * w * .012 + (elapsed < slipUntil ? Math.sin(elapsed * 22) * w * .016 : 0);
       if ((Math.abs(lean) > .3 || elapsed < slipUntil) && speed > 14) {
         ctx.strokeStyle = driftTime >= .45 ? '#322d25cc' : '#172b3199'; ctx.lineWidth = Math.max(2, w / 450);
@@ -631,7 +646,12 @@
         ctx.fillStyle = driftTime >= .45 ? '#ffd788bb' : '#d9a89a88';
         for (const side of [-1, 1]) { ctx.beginPath(); ctx.arc(px + side * w * .04 - lean * w * .02, py + h * .08, 3 + (Math.sin(elapsed * 18 + side) + 1) * 2, 0, 7); ctx.fill(); }
       }
-      kart(px, py, clamp(w / 650, 1.05, 1.4), COLORS[0], options.playerName || '나', true, options.kartDesign, options.kartColor);
+      if (flightLift > 0) {
+        ctx.save();ctx.fillStyle='#091b2a66';ctx.beginPath();ctx.ellipse(px,playerPoint.y,22,7,0,0,7);ctx.fill();ctx.globalAlpha=flightLift*.24;ctx.fillStyle='#bdeeff';ctx.fillRect(0,horizon,w,h-horizon);
+        for(let i=0;i<5;i++){const phase=((distance*.015+i*.22)%1), x=w*((i*0.37)%1), y=horizon+phase*(h-horizon), r=6+phase*13;ctx.fillStyle='#e7fbff';ctx.beginPath();ctx.arc(x-r,y,r,0,7);ctx.arc(x,y-r*.35,r*1.25,0,7);ctx.arc(x+r,y,r,0,7);ctx.fill();}
+        ctx.globalAlpha=flightLift;const flame=ctx.createLinearGradient(px,py,px,py+h*.18);flame.addColorStop(0,'#ecffff');flame.addColorStop(.35,'#79dfff');flame.addColorStop(1,'#258aff00');ctx.fillStyle=flame;ctx.beginPath();ctx.moveTo(px-w*.025,py);ctx.lineTo(px,py+h*.2);ctx.lineTo(px+w*.025,py);ctx.fill();ctx.restore();
+      }
+      kart(px, py, clamp(w / 650, 1.05, 1.4) * (1-flightLift*.1), COLORS[0], options.playerName || '나', true, options.kartDesign, options.kartColor);
       if (speed > 12) {
         const intensity=clamp((speed-12)/20,0,1)*(gate ? .55 : 1), count=boosted?26:14;
         ctx.lineWidth=boosted?2:1.2;
@@ -691,7 +711,7 @@
         if (driftTime >= .45 && driftTime - dt < .45) options.onEvent?.({ kind: 'drift', distance: Math.round(distance) });
         if (driftTime >= .45) charge = Math.min(3, charge + dt * .22);
       } else driftTime = 0;
-      const offRoad = Math.abs(lane) > .79 && elapsed >= shieldUntil;
+      const offRoad = Math.abs(lane) > .79 && elapsed >= shieldUntil && elapsed >= flightUntil;
       if (offRoad && !wasOffRoad) { effects.push({ text: '노견! 감속', until: elapsed + .8, color: '#ffda9b' }); options.onEvent?.({ kind: 'offroad', distance: Math.round(distance) }); }
       wasOffRoad = offRoad;
       if (mode === 'multi') {
@@ -702,14 +722,14 @@
         return;
       }
       const normalTarget = gate ? 43 : elapsed < boostUntil ? 63 : elapsed < draftUntil ? 46 : 43;
-      const target = elapsed < slowUntil ? 14 : elapsed < slipUntil ? Math.min(normalTarget, 34.5) : normalTarget;
+      const target = elapsed < flightUntil ? 82 : elapsed < slowUntil ? 14 : elapsed < slipUntil ? Math.min(normalTarget, 34.5) : normalTarget;
       speed += (target - speed) * Math.min(1, dt * 2.8);
       if (speed > 14 && Math.abs(lean) > .3) charge = Math.min(3, charge + Math.abs(lane - oldLane) * .45);
       const before = distance;
       distance = Math.min(total, distance + speed * (offRoad ? .66 : 1) * dt);
       for (const event of course) {
         if (gateSafeEvent(event) || event.at <= before || event.at > distance || Math.abs(lane - event.lane) > (event.kind === 'box' ? .36 : .28)) continue;
-        if (hazard(event) && elapsed >= hitUntil && elapsed >= shieldUntil) {
+        if (hazard(event) && elapsed >= flightUntil && elapsed >= hitUntil && elapsed >= shieldUntil) {
           obstaclesHit++; hitUntil = elapsed + 1.1; slipUntil = Math.max(slipUntil, elapsed + 1);
           effects.push({ text: '끼이익! 미끄러짐', until: elapsed + .9, color: '#ffaaa4' });
           options.onEvent?.({ kind: event.kind === 'banana' ? 'banana_hit' : 'hit', distance: event.at });
@@ -722,7 +742,8 @@
           effects.push({ text: charge >= 3 ? '부스트 준비! 3/3' : `${event.kind === 'coin' ? '코인' : '스타'} · 부스트 +1 (${Math.floor(charge)}/3)`, until: elapsed + 1.2, color: '#ffe36c' });
           options.onEvent?.({ kind: 'star', distance: event.at });
         } else if (event.kind === 'box' && !heldItem) {
-          heldItem = ['banana','missile','ice','shield','cannon'][boxCount++ % 5];
+          boxCount++;
+          heldItem = boxCount % 10 === 0 ? 'skyrocket' : ['banana','missile','ice','shield','cannon'][(boxCount - 1 - Math.floor(boxCount / 10)) % 5];
           effects.push({ text: `${heldItem.toUpperCase()}!`, until: elapsed + .9, color: '#ffe36c' });
           options.onEvent?.({ kind: 'box', item: heldItem, distance: event.at });
         }
@@ -743,7 +764,7 @@
         for (const event of course) if (event.kind === 'banana' && event.at > old && event.at <= o.distance && Math.abs(o.lane-event.lane)<.3 && elapsed >= (o.hitUntil||0)) {
           o.skidUntil=elapsed+1; o.hitUntil=elapsed+1.1;
         }
-        if (distance > 40 && Math.abs(o.distance-distance) < 3.5 && Math.abs(o.lane-lane) < .18 &&
+        if (elapsed >= flightUntil && distance > 40 && Math.abs(o.distance-distance) < 3.5 && Math.abs(o.lane-lane) < .18 &&
           (Math.abs(o.distance-distance) >= .8 || Math.abs(lane-oldLane) > .015) && elapsed >= hitUntil && elapsed >= (o.hitUntil || 0)) {
           hitUntil=elapsed+1.1; slipUntil=elapsed+1;
           lane=clamp(lane+(o.lane<=lane ? .11 : -.11),-.88,.88);
@@ -767,7 +788,7 @@
         const state = getState(); onFinish(state); return;
       }
     }
-    function start() { if (playing || finished) return; shuffle(); playing = true; previous = performance.now(); draw(); raf = requestAnimationFrame(frame); }
+    function start() { if (playing || finished) return; if (!deck.length && deckIndex === 0) shuffle(); playing = true; previous = performance.now(); draw(); raf = requestAnimationFrame(frame); }
     function stop() { playing = false; cancelAnimationFrame(raf); }
     function destroy() { stop(); destroyed = true; observer?.disconnect(); window.removeEventListener('resize', resize); document.removeEventListener('visibilitychange', onVisibilityChange); }
     function setSteer(value) { steer = clamp(value, -1, 1); if (steer) laneTarget=null; }
@@ -809,5 +830,5 @@
     }
     return { start, stop, destroy, answer, useItem, useWeapon, setSteer, setOpponents, setProgress, setRemoteState, setGateQuestion, selectGateLane, retryGate, playCue, getState, draw, get question() { return question; } };
   }
-  window.GrammarKart = { createRace: makeRace, paintPreview, paintShowcase, distance: TOTAL, course: COURSE, courseCenter };
+  window.GrammarKart = { createRace: makeRace, paintPreview, paintShowcase, distance: TOTAL, course: COURSE, courseCenter, getLessonQuestionIds: lesson => lessonQuestions(lesson).map(q => q.id) };
 })();

@@ -1039,3 +1039,8 @@ body .race-shell .controls #cannon { padding:29px 3px 6px; text-align:center; fo
 body .race-shell .controls #cannon::before { content:'💥'; font-size:19px; background:none; }
 body .race-shell .target-hint { color:#ffe795; font-size:11px; }
 @supports not (height:100dvh) { body .shell.race-shell { height:100vh; max-height:100vh; } }
+
+body .race-shell #question-progress { font-size:12px; }
+body .race-shell .controls { grid-template-columns:repeat(7,minmax(0,1fr)); }
+body .race-shell .controls #rocket { padding:29px 2px 6px; text-align:center; font-size:10px; color:#b8efff; }
+body .race-shell .controls #rocket::before { content:'🚀'; font-size:19px; background:none; }

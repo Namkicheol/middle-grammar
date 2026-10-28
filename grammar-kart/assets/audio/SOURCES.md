@@ -10,3 +10,5 @@
 - `kart-impact.ogg`: [Impact Sounds](https://kenney.nl/assets/impact-sounds), Kenney, CC0. 원본 `impactPunch_heavy_000.ogg`를 0.54초로 정리해 피격·장애물 충돌 thud에 쓴다.
 
 원본 팩의 CC0 표기와 파일 길이는 2026-09-27에 확인했다. `kart-audio.js`는 효과음 파일을 짧게 자르고 재생 속도·볼륨을 역할별로 조정하며, Web Audio API의 낮은 볼륨 음을 겹쳐서 단순 단일 삐 소리로 들리지 않게 한다.
+
+- `kart-tire-squeal-v2.mp3`: [Screeching Tires #3](https://bigsoundbank.com/screeching-tires-3-s2370.html), Dorian Clair, CC0. 원본 녹음의 0.15~1.50초를 mono MP3로 변환하고 high-pass와 짧은 fade, 음량 감소를 적용했다. 솔로 레이스의 skid에만 사용한다 (2026-10-28 확인).

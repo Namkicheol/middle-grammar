@@ -1471,7 +1471,7 @@ cleanupZeroScoreRecords();
   const localHost = ['localhost', '127.0.0.1', '::1'].includes(location.hostname);
   const multiplayerHref = localHost
     ? 'http://127.0.0.1:8787/multiplayer/index.html'
-    : 'https://middle-grammar-multiplayer.obangti.workers.dev/multiplayer/index.html';
+    : 'https://middle-grammar-multiplayer.obangti.workers.dev/multiplayer/';
   multiplayerTab.href = multiplayerHref;
   if (multiplayerJoinCta) {
     const roomInputUrl = new URL(multiplayerHref);

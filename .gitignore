@@ -47,3 +47,4 @@ grammar-rangers/assets/hd-v2/atlas/
 # 로컬 JavaScript/Cloudflare 개발 산출물
 node_modules/
 .wrangler/
+.vercel-static/

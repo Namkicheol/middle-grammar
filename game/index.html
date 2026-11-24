@@ -984,7 +984,7 @@ body:has(#speed-screen[style*="display: block"]) #sp-badge{display:none!importan
       <div class="lesson-list" id="unit-grid"></div>
       <button class="grade-random" id="grade-random" type="button">
         🎲 중1 전체에서 랜덤
-        <span>16개 주제 중 하나를 골라 시작</span>
+        <span>이 학년 문법 주제 중 하나를 골라 시작</span>
       </button>
     </section>
   </main>
@@ -1595,7 +1595,8 @@ function selectGrade(grade) {
   });
   const gradeLabel = GRADE_LABELS[grade];
   document.getElementById('unit-heading').textContent = `${gradeLabel} 문법 주제를 골라요`;
-  document.getElementById('grade-random').innerHTML = `🎲 ${gradeLabel} 전체에서 랜덤<span>16개 주제 중 하나를 골라 시작</span>`;
+  const visibleTopicCount = document.querySelectorAll(`.unit-card[data-group="${activeGrade}"]`).length;
+  document.getElementById('grade-random').innerHTML = `🎲 ${gradeLabel} 전체에서 랜덤<span>${visibleTopicCount}개 주제 중 하나를 골라 시작</span>`;
 }
 
 function soloLaunchQuery(unitKey) {

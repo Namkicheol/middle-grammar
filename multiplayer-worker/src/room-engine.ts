@@ -23,6 +23,10 @@ export interface Question {
   imageUrl?: string;
 }
 
+function isVerbFormInput(question: Question): boolean {
+  return question.type === "input" && question.id.startsWith("g1_verb_forms_");
+}
+
 export interface AnswerRecord {
   occurrenceIndex: number;
   questionId: string;
@@ -414,6 +418,7 @@ export interface SubmitAnswerInput {
   questionId: string;
   occurrenceIndex: number;
   answer: string;
+  timedOut?: boolean;
   serverNow: number;
 }
 
@@ -821,9 +826,13 @@ export function submitAnswer(
   if (!question) {
     throw new EngineError("UNKNOWN_QUESTION", "The question is not in this room.");
   }
-  const classroomTimeout = (isClassroomMode(state.mode) || state.mode === "grammar_kart") && input.answer === "";
-  if (typeof input.answer !== "string" || (!classroomTimeout && !question.opts.includes(input.answer))) {
-    throw new EngineError("INVALID_ANSWER", "The answer is not a valid option.");
+  const timedMode = isClassroomMode(state.mode) || state.mode === "grammar_kart";
+  const spellOut = isVerbFormInput(question);
+  if (typeof input.answer !== "string") throw new EngineError("INVALID_ANSWER", "Enter a valid answer.");
+  const answer = spellOut ? input.answer.trim().toLowerCase() : input.answer;
+  const classroomTimeout = timedMode && input.answer === "" && (!spellOut || input.timedOut === true);
+  if (!classroomTimeout && (spellOut ? !answer || answer.length > 48 : !question.opts.includes(answer))) {
+    throw new EngineError("INVALID_ANSWER", "Enter a valid answer.");
   }
 
   const durationMs = state.durationSeconds * 1_000;
@@ -838,7 +847,7 @@ export function submitAnswer(
   if (input.serverNow >= state.startedAt + durationMs) {
     throw new EngineError("ROOM_EXPIRED", "The room time has expired.");
   }
-  const correct = input.answer === question.ans;
+  const correct = !classroomTimeout && answer === (spellOut ? question.ans.trim().toLowerCase() : question.ans);
   const streak = correct ? player.streak + 1 : 0;
   const scoreGain = correct ? 100 + Math.min(streak - 1, 5) * 10 : 0;
   const checkpointAt = state.mode === "grammar_kart" && player.kart
@@ -1874,7 +1883,7 @@ function currentSafeQuestion(state: RoomState, player: PlayerState): SafeQuestio
     occurrenceIndex: player.questionIndex,
     kor: question.kor,
     eng: question.eng,
-    opts: [...player.optionOrders[question.id]],
+    opts: isVerbFormInput(question) ? [] : [...player.optionOrders[question.id]],
     level: question.level,
     type: question.type,
     ...(question.image !== undefined ? { image: question.image } : {}),

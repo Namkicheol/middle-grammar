@@ -14,8 +14,8 @@ export const DEFAULT_OUTPUT_PATH = pathToFileURL(
 );
 
 const SOURCE_LABEL = "game/questions.js";
-const EXPECTED_VISIBLE_UNIT_COUNT = 32;
-const EXPECTED_QUESTION_COUNT = 921;
+const EXPECTED_VISIBLE_UNIT_COUNT = 33;
+const EXPECTED_QUESTION_COUNT = 1021;
 
 function assert(condition, message) {
   if (!condition) throw new Error(message);
@@ -96,7 +96,7 @@ export async function buildQuestionBank({
     .sort(([left], [right]) => (left < right ? -1 : left > right ? 1 : 0));
 
   for (const [unitKey, unit] of visibleUnits) {
-    assert(/^g[12]-l\d+-/.test(unitKey), `Unexpected visible unit: ${unitKey}`);
+    assert(/^g[12]-l\d+-/.test(unitKey) || unitKey === "g1-verb-forms", `Unexpected visible unit: ${unitKey}`);
     assert(Array.isArray(unit.questions), `${unitKey}: questions must be an array`);
 
     units[unitKey] = unit.questions

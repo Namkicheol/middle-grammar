@@ -49,3 +49,5 @@
 .map-widget .minimap span{position:static;display:block;transform:none;text-align:center;font-size:10px;color:#d5ecf5;text-shadow:none}
 .map-widget .minimap:after{content:none}
 @media(max-width:600px){.map-widget .minimap{width:78px;height:125px}.map-widget .minimap svg{height:98px}}
+
+.kart-answer-form{display:flex;gap:8px;grid-column:1/-1}.kart-answer-form input{min-width:0;flex:1;padding:10px;font-size:16px}.kart-answer-form button{min-width:65px}

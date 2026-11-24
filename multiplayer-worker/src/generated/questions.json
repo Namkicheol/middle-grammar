@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-09-05T21:55:34.099Z",
+  "generatedAt": "2026-11-24T11:10:19.444Z",
   "source": "game/questions.js",
   "units": {
     "g1-l1-be-verb": [
@@ -6161,6 +6161,1338 @@
           "a warm"
         ],
         "level": 1
+      }
+    ],
+    "g1-verb-forms": [
+      {
+        "id": "g1_verb_forms_01",
+        "kor": "원형을 고르세요.",
+        "eng": "___ → went → gone",
+        "ans": "go",
+        "opts": [
+          "go",
+          "going",
+          "went",
+          "gone"
+        ],
+        "level": 1
+      },
+      {
+        "id": "g1_verb_forms_02",
+        "kor": "과거형을 쓰세요.",
+        "eng": "eat → ___ → eaten",
+        "ans": "ate",
+        "opts": [
+          "eat",
+          "ate",
+          "eating",
+          "eaten"
+        ],
+        "level": 1,
+        "type": "input"
+      },
+      {
+        "id": "g1_verb_forms_03",
+        "kor": "과거분사를 고르세요.",
+        "eng": "see → saw → ___",
+        "ans": "seen",
+        "opts": [
+          "saw",
+          "seen",
+          "see",
+          "seeing"
+        ],
+        "level": 1
+      },
+      {
+        "id": "g1_verb_forms_04",
+        "kor": "과거형을 쓰세요.",
+        "eng": "take → ___ → taken",
+        "ans": "took",
+        "opts": [
+          "taken",
+          "takes",
+          "take",
+          "took"
+        ],
+        "level": 1,
+        "type": "input"
+      },
+      {
+        "id": "g1_verb_forms_05",
+        "kor": "과거분사를 고르세요.",
+        "eng": "write → wrote → ___",
+        "ans": "written",
+        "opts": [
+          "write",
+          "writed",
+          "wrote",
+          "written"
+        ],
+        "level": 1
+      },
+      {
+        "id": "g1_verb_forms_06",
+        "kor": "원형을 쓰세요.",
+        "eng": "___ → made → made",
+        "ans": "make",
+        "opts": [
+          "made",
+          "make",
+          "making",
+          "makes"
+        ],
+        "level": 1,
+        "type": "input"
+      },
+      {
+        "id": "g1_verb_forms_07",
+        "kor": "과거형을 쓰세요.",
+        "eng": "come → ___ → come",
+        "ans": "came",
+        "opts": [
+          "come",
+          "coming",
+          "came",
+          "comed"
+        ],
+        "level": 1,
+        "type": "input"
+      },
+      {
+        "id": "g1_verb_forms_08",
+        "kor": "과거분사를 고르세요.",
+        "eng": "do → did → ___",
+        "ans": "done",
+        "opts": [
+          "did",
+          "done",
+          "do",
+          "does"
+        ],
+        "level": 1
+      },
+      {
+        "id": "g1_verb_forms_09",
+        "kor": "과거형을 고르세요.",
+        "eng": "buy → ___ → bought",
+        "ans": "bought",
+        "opts": [
+          "bought",
+          "buy",
+          "buying",
+          "buyed"
+        ],
+        "level": 1
+      },
+      {
+        "id": "g1_verb_forms_10",
+        "kor": "과거분사를 쓰세요.",
+        "eng": "give → gave → ___",
+        "ans": "given",
+        "opts": [
+          "give",
+          "given",
+          "gave",
+          "giving"
+        ],
+        "level": 1,
+        "type": "input"
+      },
+      {
+        "id": "g1_verb_forms_100",
+        "kor": "과거형을 고르세요.",
+        "eng": "work → ___ → worked",
+        "ans": "worked",
+        "opts": [
+          "work",
+          "worken",
+          "worked",
+          "working"
+        ],
+        "level": 1
+      },
+      {
+        "id": "g1_verb_forms_11",
+        "kor": "원형을 고르세요.",
+        "eng": "___ → spoke → spoken",
+        "ans": "speak",
+        "opts": [
+          "spoken",
+          "spoke",
+          "speak",
+          "speaking"
+        ],
+        "level": 1
+      },
+      {
+        "id": "g1_verb_forms_12",
+        "kor": "과거분사를 쓰세요.",
+        "eng": "break → broke → ___",
+        "ans": "broken",
+        "opts": [
+          "break",
+          "broke",
+          "breaked",
+          "broken"
+        ],
+        "level": 1,
+        "type": "input"
+      },
+      {
+        "id": "g1_verb_forms_13",
+        "kor": "과거형을 쓰세요.",
+        "eng": "sing → ___ → sung",
+        "ans": "sang",
+        "opts": [
+          "sang",
+          "sing",
+          "sung",
+          "sings"
+        ],
+        "level": 1,
+        "type": "input"
+      },
+      {
+        "id": "g1_verb_forms_14",
+        "kor": "과거분사를 고르세요.",
+        "eng": "begin → began → ___",
+        "ans": "begun",
+        "opts": [
+          "began",
+          "begun",
+          "begin",
+          "beginned"
+        ],
+        "level": 1
+      },
+      {
+        "id": "g1_verb_forms_15",
+        "kor": "원형을 고르세요.",
+        "eng": "___ → found → found",
+        "ans": "find",
+        "opts": [
+          "found",
+          "finds",
+          "find",
+          "finding"
+        ],
+        "level": 1
+      },
+      {
+        "id": "g1_verb_forms_16",
+        "kor": "과거형을 고르세요.",
+        "eng": "think → ___ → thought",
+        "ans": "thought",
+        "opts": [
+          "thinking",
+          "thought",
+          "thinked",
+          "think"
+        ],
+        "level": 1
+      },
+      {
+        "id": "g1_verb_forms_17",
+        "kor": "과거분사를 고르세요.",
+        "eng": "run → ran → ___",
+        "ans": "run",
+        "opts": [
+          "run",
+          "runned",
+          "ran",
+          "running"
+        ],
+        "level": 1
+      },
+      {
+        "id": "g1_verb_forms_18",
+        "kor": "과거형을 쓰세요.",
+        "eng": "swim → ___ → swum",
+        "ans": "swam",
+        "opts": [
+          "swum",
+          "swam",
+          "swim",
+          "swimmed"
+        ],
+        "level": 1,
+        "type": "input"
+      },
+      {
+        "id": "g1_verb_forms_19",
+        "kor": "원형을 쓰세요.",
+        "eng": "___ → slept → slept",
+        "ans": "sleep",
+        "opts": [
+          "slept",
+          "sleeping",
+          "sleep",
+          "sleeps"
+        ],
+        "level": 1,
+        "type": "input"
+      },
+      {
+        "id": "g1_verb_forms_20",
+        "kor": "과거분사를 고르세요.",
+        "eng": "cut → cut → ___",
+        "ans": "cut",
+        "opts": [
+          "cuts",
+          "cutted",
+          "cut",
+          "cutting"
+        ],
+        "level": 1
+      },
+      {
+        "id": "g1_verb_forms_21",
+        "kor": "과거형을 고르세요.",
+        "eng": "study → ___ → studied",
+        "ans": "studied",
+        "opts": [
+          "study",
+          "studying",
+          "studied",
+          "studyed"
+        ],
+        "level": 1
+      },
+      {
+        "id": "g1_verb_forms_22",
+        "kor": "과거분사를 고르세요.",
+        "eng": "stop → stopped → ___",
+        "ans": "stopped",
+        "opts": [
+          "stop",
+          "stopped",
+          "stoped",
+          "stopping"
+        ],
+        "level": 1
+      },
+      {
+        "id": "g1_verb_forms_23",
+        "kor": "원형을 쓰세요.",
+        "eng": "___ → carried → carried",
+        "ans": "carry",
+        "opts": [
+          "carried",
+          "carryed",
+          "carry",
+          "carrying"
+        ],
+        "level": 1,
+        "type": "input"
+      },
+      {
+        "id": "g1_verb_forms_24",
+        "kor": "과거형을 고르세요.",
+        "eng": "play → ___ → played",
+        "ans": "played",
+        "opts": [
+          "played",
+          "playing",
+          "plaied",
+          "play"
+        ],
+        "level": 1
+      },
+      {
+        "id": "g1_verb_forms_25",
+        "kor": "과거분사를 쓰세요.",
+        "eng": "choose → chose → ___",
+        "ans": "chosen",
+        "opts": [
+          "chosen",
+          "choose",
+          "chose",
+          "choosed"
+        ],
+        "level": 2,
+        "type": "input"
+      },
+      {
+        "id": "g1_verb_forms_26",
+        "kor": "과거형을 고르세요.",
+        "eng": "teach → ___ → taught",
+        "ans": "taught",
+        "opts": [
+          "teached",
+          "teach",
+          "taught",
+          "teaching"
+        ],
+        "level": 2
+      },
+      {
+        "id": "g1_verb_forms_27",
+        "kor": "원형을 고르세요.",
+        "eng": "___ → flew → flown",
+        "ans": "fly",
+        "opts": [
+          "flying",
+          "flown",
+          "fly",
+          "flew"
+        ],
+        "level": 2
+      },
+      {
+        "id": "g1_verb_forms_28",
+        "kor": "과거분사를 쓰세요.",
+        "eng": "throw → threw → ___",
+        "ans": "thrown",
+        "opts": [
+          "throw",
+          "threw",
+          "throwed",
+          "thrown"
+        ],
+        "level": 2,
+        "type": "input"
+      },
+      {
+        "id": "g1_verb_forms_29",
+        "kor": "과거형을 고르세요.",
+        "eng": "have → ___ → had",
+        "ans": "had",
+        "opts": [
+          "had",
+          "have",
+          "has",
+          "having"
+        ],
+        "level": 1
+      },
+      {
+        "id": "g1_verb_forms_30",
+        "kor": "과거형을 고르세요.",
+        "eng": "feel → ___ → felt",
+        "ans": "felt",
+        "opts": [
+          "feeling",
+          "feels",
+          "feel",
+          "felt"
+        ],
+        "level": 1
+      },
+      {
+        "id": "g1_verb_forms_31",
+        "kor": "과거형을 고르세요.",
+        "eng": "hear → ___ → heard",
+        "ans": "heard",
+        "opts": [
+          "hear",
+          "hearing",
+          "hears",
+          "heard"
+        ],
+        "level": 1
+      },
+      {
+        "id": "g1_verb_forms_32",
+        "kor": "과거형을 고르세요.",
+        "eng": "hold → ___ → held",
+        "ans": "held",
+        "opts": [
+          "holding",
+          "hold",
+          "holds",
+          "held"
+        ],
+        "level": 1
+      },
+      {
+        "id": "g1_verb_forms_33",
+        "kor": "과거형을 고르세요.",
+        "eng": "keep → ___ → kept",
+        "ans": "kept",
+        "opts": [
+          "keeps",
+          "kept",
+          "keep",
+          "keeping"
+        ],
+        "level": 1
+      },
+      {
+        "id": "g1_verb_forms_34",
+        "kor": "원형을 고르세요.",
+        "eng": "___ → left → left",
+        "ans": "leave",
+        "opts": [
+          "leaves",
+          "leave",
+          "leaving",
+          "left"
+        ],
+        "level": 1
+      },
+      {
+        "id": "g1_verb_forms_35",
+        "kor": "원형을 쓰세요.",
+        "eng": "___ → lost → lost",
+        "ans": "lose",
+        "opts": [
+          "lost",
+          "losing",
+          "lose",
+          "loses"
+        ],
+        "level": 1,
+        "type": "input"
+      },
+      {
+        "id": "g1_verb_forms_36",
+        "kor": "과거형을 고르세요.",
+        "eng": "meet → ___ → met",
+        "ans": "met",
+        "opts": [
+          "meeting",
+          "meets",
+          "meet",
+          "met"
+        ],
+        "level": 1
+      },
+      {
+        "id": "g1_verb_forms_37",
+        "kor": "과거형을 고르세요.",
+        "eng": "pay → ___ → paid",
+        "ans": "paid",
+        "opts": [
+          "paid",
+          "paying",
+          "pay",
+          "pays"
+        ],
+        "level": 1
+      },
+      {
+        "id": "g1_verb_forms_38",
+        "kor": "과거분사를 고르세요.",
+        "eng": "say → said → ___",
+        "ans": "said",
+        "opts": [
+          "said",
+          "says",
+          "saying",
+          "say"
+        ],
+        "level": 1
+      },
+      {
+        "id": "g1_verb_forms_39",
+        "kor": "원형을 고르세요.",
+        "eng": "___ → sold → sold",
+        "ans": "sell",
+        "opts": [
+          "selling",
+          "sells",
+          "sell",
+          "sold"
+        ],
+        "level": 1
+      },
+      {
+        "id": "g1_verb_forms_40",
+        "kor": "과거형을 고르세요.",
+        "eng": "send → ___ → sent",
+        "ans": "sent",
+        "opts": [
+          "sends",
+          "send",
+          "sent",
+          "sending"
+        ],
+        "level": 1
+      },
+      {
+        "id": "g1_verb_forms_41",
+        "kor": "원형을 고르세요.",
+        "eng": "___ → sat → sat",
+        "ans": "sit",
+        "opts": [
+          "sits",
+          "sit",
+          "sitting",
+          "sat"
+        ],
+        "level": 1
+      },
+      {
+        "id": "g1_verb_forms_42",
+        "kor": "과거분사를 고르세요.",
+        "eng": "stand → stood → ___",
+        "ans": "stood",
+        "opts": [
+          "standing",
+          "stands",
+          "stood",
+          "stand"
+        ],
+        "level": 1
+      },
+      {
+        "id": "g1_verb_forms_43",
+        "kor": "과거분사를 고르세요.",
+        "eng": "tell → told → ___",
+        "ans": "told",
+        "opts": [
+          "tell",
+          "telling",
+          "tells",
+          "told"
+        ],
+        "level": 1
+      },
+      {
+        "id": "g1_verb_forms_44",
+        "kor": "과거형을 고르세요.",
+        "eng": "win → ___ → won",
+        "ans": "won",
+        "opts": [
+          "winning",
+          "wins",
+          "won",
+          "win"
+        ],
+        "level": 1
+      },
+      {
+        "id": "g1_verb_forms_45",
+        "kor": "과거분사를 고르세요.",
+        "eng": "bring → brought → ___",
+        "ans": "brought",
+        "opts": [
+          "bring",
+          "brings",
+          "bringing",
+          "brought"
+        ],
+        "level": 1
+      },
+      {
+        "id": "g1_verb_forms_46",
+        "kor": "원형을 쓰세요.",
+        "eng": "___ → built → built",
+        "ans": "build",
+        "opts": [
+          "building",
+          "build",
+          "builds",
+          "built"
+        ],
+        "level": 1,
+        "type": "input"
+      },
+      {
+        "id": "g1_verb_forms_47",
+        "kor": "원형을 고르세요.",
+        "eng": "___ → caught → caught",
+        "ans": "catch",
+        "opts": [
+          "catching",
+          "caught",
+          "catch",
+          "catches"
+        ],
+        "level": 1
+      },
+      {
+        "id": "g1_verb_forms_48",
+        "kor": "원형을 쓰세요.",
+        "eng": "___ → fed → fed",
+        "ans": "feed",
+        "opts": [
+          "feeds",
+          "fed",
+          "feeding",
+          "feed"
+        ],
+        "level": 1,
+        "type": "input"
+      },
+      {
+        "id": "g1_verb_forms_49",
+        "kor": "원형을 고르세요.",
+        "eng": "___ → hurt → hurt",
+        "ans": "hurt",
+        "opts": [
+          "hurt",
+          "hurted",
+          "hurting",
+          "hurts"
+        ],
+        "level": 1
+      },
+      {
+        "id": "g1_verb_forms_50",
+        "kor": "원형을 고르세요.",
+        "eng": "___ → let → let",
+        "ans": "let",
+        "opts": [
+          "let",
+          "letting",
+          "leted",
+          "lets"
+        ],
+        "level": 1
+      },
+      {
+        "id": "g1_verb_forms_51",
+        "kor": "과거형을 고르세요.",
+        "eng": "put → ___ → put",
+        "ans": "put",
+        "opts": [
+          "put",
+          "puted",
+          "puting",
+          "puts"
+        ],
+        "level": 1
+      },
+      {
+        "id": "g1_verb_forms_52",
+        "kor": "과거형을 고르세요.",
+        "eng": "set → ___ → set",
+        "ans": "set",
+        "opts": [
+          "setting",
+          "set",
+          "sets",
+          "setted"
+        ],
+        "level": 1
+      },
+      {
+        "id": "g1_verb_forms_53",
+        "kor": "과거분사를 고르세요.",
+        "eng": "hit → hit → ___",
+        "ans": "hit",
+        "opts": [
+          "hitted",
+          "hit",
+          "hitting",
+          "hits"
+        ],
+        "level": 1
+      },
+      {
+        "id": "g1_verb_forms_54",
+        "kor": "과거분사를 쓰세요.",
+        "eng": "fall → fell → ___",
+        "ans": "fallen",
+        "opts": [
+          "fell",
+          "fallen",
+          "falling",
+          "fall"
+        ],
+        "level": 1,
+        "type": "input"
+      },
+      {
+        "id": "g1_verb_forms_55",
+        "kor": "과거형을 쓰세요.",
+        "eng": "draw → ___ → drawn",
+        "ans": "drew",
+        "opts": [
+          "drawn",
+          "draw",
+          "drew",
+          "drawing"
+        ],
+        "level": 1,
+        "type": "input"
+      },
+      {
+        "id": "g1_verb_forms_56",
+        "kor": "원형을 고르세요.",
+        "eng": "___ → drank → drunk",
+        "ans": "drink",
+        "opts": [
+          "drank",
+          "drinking",
+          "drunk",
+          "drink"
+        ],
+        "level": 1
+      },
+      {
+        "id": "g1_verb_forms_57",
+        "kor": "과거분사를 쓰세요.",
+        "eng": "drive → drove → ___",
+        "ans": "driven",
+        "opts": [
+          "driven",
+          "driving",
+          "drove",
+          "drive"
+        ],
+        "level": 1,
+        "type": "input"
+      },
+      {
+        "id": "g1_verb_forms_58",
+        "kor": "과거분사를 쓰세요.",
+        "eng": "ride → rode → ___",
+        "ans": "ridden",
+        "opts": [
+          "ride",
+          "ridden",
+          "rode",
+          "riding"
+        ],
+        "level": 1,
+        "type": "input"
+      },
+      {
+        "id": "g1_verb_forms_59",
+        "kor": "과거분사를 고르세요.",
+        "eng": "grow → grew → ___",
+        "ans": "grown",
+        "opts": [
+          "grew",
+          "grow",
+          "growing",
+          "grown"
+        ],
+        "level": 1
+      },
+      {
+        "id": "g1_verb_forms_60",
+        "kor": "과거형을 쓰세요.",
+        "eng": "know → ___ → known",
+        "ans": "knew",
+        "opts": [
+          "know",
+          "knowing",
+          "known",
+          "knew"
+        ],
+        "level": 1,
+        "type": "input"
+      },
+      {
+        "id": "g1_verb_forms_61",
+        "kor": "원형을 고르세요.",
+        "eng": "___ → wore → worn",
+        "ans": "wear",
+        "opts": [
+          "wear",
+          "wearing",
+          "wore",
+          "worn"
+        ],
+        "level": 1
+      },
+      {
+        "id": "g1_verb_forms_62",
+        "kor": "과거형을 쓰세요.",
+        "eng": "blow → ___ → blown",
+        "ans": "blew",
+        "opts": [
+          "blow",
+          "blew",
+          "blowing",
+          "blown"
+        ],
+        "level": 1,
+        "type": "input"
+      },
+      {
+        "id": "g1_verb_forms_63",
+        "kor": "과거형을 쓰세요.",
+        "eng": "hide → ___ → hidden",
+        "ans": "hid",
+        "opts": [
+          "hiding",
+          "hide",
+          "hid",
+          "hidden"
+        ],
+        "level": 1,
+        "type": "input"
+      },
+      {
+        "id": "g1_verb_forms_64",
+        "kor": "과거형을 쓰세요.",
+        "eng": "bite → ___ → bitten",
+        "ans": "bit",
+        "opts": [
+          "bite",
+          "bitten",
+          "biting",
+          "bit"
+        ],
+        "level": 2,
+        "type": "input"
+      },
+      {
+        "id": "g1_verb_forms_65",
+        "kor": "원형을 고르세요.",
+        "eng": "___ → rang → rung",
+        "ans": "ring",
+        "opts": [
+          "rang",
+          "ringing",
+          "rung",
+          "ring"
+        ],
+        "level": 1
+      },
+      {
+        "id": "g1_verb_forms_66",
+        "kor": "과거분사를 쓰세요.",
+        "eng": "freeze → froze → ___",
+        "ans": "frozen",
+        "opts": [
+          "froze",
+          "frozen",
+          "freezing",
+          "freeze"
+        ],
+        "level": 2,
+        "type": "input"
+      },
+      {
+        "id": "g1_verb_forms_67",
+        "kor": "과거분사를 쓰세요.",
+        "eng": "shake → shook → ___",
+        "ans": "shaken",
+        "opts": [
+          "shaking",
+          "shook",
+          "shaken",
+          "shake"
+        ],
+        "level": 2,
+        "type": "input"
+      },
+      {
+        "id": "g1_verb_forms_68",
+        "kor": "과거분사를 고르세요.",
+        "eng": "plan → planned → ___",
+        "ans": "planned",
+        "opts": [
+          "plans",
+          "planed",
+          "planned",
+          "plan"
+        ],
+        "level": 1
+      },
+      {
+        "id": "g1_verb_forms_69",
+        "kor": "원형을 고르세요.",
+        "eng": "___ → tried → tried",
+        "ans": "try",
+        "opts": [
+          "tried",
+          "tryed",
+          "tries",
+          "try"
+        ],
+        "level": 1
+      },
+      {
+        "id": "g1_verb_forms_70",
+        "kor": "과거분사를 고르세요.",
+        "eng": "visit → visited → ___",
+        "ans": "visited",
+        "opts": [
+          "visit",
+          "visiting",
+          "visitted",
+          "visited"
+        ],
+        "level": 1
+      },
+      {
+        "id": "g1_verb_forms_71",
+        "kor": "과거분사를 고르세요.",
+        "eng": "drop → dropped → ___",
+        "ans": "dropped",
+        "opts": [
+          "dropped",
+          "drop",
+          "dropping",
+          "droped"
+        ],
+        "level": 1
+      },
+      {
+        "id": "g1_verb_forms_72",
+        "kor": "원형을 고르세요.",
+        "eng": "___ → moved → moved",
+        "ans": "move",
+        "opts": [
+          "move",
+          "moveed",
+          "moving",
+          "moved"
+        ],
+        "level": 1
+      },
+      {
+        "id": "g1_verb_forms_73",
+        "kor": "과거분사를 고르세요.",
+        "eng": "dance → danced → ___",
+        "ans": "danced",
+        "opts": [
+          "dance",
+          "danced",
+          "danceed",
+          "dances"
+        ],
+        "level": 1
+      },
+      {
+        "id": "g1_verb_forms_74",
+        "kor": "원형을 고르세요.",
+        "eng": "___ → cleaned → cleaned",
+        "ans": "clean",
+        "opts": [
+          "cleans",
+          "cleaning",
+          "cleaned",
+          "clean"
+        ],
+        "level": 1
+      },
+      {
+        "id": "g1_verb_forms_75",
+        "kor": "원형을 고르세요.",
+        "eng": "___ → washed → washed",
+        "ans": "wash",
+        "opts": [
+          "washed",
+          "wash",
+          "washd",
+          "washing"
+        ],
+        "level": 1
+      },
+      {
+        "id": "g1_verb_forms_76",
+        "kor": "원형을 쓰세요.",
+        "eng": "___ → smiled → smiled",
+        "ans": "smile",
+        "opts": [
+          "smileed",
+          "smiled",
+          "smiling",
+          "smile"
+        ],
+        "level": 1,
+        "type": "input"
+      },
+      {
+        "id": "g1_verb_forms_77",
+        "kor": "원형을 고르세요.",
+        "eng": "___ → hugged → hugged",
+        "ans": "hug",
+        "opts": [
+          "hug",
+          "huged",
+          "hugged",
+          "hugging"
+        ],
+        "level": 1
+      },
+      {
+        "id": "g1_verb_forms_78",
+        "kor": "과거분사를 고르세요.",
+        "eng": "invite → invited → ___",
+        "ans": "invited",
+        "opts": [
+          "inviting",
+          "invite",
+          "invited",
+          "inviteed"
+        ],
+        "level": 1
+      },
+      {
+        "id": "g1_verb_forms_79",
+        "kor": "과거형을 고르세요.",
+        "eng": "shop → ___ → shopped",
+        "ans": "shopped",
+        "opts": [
+          "shop",
+          "shopped",
+          "shopping",
+          "shoped"
+        ],
+        "level": 1
+      },
+      {
+        "id": "g1_verb_forms_80",
+        "kor": "과거형을 고르세요.",
+        "eng": "bake → ___ → baked",
+        "ans": "baked",
+        "opts": [
+          "baked",
+          "baking",
+          "bakeed",
+          "bake"
+        ],
+        "level": 1
+      },
+      {
+        "id": "g1_verb_forms_81",
+        "kor": "과거형을 고르세요.",
+        "eng": "bend → ___ → bent",
+        "ans": "bent",
+        "opts": [
+          "bends",
+          "bend",
+          "bending",
+          "bent"
+        ],
+        "level": 1
+      },
+      {
+        "id": "g1_verb_forms_82",
+        "kor": "원형을 고르세요.",
+        "eng": "___ → dug → dug",
+        "ans": "dig",
+        "opts": [
+          "dig",
+          "digging",
+          "dug",
+          "digs"
+        ],
+        "level": 1
+      },
+      {
+        "id": "g1_verb_forms_83",
+        "kor": "원형을 고르세요.",
+        "eng": "___ → lent → lent",
+        "ans": "lend",
+        "opts": [
+          "lending",
+          "lend",
+          "lent",
+          "lends"
+        ],
+        "level": 1
+      },
+      {
+        "id": "g1_verb_forms_84",
+        "kor": "원형을 쓰세요.",
+        "eng": "___ → shot → shot",
+        "ans": "shoot",
+        "opts": [
+          "shoot",
+          "shot",
+          "shooting",
+          "shoots"
+        ],
+        "level": 1,
+        "type": "input"
+      },
+      {
+        "id": "g1_verb_forms_85",
+        "kor": "과거분사를 고르세요.",
+        "eng": "spend → spent → ___",
+        "ans": "spent",
+        "opts": [
+          "spending",
+          "spend",
+          "spends",
+          "spent"
+        ],
+        "level": 1
+      },
+      {
+        "id": "g1_verb_forms_86",
+        "kor": "과거형을 고르세요.",
+        "eng": "stick → ___ → stuck",
+        "ans": "stuck",
+        "opts": [
+          "stick",
+          "sticks",
+          "sticking",
+          "stuck"
+        ],
+        "level": 1
+      },
+      {
+        "id": "g1_verb_forms_87",
+        "kor": "원형을 고르세요.",
+        "eng": "___ → swept → swept",
+        "ans": "sweep",
+        "opts": [
+          "sweeps",
+          "sweeping",
+          "sweep",
+          "swept"
+        ],
+        "level": 1
+      },
+      {
+        "id": "g1_verb_forms_88",
+        "kor": "과거분사를 쓰세요.",
+        "eng": "tear → tore → ___",
+        "ans": "torn",
+        "opts": [
+          "tear",
+          "tore",
+          "torn",
+          "tearing"
+        ],
+        "level": 1,
+        "type": "input"
+      },
+      {
+        "id": "g1_verb_forms_89",
+        "kor": "과거형을 고르세요.",
+        "eng": "change → ___ → changed",
+        "ans": "changed",
+        "opts": [
+          "changed",
+          "changeed",
+          "change",
+          "changing"
+        ],
+        "level": 1
+      },
+      {
+        "id": "g1_verb_forms_90",
+        "kor": "과거형을 고르세요.",
+        "eng": "close → ___ → closed",
+        "ans": "closed",
+        "opts": [
+          "close",
+          "closing",
+          "closed",
+          "closeed"
+        ],
+        "level": 1
+      },
+      {
+        "id": "g1_verb_forms_91",
+        "kor": "원형을 고르세요.",
+        "eng": "___ → finished → finished",
+        "ans": "finish",
+        "opts": [
+          "finishing",
+          "finish",
+          "finishes",
+          "finished"
+        ],
+        "level": 1
+      },
+      {
+        "id": "g1_verb_forms_92",
+        "kor": "과거분사를 고르세요.",
+        "eng": "help → helped → ___",
+        "ans": "helped",
+        "opts": [
+          "help",
+          "helped",
+          "helps",
+          "helping"
+        ],
+        "level": 1
+      },
+      {
+        "id": "g1_verb_forms_93",
+        "kor": "과거분사를 고르세요.",
+        "eng": "jump → jumped → ___",
+        "ans": "jumped",
+        "opts": [
+          "jumping",
+          "jump",
+          "jumped",
+          "jumps"
+        ],
+        "level": 1
+      },
+      {
+        "id": "g1_verb_forms_94",
+        "kor": "원형을 고르세요.",
+        "eng": "___ → lived → lived",
+        "ans": "live",
+        "opts": [
+          "live",
+          "living",
+          "liveed",
+          "lived"
+        ],
+        "level": 1
+      },
+      {
+        "id": "g1_verb_forms_95",
+        "kor": "과거분사를 고르세요.",
+        "eng": "love → loved → ___",
+        "ans": "loved",
+        "opts": [
+          "loveed",
+          "loved",
+          "loves",
+          "love"
+        ],
+        "level": 1
+      },
+      {
+        "id": "g1_verb_forms_96",
+        "kor": "원형을 쓰세요.",
+        "eng": "___ → needed → needed",
+        "ans": "need",
+        "opts": [
+          "need",
+          "needed",
+          "needing",
+          "needs"
+        ],
+        "level": 1,
+        "type": "input"
+      },
+      {
+        "id": "g1_verb_forms_97",
+        "kor": "과거분사를 고르세요.",
+        "eng": "save → saved → ___",
+        "ans": "saved",
+        "opts": [
+          "saveed",
+          "saved",
+          "save",
+          "saving"
+        ],
+        "level": 1
+      },
+      {
+        "id": "g1_verb_forms_98",
+        "kor": "과거분사를 고르세요.",
+        "eng": "start → started → ___",
+        "ans": "started",
+        "opts": [
+          "start",
+          "starting",
+          "starts",
+          "started"
+        ],
+        "level": 1
+      },
+      {
+        "id": "g1_verb_forms_99",
+        "kor": "원형을 쓰세요.",
+        "eng": "___ → wanted → wanted",
+        "ans": "want",
+        "opts": [
+          "want",
+          "wanted",
+          "wanting",
+          "wants"
+        ],
+        "level": 1,
+        "type": "input"
       }
     ],
     "g2-l1-give": [

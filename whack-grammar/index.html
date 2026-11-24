@@ -556,7 +556,8 @@ html[data-solo-launch] #screen-start{display:none!important;}
 <script>function toast(msg, type){}</script>
 <script src="../sounds.js"></script>
 <script src="../score-popup.js"></script>
-<script src="../game/questions.js?v=questions-20260901-all-split"></script>
+<script src="../game/questions.js?v=verbs-20261124"></script>
+<script src="../game/solo-input.js"></script>
 <script src="../game/classroom-bridge.js"></script>
 <script>
 const classroomMode = !!window.ClassroomMatch?.enabled;
@@ -665,7 +666,7 @@ function buildUnitList() {
   Object.entries(GAME_QUESTIONS).forEach(([key, info]) => {
     if (key === 'all' || info.hidden) return;
     const grade = key.startsWith('g2-') ? 'g2' : 'g1';
-    const lesson = (key.match(/^g[12]-l(\d+)/) || [])[1] || '기타';
+    const lesson = (key.match(/^g[12]-l(\d+)/) || [])[1] || '보충';
     if (!grouped[grade].has(lesson)) grouped[grade].set(lesson, []);
     grouped[grade].get(lesson).push({ key, info });
   });
@@ -691,7 +692,7 @@ function buildUnitList() {
       details.open = lesson === (unitKey.match(/^g[12]-l(\d+)/) || [])[1];
       const summary = document.createElement('summary');
       summary.setAttribute('aria-expanded', String(details.open));
-      summary.innerHTML = `<span>LESSON ${lesson}</span><span class="lesson-count">${items.length}개 주제</span>`;
+      summary.innerHTML = `<span>${lesson === '보충' ? '보충 학습' : `LESSON ${lesson}`}</span><span class="lesson-count">${items.length}개 주제</span>`;
       details.addEventListener('toggle', () => summary.setAttribute('aria-expanded', String(details.open)));
       details.appendChild(summary);
       const options = document.createElement('div');
@@ -863,7 +864,13 @@ function renderQuestion() {
   // q.eng has '___' — substitute a wrong option in red strike-through so the
   // sentence reads as an error to fix, then student picks the right answer mole
   const hintEl = document.getElementById('q-hint');
-  if (classroomMode) {
+  const oldForm = document.getElementById('whack-input-form'); if (oldForm) oldForm.remove();
+  if (SoloInput.matches(q)) {
+    qEng.textContent = q.eng;
+    if (hintEl) hintEl.textContent = '영어 단어를 입력하세요';
+    const holder = document.createElement('div'); holder.id = 'whack-input-form'; hintEl.after(holder);
+    SoloInput.render(holder, q, (value) => { const mole = document.createElement('div'); document.getElementById('field').appendChild(mole); handleHit(null, mole, -1, value); });
+  } else if (classroomMode) {
     qEng.textContent = q.eng;
     if (hintEl) hintEl.textContent = '알맞은 답 두더지를 두드려요';
   } else if (q.type === 'ox') {
@@ -900,7 +907,7 @@ async function nextQuestion() {
   clearTimeout(qTimeoutTimer);
   const timeoutMs = classroomMode ? Math.max(1, Math.min(Q_TIME, ClassroomMatch.remainingMs())) : Q_TIME;
   qTimeoutTimer = setTimeout(onQTimeout, timeoutMs);
-  scheduleSpawn(120);
+  if (!SoloInput.matches(q)) scheduleSpawn(120);
 }
 
 function tickQTimer() {

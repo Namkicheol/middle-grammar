@@ -34,7 +34,11 @@
     const kor = document.createElement('p'); kor.textContent = question.kor || '알맞은 답을 고르세요.';
     const eng = document.createElement('h2'); eng.textContent = question.eng || '';
     const choices = document.createElement('div'); choices.className = 'choices';
-    question.opts.forEach((choice, i) => {
+    if (question.type === 'input') {
+      const form = document.createElement('form'); form.className = 'kart-answer-form'; const input = document.createElement('input'); input.placeholder = '답을 입력하세요'; input.setAttribute('aria-label', '정답 입력');
+      const submit = document.createElement('button'); submit.type = 'submit'; submit.textContent = '제출';
+      form.addEventListener('submit', e => { e.preventDefault(); if (input.value.trim()) choose(input.value); }); form.append(input, submit); choices.append(form);
+    } else question.opts.forEach((choice, i) => {
       const button = document.createElement('button'); button.type = 'button'; button.textContent = `${i + 1}. ${choice}`;
       button.dataset.choice = choice;
       button.addEventListener('click', () => choose(choice)); choices.append(button);
@@ -42,11 +46,11 @@
     box.append(head, kor, eng, choices);
     requestAnimationFrame(() => box.classList.toggle('has-overflow', box.scrollHeight > box.clientHeight + 1));
   }
-  function choose(choice) {
+  function choose(choice, timedOut = false) {
     if (pending || !questionKey || !race) return;
     pending = true; window.KartAudio?.unlock?.(); window.KartAudio?.startMusic?.();
     const [index, ...id] = questionKey.split(':');
-    send({ type: 'grammar-kart-answer-request', questionId: id.join(':'), occurrenceIndex: Number(index), answer: choice });
+    send({ type: 'grammar-kart-answer-request', questionId: id.join(':'), occurrenceIndex: Number(index), answer: choice, timedOut });
     for (const b of document.querySelectorAll('.choices button')) b.disabled = true;
   }
   function sync(room) {
@@ -68,7 +72,7 @@
           if (questionKey && !pending) {
             const seconds = Math.max(0, Math.ceil((questionUntil - now) / 1000));
             const timer = document.querySelector('.question-timer'); if (timer && timer.textContent !== `${seconds}초`) timer.textContent = `${seconds}초`;
-            if (!seconds) choose('');
+            if (!seconds) choose('', true);
           }
           if (!state.finished && (now - sendAt > 900 || (Math.abs(state.lane - lastSentLane) > 0.03 && now - sendAt > 220))) {
             sendAt = now; lastSentLane = state.lane;
@@ -134,6 +138,7 @@
     missile.addEventListener('click', () => { window.KartAudio?.unlock?.(); send({ type: 'grammar-kart-weapon-request', weapon: 'missile' }); });
     shield.addEventListener('click', () => { window.KartAudio?.unlock?.(); send({ type: 'grammar-kart-weapon-request', weapon: 'shield' }); });
     window.addEventListener('keydown', e => {
+      if (e.target.closest?.('input, textarea, select, [contenteditable=true]')) return;
       if (['ArrowLeft','a','A'].includes(e.key)) { e.preventDefault(); held.left = true; steer(); }
       if (['ArrowRight','d','D'].includes(e.key)) { e.preventDefault(); held.right = true; steer(); }
       if ('1234'.includes(e.key) && e.key.length === 1) document.querySelectorAll('.choices button')[Number(e.key)-1]?.click();

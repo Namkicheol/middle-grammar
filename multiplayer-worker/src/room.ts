@@ -138,7 +138,7 @@ export class GameRoom implements DurableObject {
       return;
     }
     let record: RoomRecord | undefined;
-    let payload: { type?: string; questionId?: string; occurrenceIndex?: number; answer?: string; choiceId?: string; seq?: number; lane?: number; weapon?: string; direction?: string; action?: string; hotspotId?: string; code?: string; planetId?: string; targetPlayerId?: string } = {};
+    let payload: { type?: string; questionId?: string; occurrenceIndex?: number; answer?: string; timedOut?: boolean; choiceId?: string; seq?: number; lane?: number; weapon?: string; direction?: string; action?: string; hotspotId?: string; code?: string; planetId?: string; targetPlayerId?: string } = {};
     try {
       payload = JSON.parse(
         typeof message === "string" ? message : new TextDecoder().decode(message),
@@ -270,6 +270,7 @@ export class GameRoom implements DurableObject {
         questionId: payload.questionId,
         occurrenceIndex: payload.occurrenceIndex!,
         answer: payload.answer,
+        timedOut: payload.timedOut === true,
         serverNow: Date.now(),
       });
       record.state = submitted.state;

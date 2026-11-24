@@ -228,7 +228,8 @@ body{background:#18251d;font-family:'Noto Sans KR',system-ui,sans-serif;color:#f
 </div>
 
 <audio id="bgm" src="assets/rangers-theme.mp3" loop preload="none"></audio>
-<script src="../game/questions.js?v=questions-20260901-all-split"></script>
+<script src="../game/questions.js?v=verbs-20261124"></script>
+<script src="../game/solo-input.js"></script>
 <script src="../game/classroom-bridge.js"></script>
 <script>
 'use strict';
@@ -761,7 +762,8 @@ async function nextQuestion(){
   $('q-eng').innerHTML=q.eng.replace(/_{2,}/g,'<b>____</b>');
   $('q-kor').textContent=q.kor;$('q-reward').textContent='';
   const box=$('opts');box.innerHTML='';
-  shuffled(q.opts).forEach(o=>{const b=document.createElement('button');b.className='opt';b.textContent=o;b.onclick=()=>answer(b,o);box.appendChild(b);});
+  if (SoloInput.matches(q)) SoloInput.render(box, q, (value, button) => answer(button, value));
+  else shuffled(q.opts).forEach(o=>{const b=document.createElement('button');b.className='opt';b.textContent=o;b.onclick=()=>answer(b,o);box.appendChild(b);});
 }
 async function answer(btn,val){
   const g=GS;if(!g||g.over||g.locked)return;g.locked=true;

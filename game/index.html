@@ -1243,7 +1243,8 @@ body:has(#speed-screen[style*="display: block"]) #sp-badge{display:none!importan
   </div>
 </div>
 
-<script src="./questions.js?v=questions-20260901-all-split"></script>
+<script src="./questions.js?v=verbs-20261124"></script>
+<script src="./solo-input.js"></script>
 <script src="../score-popup.js"></script>
 <script src="../sounds.js"></script>
 <script src="./classroom-bridge.js"></script>
@@ -1496,9 +1497,8 @@ cleanupZeroScoreRecords();
     if (key === 'all' || unit.hidden) return;
     const grade = key.startsWith('g1') ? 'g1' : 'g2';
     const lessonMatch = key.match(/^g[12]-l(\d+)/);
-    if (!lessonMatch) return;
-    const lesson = Number(lessonMatch[1]);
-    const groupKey = `${grade}-l${lesson}`;
+    const lesson = lessonMatch ? Number(lessonMatch[1]) : '보충';
+    const groupKey = `${grade}-${lesson}`;
     if (!lessonGroups.has(groupKey)) lessonGroups.set(groupKey, { grade, lesson, units: [] });
     lessonGroups.get(groupKey).units.push({ key, unit });
   });
@@ -1508,7 +1508,7 @@ cleanupZeroScoreRecords();
     row.className = 'lesson-row';
     row.dataset.grade = group.grade;
     row.hidden = group.grade !== activeGrade;
-    row.innerHTML = `<div class="lesson-label"><span>LESSON ${group.lesson}</span><span>문법 ${group.units.length}개</span></div>`;
+    row.innerHTML = `<div class="lesson-label"><span>${group.lesson === '보충' ? '보충 학습' : `LESSON ${group.lesson}`}</span><span>문법 ${group.units.length}개</span></div>`;
     const topics = document.createElement('div');
     topics.className = 'lesson-topics';
     group.units.forEach(({ key, unit }) => {
@@ -1755,6 +1755,8 @@ function nextSpeedQuestion() {
 
   const optsEl = document.getElementById('speed-options');
   optsEl.innerHTML = '';
+  if (SoloInput.matches(q)) SoloInput.render(optsEl, q, (value) => answerSpeedQuiz(value, q, optsEl));
+  else {
   const shuffled = [...q.opts].sort(() => Math.random() - 0.5);
   shuffled.forEach(opt => {
     const btn = document.createElement('button');
@@ -1763,6 +1765,7 @@ function nextSpeedQuestion() {
     btn.onclick = () => answerSpeedQuiz(opt, q, optsEl);
     optsEl.appendChild(btn);
   });
+  }
   updateSpeedHUD();
 }
 
@@ -3180,6 +3183,8 @@ function nextBossQuestion() {
 
   const optsEl = document.getElementById('boss-options');
   optsEl.innerHTML = '';
+  if (SoloInput.matches(q)) SoloInput.render(optsEl, q, (value) => answerBossQuestion(value, q, optsEl));
+  else {
   const shuffled = [...q.opts].sort(() => Math.random() - 0.5);
   shuffled.forEach(opt => {
     const btn = document.createElement('button');
@@ -3188,6 +3193,7 @@ function nextBossQuestion() {
     btn.onclick = () => answerBossQuestion(opt, q, optsEl);
     optsEl.appendChild(btn);
   });
+  }
   updateBossHUD();
 
   // Start boss telegraph if Lv.2+ form active
@@ -4744,6 +4750,8 @@ async function triggerQuizModal() {
 
   const optsEl = document.getElementById('quiz-opts');
   optsEl.innerHTML = '';
+  if (SoloInput.matches(q)) SoloInput.render(optsEl, q, (value) => answerQuiz(value, q, optsEl));
+  else {
   const shuffled = [...q.opts].sort(() => Math.random() - 0.5);
   shuffled.forEach(opt => {
     const btn = document.createElement('button');
@@ -4752,6 +4760,7 @@ async function triggerQuizModal() {
     btn.onclick = () => answerQuiz(opt, q, optsEl);
     optsEl.appendChild(btn);
   });
+  }
 
   document.getElementById('quiz-overlay').classList.add('show');
   bubbleQuestionPending = false;

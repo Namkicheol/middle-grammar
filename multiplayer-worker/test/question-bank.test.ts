@@ -21,7 +21,7 @@ function sha256(bytes) {
 }
 
 describe("multiplayer question bank generator", () => {
-  it("extracts only the 32 visible post-split units in stable order", async () => {
+  it("extracts the 33 visible units in stable order", async () => {
     const bank = await buildQuestionBank({
       sourcePath: DEFAULT_SOURCE_PATH,
       generatedAt: FIXED_GENERATED_AT,
@@ -31,20 +31,28 @@ describe("multiplayer question bank generator", () => {
     expect(Object.keys(bank)).toEqual(["generatedAt", "source", "units"]);
     expect(bank.generatedAt).toBe(FIXED_GENERATED_AT);
     expect(bank.source).toBe("game/questions.js");
-    expect(unitKeys).toHaveLength(32);
+    expect(unitKeys).toHaveLength(33);
     expect(unitKeys).toEqual([...unitKeys].sort());
     expect(bank.units).not.toHaveProperty("all");
     expect(bank.units).not.toHaveProperty("g1-l1");
     expect(bank.units).not.toHaveProperty("g2-l8");
     expect(bank.units).toHaveProperty("g1-l1-be-verb");
     expect(bank.units).toHaveProperty("g2-l8-wh-to-infinitive");
+    const verbForms = bank.units["g1-verb-forms"];
+    expect(verbForms).toHaveLength(100);
+    expect(verbForms.filter(question => question.type === "input")).toHaveLength(30);
+    for (const question of verbForms) {
+      expect(question.eng.split(" → ")).toHaveLength(3);
+      expect(question.eng.match(/___/g)).toHaveLength(1);
+      expect(new Set(question.opts).size).toBe(4);
+    }
     for (const questions of Object.values(bank.units)) {
       const ids = questions.map((question) => question.id);
       expect(ids).toEqual([...ids].sort());
     }
   });
 
-  it("contains exactly 921 unique, answerable questions", async () => {
+  it("contains exactly 1021 unique, answerable questions", async () => {
     const bank = await buildQuestionBank({
       sourcePath: DEFAULT_SOURCE_PATH,
       generatedAt: FIXED_GENERATED_AT,
@@ -52,7 +60,7 @@ describe("multiplayer question bank generator", () => {
     const questions = Object.values(bank.units).flat();
     const ids = questions.map((question) => question.id);
 
-    expect(questions).toHaveLength(921);
+    expect(questions).toHaveLength(1021);
     expect(new Set(ids).size).toBe(questions.length);
     for (const question of questions) {
       expect(question.opts, question.id).toContain(question.ans);

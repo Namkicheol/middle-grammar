@@ -92,7 +92,7 @@
     const { canvas, lesson, mode = 'solo', onProgress = () => {}, onAnswer = () => {}, onFinish = () => {}, onQuestion = () => {} } = options;
     const ctx = canvas.getContext('2d');
     const pool = ((typeof GAME_QUESTIONS !== 'undefined' && GAME_QUESTIONS[lesson]?.questions) || [])
-      .filter(q => Array.isArray(q.opts) && q.opts.length === 4 && q.opts.some(o => norm(o) === norm(q.ans)));
+      .filter(q => q.type === 'input' ? Boolean(q.ans) : Array.isArray(q.opts) && q.opts.length === 4 && q.opts.some(o => norm(o) === norm(q.ans)));
     let deck = [];
     let deckIndex = 0;
     let raf = 0;
@@ -108,11 +108,11 @@
       if (!q) { gate = null; return; }
       const key = `${q.id}:${occurrence ?? q.occurrenceIndex ?? 0}`;
       if (gate?.key === key || completedGate === key) return;
-      const reading = (q.eng || '').length + q.opts.join(' ').length;
+      const reading = (q.eng || '').length + (q.opts || []).join(' ').length;
       gate = { key, question: q, at: Math.min(TOTAL - 20, distance + (reading > 170 ? 380 : 360)) };
     }
     function selectGateLane(index) {
-      if (!gate || gate.submitted || index < 0 || index > 3) return;
+      if (!gate || gate.question.type === 'input' || gate.submitted || index < 0 || index > 3) return;
       steer = 0; laneTarget = answerLanes[index];
     }
     function crossGate() {
@@ -120,7 +120,7 @@
       const index = answerLanes.reduce((best,value,i)=>Math.abs(lane-value)<Math.abs(lane-answerLanes[best])?i:best,0);
       const crossed = gate;
       completedGate = crossed.key;
-      if (mode === 'solo') { gate = null; answer(crossed.question.opts[index]); }
+      if (mode === 'solo') { gate = null; answer(crossed.question.type === 'input' ? '' : crossed.question.opts[index]); }
       else { crossed.submitted = true; crossed.index = index; options.onGateChoice?.(crossed.question.opts[index]); }
     }
     function retryGate() {
@@ -504,7 +504,7 @@
           ctx.strokeStyle='#fff2b0';ctx.lineWidth=Math.max(1,sc*2);ctx.stroke();
         }
       }
-      if(gate){
+      if(gate && gate.question.type !== 'input'){
         const delta=gate.at-distance,t=1-delta/viewDepth;
         if(delta<viewDepth&&delta>=-8){
           const colors=['#71b1ff','#ff8b79','#f4ca67','#dce8f7'];

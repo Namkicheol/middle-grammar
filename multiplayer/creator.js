@@ -22,6 +22,7 @@ const BUILTIN_LABELS = {
   "g1-l6-sensory-verbs": "L6 · 감각동사", "g1-l6-because": "L6 · because",
   "g1-l7-make-adjective": "L7 · make+형용사", "g1-l7-that": "L7 · 접속사 that",
   "g1-l8-exclamation": "L8 · 감탄문", "g1-l8-something-adjective": "L8 · -thing+형용사",
+  "g1-verb-forms": "보충 · 동사의 3단 변화",
   "g2-l1-give": "L1 · 수여동사", "g2-l1-relative-pronoun": "L1 · 관계대명사",
   "g2-l2-present-perfect": "L2 · 현재완료", "g2-l2-comparative": "L2 · 비교급·최상급",
   "g2-l3-adjective-to-infinitive": "L3 · 형용사 to부정사", "g2-l3-if": "L3 · if",

@@ -37,3 +37,5 @@
 .track-wrap>#left:active,.track-wrap>#right:active{background:#2babc4d9;transform:scale(.96)}
 @media(max-width:760px){.race-shell:not(.question-active) .track-wrap canvas{height:57dvh;min-height:390px}.race-shell.question-active .track-wrap canvas{height:33dvh;min-height:250px}.track-wrap>#left,.track-wrap>#right{width:64px;height:66px;bottom:9px}}
 @media(max-width:430px){.race-shell:not(.question-active) .track-wrap canvas{height:54dvh;min-height:375px}.race-shell.question-active .track-wrap canvas{height:31dvh;min-height:230px}.race-shell .controls .control{min-height:51px;font-size:11px}}
+
+.kart-answer-form{display:flex;gap:8px;grid-column:1/-1}.kart-answer-form input{min-width:0;flex:1;padding:10px;font-size:16px}.kart-answer-form button{min-width:65px}

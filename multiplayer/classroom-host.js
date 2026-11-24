@@ -16,6 +16,7 @@ function safeQuestion(question) {
     eng: String(question.eng || question.prompt || question.text || ""),
     kor: String(question.kor || question.promptKor || ""),
     opts,
+    ...(question.type === "input" && String(id).startsWith("g1_verb_forms_") ? { type: "input" } : {}),
     ...(question.level ? { level: String(question.level) } : {}),
     ...(question.image || question.imageUrl ? { image: String(question.image || question.imageUrl) } : {}),
   };

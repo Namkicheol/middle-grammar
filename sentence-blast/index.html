@@ -126,7 +126,8 @@ body{background:#0c2f5c;color:#fff;font-family:ui-rounded,'SF Pro Rounded','Aria
 </div>
 
 <audio id="bgm" src="../game/assets/bgm/bubble-theme.mp3" loop preload="auto"></audio>
-<script src="../game/questions.js?v=questions-20260901-all-split"></script>
+<script src="../game/questions.js?v=verbs-20261124"></script>
+<script src="../game/solo-input.js"></script>
 <script src="../sounds.js"></script>
 <script src="../game/classroom-bridge.js"></script>
 <script>
@@ -336,7 +337,8 @@ async function openChallenge(){
   lastChallengeTime=challengeLeft;$('challenge-time').textContent=challengeLeft;$('challenge-kor').textContent=currentQuestion.kor||'알맞은 답을 고르세요.';$('challenge-eng').textContent=isChoice?String(currentQuestion.eng||''):'';$('challenge-eng').hidden=!isChoice;$('feedback').textContent='';$('feedback').className='feedback';$('challenge').classList.toggle('choice-mode',isChoice);$('challenge').querySelector('h2').textContent=(isChoice?'문법 선택':'Sentence Challenge')+(grammarStreak?` · 🔥 ${grammarStreak}연속`:'' );$('challenge').querySelector('.guide').textContent=isChoice?'알맞은 답을 하나 고르세요.':'단어를 차례로 눌러 문장을 완성하세요.';$('answer-zone').hidden=isChoice;$('check-btn').style.display=isChoice?'none':'';$('check-btn').disabled=false;$('check-btn').textContent='BLAST';$('check-btn').onclick=checkSentence;$('reset-btn').style.display=isChoice?'none':'';$('reset-btn').disabled=false;
   const chips=$('chips');chips.innerHTML='';
   if(isChoice){
-    shuffle(currentQuestion.opts.slice()).forEach(option=>{const b=document.createElement('button');b.className='word';b.textContent=option;b.onclick=()=>resolveChallenge(classroomMode?false:option===currentQuestion.ans,false,option);chips.appendChild(b)});
+    if (SoloInput.matches(currentQuestion)) { $('challenge').querySelector('.guide').textContent='영어 단어를 입력하세요.'; SoloInput.render(chips, currentQuestion, value=>resolveChallenge(value===currentQuestion.ans,false,value)); }
+    else shuffle(currentQuestion.opts.slice()).forEach(option=>{const b=document.createElement('button');b.className='word';b.textContent=option;b.onclick=()=>resolveChallenge(classroomMode?false:option===currentQuestion.ans,false,option);chips.appendChild(b)});
   }else{
     const words=currentSentence.split(' ');let shuffled=shuffle(words.map((w,i)=>({w,i})));if(shuffled.map(x=>x.w).join(' ')===currentSentence)shuffled.reverse();
     shuffled.forEach(item=>{const b=document.createElement('button');b.className='word';b.textContent=item.w;b.dataset.token=item.i;b.onclick=()=>chooseWord(b,item);chips.appendChild(b)});renderChosen();

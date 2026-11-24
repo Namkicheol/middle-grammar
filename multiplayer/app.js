@@ -218,6 +218,7 @@ const UNIT_OPTIONS = {
     ["g1-l7-that", "L7 · 접속사 that"],
     ["g1-l8-exclamation", "L8 · 감탄문"],
     ["g1-l8-something-adjective", "L8 · -thing+형용사"],
+    ["g1-verb-forms", "보충 · 동사의 3단 변화"],
   ],
   g2: [
     ["g2-l1-give", "L1 · 수여동사"],
@@ -294,6 +295,7 @@ const state = {
   unitSearch: "",
   clockTimer: null,
   renderedQuestionKey: null,
+  typedAnswerDraft: null,
   needsQuestionFocus: false,
   localSet: initialTeacherDraft?.customSet || (initialParams.get("set") === "local" ? loadLocalSet() : null),
   treasureBusy: false,
@@ -1844,7 +1846,7 @@ function spaceRaiderPlayView() {
   const questionText = question?.eng || question?.prompt || question?.text || "다음 문법 신호를 기다리는 중이에요.";
   const hasChoice = Array.isArray(space.pendingPlanets) && space.pendingPlanets.length;
   const hasEffect = Boolean(space.effect);
-  const questionCard = !hasChoice && !hasEffect && question ? `<section class="space-question-card" aria-labelledby="space-question-title"><div class="space-question-meta"><span>문제 ${progress.current + 1}</span><span>${progress.current} / ${Number(state.room?.questionCount || 0) || "∞"}</span></div><p class="space-question-kor">${escapeHtml(questionInstruction(question))}</p><h2 id="space-question-title">${escapeHtml(questionText)}</h2><div class="answers space-answers" aria-label="답 선택지">${options.map((option, index) => answerButtonHtml(option, answered, qKey, index)).join("")}</div>${pendingAnswerHtml(qKey)}${feedbackHtml(qKey)}</section>` : "";
+  const questionCard = !hasChoice && !hasEffect && question ? `<section class="space-question-card" aria-labelledby="space-question-title"><div class="space-question-meta"><span>문제 ${progress.current + 1}</span><span>${progress.current} / ${Number(state.room?.questionCount || 0) || "∞"}</span></div><p class="space-question-kor">${escapeHtml(questionInstruction(question))}</p><h2 id="space-question-title">${escapeHtml(questionText)}</h2>${isVerbFormInput(question) ? typedAnswerHtml(qKey, answered) : `<div class="answers space-answers" aria-label="답 선택지">${options.map((option, index) => answerButtonHtml(option, answered, qKey, index)).join("")}</div>`}${pendingAnswerHtml(qKey)}${feedbackHtml(qKey)}</section>` : "";
   return `<section class="screen space-raiders-screen" data-mode="space_raiders" aria-labelledby="space-title"><header class="space-hud"><div class="space-hud-brand"><span class="space-brand-orbit" aria-hidden="true">✦</span><div><p>CLASSROOM SPACE ARCADE</p><strong id="space-title">우주 약탈단</strong></div></div><div class="space-hud-stat"><span>내 에너지</span><strong>${playerEnergy(me).toLocaleString()}<em>⚡</em></strong></div><div class="space-hud-stat"><span>방어막</span><strong>${Number(space.shield || 0)}<em>🛡</em></strong></div><div class="space-hud-stat"><span>연속 탐사</span><strong>${Number(space.explorationStreak || 0)}<em>/3</em></strong></div><div class="space-hud-stat"><span>현재 순위</span><strong>${playerRank(me) || "-"}<em>위</em></strong></div><div class="space-hud-stat space-hud-time"><span>남은 시간</span><strong id="game-timer">${formatTime(remainingSeconds())}</strong></div><button class="game-sound-toggle in-game" type="button" data-game-sound-toggle aria-pressed="false">🔊 소리</button><button class="space-music-toggle" type="button" data-space-music-toggle aria-pressed="false">🎵 음악</button></header><div class="space-hero"><div class="space-hero-copy"><p class="eyebrow">CAPTAIN ${escapeHtml(playerName(me))}</p><h1>정답으로 항로를 열고<br><span>친구의 에너지를 노려요.</span></h1><p>문법 문제를 맞히면 미지의 행성 3곳 중 하나가 열립니다. 결과를 공개하고 라이벌의 균형을 흔드세요.</p>${spaceRivalStrip()}</div><img class="space-ship-art" src="./assets/space-raiders/space-raiders-ship.png" alt="주황색 우주 정찰선" width="640" height="512"><div class="space-orbit-rings" aria-hidden="true"><i></i><i></i><i></i></div></div><main class="space-stage">${spaceEventHtml(space)}${spacePlanetCards(space)}${spaceEffectPanel(space)}${questionCard}${!questionCard && !hasChoice && !hasEffect ? `<div class="space-waiting" role="status">다음 문법 신호를 준비하고 있어요…</div>` : ""}<details class="space-ranking"><summary>LIVE 순위 · 내 주변 보기</summary><div class="space-ranking-body"><p>에너지는 서버가 확정한 실제 잔량입니다.</p>${leaderboardHtml(sortedPlayers(), { studentView: true })}</div></details></main></section>`;
 }
 
@@ -1893,7 +1895,7 @@ function studentPlayView() {
               <p class="question-kor">${escapeHtml(questionInstruction(question))}</p>
               <h1 id="question-title" class="question-eng${longQuestionClass}" tabindex="-1" role="status" aria-live="polite" aria-atomic="true">${escapeHtml(questionText)}</h1>
             </div>
-            <div class="answers arena-answers" data-option-count="${options.length}" aria-label="답 선택지">${options.map((option, index) => answerButtonHtml(option, answered, qKey, index)).join("")}</div>
+            ${isVerbFormInput(question) ? typedAnswerHtml(qKey, answered) : `<div class="answers arena-answers" data-option-count="${options.length}" aria-label="답 선택지">${options.map((option, index) => answerButtonHtml(option, answered, qKey, index)).join("")}</div>`}
             <div class="arena-answer-status">${pendingAnswerHtml(qKey)}${feedbackHtml(qKey)}</div>
           </div>
         ` : `
@@ -1928,7 +1930,7 @@ function submitClassroomAnswer(question, answer, { reconcile = false } = {}) {
   state.pendingQuestionKey = occurrenceKey;
   state.chosenAnswer = answer;
   try {
-    state.socket?.send({ type: "answer", questionId: question.id, occurrenceIndex: question.occurrenceIndex, answer });
+    state.socket?.send({ type: "answer", questionId: question.id, occurrenceIndex: question.occurrenceIndex, answer, timedOut: answer === "" });
   } catch (error) {
     state.pendingQuestionKey = null;
     state.chosenAnswer = null;
@@ -1981,8 +1983,14 @@ window.addEventListener("message", (event) => {
     } else if (message.type === "grammar-kart-answer-request") {
       const question = currentQuestion();
       if (question?.id === message.questionId && question?.occurrenceIndex === message.occurrenceIndex &&
-          (message.answer === "" || question.opts?.includes(message.answer))) {
-        state.socket?.send({ type: "answer", questionId: question.id, occurrenceIndex: question.occurrenceIndex, answer: message.answer });
+          typeof message.answer === "string" &&
+          (isVerbFormInput(question)
+            ? Boolean(message.answer.trim()) || (message.answer === "" && message.timedOut === true)
+            : message.answer === "" || question.opts?.includes(message.answer))) {
+        state.socket?.send({
+          type: "answer", questionId: question.id, occurrenceIndex: question.occurrenceIndex,
+          answer: message.answer, timedOut: message.timedOut === true,
+        });
       } else {
         kartFrame.contentWindow.postMessage({ type: "grammar-kart-error", message: "현재 문제를 다시 확인해 주세요." }, kartSiteOrigin());
       }
@@ -2095,6 +2103,21 @@ function treasureChoiceView(choices) {
     <div class="treasure-grid">${choices.filter(choice => !["raid", "switch"].includes(choice.strategy)).map(choice => actionButton(choice)).join("")}${targeted}</div>
     ${state.feedback?.treasureMessage ? `<div class="feedback ${state.feedback.treasureTone || "correct"}" role="status">${escapeHtml(state.feedback.treasureMessage)}</div>` : ""}
   </div>`;
+}
+
+function isVerbFormInput(question) {
+  return question?.type === "input" && String(questionId(question)).startsWith("g1_verb_forms_");
+}
+
+function typedAnswerHtml(key, answered) {
+  const draft = state.typedAnswerDraft?.key === key ? state.typedAnswerDraft.value : "";
+  const disabled = answered ? "disabled" : "";
+  return `<form class="typed-answer" data-question-key="${escapeHtml(key)}">
+    <input id="typed-verb-answer" name="verbAnswer" type="text" aria-label="영어 정답"
+           placeholder="영어 정답 입력" value="${escapeHtml(draft)}" autocomplete="off"
+           autocorrect="off" autocapitalize="none" spellcheck="false" maxlength="48" required ${disabled}>
+    <button class="primary-button" type="submit" ${disabled}>제출</button>
+  </form>`;
 }
 
 function answerButtonHtml(option, answered, currentKey, index = 0) {
@@ -2506,11 +2529,19 @@ function render() {
     document.querySelector("#question-title")?.focus({ preventScroll: true });
     state.needsQuestionFocus = false;
   }
+  if (questionChanged) state.typedAnswerDraft = null;
   if (state.room && roomStatus() === "playing") ensureClock();
   else stopClock();
 }
 
 function bindEvents() {
+  const answerForm = app.querySelector(".typed-answer");
+  if (answerForm) {
+    answerForm.addEventListener("input", () => {
+      state.typedAnswerDraft = { key: answerForm.dataset.questionKey, value: answerForm.elements.verbAnswer.value };
+    });
+    answerForm.addEventListener("submit", submitAnswer);
+  }
   app.querySelectorAll("[data-action]").forEach((element) => {
     const action = element.dataset.action;
     if (action === "choose-student") element.addEventListener("click", chooseStudent);
@@ -3071,9 +3102,15 @@ async function finishRoom() {
 }
 
 function submitAnswer(event) {
+  if (event.type === "submit") event.preventDefault();
   if (state.pendingQuestionKey || state.busy) return;
   const question = currentQuestion();
-  const answer = event.currentTarget.dataset.answer;
+  const typed = isVerbFormInput(question);
+  const answer = typed ? event.currentTarget.elements?.verbAnswer?.value.trim() : event.currentTarget.dataset.answer;
+  if (typed && !answer) {
+    event.currentTarget.elements?.verbAnswer?.focus();
+    return;
+  }
   const occurrenceIndex = questionOccurrenceIndex(question);
   const occurrenceKey = questionOccurrenceKey(question);
   if (!questionId(question) || occurrenceIndex === null || !occurrenceKey) {

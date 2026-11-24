@@ -466,7 +466,8 @@ canvas#c{position:absolute;inset:0;width:100%;height:100%;}
   </div>
 </div>
 
-<script src="../game/questions.js?v=questions-20260901-all-split"></script>
+<script src="../game/questions.js?v=verbs-20261124"></script>
+<script src="../game/solo-input.js"></script>
 <script src="../game/classroom-bridge.js"></script>
 <script src="../sounds.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
@@ -1609,7 +1610,8 @@ async function showQuestion() {
   // Render options
   const optsEl = document.getElementById('qpop-opts');
   optsEl.innerHTML = '';
-  opts.forEach(opt => {
+  if (SoloInput.matches(q)) SoloInput.render(optsEl, q, (value, button) => handleAnswer(value, q.ans, button));
+  else opts.forEach(opt => {
     const btn = document.createElement('button');
     btn.className = 'qopt';
     btn.textContent = opt;
@@ -1808,7 +1810,8 @@ function reviewNext() {
   const fb = document.getElementById('qpop-fb'); fb.textContent = ''; fb.className = 'qpop-fb';
   const optsEl = document.getElementById('qpop-opts');
   optsEl.innerHTML = '';
-  [...q.opts].forEach(opt => {   // 약점 라운드는 차분히 — SHOCK 섞기·타이머 없음
+  if (SoloInput.matches(q)) SoloInput.render(optsEl, q, (value, button) => reviewAnswer(value, q.ans, button));
+  else [...q.opts].forEach(opt => {   // 약점 라운드는 차분히 — SHOCK 섞기·타이머 없음
     const btn = document.createElement('button');
     btn.className = 'qopt'; btn.textContent = opt;
     btn.onclick = () => reviewAnswer(opt, q.ans, btn);

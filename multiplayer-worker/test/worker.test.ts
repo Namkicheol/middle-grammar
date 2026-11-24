@@ -2,6 +2,7 @@ import { runInDurableObject } from "cloudflare:test";
 import { env } from "cloudflare:workers";
 import { beforeEach, describe, expect, it } from "vitest";
 import worker from "../src/index";
+import { ACTIVE_ROOM_MODES } from "../src/room-engine";
 import type { Env, RoomRecord } from "../src/types";
 
 const TEACHER = "teacher@example.com";
@@ -206,6 +207,24 @@ describe("teacher quiz sets", () => {
 });
 
 describe("room routes", () => {
+  it.each(ACTIVE_ROOM_MODES)("uses the verb forms pool in %s rooms", async (mode) => {
+    const { response, body } = await createRoom(TEACHER, {
+      grade: "g1",
+      unitKey: "g1-verb-forms",
+      mode,
+      questionCount: 20,
+    });
+    expect(response.status).toBe(201);
+    expect(body.state).toMatchObject({ grade: "g1", unitKey: "g1-verb-forms", mode });
+    await inspectDurableObject(env.ROOMS.getByName(body.code), async (_instance, state) => {
+      const record = await state.storage.get<RoomRecord>("room");
+      const questions = record?.state.questions ?? [];
+      expect(questions).toHaveLength(20);
+      expect(new Set(questions.map(question => question.id)).size).toBe(20);
+      expect(questions.every(question => question.id.startsWith("g1_verb_forms_"))).toBe(true);
+    });
+  });
+
   it("creates a six-digit room with a multiplayer join URL and scoped state", async () => {
     const { response, body } = await createRoom();
     expect(response.status).toBe(201);
@@ -509,6 +528,38 @@ describe("room routes", () => {
 });
 
 describe("socket tickets and scoring", () => {
+  it("hides choices for verb spelling and grades typed text over WebSocket", async () => {
+    const { body: room } = await createRoom(TEACHER, {
+      grade: "g1", unitKey: "g1-verb-forms", questionCount: 20, shuffleQuestions: false,
+    });
+    let expected = "";
+    await inspectDurableObject(env.ROOMS.getByName(room.code), async (_instance, state) => {
+      const record = (await state.storage.get<RoomRecord>("room"))!;
+      const typed = record.state.questions.find((question) => question.type === "input")!;
+      expected = typed.ans;
+      record.state.questions = [typed, ...record.state.questions.filter((question) => question.id !== typed.id)];
+      await state.storage.put("room", record);
+    });
+    const { body: student } = await join(room.code, "변화 연습");
+    await request(`/api/teacher/rooms/${room.code}/start`, {
+      method: "POST", headers: { "x-dev-teacher-email": TEACHER },
+    });
+    const { body: issued } = await socketTicket(room.code, student.playerId, student.resumeToken);
+    const response = await request(`/api/rooms/${room.code}/ws?ticket=${issued.ticket}`, { headers: { upgrade: "websocket" } });
+    expect(response.status).toBe(101);
+    const socket = response.webSocket!;
+    socket.accept();
+    const question = (await nextMessage(socket)).state.self.currentQuestion;
+    expect(question).toMatchObject({ type: "input", opts: [] });
+    expect(question).not.toHaveProperty("ans");
+    const payload = { type: "answer", questionId: question.id, occurrenceIndex: question.occurrenceIndex };
+    socket.send(JSON.stringify({ ...payload, answer: "   " }));
+    expect(await nextMessage(socket)).toMatchObject({ type: "error", error: "INVALID_ANSWER" });
+    socket.send(JSON.stringify({ ...payload, answer: ` ${expected.toUpperCase()} ` }));
+    expect(await nextMessage(socket)).toMatchObject({ type: "answer_result", result: { correct: true, scoreGain: 100 } });
+    socket.close(1000, "test complete");
+  });
+
   it("caps unconsumed socket tickets for one player", async () => {
     const { body: room } = await createRoom();
     const { body: player } = await join(room.code, "티켓 학생");

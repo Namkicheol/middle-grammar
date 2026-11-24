@@ -386,7 +386,8 @@ body{background:#101923;font-family:'Noto Sans KR',system-ui,sans-serif;color:#f
 </div>
 
 <audio id="bgm" src="assets/bgm/climb-epic.mp3" loop preload="none"></audio>
-<script src="../game/questions.js?v=questions-20260901-all-split"></script>
+<script src="../game/questions.js?v=verbs-20261124"></script>
+<script src="../game/solo-input.js"></script>
 <script src="../game/classroom-bridge.js"></script>
 <script>
 'use strict';
@@ -785,7 +786,8 @@ function presentOptions(){
   const g=GS,q=g.cur;
   const opts=shuffled(q.opts,g.rng);
   const box=$('opts');box.innerHTML='';
-  opts.forEach((o,i)=>{
+  if (SoloInput.matches(q)) SoloInput.render(box, q, (value, button) => answer(button, value));
+  else opts.forEach((o,i)=>{
     const b=document.createElement('button');
     const key=String.fromCharCode(65+i);
     b.className='opt';b.dataset.answer=o;b.setAttribute('aria-label',key+'. '+o);
@@ -795,7 +797,7 @@ function presentOptions(){
     box.appendChild(b);
   });
   // 🌪️ 돌풍층: 2.8초마다 선택지 위치가 뒤바뀐다
-  if(g.event==='wind'&&!document.hidden)startWindShuffle();
+  if(g.event==='wind'&&!document.hidden&&!SoloInput.matches(q))startWindShuffle();
   // 시간 단축: 몬스터 60% / 보스 70% / ⚡가속 55% (베팅은 보통 시간)
   const tScale=g.event==='monster'?0.6:g.event==='boss'?0.7:g.event==='rush'?0.55:1;
   // 특수층과 고층은 너무 짧아 문제를 읽지 못하는 상황을 막되, 긴 문항만 소폭 보정한다.

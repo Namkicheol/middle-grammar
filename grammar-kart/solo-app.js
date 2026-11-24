@@ -13,7 +13,7 @@
     try { Promise.resolve(request.call(element)).catch(() => {}); } catch (_) {}
   }
   const allLessons = Object.entries(typeof GAME_QUESTIONS !== 'undefined' ? GAME_QUESTIONS : {})
-    .filter(([key, item]) => /^g[12]-l\d+$/.test(key) && item.questions?.some(q => q.opts?.length === 4));
+    .filter(([key, item]) => (/^g[12]-l\d+$/.test(key) || key === 'g1-verb-forms') && item.questions?.some(q => q.opts?.length === 4));
   let selectedLesson = allLessons[0]?.[0] || 'g1-l1';
   let selectedMap = 'coastal';
   try { selectedMap = localStorage.getItem('grammar-kart-map') || selectedMap; } catch (_) {}
@@ -179,7 +179,13 @@
         const kor = $('p', '', question.kor || '빈칸에 들어갈 알맞은 답을 고르세요.');
         const eng = $('h2', '', question.eng || question.question || question.prompt || '알맞은 답을 고르세요.');
         const choices = $('div', 'choices');
-        question.opts.forEach((choice, i) => {
+        if (question.type === 'input') {
+          const form = $('form', 'kart-answer-form'); const input = $('input'); input.type = 'text'; input.placeholder = '답을 입력하세요'; input.setAttribute('aria-label', '정답 입력');
+          const submit = $('button', '', '제출'); submit.type = 'submit';
+          input.addEventListener('focus', () => { keyHolds.left.clear(); keyHolds.right.clear(); updateSteer(); });
+          form.addEventListener('submit', e => { e.preventDefault(); if (input.value.trim() && !pendingAnswer) race.answer(input.value); });
+          form.append(input, submit); choices.append(form);
+        } else question.opts.forEach((choice, i) => {
           const button = $('button', '', `${'ABCD'[i]}. ${choice}`); button.type = 'button'; button.dataset.answer = choice;
           button.addEventListener('click', () => choose(choice)); choices.append(button);
         });
@@ -241,7 +247,7 @@
       button.addEventListener('lostpointercapture', onPointerRelease);
     }
     const keydown = ev => {
-      if (app.race !== race) return;
+      if (app.race !== race || ev.target.closest?.('input, textarea, select, [contenteditable=true]')) return;
       const direction = directionForKey(ev.key);
       if (direction) { ev.preventDefault(); keyHolds[direction].add(ev.key); updateSteer(); }
       if ('1234'.includes(ev.key) && ev.key.length === 1 && race.question) { const choice = race.question.opts[Number(ev.key) - 1]; if (choice) choose(choice); }
